@@ -1019,12 +1019,12 @@ function submitForm(formId) {
   // 3. Power Automate: trigger on form submission →
   //    send email to family (from guardian email field) →
   //    save to SharePoint folder: Client Records/[Consumer Name]/Signed Forms
-  generatePDF(formId);   window.open('https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=n9gWGeMOckmlE9kfswBwQERInGw2UjVFjCMVqiFbowpUNVBSRE5JV040NjRMQTFMTlBIVjQzUVVERi4u', '_blank');   console.log('Form submitted:', formId);, formId);
+  generatePDF(formId);   window.open('https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=n9gWGeMOckmlE9kfswBwQERInGw2UjVFjCMVqiFbowpUNVBSRE5JV040NjRMQTFMTlBIVjQzUVVERi4u', '_blank');   console.log('Form submitted:', formId);
 }
 // ── AUTO-POPULATE shared fields across tabs ──
 function syncSharedFields() {
   const sharedFields = [
-    { from: 'consumer-name-consent', to: ['consumer-name-rights', 'consumer-name-emergency'] },
+    { from: '{ from: 'c-consumer', to: ['r-consumer', 'e-consumer'] },     { from: 'c-uci',      to: ['r-uci',      'e-uci']      },     { from: 'c-guardian', to: ['r-guardian']                },     { from: 'c-email',    to: ['r-email']                   },     { from: 'c-date',     to: ['r-date', 'e-date']          },     { from: 'c-dob',      to: ['e-dob']                     }', to: ['consumer-name-rights', 'consumer-name-emergency'] },
     { from: 'uci-consent', to: ['uci-rights', 'uci-emergency'] },
     { from: 'guardian-consent', to: ['guardian-rights'] },
     { from: 'email-consent', to: ['email-rights'] },
