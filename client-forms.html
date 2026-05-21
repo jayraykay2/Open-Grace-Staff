@@ -481,7 +481,7 @@ function submitForm(formId) {
   }
   errEl.classList.remove('show');
   generatePDF(formId);
-  const msBase = 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=n9gWGeMOckmlE9kfswBwQERInGw2UjVFjCMVqiFbowpUNVBSRE5JV040NjRMQTFMTlBIVjQzUVVERi4u'; const msParams = new URLSearchParams({   r8afebeab1fae4fac91ada107ff634885: document.getElementById('c-consumer')?.value || '',   r443302e9a65f4ca2a48ac6c32a748936: document.getElementById('c-uci')?.value || '',   r58f6b5505b40455bb2480bb827f43b5b: document.getElementById('c-staff-print')?.value || '',   rfdbeed1cd86c4a91a672bdb3d4985f52: JSON.stringify(document.getElementById('c-date')?.value || ''),   r42b25d167c6f45fa8d3659cbb00cf9b1: document.getElementById('e-p1-name')?.value || '',   rb975e480cb0648b28a248108d5741b1a: document.getElementById('e-p1-phone')?.value || '',   r549aedb33a0f4599af7c8e1a6a1cc8b5: document.getElementById('e-p1-rel')?.value || '', }); window.open(msBase + '&' + msParams.toString(), '_blank');
+  const msBase = 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=n9gWGeMOckmlE9kfswBwQERInGw2UjVFjCMVqiFbowpUNVBSRE5JV040NjRMQTFMTlBIVjQzUVVERi4u'; const msBase = 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=n9gWGeMOckmlE9kfswBwQERInGw2UjVFjCMVqiFbowpUNVBSRE5JV040NjRMQTFMTlBIVjQzUVVERi4u'; const enc = v => encodeURIComponent(v || ''); const msUrl = msBase   + '&r8afebeab1fae4fac91ada107ff634885=' + enc(document.getElementById('c-consumer')?.value)   + '&r443302e9a65f4ca2a48ac6c32a748936=' + enc(document.getElementById('c-uci')?.value)   + '&r58f6b5505b40455bb2480bb827f43b5b=' + enc(document.getElementById('c-staff-print')?.value)   + '&rfdbeed1cd86c4a91a672bdb3d4985f52=' + enc(JSON.stringify(document.getElementById('c-date')?.value))   + '&r42b25d167c6f45fa8d3659cbb00cf9b1=' + enc(document.getElementById('e-p1-name')?.value)   + '&rb975e480cb0648b28a248108d5741b1a=' + enc(document.getElementById('e-p1-phone')?.value)   + '&r549aedb33a0f4599af7c8e1a6a1cc8b5=' + enc(document.getElementById('e-p1-rel')?.value); window.open(msUrl, '_blank');   r8afebeab1fae4fac91ada107ff634885: document.getElementById('c-consumer')?.value || '',   r443302e9a65f4ca2a48ac6c32a748936: document.getElementById('c-uci')?.value || '',   r58f6b5505b40455bb2480bb827f43b5b: document.getElementById('c-staff-print')?.value || '',   rfdbeed1cd86c4a91a672bdb3d4985f52: JSON.stringify(document.getElementById('c-date')?.value || ''),   r42b25d167c6f45fa8d3659cbb00cf9b1: document.getElementById('e-p1-name')?.value || '',   rb975e480cb0648b28a248108d5741b1a: document.getElementById('e-p1-phone')?.value || '',   r549aedb33a0f4599af7c8e1a6a1cc8b5: document.getElementById('e-p1-rel')?.value || '', }); window.open(msBase + '&' + msParams.toString(), '_blank');
   document.getElementById('form-' + formId).style.display = 'none';
   document.getElementById('success-' + formId).classList.add('show');
   document.getElementById('success-' + formId).scrollIntoView({behavior:'smooth'});
@@ -527,7 +527,7 @@ function generatePDF(formId) {
       const value = input.value || '—';
       doc.setFont('helvetica','bold'); doc.text(labelText+':', 40, y);
       doc.setFont('helvetica','normal');
-      const lines = doc.splitTextToSize(value, 380);
+      const lines = doc.splitTextToSize(value, 340);       doc.text(lines, 230, y); = doc.splitTextToSize(value, 380);
       doc.text(lines, 210, y);
       y += lines.length * 14 + 6;
       if (y > 720) { doc.addPage(); y = 40; }
