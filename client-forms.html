@@ -1019,10 +1019,122 @@ function submitForm(formId) {
   // 3. Power Automate: trigger on form submission →
   //    send email to family (from guardian email field) →
   //    save to SharePoint folder: Client Records/[Consumer Name]/Signed Forms
-  console.log('Form submitted:', formId);
+  generatePDF(formId);   window.open('https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=n9gWGeMOckmlE9kfswBwQERInGw2UjVFjCMVqiFbowpUNVBSRE5JV040NjRMQTFMTlBIVjQzUVVERi4u', '_blank');   console.log('Form submitted:', formId);, formId);
 }
+// ── AUTO-POPULATE shared fields across tabs ──
+function syncSharedFields() {
+  const sharedFields = [
+    { from: 'consumer-name-consent', to: ['consumer-name-rights', 'consumer-name-emergency'] },
+    { from: 'uci-consent', to: ['uci-rights', 'uci-emergency'] },
+    { from: 'guardian-consent', to: ['guardian-rights'] },
+    { from: 'email-consent', to: ['email-rights'] },
+    { from: 'date-consent', to: ['date-rights', 'date-emergency'] }
+  ];
+  sharedFields.forEach(({ from, to }) => {
+    const src = document.getElementById(from);
+    if (!src) return;
+    src.addEventListener('input', () => {
+      to.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = src.value;
+      });
+    });
+  });
+}
+syncSharedFields();
 
-function resetForm(formId) {
+// ── PDF GENERATION ──
+function generatePDF(formId) {
+  const script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+  script.onload = () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const panel = document.getElementById('panel-' + formId);
+    const formTitle = panel.querySelector('h2') ? panel.querySelector('h2').innerText : 'Client Acknowledgment Form';
+    const today = new Date().toLocaleDateString('en-US');
+    let y = 60;
+
+    // Header
+    doc.setFillColor(26, 107, 60);
+    doc.rect(0, 0, 612, 50, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Open Grace LLC — Client Acknowledgment Form', 306, 30, { align: 'center' });
+    doc.setFontSize(10);
+    doc.text('CFS Vendor PJ6208 · Inland Counties Regional Center', 306, 44, { align: 'center' });
+
+    // Form title
+    doc.setTextColor(26, 107, 60);
+    doc.setFontSize(13);
+    doc.text(formTitle, 40, y + 20);
+    doc.setDrawColor(26, 107, 60);
+    doc.line(40, y + 24, 572, y + 24);
+    y += 40;
+
+    // Fields
+    doc.setTextColor(50, 50, 50);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const inputs = panel.querySelectorAll('input[type=text], input[type=email], input[type=date], input[type=tel], textarea');
+    inputs.forEach(input => {
+      const label = input.closest('.field') ? input.closest('.field').querySelector('label') : null;
+      const labelText = label ? label.innerText.replace('*', '').trim() : '';
+      const value = input.value || '—';
+      if (labelText) {
+        doc.setFont('helvetica', 'bold');
+        doc.text(labelText + ':', 40, y);
+        doc.setFont('helvetica', 'normal');
+        const lines = doc.splitTextToSize(value, 400);
+        doc.text(lines, 200, y);
+        y += lines.length * 14 + 6;
+        if (y > 720) { doc.addPage(); y = 40; }
+      }
+    });
+
+    // Checkboxes
+    y += 10;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Acknowledgments:', 40, y);
+    y += 16;
+    doc.setFont('helvetica', 'normal');
+    panel.querySelectorAll('input[type=checkbox]').forEach(cb => {
+      const lbl = document.querySelector(`label[for="${cb.id}"]`);
+      if (lbl) {
+        const checked = cb.checked ? '☑' : '☐';
+        const lines = doc.splitTextToSize(checked + ' ' + lbl.innerText, 520);
+        doc.text(lines, 40, y);
+        y += lines.length * 14 + 4;
+        if (y > 720) { doc.addPage(); y = 40; }
+      }
+    });
+
+    // Signature
+    const sigCanvases = panel.querySelectorAll('canvas');
+    if (sigCanvases.length > 0) {
+      y += 10;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Signatures captured on device', 40, y);
+      y += 14;
+      sigCanvases.forEach((canvas, i) => {
+        try {
+          const imgData = canvas.toDataURL('image/png');
+          doc.addImage(imgData, 'PNG', 40 + (i * 270), y, 240, 60);
+        } catch(e) {}
+      });
+      y += 70;
+    }
+
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(120, 120, 120);
+    doc.text(`Generated: ${today} · Open Grace LLC · joshua.kennedy@opengrace.org · CFS Vendor PJ6208`, 306, 760, { align: 'center' });
+
+    doc.save('OpenGrace_Acknowledgment_' + formId + '_' + today.replace(/\//g, '-') + '.pdf');
+  };
+  document.head.appendChild(script);
+}function resetForm(formId) {
   // Reset fields
   const panel = document.getElementById('panel-' + formId);
   panel.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
