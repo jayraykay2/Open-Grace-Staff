@@ -607,9 +607,9 @@ function generateCombinedPDF(callback) {
       // Header
       doc.setFillColor(31,30,77); doc.rect(0,0,612,50,'F');
       doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
-      doc.text('Open Grace LLC — Client Acknowledgment Forms', 306, 30, {align:'center'});
+      doc.text('Open Grace LLC - CFS Vendor PJ6208 - joshua.kennedy@opengrace.org - Generated '+today, 306, 760, {align:'center'});
       doc.setFontSize(10);
-      doc.text('CFS Vendor PJ6208 · Inland Counties Regional Center · ' + today, 306, 44, {align:'center'});
+      doc.text('CFS Vendor PJ6208 - Inland Counties Regional Center - ' + today, 306, 44, {align:'center'});
       // Form title
       doc.setTextColor(31,30,77); doc.setFontSize(13); doc.setFont('helvetica','bold');
       doc.text(formTitles[formId], 40, y+20);
@@ -657,7 +657,7 @@ function generateCombinedPDF(callback) {
             }
           } catch(e) {}
         });
-        y+=70;
+        y+=y += 30;
       }
       // Footer
       doc.setFontSize(8); doc.setTextColor(150,150,150);
