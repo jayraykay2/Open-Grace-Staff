@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Open Grace — Client Acknowledgment Forms</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#1F1E4D; --purple:#2D2B6B; --teal:#148F77; --orange:#E8640A;
+  --gold:#C9A84C; --cream:#F8F6F0; --warm:#EDE8DF; --slate:#5A6472;
+  --border:#D4CFC4; --white:#FFFFFF; --red:#C0392B; --green:#148F77;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--navy);min-height:100vh;font-size:16px;line-height:1.6;}
+.header{background:var(--navy);padding:20px 24px 16px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,0.2);}
+.header-text h1{font-family:'Playfair Display',serif;font-size:18px;color:#fff;line-height:1.2;}
+.header-text p{font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:0.5px;margin-top:2px;}
+
+/* TAB BAR */
+.form-selector{background:var(--white);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.form-selector::-webkit-scrollbar{display:none;}
+.form-tab{padding:14px 16px;font-size:13px;font-weight:600;color:var(--slate);border-bottom:3px solid transparent;white-space:nowrap;cursor:pointer;transition:all 0.2s;flex-shrink:0;display:flex;align-items:center;gap:6px;}
+.form-tab.active{color:var(--teal);border-bottom-color:var(--teal);background:#F0FAF7;}
+.form-tab.completed{color:var(--teal);}
+.form-tab.incomplete-warn{color:var(--red);border-bottom-color:var(--red);animation:pulse 1s ease 3;}
+@keyframes pulse{0%,100%{background:transparent;}50%{background:#FDEDEC;}}
+.tab-status{font-size:14px;}
+
+/* PROGRESS BAR */
+.progress-bar{background:var(--warm);padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--slate);}
+.progress-track{flex:1;height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--teal);border-radius:99px;transition:width 0.4s ease;}
+.progress-label{font-weight:600;color:var(--navy);white-space:nowrap;}
+
+.content{max-width:760px;margin:0 auto;padding:24px 16px 80px;}
+.form-panel{display:none;}
+.form-panel.active{display:block;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.form-card{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:20px;box-shadow:0 2px 12px rgba(31,30,77,0.06);}
+.form-card-header{background:linear-gradient(135deg,var(--navy) 0%,var(--purple) 100%);padding:20px 24px;color:#fff;}
+.form-card-header h2{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:4px;}
+.form-card-header p{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5;}
+.form-card-body{padding:24px;}
+.field-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.field-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:140px;}
+.field-group label{font-size:11px;font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:0.8px;}
+.field-group input,.field-group select,.field-group textarea{padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:15px;color:var(--navy);background:var(--cream);transition:border 0.2s,background 0.2s;-webkit-appearance:none;width:100%;}
+.field-group input:focus,.field-group select:focus,.field-group textarea:focus{outline:none;border-color:var(--teal);background:var(--white);}
+.field-group textarea{min-height:80px;resize:vertical;}
+.form-text{font-size:14px;color:var(--slate);line-height:1.7;margin-bottom:16px;padding:16px;background:var(--cream);border-radius:8px;border-left:3px solid var(--teal);}
+.form-text h4{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;}
+.form-text ul{padding-left:18px;margin-top:6px;}
+.form-text ul li{margin-bottom:4px;}
+.check-item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.check-item:last-child{border-bottom:none;}
+.check-item input[type=checkbox]{width:22px;height:22px;accent-color:var(--teal);flex-shrink:0;margin-top:2px;cursor:pointer;}
+.check-item span{font-size:14px;color:var(--slate);line-height:1.5;}
+.divider{height:1px;background:var(--border);margin:20px 0;}
+.sig-label{font-size:12px;font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;display:block;}
+.sig-canvas-wrap{border:2px dashed var(--border);border-radius:12px;background:var(--cream);position:relative;margin-bottom:10px;touch-action:none;overflow:hidden;}
+.sig-canvas-wrap canvas{display:block;width:100%;height:140px;cursor:crosshair;touch-action:none;}
+.sig-canvas-wrap .sig-placeholder{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:13px;color:var(--border);pointer-events:none;font-style:italic;}
+.sig-canvas-wrap.signed{border-color:var(--teal);border-style:solid;background:#FAFFFE;}
+.sig-actions{display:flex;gap:8px;margin-bottom:16px;}
+.btn-clear{background:none;border:1.5px solid var(--border);border-radius:8px;padding:8px 16px;font-family:'Source Sans 3',sans-serif;font-size:13px;color:var(--slate);cursor:pointer;transition:all 0.2s;}
+.btn-clear:hover{border-color:var(--red);color:var(--red);}
+.sig-row{display:flex;gap:16px;flex-wrap:wrap;}
+.sig-col{flex:1;min-width:200px;}
+
+/* NEXT TAB BUTTON */
+.btn-next{display:block;width:100%;background:linear-gradient(135deg,var(--purple) 0%,var(--navy) 100%);color:var(--white);border:none;border-radius:12px;padding:16px;font-family:'Source Sans 3',sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;box-shadow:0 4px 16px rgba(31,30,77,0.2);}
+
+/* FINAL SUBMIT SECTION */
+.final-submit-section{background:var(--white);border-radius:16px;border:2px solid var(--teal);padding:24px;margin-top:24px;display:none;}
+.final-submit-section.visible{display:block;animation:fadeIn 0.4s ease;}
+.final-submit-section h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--teal);margin-bottom:8px;}
+.final-submit-section p{font-size:14px;color:var(--slate);margin-bottom:20px;}
+.tab-completion-list{margin-bottom:20px;}
+.tab-completion-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.tab-completion-item:last-child{border-bottom:none;}
+.tab-completion-item .status-icon{font-size:18px;flex-shrink:0;}
+.tab-completion-item .tab-name{flex:1;font-weight:600;}
+.tab-completion-item .fix-btn{font-size:12px;background:var(--cream);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;color:var(--navy);}
+.tab-completion-item.done .tab-name{color:var(--teal);}
+.tab-completion-item.pending .tab-name{color:var(--red);}
+.btn-submit-all{display:block;width:100%;background:linear-gradient(135deg,var(--teal) 0%,#0E7A65 100%);color:var(--white);border:none;border-radius:12px;padding:18px;font-family:'Source Sans 3',sans-serif;font-size:16px;font-weight:600;cursor:pointer;letter-spacing:0.3px;box-shadow:0 4px 16px rgba(20,143,119,0.3);}
+.btn-submit-all:disabled{background:#aaa;box-shadow:none;cursor:not-allowed;}
+
+.sub-info{background:var(--navy);border-radius:12px;padding:18px 20px;color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin-bottom:16px;}
+.sub-info strong{color:var(--gold);display:block;margin-bottom:6px;}
+.val-error{background:#FDEDEC;border:1px solid #E74C3C;border-radius:8px;padding:12px 16px;font-size:13px;color:var(--red);margin-bottom:16px;display:none;}
+.val-error.show{display:block;}
+.val-error ul{padding-left:16px;margin-top:4px;}
+.section-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--navy);margin:20px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--warm);}
+
+/* SUCCESS */
+.success-screen{display:none;text-align:center;padding:48px 24px;}
+.success-screen.show{display:block;animation:fadeIn 0.4s ease;}
+.success-icon{width:72px;height:72px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px;}
+.success-screen h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:8px;}
+.success-screen p{font-size:14px;color:var(--slate);line-height:1.6;margin-bottom:24px;}
+.btn-new{display:inline-block;background:var(--navy);color:var(--white);border:none;border-radius:10px;padding:14px 28px;font-family:'Source Sans 3',sans-serif;font-size:15px;font-weight:600;cursor:pointer;}
+
+/* SENDING OVERLAY */
+.sending-overlay{display:none;position:fixed;inset:0;background:rgba(31,30,77,0.85);z-index:999;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;}
+.sending-overlay.show{display:flex;}
+.sending-spinner{width:56px;height:56px;border:4px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:20px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sending-overlay h3{font-size:20px;margin-bottom:8px;}
+.sending-overlay p{font-size:14px;opacity:0.7;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-text">
+    <h1>Open Grace LLC</h1>
+    <p>CLIENT ACKNOWLEDGMENT FORMS</p>
+  </div>
+</div>
+
+<div class="form-selector">
+  <div class="form-tab active" id="tab-consent" onclick="showForm('consent',this)">
+    <span class="tab-status" id="status-consent">📋</span> Consent to Services
+  </div>
+  <div class="form-tab" id="tab-rights" onclick="showForm('rights',this)">
+    <span class="tab-status" id="status-rights">⚖️</span> Client Rights
+  </div>
+  <div class="form-tab" id="tab-emergency" onclick="showForm('emergency',this)">
+    <span class="tab-status" id="status-emergency">🚨</span> Emergency Contact
+  </div>
+</div>
+
+<div class="progress-bar">
+  <span class="progress-label" id="progress-label">0 of 3 tabs completed</span>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+</div>
+
+<div class="content">
+
+<!-- FORM 1 — CONSENT -->
+<div class="form-panel active" id="panel-consent">
+  <div class="form-card">
+    <div class="form-card-header">
+      <h2>Consent to Services &amp; Release of Information</h2>
+      <p>Coordinated Family Support Services — Inland Counties Regional Center Service Area</p>
+    </div>
+    <div class="form-card-body">
+      <h3 class="section-title">Client Information</h3>
+      <div class="field-row">
+        <div class="field-group"><label>Consumer Full Name *</label><input type="text" id="c-consumer" placeholder="Last, First" oninput="syncFields()"></div>
+        <div class="field-group"><label>UCI Number *</label><input type="text" id="c-uci" placeholder="7-digit UCI" oninput="syncFields()"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Date of Birth *</label><input type="date" id="c-dob" oninput="syncFields()"></div>
+        <div class="field-group"><label>Primary Diagnosis</label><input type="text" id="c-diag" placeholder="e.g. Autism Spectrum Disorder"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Guardian / Authorized Representative *</label><input type="text" id="c-guardian" placeholder="Full name" oninput="syncFields()"></div>
+        <div class="field-group"><label>Relationship to Consumer *</label><input type="text" id="c-rel" placeholder="e.g. Mother, Legal Guardian"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Family Email Address *</label><input type="email" id="c-email" placeholder="For your copy of this form" oninput="syncFields()"></div>
+        <div class="field-group"><label>Today's Date *</label><input type="date" id="c-date" oninput="syncFields()"></div>
+      </div>
+      <h3 class="section-title">Consent to Services</h3>
+      <div class="form-text"><h4>Description of Services</h4>Open Grace LLC is a Coordinated Family Support (CFS) provider operating under contract with Inland Counties Regional Center (IRC). CFS services assist adults with developmental disabilities who live in their family home by providing personalized coordination, service navigation, and advocacy. Services include assessment of service needs, development and monitoring of service plans, coordination of community resources, advocacy, and ongoing family support.</div>
+      <div class="form-text"><h4>Authorization &amp; Hours</h4>Services are provided pursuant to a Purchase of Service (POS) authorized by IRC. The authorized service hours and scope are outlined in the consumer's Individual Program Plan (IPP). Open Grace will provide services within the authorized hours only. Any changes to service authorization require IRC approval.</div>
+      <label class="section-title">Please read and check each item:</label>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I consent to Open Grace LLC providing Coordinated Family Support services to the consumer named above as authorized by Inland Counties Regional Center.</span></div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I understand that services are provided within the hours authorized on the Purchase of Service (POS) and that additional hours require IRC approval.</span></div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I understand that I may withdraw consent for services at any time by notifying Open Grace LLC and IRC in writing, without affecting the consumer's eligibility for other regional center services.</span></div>
+      <h3 class="section-title">Release of Information</h3>
+      <div class="form-text">Open Grace LLC may need to share information about the consumer with Inland Counties Regional Center, the consumer's service coordinator, and other authorized service providers. All information is shared only to the extent necessary to coordinate services and is protected under Welfare &amp; Institutions Code §4514.</div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I authorize Open Grace LLC to exchange information with Inland Counties Regional Center and the assigned Service Coordinator as necessary to coordinate and document services.</span></div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I authorize Open Grace LLC to share information with other service providers directly involved in the consumer's care as needed to coordinate services.</span></div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I understand that all information shared is confidential and protected under W&amp;I Code §4514 and applicable federal privacy laws.</span></div>
+      <div class="divider"></div>
+      <h3 class="section-title">Signatures</h3>
+      <div class="sig-row">
+        <div class="sig-col">
+          <span class="sig-label">Guardian / Authorized Representative Signature *</span>
+          <div class="sig-canvas-wrap" id="wrap-consent-guardian"><canvas id="sig-consent-guardian" height="140"></canvas><div class="sig-placeholder">Sign here with your finger</div></div>
+          <div class="sig-actions"><button class="btn-clear" onclick="clearSig('sig-consent-guardian','wrap-consent-guardian')">Clear</button></div>
+          <div class="field-group"><label>Print Name</label><input type="text" id="c-guard-print" placeholder="Full printed name"></div>
+        </div>
+        <div class="sig-col">
+          <span class="sig-label">Open Grace Staff Signature *</span>
+          <div class="sig-canvas-wrap" id="wrap-consent-staff"><canvas id="sig-consent-staff" height="140"></canvas><div class="sig-placeholder">Sign here with your finger</div></div>
+          <div class="sig-actions"><button class="btn-clear" onclick="clearSig('sig-consent-staff','wrap-consent-staff')">Clear</button></div>
+          <div class="field-group"><label>Staff Name &amp; Title</label><input type="text" id="c-staff-print" placeholder="Name — CFS Family Coordinator"></div>
+        </div>
+      </div>
+      <div class="val-error" id="val-consent"></div>
+      <button class="btn-next" onclick="markComplete('consent')">Save Consent Form &amp; Continue to Client Rights →</button>
+    </div>
+  </div>
+</div>
+
+<!-- FORM 2 — CLIENT RIGHTS -->
+<div class="form-panel" id="panel-rights">
+  <div class="form-card">
+    <div class="form-card-header">
+      <h2>Client Rights &amp; Confidentiality</h2>
+      <p>Acknowledgment of Consumer Rights — W&amp;I Code §4500 et seq.</p>
+    </div>
+    <div class="form-card-body">
+      <h3 class="section-title">Consumer Information</h3>
+      <div class="field-row">
+        <div class="field-group"><label>Consumer Full Name *</label><input type="text" id="r-consumer" placeholder="Last, First"></div>
+        <div class="field-group"><label>UCI Number *</label><input type="text" id="r-uci" placeholder="7-digit UCI"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Guardian / Authorized Representative *</label><input type="text" id="r-guardian" placeholder="Full name"></div>
+        <div class="field-group"><label>Family Email Address *</label><input type="email" id="r-email" placeholder="For your copy"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Today's Date *</label><input type="date" id="r-date"></div>
+      </div>
+      <h3 class="section-title">Your Rights as a Regional Center Consumer</h3>
+      <div class="form-text">As a consumer receiving services through Inland Counties Regional Center and Open Grace LLC, you have the following rights under the Lanterman Developmental Disabilities Services Act (W&amp;I Code §4500 et seq.):
+        <ul>
+          <li>The right to receive services in the least restrictive environment appropriate to your needs</li>
+          <li>The right to be treated with dignity and respect at all times</li>
+          <li>The right to participate in the development of your Individual Program Plan (IPP)</li>
+          <li>The right to have your personal information kept confidential</li>
+          <li>The right to file a complaint or grievance without fear of retaliation</li>
+          <li>The right to request a fair hearing if you disagree with a regional center decision</li>
+          <li>The right to have an advocate or representative of your choice present at any meeting</li>
+          <li>The right to refuse services without losing eligibility for other regional center services</li>
+          <li>The right to access your records upon request</li>
+        </ul>
+      </div>
+      <h3 class="section-title">Confidentiality</h3>
+      <div class="form-text">All information about you and your family is strictly confidential and protected under Welfare &amp; Institutions Code §4514. Open Grace LLC will not share your personal information with anyone outside of your service team without your written consent, except as required by law.</div>
+      <h3 class="section-title">Grievance &amp; Complaint Process</h3>
+      <div class="form-text">If you have a concern or complaint about the services you receive from Open Grace LLC you may:
+        <ul>
+          <li>Speak directly with your assigned CFS Family Coordinator</li>
+          <li>Contact the Open Grace director at joshua.kennedy@opengrace.org</li>
+          <li>Contact your Inland Counties Regional Center Service Coordinator</li>
+          <li>Request a fair hearing through IRC by calling (951) 241-8102</li>
+          <li>Contact the Office of Clients' Rights Advocacy (OCRA) for independent advocacy</li>
+        </ul>
+        All complaints will be addressed promptly and without retaliation.
+      </div>
+      <h3 class="section-title">Mandatory Reporting</h3>
+      <div class="form-text" style="border-left-color:var(--orange);">Open Grace LLC staff are mandated reporters under California law. Staff are required to immediately report any suspected abuse, neglect, or exploitation of a consumer to the appropriate authorities. This reporting obligation cannot be waived.</div>
+      <label class="section-title">Acknowledgment — please check each item:</label>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I have been informed of and understand the consumer's rights under the Lanterman Act and W&amp;I Code §4500 et seq.</span></div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I understand that all consumer information is confidential and protected under W&amp;I Code §4514.</span></div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I understand the grievance and complaint process and how to exercise the consumer's rights if needed.</span></div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I understand that Open Grace LLC staff are mandated reporters and are required by law to report suspected abuse or neglect.</span></div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I have had an opportunity to ask questions and all my questions have been answered to my satisfaction.</span></div>
+      <div class="divider"></div>
+      <h3 class="section-title">Signatures</h3>
+      <div class="sig-row">
+        <div class="sig-col">
+          <span class="sig-label">Guardian / Authorized Representative *</span>
+          <div class="sig-canvas-wrap" id="wrap-rights-guardian"><canvas id="sig-rights-guardian" height="140"></canvas><div class="sig-placeholder">Sign here with your finger</div></div>
+          <div class="sig-actions"><button class="btn-clear" onclick="clearSig('sig-rights-guardian','wrap-rights-guardian')">Clear</button></div>
+          <div class="field-group"><label>Print Name</label><input type="text" id="r-guard-print" placeholder="Full printed name"></div>
+        </div>
+        <div class="sig-col">
+          <span class="sig-label">Open Grace Staff Signature *</span>
+          <div class="sig-canvas-wrap" id="wrap-rights-staff"><canvas id="sig-rights-staff" height="140"></canvas><div class="sig-placeholder">Sign here with your finger</div></div>
+          <div class="sig-actions"><button class="btn-clear" onclick="clearSig('sig-rights-staff','wrap-rights-staff')">Clear</button></div>
+          <div class="field-group"><label>Staff Name &amp; Title</label><input type="text" id="r-staff-print" placeholder="Name — CFS Family Coordinator"></div>
+        </div>
+      </div>
+      <div class="val-error" id="val-rights"></div>
+      <button class="btn-next" onclick="markComplete('rights')">Save Client Rights &amp; Continue to Emergency Contact →</button>
+    </div>
+  </div>
+</div>
+
+<!-- FORM 3 — EMERGENCY CONTACT -->
+<div class="form-panel" id="panel-emergency">
+  <div class="form-card">
+    <div class="form-card-header">
+      <h2>Emergency Contact &amp; Authorization</h2>
+      <p>Emergency Planning &amp; Medical Authorization for CFS Services</p>
+    </div>
+    <div class="form-card-body">
+      <h3 class="section-title">Consumer Information</h3>
+      <div class="field-row">
+        <div class="field-group"><label>Consumer Full Name *</label><input type="text" id="e-consumer" placeholder="Last, First"></div>
+        <div class="field-group"><label>UCI Number *</label><input type="text" id="e-uci" placeholder="7-digit UCI"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Date of Birth *</label><input type="date" id="e-dob"></div>
+        <div class="field-group"><label>Today's Date *</label><input type="date" id="e-date"></div>
+      </div>
+      <h3 class="section-title">Primary Emergency Contact</h3>
+      <div class="field-row">
+        <div class="field-group"><label>Full Name *</label><input type="text" id="e-p1-name" placeholder="Primary contact name"></div>
+        <div class="field-group"><label>Relationship *</label><input type="text" id="e-p1-rel" placeholder="e.g. Mother, Legal Guardian"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Primary Phone *</label><input type="tel" id="e-p1-phone" placeholder="(xxx) xxx-xxxx"></div>
+        <div class="field-group"><label>Alternate Phone</label><input type="tel" id="e-p1-alt" placeholder="(xxx) xxx-xxxx"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Email Address *</label><input type="email" id="e-p1-email" placeholder="For copy of this form"></div>
+        <div class="field-group"><label>Home Address</label><input type="text" id="e-p1-addr" placeholder="Street, City, State, Zip"></div>
+      </div>
+      <h3 class="section-title">Secondary Emergency Contact</h3>
+      <div class="field-row">
+        <div class="field-group"><label>Full Name</label><input type="text" id="e-p2-name" placeholder="Secondary contact name"></div>
+        <div class="field-group"><label>Relationship</label><input type="text" id="e-p2-rel" placeholder="e.g. Sister, Uncle"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Phone</label><input type="tel" id="e-p2-phone" placeholder="(xxx) xxx-xxxx"></div>
+      </div>
+      <h3 class="section-title">Medical Information</h3>
+      <div class="field-row">
+        <div class="field-group"><label>Primary Care Physician</label><input type="text" id="e-pcp" placeholder="Doctor name and practice"></div>
+        <div class="field-group"><label>PCP Phone</label><input type="tel" id="e-pcp-phone" placeholder="(xxx) xxx-xxxx"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Health Insurance</label><input type="text" id="e-ins" placeholder="e.g. IEHP, Medi-Cal"></div>
+        <div class="field-group"><label>Insurance Member ID</label><input type="text" id="e-ins-id" placeholder="Member ID number"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Known Allergies</label><input type="text" id="e-allergy" placeholder="e.g. Seasonal, None known"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Current Medications</label><textarea id="e-meds" placeholder="List medications, dosages, and frequency..."></textarea></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Special Health / Safety Considerations</label><textarea id="e-special" placeholder="e.g. nonverbal, elopement risk, dietary restrictions, seizure history..."></textarea></div>
+      </div>
+      <h3 class="section-title">Emergency Authorization</h3>
+      <div class="form-text">In the event of a medical emergency during CFS service hours where the primary emergency contact cannot be immediately reached, I authorize Open Grace LLC staff to:
+        <ul>
+          <li>Call 911 and request emergency medical services immediately</li>
+          <li>Remain with the consumer until emergency services arrive</li>
+          <li>Provide emergency responders with the medical information listed on this form</li>
+          <li>Notify IRC and file a Special Incident Report (SIR) as required</li>
+        </ul>
+        Open Grace LLC staff are not authorized to administer medications or make medical decisions.
+      </div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I authorize Open Grace LLC to contact 911 and emergency services in the event of a medical emergency during service hours.</span></div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I authorize Open Grace LLC to share the medical information on this form with emergency responders as needed.</span></div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I understand that Open Grace LLC will attempt to contact me immediately in any emergency situation.</span></div>
+      <div class="check-item"><input type="checkbox" class="req-check"><span>I confirm that the emergency contact and medical information provided above is accurate and current. I will notify Open Grace LLC promptly if any information changes.</span></div>
+      <div class="divider"></div>
+      <h3 class="section-title">Signatures</h3>
+      <div class="sig-row">
+        <div class="sig-col">
+          <span class="sig-label">Guardian / Authorized Representative *</span>
+          <div class="sig-canvas-wrap" id="wrap-emerg-guardian"><canvas id="sig-emerg-guardian" height="140"></canvas><div class="sig-placeholder">Sign here with your finger</div></div>
+          <div class="sig-actions"><button class="btn-clear" onclick="clearSig('sig-emerg-guardian','wrap-emerg-guardian')">Clear</button></div>
+          <div class="field-group"><label>Print Name</label><input type="text" id="e-guard-print" placeholder="Full printed name"></div>
+        </div>
+        <div class="sig-col">
+          <span class="sig-label">Open Grace Staff Signature *</span>
+          <div class="sig-canvas-wrap" id="wrap-emerg-staff"><canvas id="sig-emerg-staff" height="140"></canvas><div class="sig-placeholder">Sign here with your finger</div></div>
+          <div class="sig-actions"><button class="btn-clear" onclick="clearSig('sig-emerg-staff','wrap-emerg-staff')">Clear</button></div>
+          <div class="field-group"><label>Staff Name &amp; Title</label><input type="text" id="e-staff-print" placeholder="Name — CFS Family Coordinator"></div>
+        </div>
+      </div>
+      <div class="val-error" id="val-emergency"></div>
+      <button class="btn-next" onclick="markComplete('emergency')">Save Emergency Contact Form ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL SUBMIT SECTION -->
+<div class="final-submit-section" id="final-submit-section">
+  <h3>✅ Ready to Submit All Forms</h3>
+  <p>Review the completion status below before submitting. All three forms must be completed.</p>
+  <div class="tab-completion-list" id="completion-list"></div>
+  <div class="sub-info"><strong>📧 What happens when you submit</strong>A combined PDF will be downloaded to this device, emailed to the family and to joshua.kennedy@opengrace.org, saved to OneDrive under the client's name, and logged to the Open Grace Client Logs.</div>
+  <button class="btn-submit-all" id="btn-submit-all" onclick="submitAll()">Submit All Forms &amp; Send to Family →</button>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-screen" id="success-all">
+  <div class="success-icon">✓</div>
+  <h2>All Forms Submitted</h2>
+  <p>All three acknowledgment forms have been signed and submitted.<br>A PDF has been downloaded, emailed to the family and director, and saved to OneDrive under the client's records.</p>
+  <button class="btn-new" onclick="resetAll()">Start New Client Session</button>
+</div>
+
+</div><!-- end content -->
+
+<!-- SENDING OVERLAY -->
+<div class="sending-overlay" id="sending-overlay">
+  <div class="sending-spinner"></div>
+  <h3>Submitting Forms...</h3>
+  <p>Generating PDF and sending to family.<br>Please do not close this page.</p>
+</div>
+
+<script>
+// ── POWER AUTOMATE HTTP TRIGGER URL ──────────────────────────────────────
+// Replace this with your actual Power Automate HTTP trigger URL after creating the flow
+const FLOW_URL = 'https://default1916d89f0ee34972a513d91fb30070.40.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fe45b23fc1594827bd1a2197b699bf29/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=p1sI6ooyVKAz56SWuv2jf-7wREfDipXQBdIFUnUPPVI';
+
+// ── MICROSOFT FORMS PREFILL BASE ─────────────────────────────────────────
+const MS_FORM_BASE = 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=n9gWGeMOckmlE9kfswBwQERInGw2UjVFjCMVqiFbowpUNVBSRE5JV040NjRMQTFMTlBIVjQzUVVERi4u';
+
+// ── TAB COMPLETION STATE ──────────────────────────────────────────────────
+const tabState = { consent: false, rights: false, emergency: false };
+const tabLabels = { consent: '📋 Consent to Services', rights: '⚖️ Client Rights', emergency: '🚨 Emergency Contact' };
+
+// ── FORM CONFIG ───────────────────────────────────────────────────────────
+const formConfig = {
+  consent: {
+    required: [
+      {id:'c-consumer',label:'Consumer Full Name'},{id:'c-uci',label:'UCI Number'},
+      {id:'c-dob',label:'Date of Birth'},{id:'c-guardian',label:'Guardian Name'},
+      {id:'c-rel',label:'Relationship'},{id:'c-email',label:'Family Email'},{id:'c-date',label:'Date'}
+    ],
+    sigs: ['sig-consent-guardian','sig-consent-staff']
+  },
+  rights: {
+    required: [
+      {id:'r-consumer',label:'Consumer Full Name'},{id:'r-uci',label:'UCI Number'},
+      {id:'r-guardian',label:'Guardian Name'},{id:'r-email',label:'Family Email'},{id:'r-date',label:'Date'}
+    ],
+    sigs: ['sig-rights-guardian','sig-rights-staff']
+  },
+  emergency: {
+    required: [
+      {id:'e-consumer',label:'Consumer Full Name'},{id:'e-uci',label:'UCI Number'},
+      {id:'e-dob',label:'Date of Birth'},{id:'e-date',label:'Date'},
+      {id:'e-p1-name',label:'Emergency Contact Name'},{id:'e-p1-rel',label:'Relationship'},
+      {id:'e-p1-phone',label:'Primary Contact Phone'},{id:'e-p1-email',label:'Contact Email'}
+    ],
+    sigs: ['sig-emerg-guardian','sig-emerg-staff']
+  }
+};
+
+// ── SIGNATURE PADS ────────────────────────────────────────────────────────
+const sigStates = {};
+function initCanvas(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas || sigStates[id]) return;
+  const wrap = canvas.parentElement;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width  = (rect.width || 300) * dpr;
+  canvas.height = 140 * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.strokeStyle = '#1F1E4D'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  let drawing = false, hasSig = false;
+  function pos(e) { const r = canvas.getBoundingClientRect(); const s = e.touches ? e.touches[0] : e; return {x:s.clientX-r.left, y:s.clientY-r.top}; }
+  function start(e) { e.preventDefault(); drawing=true; const p=pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
+  function move(e) {
+    if (!drawing) return; e.preventDefault();
+    const p=pos(e); ctx.lineTo(p.x,p.y); ctx.stroke();
+    if (!hasSig) { hasSig=true; wrap.classList.add('signed'); const ph=wrap.querySelector('.sig-placeholder'); if(ph) ph.style.display='none'; }
+  }
+  function end() { drawing=false; ctx.beginPath(); }
+  canvas.addEventListener('mousedown',start); canvas.addEventListener('mousemove',move); canvas.addEventListener('mouseup',end);
+  canvas.addEventListener('touchstart',start,{passive:false}); canvas.addEventListener('touchmove',move,{passive:false}); canvas.addEventListener('touchend',end);
+  sigStates[id] = { ctx, dpr, hasSig:()=>hasSig, getDataURL:()=>canvas.toDataURL('image/png'), clear:()=>{ ctx.clearRect(0,0,canvas.width/dpr,canvas.height/dpr); hasSig=false; wrap.classList.remove('signed'); const ph=wrap.querySelector('.sig-placeholder'); if(ph) ph.style.display=''; } };
+}
+const allCanvases = ['sig-consent-guardian','sig-consent-staff','sig-rights-guardian','sig-rights-staff','sig-emerg-guardian','sig-emerg-staff'];
+function initAll() { allCanvases.forEach(initCanvas); }
+window.addEventListener('load', initAll);
+function clearSig(id) { if(sigStates[id]) sigStates[id].clear(); }
+function hasSig(id) { return sigStates[id] ? sigStates[id].hasSig() : false; }
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────
+function showForm(id, btn) {
+  document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+  setTimeout(initAll, 150);
+}
+
+// ── AUTO-POPULATE ─────────────────────────────────────────────────────────
+function syncFields() {
+  const map = [
+    {from:'c-consumer', to:['r-consumer','e-consumer']},
+    {from:'c-uci',      to:['r-uci','e-uci']},
+    {from:'c-guardian', to:['r-guardian']},
+    {from:'c-email',    to:['r-email']},
+    {from:'c-date',     to:['r-date','e-date']},
+    {from:'c-dob',      to:['e-dob']},
+  ];
+  map.forEach(({from, to}) => {
+    const src = document.getElementById(from);
+    if (!src) return;
+    to.forEach(tid => { const el = document.getElementById(tid); if(el) el.value = src.value; });
+  });
+}
+
+// ── VALIDATE TAB ─────────────────────────────────────────────────────────
+function validateTab(formId) {
+  const cfg = formConfig[formId];
+  const errors = [];
+  cfg.required.forEach(f => { const el = document.getElementById(f.id); if(!el || !el.value.trim()) errors.push(f.label + ' is required'); });
+  const panel = document.getElementById('panel-' + formId);
+  const unchecked = Array.from(panel.querySelectorAll('.req-check')).filter(cb => !cb.checked).length;
+  if (unchecked > 0) errors.push('All acknowledgment items must be checked (' + unchecked + ' remaining)');
+  cfg.sigs.forEach(sigId => { if(!hasSig(sigId)) errors.push(sigId.includes('guardian') ? 'Guardian signature is required' : 'Staff signature is required'); });
+  return errors;
+}
+
+// ── MARK TAB COMPLETE ────────────────────────────────────────────────────
+function markComplete(formId) {
+  const errors = validateTab(formId);
+  const errEl = document.getElementById('val-' + formId);
+  if (errors.length > 0) {
+    errEl.innerHTML = '<strong>Please complete the following before continuing:</strong><ul>' + errors.map(e=>'<li>'+e+'</li>').join('') + '</ul>';
+    errEl.classList.add('show');
+    errEl.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  errEl.classList.remove('show');
+  tabState[formId] = true;
+  document.getElementById('status-' + formId).textContent = '✅';
+  document.getElementById('tab-' + formId).classList.add('completed');
+  updateProgress();
+  // Auto-advance to next tab
+  const order = ['consent','rights','emergency'];
+  const idx = order.indexOf(formId);
+  if (idx < order.length - 1) {
+    const nextId = order[idx + 1];
+    showForm(nextId, document.getElementById('tab-' + nextId));
+  }
+  updateFinalSection();
+}
+
+// ── PROGRESS BAR ─────────────────────────────────────────────────────────
+function updateProgress() {
+  const done = Object.values(tabState).filter(Boolean).length;
+  document.getElementById('progress-label').textContent = done + ' of 3 tabs completed';
+  document.getElementById('progress-fill').style.width = (done / 3 * 100) + '%';
+}
+
+// ── FINAL SUBMIT SECTION ─────────────────────────────────────────────────
+function updateFinalSection() {
+  const section = document.getElementById('final-submit-section');
+  const list = document.getElementById('completion-list');
+  const allDone = Object.values(tabState).every(Boolean);
+  section.classList.add('visible');
+  list.innerHTML = Object.entries(tabState).map(([id, done]) =>
+    `<div class="tab-completion-item ${done?'done':'pending'}">
+      <span class="status-icon">${done?'✅':'❌'}</span>
+      <span class="tab-name">${tabLabels[id]}</span>
+      ${!done ? `<button class="fix-btn" onclick="showForm('${id}', document.getElementById('tab-${id}'))">Go to tab →</button>` : ''}
+    </div>`
+  ).join('');
+  document.getElementById('btn-submit-all').disabled = !allDone;
+}
+
+// ── SUBMIT ALL ────────────────────────────────────────────────────────────
+function submitAll() {
+  const allDone = Object.values(tabState).every(Boolean);
+  if (!allDone) { updateFinalSection(); return; }
+  document.getElementById('sending-overlay').classList.add('show');
+  generateCombinedPDF(pdfBase64 => {
+    // Open Microsoft Form with prefill
+    const enc = v => encodeURIComponent(v || '');
+    const msUrl = MS_FORM_BASE
+      + '&r8afebeab1fae4fac91ada107ff634885=' + enc(document.getElementById('c-consumer')?.value)
+      + '&r443302e9a65f4ca2a48ac6c32a748936=' + enc(document.getElementById('c-uci')?.value)
+      + '&r58f6b5505b40455bb2480bb827f43b5b=' + enc(document.getElementById('c-staff-print')?.value)
+      + '&rfdbeed1cd86c4a91a672bdb3d4985f52=' + enc(JSON.stringify(document.getElementById('c-date')?.value))
+      + '&r42b25d167c6f45fa8d3659cbb00cf9b1=' + enc(document.getElementById('e-p1-name')?.value)
+      + '&rb975e480cb0648b28a248108d5741b1a=' + enc(document.getElementById('e-p1-phone')?.value)
+      + '&r549aedb33a0f4599af7c8e1a6a1cc8b5=' + enc(document.getElementById('e-p1-rel')?.value);
+    window.open(msUrl, '_blank');
+    // Send to Power Automate if URL is set
+    if (FLOW_URL && FLOW_URL !== 'YOUR_POWER_AUTOMATE_HTTP_TRIGGER_URL_HERE') {
+      const clientName = document.getElementById('c-consumer')?.value || 'Unknown';
+      const familyEmail = document.getElementById('c-email')?.value || '';
+      const today = new Date().toLocaleDateString('en-US');
+      fetch(FLOW_URL, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          clientName, familyEmail, date: today,
+          pdfBase64, fileName: clientName + ' — Acknowledgments — ' + today.replace(/\//g,'-') + '.pdf'
+        })
+      }).catch(err => console.log('Flow error:', err));
+    }
+    document.getElementById('sending-overlay').classList.remove('show');
+    document.getElementById('final-submit-section').style.display = 'none';
+    document.getElementById('success-all').classList.add('show');
+    document.getElementById('success-all').scrollIntoView({behavior:'smooth'});
+  });
+}
+
+// ── COMBINED PDF ──────────────────────────────────────────────────────────
+function generateCombinedPDF(callback) {
+  const script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+  script.onload = () => {
+    const {jsPDF} = window.jspdf;
+    const doc = new jsPDF({unit:'pt', format:'letter'});
+    const clientName = document.getElementById('c-consumer')?.value || 'Unknown Client';
+    const today = new Date().toLocaleDateString('en-US');
+    const forms = ['consent','rights','emergency'];
+    const formTitles = {consent:'Consent to Services & Release of Information', rights:'Client Rights & Confidentiality', emergency:'Emergency Contact & Authorization'};
+    forms.forEach((formId, fi) => {
+      if (fi > 0) doc.addPage();
+      let y = 60;
+      // Header
+      doc.setFillColor(31,30,77); doc.rect(0,0,612,50,'F');
+      doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
+      doc.text('Open Grace LLC — Client Acknowledgment Forms', 306, 30, {align:'center'});
+      doc.setFontSize(10);
+      doc.text('CFS Vendor PJ6208 · Inland Counties Regional Center · ' + today, 306, 44, {align:'center'});
+      // Form title
+      doc.setTextColor(31,30,77); doc.setFontSize(13); doc.setFont('helvetica','bold');
+      doc.text(formTitles[formId], 40, y+20);
+      doc.setDrawColor(20,143,119); doc.line(40,y+24,572,y+24); y+=40;
+      // Client name banner
+      doc.setFillColor(240,250,247); doc.rect(40,y,532,24,'F');
+      doc.setFontSize(11); doc.setTextColor(20,100,60);
+      doc.text('Client: ' + clientName + '   UCI: ' + (document.getElementById('c-uci')?.value||''), 48, y+16);
+      y += 34;
+      // Fields
+      const panel = document.getElementById('panel-' + formId);
+      doc.setTextColor(50,50,50); doc.setFontSize(10); doc.setFont('helvetica','normal');
+      panel.querySelectorAll('.field-group').forEach(fg => {
+        const label = fg.querySelector('label');
+        const input = fg.querySelector('input, textarea, select');
+        if (!label || !input || !input.value.trim()) return;
+        const labelText = label.innerText.replace('*','').trim();
+        const value = input.value;
+        doc.setFont('helvetica','bold'); doc.text(labelText+':', 40, y);
+        doc.setFont('helvetica','normal');
+        const lines = doc.splitTextToSize(value, 340);
+        doc.text(lines, 230, y);
+        y += lines.length*14+6;
+        if (y > 720) { doc.addPage(); y=40; }
+      });
+      // Checkboxes
+      y+=8; doc.setFont('helvetica','bold'); doc.text('Acknowledgments:', 40, y); y+=16; doc.setFont('helvetica','normal');
+      panel.querySelectorAll('.check-item').forEach(item => {
+        const cb = item.querySelector('input[type=checkbox]');
+        const span = item.querySelector('span');
+        if (!span) return;
+        const lines = doc.splitTextToSize((cb&&cb.checked?'[X] ':'[ ] ') + span.innerText, 520);
+        doc.text(lines, 40, y); y+=lines.length*14+4;
+        if (y>720) { doc.addPage(); y=40; }
+      });
+      // Signatures
+      const sigIds = formConfig[formId].sigs;
+      if (sigIds.length > 0) {
+        y+=10; doc.setFont('helvetica','bold'); doc.text('Signatures:', 40, y); y+=14;
+        sigIds.forEach((sigId, i) => {
+          try {
+            if (sigStates[sigId] && sigStates[sigId].hasSig()) {
+              const imgData = sigStates[sigId].getDataURL();
+              doc.addImage(imgData,'PNG',40+(i*270),y,240,60);
+            }
+          } catch(e) {}
+        });
+        y+=70;
+      }
+      // Footer
+      doc.setFontSize(8); doc.setTextColor(150,150,150);
+      doc.text('Open Grace LLC · CFS Vendor PJ6208 · joshua.kennedy@opengrace.org · Generated '+today, 306, 760, {align:'center'});
+    });
+    // Save and return base64
+    const fileName = clientName + ' — Acknowledgments — ' + today.replace(/\//g,'-') + '.pdf';
+    doc.save(fileName);
+    const pdfBase64 = doc.output('datauristring').split(',')[1];
+    callback(pdfBase64);
+  };
+  document.head.appendChild(script);
+}
+
+// ── RESET ─────────────────────────────────────────────────────────────────
+function resetAll() {
+  document.querySelectorAll('input, textarea, select').forEach(el => { if(el.type!=='checkbox') el.value=''; });
+  document.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked=false);
+  allCanvases.forEach(id => { if(sigStates[id]) sigStates[id].clear(); });
+  Object.keys(tabState).forEach(k => tabState[k]=false);
+  ['consent','rights','emergency'].forEach(id => {
+    document.getElementById('status-'+id).textContent = id==='consent'?'📋':id==='rights'?'⚖️':'🚨';
+    document.getElementById('tab-'+id).classList.remove('completed','incomplete-warn');
+  });
+  updateProgress();
+  document.getElementById('final-submit-section').classList.remove('visible');
+  document.getElementById('success-all').classList.remove('show');
+  showForm('consent', document.getElementById('tab-consent'));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
