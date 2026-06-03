@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Grace LLC — Employee Handbook</title>
+<style>
+  :root {
+    --navy: #2D2B7F;
+    --orange: #FF6B1A;
+    --purple: #9B4FD4;
+    --gold: #FFB800;
+    --light: #F8F4FF;
+    --gray: #444444;
+    --light-gray: #F5F5F5;
+    --med-gray: #E0E0E0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 15px;
+    color: var(--gray);
+    background: #fff;
+    line-height: 1.7;
+  }
+
+  /* PRINT */
+  @media print {
+    .no-print { display: none; }
+    .cover { page-break-after: always; }
+    .section { page-break-inside: avoid; }
+    body { font-size: 12pt; }
+  }
+
+  /* NAV BAR */
+  .navbar {
+    background: var(--navy);
+    color: white;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .navbar .brand { font-size: 18px; font-weight: 700; color: white; }
+  .navbar .brand span { color: var(--orange); }
+  .navbar .badge {
+    background: var(--orange);
+    color: white;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* COVER */
+  .cover {
+    background: linear-gradient(135deg, var(--navy) 0%, #1a1860 100%);
+    color: white;
+    padding: 80px 60px;
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .cover .org-name {
+    font-size: 56px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .cover .org-sub {
+    font-size: 22px;
+    color: var(--orange);
+    margin-bottom: 6px;
+  }
+  .cover .org-vendor {
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 60px;
+  }
+  .cover .handbook-title {
+    background: rgba(255,255,255,0.08);
+    border: 2px solid var(--orange);
+    border-radius: 12px;
+    padding: 28px 60px;
+    font-size: 38px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 4px;
+    margin-bottom: 50px;
+  }
+  .cover .director { font-size: 18px; color: rgba(255,255,255,0.85); margin-bottom: 6px; }
+  .cover .email { color: var(--purple); font-size: 16px; margin-bottom: 8px; }
+  .cover .eff-date { color: rgba(255,255,255,0.5); font-size: 14px; font-style: italic; margin-bottom: 40px; }
+  .cover .confidential {
+    background: rgba(255,107,26,0.15);
+    border-left: 4px solid var(--orange);
+    color: rgba(255,255,255,0.85);
+    padding: 14px 24px;
+    border-radius: 6px;
+    font-size: 13px;
+    max-width: 600px;
+    text-align: left;
+  }
+
+  /* MAIN LAYOUT */
+  .layout {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* SIDEBAR TOC */
+  .toc {
+    width: 260px;
+    min-width: 260px;
+    background: var(--light);
+    padding: 32px 20px;
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    border-right: 1px solid var(--med-gray);
+  }
+  .toc h3 {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .toc a {
+    display: block;
+    padding: 7px 10px;
+    color: var(--gray);
+    text-decoration: none;
+    font-size: 13px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    transition: all 0.2s;
+  }
+  .toc a:hover { background: var(--navy); color: white; }
+  .toc a .num { color: var(--orange); font-weight: 700; margin-right: 6px; }
+
+  /* CONTENT */
+  .content {
+    flex: 1;
+    padding: 48px 52px;
+    max-width: 860px;
+  }
+
+  /* SECTION */
+  .section { margin-bottom: 56px; }
+
+  .section-header {
+    border-bottom: 3px solid var(--orange);
+    padding-bottom: 10px;
+    margin-bottom: 24px;
+  }
+  .section-header h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: 0.5px;
+  }
+
+  .subsection h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--orange);
+    margin: 24px 0 10px;
+  }
+
+  p { margin-bottom: 12px; }
+
+  ul, ol {
+    margin: 10px 0 14px 24px;
+  }
+  ul li, ol li {
+    margin-bottom: 7px;
+    line-height: 1.6;
+  }
+  ul li::marker { color: var(--orange); }
+  ol li::marker { color: var(--navy); font-weight: 700; }
+
+  .highlight {
+    background: #FFF3E0;
+    border-left: 4px solid var(--orange);
+    padding: 14px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 20px 0;
+    font-weight: 600;
+    color: #5a3000;
+    font-size: 14px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--med-gray);
+    margin: 48px 0;
+  }
+
+  /* SIGNATURE PAGE */
+  .sig-block {
+    margin-top: 32px;
+  }
+  .sig-line {
+    margin-bottom: 32px;
+  }
+  .sig-line .line {
+    border-bottom: 1px solid var(--gray);
+    height: 36px;
+    margin-bottom: 6px;
+  }
+  .sig-line .label {
+    font-size: 13px;
+    color: #888;
+    font-style: italic;
+  }
+  .sig-director {
+    border-top: 2px solid var(--navy);
+    padding-top: 20px;
+    margin-top: 40px;
+  }
+
+  /* FOOTER */
+  .page-footer {
+    background: var(--navy);
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 24px;
+    font-size: 13px;
+    margin-top: 80px;
+  }
+  .page-footer span { color: var(--orange); }
+
+  /* PRINT BUTTON */
+  .print-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--orange);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(255,107,26,0.4);
+    z-index: 200;
+    transition: all 0.2s;
+  }
+  .print-btn:hover { background: #e05500; transform: translateY(-2px); }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar no-print">
+  <div class="brand">Open <span>Grace</span> LLC</div>
+  <div class="badge">CONFIDENTIAL — EMPLOYEE HANDBOOK</div>
+</nav>
+
+<!-- COVER -->
+<div class="cover no-print">
+  <div class="org-name">OPEN GRACE LLC</div>
+  <div class="org-sub">Coordinated Family Support Services</div>
+  <div class="org-vendor">Vendorized CFS Provider &bull; Inland Counties Regional Center &bull; Vendor PJ6208</div>
+  <div class="handbook-title">EMPLOYEE HANDBOOK</div>
+  <div class="director">Director: Joshua Ellis</div>
+  <div class="email">joshua.kennedy@opengrace.org</div>
+  <div class="eff-date">Effective Date: May 23, 2026</div>
+  <div class="confidential">
+    ⚠️ This handbook is the property of Open Grace LLC and contains confidential employment policies and procedures. Do not distribute outside the organization.
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- TOC SIDEBAR -->
+  <nav class="toc no-print">
+    <h3>Contents</h3>
+    <a href="#s1"><span class="num">1.</span> Welcome & Mission</a>
+    <a href="#s2"><span class="num">2.</span> At-Will Employment</a>
+    <a href="#s3"><span class="num">3.</span> Equal Opportunity</a>
+    <a href="#s4"><span class="num">4.</span> Family Coordinator Role</a>
+    <a href="#s5"><span class="num">5.</span> Work Hours & Scheduling</a>
+    <a href="#s6"><span class="num">6.</span> Confidentiality & HIPAA</a>
+    <a href="#s7"><span class="num">7.</span> Documentation (IRC)</a>
+    <a href="#s8"><span class="num">8.</span> Code of Conduct</a>
+    <a href="#s9"><span class="num">9.</span> Mandated Reporter</a>
+    <a href="#s10"><span class="num">10.</span> Social Media</a>
+    <a href="#s11"><span class="num">11.</span> Dress Code</a>
+    <a href="#s12"><span class="num">12.</span> Time Off & Absences</a>
+    <a href="#s13"><span class="num">13.</span> Progressive Discipline</a>
+    <a href="#s14"><span class="num">14.</span> Grievance Procedure</a>
+    <a href="#s15"><span class="num">15.</span> Technology Policy</a>
+    <a href="#s16"><span class="num">16.</span> Health & Safety</a>
+    <a href="#s17"><span class="num">17.</span> Acknowledgment & Signature</a>
+  </nav>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <div id="s1" class="section">
+      <div class="section-header"><h2>1. WELCOME & MISSION STATEMENT</h2></div>
+      <p>Welcome to Open Grace LLC.</p>
+      <p>Open Grace LLC is a Coordinated Family Support (CFS) provider dedicated to empowering individuals with developmental and intellectual disabilities and strengthening the families who support them. Our services are guided by dignity, compassion, professionalism, cultural responsiveness, and person-centered care.</p>
+      <p>As a vendorized provider through Inland Counties Regional Center (IRC), Open Grace LLC operates in accordance with applicable California Welfare and Institutions Code provisions, Title 17 California Code of Regulations, HIPAA requirements, and all applicable federal, state, and local regulations.</p>
+      <div class="subsection">
+        <h3>Our Mission</h3>
+        <p>To provide individualized support that promotes independence, stability, safety, self-determination, and meaningful community inclusion for the individuals and families we serve.</p>
+        <h3>Our Core Values</h3>
+        <ul>
+          <li>Support should adapt to the person, not require the person to adapt to the support.</li>
+          <li>Families deserve respect, partnership, and clear communication.</li>
+          <li>Professionalism and compassion must coexist.</li>
+          <li>Ethical and compliant service delivery protects both clients and staff.</li>
+          <li>Documentation, accountability, and integrity are essential to quality care.</li>
+          <li>Cultural responsiveness is not optional — it is a standard of practice.</li>
+        </ul>
+      </div>
+    </div>
+    <hr class="divider">
+
+    <div id="s2" class="section">
+      <div class="section-header"><h2>2. AT-WILL EMPLOYMENT POLICY</h2></div>
+      <p>Employment with Open Grace LLC is at-will. This means that either the employee or Open Grace LLC may terminate the employment relationship at any time, with or without cause, and with or without advance notice, subject to applicable California law.</p>
+      <div class="highlight">Nothing in this handbook, any verbal statement, policy, practice, or procedure creates a contract of employment or alters the at-will nature of employment.</div>
+      <p>Only the Director of Open Grace LLC has the authority to enter into any agreement modifying at-will employment status, and any such agreement must be in writing and signed by both the employee and the Director.</p>
+    </div>
+    <hr class="divider">
+
+    <div id="s3" class="section">
+      <div class="section-header"><h2>3. EQUAL EMPLOYMENT OPPORTUNITY STATEMENT</h2></div>
+      <p>Open Grace LLC is committed to providing equal employment opportunities to all employees and applicants without regard to:</p>
+      <ul>
+        <li>Race, color, religion, or creed</li>
+        <li>Sex, gender identity or expression, or sexual orientation</li>
+        <li>National origin or ancestry</li>
+        <li>Physical or mental disability or medical condition</li>
+        <li>Genetic information</li>
+        <li>Marital or familial status</li>
+        <li>Age (40 and over)</li>
+        <li>Military or veteran status</li>
+        <li>Pregnancy, childbirth, or related medical conditions</li>
+        <li>Any other classification protected under federal or California law</li>
+      </ul>
+      <p>Open Grace LLC prohibits unlawful discrimination, harassment, retaliation, or abusive conduct in the workplace.</p>
+    </div>
+    <hr class="divider">
+
+    <div id="s4" class="section">
+      <div class="section-header"><h2>4. FAMILY COORDINATOR JOB DESCRIPTION & EXPECTATIONS</h2></div>
+      <p>Family Coordinators are the core of service delivery at Open Grace LLC. They provide direct Coordinated Family Support (CFS) services to consumers and families receiving services through Inland Counties Regional Center.</p>
+      <div class="subsection">
+        <h3>Primary Responsibilities</h3>
+        <ul>
+          <li>Provide direct support services to consumers and families in accordance with authorized service plans</li>
+          <li>Assist consumers with skill development, independent living goals, and community integration</li>
+          <li>Support linkage to community resources, programs, and natural supports</li>
+          <li>Maintain consistent communication with service coordinators and interdisciplinary teams</li>
+          <li>Complete accurate, objective, and timely documentation of all services rendered</li>
+          <li>Submit daily contact logs and CFS service forms as required by IRC</li>
+          <li>Report safety concerns, incidents, and suspected abuse immediately</li>
+          <li>Participate in required trainings, supervision, and team meetings</li>
+          <li>Maintain confidentiality and professional boundaries at all times</li>
+        </ul>
+        <h3>Performance Expectations</h3>
+        <ul>
+          <li>Punctuality and reliability in all scheduled shifts and client appointments</li>
+          <li>Professional communication with clients, families, and team members</li>
+          <li>Accurate and timely submission of all required documentation</li>
+          <li>Cultural responsiveness and person-centered approach in all interactions</li>
+          <li>Ethical conduct aligned with Open Grace LLC values and IRC standards</li>
+          <li>Completion of all required training within designated timeframes</li>
+        </ul>
+      </div>
+    </div>
+    <hr class="divider">
+
+    <div id="s5" class="section">
+      <div class="section-header"><h2>5. WORK HOURS & SCHEDULING</h2></div>
+      <p>Work schedules are assigned based on client needs, operational requirements, and program demands.</p>
+      <div class="subsection">
+        <h3>General Guidelines</h3>
+        <ul>
+          <li>Employees must arrive on time and prepared for all scheduled shifts and client visits</li>
+          <li>Accurate timesheets must be maintained and submitted on schedule</li>
+          <li>Overtime must be pre-authorized by the Director before hours are worked</li>
+          <li>Schedule changes require advance notice and Director approval</li>
+        </ul>
+      </div>
+      <div class="highlight">Falsification of service hours, timesheets, or documentation is strictly prohibited and will result in immediate termination and may be reported to appropriate licensing authorities.</div>
+    </div>
+    <hr class="divider">
+
+    <div id="s6" class="section">
+      <div class="section-header"><h2>6. CONFIDENTIALITY & HIPAA COMPLIANCE</h2></div>
+      <p>Employees are required to maintain strict confidentiality regarding all consumer, family, employee, and organizational information. This obligation continues after employment ends.</p>
+      <div class="subsection">
+        <h3>Legal Obligations</h3>
+        <ul>
+          <li>HIPAA Privacy and Security Rules</li>
+          <li>Title 17 California Code of Regulations</li>
+          <li>Welfare and Institutions Code confidentiality provisions</li>
+          <li>Inland Counties Regional Center data sharing agreements</li>
+        </ul>
+        <h3>Prohibited Actions</h3>
+        <ul>
+          <li>Discussing confidential consumer information in public settings</li>
+          <li>Sharing protected health information with unauthorized individuals</li>
+          <li>Posting client-related information, photos, or identifying details online</li>
+          <li>Accessing consumer records beyond the scope of your assigned role</li>
+          <li>Removing or transmitting confidential documents outside authorized channels</li>
+        </ul>
+      </div>
+      <p>Any suspected confidentiality breach must be reported immediately to the Director. Violations may result in disciplinary action, termination, and regulatory reporting.</p>
+    </div>
+    <hr class="divider">
+
+    <div id="s7" class="section">
+      <div class="section-header"><h2>7. CLIENT DOCUMENTATION REQUIREMENTS (IRC COMPLIANCE)</h2></div>
+      <p>Accurate documentation is a critical component of service delivery, regulatory compliance, and consumer protection.</p>
+      <div class="subsection">
+        <h3>Required Documentation</h3>
+        <ul>
+          <li>Daily Contact Logs — completed for every service interaction</li>
+          <li>CFS Service Forms — submitted per IRC schedule and format requirements</li>
+          <li>Incident Reports — filed immediately following any reportable incident</li>
+          <li>Progress Notes — aligned with consumer goals and authorized services</li>
+          <li>Service Acknowledgment Forms — signed by consumers/guardians as required</li>
+        </ul>
+        <h3>Documentation Standards</h3>
+        <ul>
+          <li>All documentation must be accurate, objective, legible, and professional</li>
+          <li>Documentation must be submitted within required timeframes</li>
+          <li>Entries must reflect services actually rendered — no pre-dating or falsification</li>
+          <li>Documentation must align with authorized services in the consumer's IPP</li>
+        </ul>
+      </div>
+      <div class="highlight">Failure to maintain accurate and timely documentation is a serious compliance issue and may result in disciplinary action, termination, and notification to IRC.</div>
+    </div>
+    <hr class="divider">
+
+    <div id="s8" class="section">
+      <div class="section-header"><h2>8. CODE OF CONDUCT & PROFESSIONAL STANDARDS</h2></div>
+      <div class="subsection">
+        <h3>Expected Conduct</h3>
+        <ul>
+          <li>Treat all individuals with dignity, respect, and professionalism</li>
+          <li>Maintain appropriate professional boundaries with consumers and families</li>
+          <li>Avoid conflicts of interest and disclose any potential conflicts immediately</li>
+          <li>Follow all organizational policies, procedures, and directives</li>
+          <li>Cooperate fully with internal and external compliance reviews</li>
+          <li>Report concerns, safety issues, or misconduct promptly</li>
+        </ul>
+        <h3>Prohibited Conduct</h3>
+        <p>The following conduct may result in disciplinary action up to and including immediate termination:</p>
+        <ul>
+          <li>Dishonesty, fraud, or misrepresentation</li>
+          <li>Neglect or abandonment of assigned duties</li>
+          <li>Harassment, bullying, or discrimination of any kind</li>
+          <li>Confidentiality violations or unauthorized disclosure of protected information</li>
+          <li>Unsafe practices that endanger consumers, staff, or the public</li>
+          <li>Use, possession, or distribution of alcohol or controlled substances during work hours</li>
+          <li>Abuse, neglect, exploitation, or mistreatment of consumers</li>
+          <li>Theft or misappropriation of organizational or consumer property</li>
+        </ul>
+      </div>
+    </div>
+    <hr class="divider">
+
+    <div id="s9" class="section">
+      <div class="section-header"><h2>9. MANDATED REPORTER OBLIGATIONS</h2></div>
+      <p>All employees of Open Grace LLC are mandated reporters under California law. This is a non-negotiable legal obligation.</p>
+      <div class="subsection">
+        <h3>Reporting Requirements</h3>
+        <ul>
+          <li>Child abuse or neglect (Penal Code § 11164 et seq.)</li>
+          <li>Elder abuse or dependent adult abuse (Welfare & Institutions Code § 15600 et seq.)</li>
+          <li>Abuse, neglect, or exploitation of individuals receiving developmental services</li>
+        </ul>
+        <h3>How to Report</h3>
+        <ol>
+          <li>Contact appropriate authorities immediately (APS, CPS, or law enforcement)</li>
+          <li>Notify the Director of Open Grace LLC as soon as possible after reporting</li>
+          <li>Complete any required internal incident documentation</li>
+        </ol>
+      </div>
+      <div class="highlight">Failure to report suspected abuse is a crime in California and may result in termination, civil liability, and criminal penalties.</div>
+    </div>
+    <hr class="divider">
+
+    <div id="s10" class="section">
+      <div class="section-header"><h2>10. SOCIAL MEDIA POLICY</h2></div>
+      <div class="subsection">
+        <h3>Prohibited Online Conduct</h3>
+        <ul>
+          <li>Posting or sharing any confidential client information, photos, or identifying details</li>
+          <li>Discussing consumers, families, or colleagues in online forums or groups</li>
+          <li>Making derogatory statements about Open Grace LLC, IRC, or clients</li>
+          <li>Maintaining personal social media relationships with consumers or family members</li>
+          <li>Representing personal opinions as those of Open Grace LLC</li>
+        </ul>
+      </div>
+      <p>Professional boundaries with consumers and families must be maintained across all social media platforms at all times, including after hours.</p>
+    </div>
+    <hr class="divider">
+
+    <div id="s11" class="section">
+      <div class="section-header"><h2>11. DRESS CODE & PROFESSIONAL APPEARANCE</h2></div>
+      <div class="subsection">
+        <h3>Standards</h3>
+        <ul>
+          <li>Clothing should be clean, neat, and appropriate for a professional care setting</li>
+          <li>Closed-toe shoes are recommended during home visits for safety</li>
+          <li>Avoid excessive perfume or cologne, which may affect sensitive consumers</li>
+        </ul>
+        <h3>Prohibited Attire</h3>
+        <ul>
+          <li>Clothing with offensive language, graphics, or imagery</li>
+          <li>Excessively revealing, torn, or visibly damaged clothing</li>
+          <li>Clothing promoting drugs, alcohol, violence, or discrimination</li>
+        </ul>
+      </div>
+    </div>
+    <hr class="divider">
+
+    <div id="s12" class="section">
+      <div class="section-header"><h2>12. TIME OFF, ABSENCES & CALL-OUT PROCEDURES</h2></div>
+      <div class="subsection">
+        <h3>Call-Out Procedure</h3>
+        <ol>
+          <li>Notify your supervisor as early as possible, no later than one hour before your scheduled shift</li>
+          <li>Provide a reason for your absence and estimated return date if known</li>
+          <li>Follow up with any required documentation (e.g., medical note for extended absences)</li>
+        </ol>
+        <h3>Attendance Standards</h3>
+        <ul>
+          <li>Excessive absenteeism or repeated tardiness will result in corrective action</li>
+          <li>No-call, no-show absences may result in immediate disciplinary action</li>
+          <li>Employees must obtain advance approval for planned time off</li>
+        </ul>
+      </div>
+      <p>California law provides for various protected leave entitlements including Paid Sick Leave, FMLA/CFRA, and Pregnancy Disability Leave. Contact the Director for information regarding applicable leave rights.</p>
+    </div>
+    <hr class="divider">
+
+    <div id="s13" class="section">
+      <div class="section-header"><h2>13. PROGRESSIVE DISCIPLINE POLICY</h2></div>
+      <p>Open Grace LLC utilizes a progressive discipline process when appropriate. The organization reserves the right to accelerate or skip steps based on the severity of conduct.</p>
+      <div class="subsection">
+        <h3>Corrective Action Steps</h3>
+        <ol>
+          <li><strong>Verbal Warning</strong> — documented discussion of the issue and expected correction</li>
+          <li><strong>Written Warning</strong> — formal written notice placed in the employee file</li>
+          <li><strong>Final Written Warning</strong> — notice that further violations may result in termination</li>
+          <li><strong>Suspension</strong> — temporary unpaid removal from duty pending review</li>
+          <li><strong>Termination</strong> — separation from employment</li>
+        </ol>
+      </div>
+      <div class="highlight">Certain conduct — including consumer abuse, falsification of records, confidentiality violations, or criminal activity — may result in immediate termination without prior warning steps.</div>
+    </div>
+    <hr class="divider">
+
+    <div id="s14" class="section">
+      <div class="section-header"><h2>14. GRIEVANCE & COMPLAINT PROCEDURE</h2></div>
+      <p>Open Grace LLC encourages employees to raise workplace concerns promptly and in good faith.</p>
+      <div class="subsection">
+        <h3>Process</h3>
+        <ol>
+          <li>Employee raises concern with their direct supervisor</li>
+          <li>If unresolved or if the concern involves the supervisor, escalate to the Director</li>
+          <li>The Director will conduct a review and respond within a reasonable timeframe</li>
+          <li>External reporting options (California Labor Commissioner, DFEH, EEOC) remain available to all employees</li>
+        </ol>
+      </div>
+      <p>Open Grace LLC strictly prohibits retaliation against any employee who raises a concern, files a complaint, or participates in an investigation in good faith.</p>
+    </div>
+    <hr class="divider">
+
+    <div id="s15" class="section">
+      <div class="section-header"><h2>15. TECHNOLOGY & DEVICE USE POLICY</h2></div>
+      <div class="subsection">
+        <h3>Guidelines</h3>
+        <ul>
+          <li>Do not store confidential consumer information on personal devices without authorization</li>
+          <li>Do not photograph consumers or their homes without explicit written consent</li>
+          <li>Use of personal devices during direct client service should be limited to service-related purposes</li>
+          <li>Report any lost or stolen devices containing consumer information immediately</li>
+          <li>Organizational platforms (OneDrive, Staff Portal, MS Forms) must be used for all official documentation</li>
+        </ul>
+      </div>
+    </div>
+    <hr class="divider">
+
+    <div id="s16" class="section">
+      <div class="section-header"><h2>16. HEALTH, SAFETY & EMERGENCY PROCEDURES</h2></div>
+      <p>The safety of consumers, employees, and the public is a top priority at Open Grace LLC.</p>
+      <div class="subsection">
+        <h3>During a Home Visit Emergency</h3>
+        <ol>
+          <li>Ensure the immediate safety of the consumer</li>
+          <li>Call 911 if there is imminent danger, medical emergency, or threat of harm</li>
+          <li>Contact the Director as soon as it is safe to do so</li>
+          <li>Complete an incident report as soon as possible after the event</li>
+        </ol>
+        <h3>Injury or Illness</h3>
+        <ul>
+          <li>Report any work-related injury or illness to the Director immediately</li>
+          <li>Employees may be entitled to workers' compensation benefits under California law</li>
+        </ul>
+      </div>
+      <p>Employees should never place themselves in a situation that poses an unreasonable risk to their own safety. If a visit environment is unsafe, leave and contact the Director immediately.</p>
+    </div>
+    <hr class="divider">
+
+    <div id="s17" class="section">
+      <div class="section-header"><h2>17. EMPLOYEE ACKNOWLEDGMENT & SIGNATURE PAGE</h2></div>
+      <p>By signing below, I acknowledge that I have received, read, and understand the Open Grace LLC Employee Handbook. I agree to comply with all policies and procedures contained herein.</p>
+      <p>I understand that:</p>
+      <ul>
+        <li>I am responsible for reading, understanding, and complying with all handbook policies</li>
+        <li>This handbook does not create a contract of employment of any kind</li>
+        <li>My employment with Open Grace LLC is at-will and may be terminated at any time</li>
+        <li>Open Grace LLC reserves the right to modify, revise, or discontinue any policy at any time</li>
+        <li>The most current version of this handbook supersedes all prior versions</li>
+      </ul>
+
+      <div class="sig-block">
+        <div class="sig-line"><div class="line"></div><div class="label">Employee Full Legal Name (Print)</div></div>
+        <div class="sig-line"><div class="line"></div><div class="label">Employee Signature</div></div>
+        <div class="sig-line"><div class="line"></div><div class="label">Date</div></div>
+        <div class="sig-line"><div class="line"></div><div class="label">Position / Title</div></div>
+
+        <div class="sig-director">
+          <p style="font-weight:700;color:var(--navy);margin-bottom:20px;">Director Signature</p>
+          <div class="sig-line"><div class="line"></div><div class="label">Joshua Ellis, Director — Open Grace LLC</div></div>
+          <div class="sig-line"><div class="line"></div><div class="label">Date</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /layout -->
+
+<footer class="page-footer">
+  <span>Open Grace LLC</span> &bull; Coordinated Family Support Services &bull; IRC Vendor PJ6208 &bull; joshua.kennedy@opengrace.org &bull; Effective May 23, 2026
+</footer>
+
+<button class="print-btn no-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+
+</body>
+</html>
