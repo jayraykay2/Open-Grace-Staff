@@ -271,7 +271,7 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);line-height
           <div class="rl-info"><h4>Employee Handbook</h4><p>Policies, code of conduct, IRC compliance standards</p></div>
           <div class="rl-arrow">&#8594;</div>
         </a>
-        <a class="resource-link" href="https://opengrace.org/client-forms.html" target="_blank">
+        <a class="resource-link" href="https://opengrace.org/client-portal.html" target="_blank">
           <div class="rl-icon">&#128203;</div>
           <div class="rl-info"><h4>Client Forms Reference</h4><p>CFS acknowledgment and service forms</p></div>
           <div class="rl-arrow">&#8594;</div>
@@ -335,9 +335,68 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);line-height
     <div class="contact-links">
       <a href="tel:9518804132">(951) 880-4132</a>
       <a href="mailto:onboarding@opengrace.org">onboarding@opengrace.org</a>
-      <a href="mailto:joshua.kennedy@opengrace.org">joshua.kennedy@opengrace.org</a>
+      <a href="mailto:info@opengrace.org">info@opengrace.org</a>
     </div>
   </div>
+
+  <!-- SECTION 6: QUICK SEND TO FAMILIES -->
+  <div class="section">
+    <div class="section-head" onclick="toggle(this)">
+      <div class="section-num" style="background:var(--purple);">6</div>
+      <h3>Quick Send to Families</h3>
+      <div class="chev">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <p style="font-size:13px;color:var(--g700);line-height:1.7;margin-bottom:16px;">
+        Tap any button below to open a pre-written text or email to share a resource with a family you are working with. Always get Director approval before sharing any document not listed here.
+      </p>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+
+        <div style="background:var(--g100);border-radius:12px;padding:14px 16px;">
+          <div style="font-size:13px;font-weight:700;color:var(--g900);margin-bottom:3px;">&#127968; Client Welcome Packet</div>
+          <div style="font-size:11px;color:var(--g400);margin-bottom:10px;">Send to families at or after first meeting</div>
+          <div style="display:flex;gap:8px;">
+            <a href="sms:?body=Hi, this is your Open Grace LLC Family Coordinator. Here is your Client Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf — Please reach out with any questions." style="flex:1;background:var(--green);color:white;border-radius:8px;padding:8px;text-align:center;font-size:12px;font-weight:700;text-decoration:none;">&#128222; Text</a>
+            <a href="mailto:?subject=Welcome to Open Grace LLC&body=Here is your Client Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf" style="flex:1;background:var(--navy2);color:white;border-radius:8px;padding:8px;text-align:center;font-size:12px;font-weight:700;text-decoration:none;">&#9993; Email</a>
+          </div>
+        </div>
+
+        <div style="background:var(--g100);border-radius:12px;padding:14px 16px;">
+          <div style="font-size:13px;font-weight:700;color:var(--g900);margin-bottom:3px;">&#128203; CFS Service Acknowledgment</div>
+          <div style="font-size:11px;color:var(--g400);margin-bottom:10px;">Required before services begin — send at first meeting</div>
+          <div style="display:flex;gap:8px;">
+            <a href="sms:?body=Hi, please complete the Open Grace LLC CFS Service Acknowledgment when you have a moment: https://form.jotform.com/261451993406057 — Questions? Call (951) 880-4132." style="flex:1;background:var(--green);color:white;border-radius:8px;padding:8px;text-align:center;font-size:12px;font-weight:700;text-decoration:none;">&#128222; Text</a>
+            <a href="mailto:?subject=Action Needed — CFS Service Acknowledgment&body=Please complete your CFS Service Acknowledgment at: https://form.jotform.com/261451993406057" style="flex:1;background:var(--navy2);color:white;border-radius:8px;padding:8px;text-align:center;font-size:12px;font-weight:700;text-decoration:none;">&#9993; Email</a>
+          </div>
+        </div>
+
+        <div style="background:var(--g100);border-radius:12px;padding:14px 16px;">
+          <div style="font-size:13px;font-weight:700;color:var(--g900);margin-bottom:3px;">&#127760; Community Resources</div>
+          <div style="font-size:11px;color:var(--g400);margin-bottom:10px;">Benefits, food, transportation, health — Inland Empire</div>
+          <div style="display:flex;gap:8px;">
+            <a href="sms:?body=Hi, here is a directory of local resources that may be helpful for your family: https://opengrace.org/resources.html" style="flex:1;background:var(--green);color:white;border-radius:8px;padding:8px;text-align:center;font-size:12px;font-weight:700;text-decoration:none;">&#128222; Text</a>
+            <a href="mailto:?subject=Community Resources — Open Grace LLC&body=Here is a directory of local resources for your family: https://opengrace.org/resources.html" style="flex:1;background:var(--navy2);color:white;border-radius:8px;padding:8px;text-align:center;font-size:12px;font-weight:700;text-decoration:none;">&#9993; Email</a>
+          </div>
+        </div>
+
+        <div style="background:var(--g100);border-radius:12px;padding:14px 16px;">
+          <div style="font-size:13px;font-weight:700;color:var(--g900);margin-bottom:3px;">&#128680; Emergency Contact Card</div>
+          <div style="font-size:11px;color:var(--g400);margin-bottom:10px;">APS, CPS, 211, IRC, Open Grace — important numbers</div>
+          <div style="display:flex;gap:8px;">
+            <a href="sms:?body=Hi, here are important contact numbers for your family. Post this somewhere easy to find.%0A%0AOpen Grace LLC: (951) 880-4132%0AAdult Protective Services: 1-800-774-5000%0AChild Protective Services: 1-800-340-5700%0A211 Inland Empire: Dial 211%0AIRC: (909) 890-4800%0AEmergency: 911" style="flex:1;background:var(--green);color:white;border-radius:8px;padding:8px;text-align:center;font-size:12px;font-weight:700;text-decoration:none;">&#128222; Text</a>
+            <a href="mailto:?subject=Important Contact Numbers — Open Grace LLC&body=Important contacts for your family:%0A%0AOpen Grace LLC: (951) 880-4132%0AAdult Protective Services: 1-800-774-5000%0AChild Protective Services: 1-800-340-5700%0A211 Inland Empire: Dial 211%0AIRC: (909) 890-4800%0AEmergency: 911" style="flex:1;background:var(--navy2);color:white;border-radius:8px;padding:8px;text-align:center;font-size:12px;font-weight:700;text-decoration:none;">&#9993; Email</a>
+          </div>
+        </div>
+
+        <div style="background:var(--orange3);border-left:4px solid var(--orange);border-radius:0 10px 10px 0;padding:12px 16px;font-size:12px;color:#7A3800;line-height:1.65;">
+          <strong>Reminder:</strong> Only share documents listed here without Director approval. For anything else — contact <a href="tel:9518804132" style="color:var(--orange);font-weight:700;">(951) 880-4132</a> first.
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 
 </div>
 
@@ -347,17 +406,5 @@ function toggle(head) {
   head.nextElementSibling.classList.toggle('open');
 }
 </script>
-
-<div id="float-nav" style="position:fixed;bottom:80px;right:20px;display:flex;flex-direction:column;gap:10px;z-index:1000;">
-  <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
-    style="width:48px;height:48px;border-radius:50%;background:#2D2B7F;border:none;color:white;font-size:20px;cursor:pointer;box-shadow:0 4px 16px rgba(30,28,94,0.35);display:flex;align-items:center;justify-content:center;">&#8679;</button>
-</div>
-<div id="section-select" style="position:sticky;bottom:0;background:white;border-top:2px solid #E4E2F0;padding:8px 12px;display:flex;gap:6px;overflow-x:auto;z-index:98;">
-  <button onclick="document.querySelectorAll('.section')[0].scrollIntoView({behavior:'smooth'})" style="background:#E8E7FF;border:none;color:#2D2B7F;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;">&#128203; Onboarding</button>
-  <button onclick="document.querySelectorAll('.section')[1].scrollIntoView({behavior:'smooth'})" style="background:#FFF0E8;border:none;color:#FF6B1A;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;">&#128221; Daily Log</button>
-  <button onclick="document.querySelectorAll('.section')[2].scrollIntoView({behavior:'smooth'})" style="background:#FCEBEB;border:none;color:#A32D2D;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;">&#128680; Incident</button>
-  <button onclick="document.querySelectorAll('.section')[3].scrollIntoView({behavior:'smooth'})" style="background:#F3EAFF;border:none;color:#7B35C1;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;">&#128218; Resources</button>
-  <button onclick="document.querySelectorAll('.section')[4].scrollIntoView({behavior:'smooth'})" style="background:#FFF8E0;border:none;color:#7A5800;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;">&#9888;&#65039; Mandated</button>
-</div>
 </body>
 </html>
