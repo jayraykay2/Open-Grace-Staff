@@ -1,0 +1,19 @@
+{
+  "_readme": "Open Grace LLC \u2014 Staff Access Control. Director manages this file. Set active:false to immediately revoke access.",
+  "_hipaa_notice": "This file controls access to PHI. Handle with care.",
+  "last_updated": "2026-06-05",
+  "staff": [
+    {
+      "code": "OG-2026-001",
+      "name": "Staff Member Name",
+      "position": "Family Coordinator",
+      "active": true,
+      "clients": [
+        "Burks, Jaybrion \u2014 UCI 6953825"
+      ],
+      "hired": "2026-06-05",
+      "terminated": null,
+      "notes": "First hire \u2014 replace with actual staff name when onboarded"
+    }
+  ]
+}
