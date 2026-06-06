@@ -2,604 +2,979 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Open Grace — Director</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --navy:#1E1C5E;--navy2:#2D2B7F;--navy3:#3D3A9A;
-  --orange:#FF6B1A;--orange2:#FF8C4A;--orange3:#FFF0E8;
-  --purple:#7B35C1;--purple3:#F3EAFF;
-  --gold:#FFB800;--gold2:#FFF8E0;
-  --green:#16A34A;--green2:#F0FDF4;
-  --red:#DC2626;--red2:#FEF2F2;
-  --white:#fff;--off:#F8F7FF;
-  --g100:#F2F1FA;--g200:#E4E2F0;--g400:#9895B5;--g700:#3D3B52;--g900:#1A1830;
+:root {
+  --navy:#1E1C5E; --navy2:#2D2B7F; --navy3:#3D3A9A;
+  --orange:#FF6B1A; --orange3:#FFF0E8;
+  --purple:#7B35C1;
+  --gold:#FFB800;
+  --green:#16A34A; --green2:#F0FDF4;
+  --red:#DC2626;
+  --white:#fff;
+  --g100:#F2F1FA; --g200:#E4E2F0; --g400:#9895B5; --g700:#3D3B52;
   --sans:'DM Sans',system-ui,sans-serif;
   --display:'Fraunces',Georgia,serif;
-  --tab-h:64px;--safe-bottom:env(safe-area-inset-bottom,0px);
+  --tab-h:62px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;overflow:hidden;font-family:var(--sans);background:#0f0d2e;}
-body{display:flex;flex-direction:column;}
+html,body{height:100%;overflow:hidden;background:#0a0820;}
+body{font-family:var(--sans);display:flex;flex-direction:column;}
 
 /* ── HEADER ── */
-.hdr{background:linear-gradient(135deg,var(--navy) 0%,#0f0d2e 100%);padding:12px 18px 10px;display:flex;align-items:center;gap:12px;flex-shrink:0;padding-top:calc(12px + env(safe-area-inset-top,0px));}
-.hdr-logo{width:38px;height:38px;object-fit:contain;border-radius:10px;background:white;padding:2px;flex-shrink:0;}
-.hdr-info{flex:1;}
-.hdr-org{font-size:11px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.5px;}
+.hdr{
+  background:linear-gradient(135deg,var(--navy) 0%,#0a0820 100%);
+  padding:12px 16px 10px;
+  padding-top:calc(12px + var(--safe-top));
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.hdr-logo{width:40px;height:40px;border-radius:11px;object-fit:contain;background:white;padding:3px;flex-shrink:0;}
+.hdr-text{flex:1;}
+.hdr-name{font-size:11px;color:rgba(255,255,255,.35);font-weight:600;letter-spacing:.3px;}
 .hdr-greeting{font-size:17px;font-weight:700;color:white;line-height:1.2;}
-.hdr-greeting span{color:var(--orange);}
-.hdr-date{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;}
-.hdr-badge{background:var(--green);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:white;flex-shrink:0;}
+.hdr-greeting em{color:var(--orange);font-style:normal;}
+.hdr-date{font-size:10px;color:rgba(255,255,255,.3);margin-top:1px;}
+.hdr-alert{background:var(--green);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:white;flex-shrink:0;cursor:default;}
+.hdr-alert.warn{background:var(--red);}
 
-/* ── SCREENS ── */
+/* ── SCROLL AREA ── */
 .screens{flex:1;overflow:hidden;position:relative;}
-.screen{position:absolute;inset:0;overflow-y:auto;padding:14px 14px calc(var(--tab-h) + var(--safe-bottom) + 14px);display:none;}
+.screen{
+  position:absolute;inset:0;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:12px 14px calc(var(--tab-h) + var(--safe-bot) + 16px);
+  display:none;
+}
 .screen.active{display:block;}
 
 /* ── TAB BAR ── */
-.tabbar{flex-shrink:0;background:var(--navy);display:grid;grid-template-columns:repeat(6,1fr);height:var(--tab-h);padding-bottom:var(--safe-bottom);border-top:1px solid rgba(255,255,255,.08);}
-.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;opacity:.45;transition:opacity .2s;-webkit-tap-highlight-color:transparent;}
+.tabbar{
+  flex-shrink:0;background:rgba(10,8,32,.98);
+  border-top:1px solid rgba(255,255,255,.08);
+  display:grid;grid-template-columns:repeat(7,1fr);
+  height:var(--tab-h);
+  padding-bottom:var(--safe-bot);
+}
+.tab{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;cursor:pointer;opacity:.4;transition:opacity .15s;
+  -webkit-tap-highlight-color:transparent;
+}
 .tab.active{opacity:1;}
-.tab-icon{font-size:20px;line-height:1;}
-.tab-label{font-size:9px;font-weight:700;color:white;letter-spacing:.3px;}
+.tab-icon{font-size:19px;line-height:1;}
+.tab-label{font-size:8.5px;font-weight:700;color:white;letter-spacing:.2px;text-align:center;}
 
-/* ── SHARED CARDS ── */
-.card{background:rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;border:1px solid rgba(255,255,255,.08);}
-.card-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
-.card-val{font-size:26px;font-weight:800;color:white;font-family:var(--display);line-height:1;}
-.card-sub{font-size:12px;color:rgba(255,255,255,.45);margin-top:4px;line-height:1.5;}
-.sec-label{font-size:10px;font-weight:800;color:rgba(255,255,255,.35);letter-spacing:2px;text-transform:uppercase;margin:18px 0 10px;display:flex;align-items:center;gap:8px;}
-.sec-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
-.info-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+/* ── SECTION LABEL ── */
+.sec{
+  font-size:9.5px;font-weight:800;color:rgba(255,255,255,.3);
+  letter-spacing:2px;text-transform:uppercase;
+  margin:16px 0 8px;display:flex;align-items:center;gap:8px;
+}
+.sec::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07);}
+
+/* ── CARDS ── */
+.card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;margin-bottom:10px;}
+.card-label{font-size:9.5px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
+.card-val{font-size:28px;font-weight:800;color:white;font-family:var(--display);line-height:1;}
+.card-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:4px;line-height:1.55;}
+
+/* ── INFO GRID ── */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 
 /* ── QPR ALERT ── */
-.qpr-alert{border-radius:14px;padding:14px 16px;margin-bottom:12px;}
-.qpr-alert.warning{background:rgba(255,184,0,.12);border:1px solid rgba(255,184,0,.3);}
-.qpr-alert.danger{background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.35);}
-.qpr-alert.ok{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.2);}
-.qpr-alert-title{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
-.qpr-alert.warning .qpr-alert-title{color:var(--gold);}
-.qpr-alert.danger .qpr-alert-title{color:#FC8181;}
-.qpr-alert.ok .qpr-alert-title{color:#6EE7B7;}
+.qpr-card{border-radius:14px;padding:13px 14px;margin-bottom:10px;}
+.qpr-card.danger{background:rgba(220,38,38,.14);border:1px solid rgba(220,38,38,.3);}
+.qpr-card.warn{background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.25);}
+.qpr-card.ok{background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.15);}
+.qpr-tag{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.qpr-card.danger .qpr-tag{color:#FC8181;}
+.qpr-card.warn .qpr-tag{color:var(--gold);}
+.qpr-card.ok .qpr-tag{color:#6EE7B7;}
+
+/* ── ACTION BUTTONS ── */
+.action{
+  display:block;width:100%;padding:13px;margin-bottom:8px;
+  border:none;border-radius:13px;
+  font-size:14px;font-weight:700;font-family:var(--sans);
+  cursor:pointer;text-align:center;text-decoration:none;
+  -webkit-tap-highlight-color:transparent;transition:opacity .15s;
+}
+.action:active{opacity:.8;}
+.action.orange{background:linear-gradient(135deg,var(--orange),#e04800);color:white;}
+.action.navy{background:linear-gradient(135deg,var(--navy2),var(--navy));color:white;}
+.action.green{background:var(--green);color:white;}
+.action.purple{background:var(--purple);color:white;}
+.action.ghost{background:rgba(255,255,255,.07);color:rgba(255,255,255,.7);}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.action-row .action{margin-bottom:0;}
 
 /* ── LINK ROWS ── */
-.link-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border-radius:12px;padding:13px 14px;margin-bottom:8px;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:background .15s;}
-.link-row:active{background:rgba(255,255,255,.12);}
-.link-icon{font-size:20px;width:32px;text-align:center;flex-shrink:0;}
-.link-info{flex:1;}
-.link-label{font-size:14px;font-weight:700;color:white;}
-.link-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;}
-.link-arrow{font-size:14px;color:rgba(255,255,255,.25);}
+.lrow{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,.06);border-radius:12px;
+  padding:12px 13px;margin-bottom:8px;
+  text-decoration:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  border:1px solid rgba(255,255,255,.05);
+}
+.lrow:active{background:rgba(255,255,255,.1);}
+.lrow-icon{font-size:20px;width:30px;text-align:center;flex-shrink:0;}
+.lrow-info{flex:1;min-width:0;}
+.lrow-label{font-size:13.5px;font-weight:700;color:white;}
+.lrow-sub{font-size:10.5px;color:rgba(255,255,255,.35);margin-top:2px;}
+.lrow-arrow{font-size:13px;color:rgba(255,255,255,.2);flex-shrink:0;}
 
-/* ── CLIENT EDITOR ── */
-.client-editor-modal{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.6);align-items:flex-end;}
-.client-editor-modal.open{display:flex;}
-.client-editor-sheet{background:var(--navy);border-radius:20px 20px 0 0;padding:20px 18px calc(20px + var(--safe-bottom));width:100%;max-height:88vh;overflow-y:auto;}
-.ced-title{font-size:16px;font-weight:700;color:white;margin-bottom:4px;}
-.ced-sub{font-size:11px;color:rgba(255,255,255,.35);margin-bottom:18px;}
-.ced-field-group{margin-bottom:14px;}
-.ced-field-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
-.ced-input{width:100%;padding:11px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;color:white;font-size:14px;font-family:var(--sans);outline:none;}
-.ced-input:focus{border-color:var(--orange);}
-.ced-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.ced-client-block{background:rgba(255,255,255,.06);border-radius:12px;padding:13px;margin-bottom:10px;position:relative;}
-.ced-remove{position:absolute;top:10px;right:10px;background:rgba(220,38,38,.2);border:none;color:#FC8181;width:26px;height:26px;border-radius:7px;font-size:14px;cursor:pointer;font-family:var(--sans);display:flex;align-items:center;justify-content:center;}
-.ced-add{width:100%;padding:12px;background:rgba(255,255,255,.06);border:1.5px dashed rgba(255,255,255,.18);border-radius:12px;color:rgba(255,255,255,.5);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);margin-top:4px;}
-.ced-btns{display:flex;gap:10px;margin-top:16px;}
-.ced-cancel{flex:1;padding:13px;background:rgba(255,255,255,.07);border:none;border-radius:12px;color:rgba(255,255,255,.55);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans);}
-.ced-save{flex:2;padding:13px;background:var(--orange);border:none;border-radius:12px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sans);}
+/* ── STATUS BADGE ── */
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.3px;}
+.badge.green{background:rgba(22,163,74,.2);color:#6EE7B7;}
+.badge.orange{background:rgba(255,107,26,.2);color:var(--orange);}
+.badge.red{background:rgba(220,38,38,.2);color:#FC8181;}
+.badge.gold{background:rgba(255,184,0,.15);color:var(--gold);}
+.badge.gray{background:rgba(255,255,255,.08);color:rgba(255,255,255,.45);}
+
+/* ── PIPELINE CARDS ── */
+.pipe-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;margin-bottom:8px;}
+.pipe-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.pipe-name{font-size:14px;font-weight:700;color:white;}
+.pipe-meta{font-size:10.5px;color:rgba(255,255,255,.35);line-height:1.5;margin-bottom:10px;}
+.pipe-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.pipe-btn{padding:7px 12px;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);-webkit-tap-highlight-color:transparent;}
+.pipe-btn.sms{background:var(--green);color:white;}
+.pipe-btn.email{background:var(--navy2);color:white;}
+.pipe-btn.mark{background:rgba(255,255,255,.1);color:white;}
+.pipe-btn.assign{background:var(--orange);color:white;}
+
+/* ── MODAL SHEET ── */
+.overlay{
+  position:fixed;inset:0;z-index:990;
+  background:rgba(0,0,0,.6);
+  display:none;align-items:flex-end;justify-content:center;
+}
+.overlay.open{display:flex;}
+.sheet{
+  background:#141230;border-radius:22px 22px 0 0;
+  width:100%;max-width:640px;
+  max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:20px 18px calc(20px + var(--safe-bot));
+}
+.sheet-handle{width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 18px;}
+.sheet-title{font-size:17px;font-weight:800;color:white;margin-bottom:3px;}
+.sheet-sub{font-size:11px;color:rgba(255,255,255,.35);margin-bottom:18px;line-height:1.5;}
+
+/* ── FORM FIELDS IN SHEET ── */
+.field{margin-bottom:13px;}
+.field-label{font-size:9.5px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.field-input{
+  width:100%;padding:12px 14px;
+  background:rgba(255,255,255,.08);
+  border:1.5px solid rgba(255,255,255,.1);
+  border-radius:11px;color:white;
+  font-size:14px;font-family:var(--sans);outline:none;
+  -webkit-appearance:none;
+}
+.field-input:focus{border-color:var(--orange);}
+.field-input::placeholder{color:rgba(255,255,255,.2);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.field-textarea{min-height:70px;resize:none;}
+.field-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+
+/* ── SHEET BUTTONS ── */
+.sheet-btns{display:flex;gap:10px;margin-top:16px;}
+.sheet-cancel{flex:1;padding:13px;background:rgba(255,255,255,.07);border:none;border-radius:12px;color:rgba(255,255,255,.5);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans);}
+.sheet-save{flex:2;padding:13px;background:var(--orange);border:none;border-radius:12px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sans);}
+.sheet-danger{flex:1;padding:13px;background:rgba(220,38,38,.2);border:none;border-radius:12px;color:#FC8181;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);}
 
 /* ── SEND SCREEN ── */
-.aud-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.aud-btn{padding:12px 8px;border:1.5px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.55);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);text-align:center;transition:all .15s;}
+.aud-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;}
+.aud-btn{padding:10px 4px;border:1.5px solid rgba(255,255,255,.1);border-radius:11px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);font-size:10px;font-weight:700;cursor:pointer;font-family:var(--sans);text-align:center;-webkit-tap-highlight-color:transparent;}
 .aud-btn.active{background:var(--orange);border-color:var(--orange);color:white;}
-.send-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border-radius:12px;padding:12px 14px;margin-bottom:8px;}
-.send-row-icon{font-size:20px;width:30px;text-align:center;flex-shrink:0;}
-.send-row-info{flex:1;min-width:0;}
-.send-row-label{font-size:13px;font-weight:700;color:white;line-height:1.3;}
-.send-row-sub{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.send-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:12px;padding:11px 13px;margin-bottom:7px;}
+.send-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0;}
+.send-info{flex:1;min-width:0;}
+.send-label{font-size:13px;font-weight:700;color:white;}
+.send-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .send-btns{display:flex;gap:5px;flex-shrink:0;}
-.sbtn{padding:7px 10px;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);}
-.sbtn.sms{background:var(--green);color:white;}
-.sbtn.email{background:var(--navy2);color:white;}
-.sbtn.copy{background:rgba(255,255,255,.1);color:white;}
-.custom-box{background:rgba(255,255,255,.05);border-radius:12px;padding:14px;margin-top:4px;}
-.custom-box textarea{width:100%;background:transparent;border:none;color:rgba(255,255,255,.8);font-size:13px;font-family:var(--sans);resize:none;outline:none;line-height:1.6;min-height:70px;}
-.custom-actions{display:flex;gap:8px;margin-top:10px;}
-.custom-actions button{flex:1;padding:10px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);}
+.sbtn{padding:7px 9px;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);-webkit-tap-highlight-color:transparent;}
+.sbtn.s{background:var(--green);color:white;}
+.sbtn.e{background:var(--navy2);color:white;}
+.sbtn.c{background:rgba(255,255,255,.1);color:white;}
 
-/* ── ORANGE ACTION BTN ── */
-.action-btn{display:block;width:100%;padding:14px;background:linear-gradient(135deg,var(--orange),#e04800);color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sans);text-align:center;text-decoration:none;margin-bottom:10px;-webkit-tap-highlight-color:transparent;}
-.action-btn.navy{background:linear-gradient(135deg,var(--navy2),var(--navy));}
-.action-btn.green{background:var(--green);}
-.action-btn.purple{background:var(--purple);}
+/* ── CONTACTS ── */
+.contact-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:13px;margin-bottom:8px;}
+.contact-name{font-size:14px;font-weight:700;color:white;margin-bottom:2px;}
+.contact-role{font-size:10.5px;color:rgba(255,255,255,.35);margin-bottom:9px;line-height:1.4;}
+.contact-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.cbtn{flex:1;min-width:52px;padding:9px 6px;border-radius:10px;font-size:11px;font-weight:700;text-align:center;text-decoration:none;border:none;cursor:pointer;font-family:var(--sans);-webkit-tap-highlight-color:transparent;}
+.cbtn.call{background:var(--green);color:white;}
+.cbtn.text{background:var(--navy2);color:white;}
+.cbtn.mail{background:rgba(255,255,255,.1);color:white;}
+.cbtn.send{background:var(--orange);color:white;}
 
-/* ── FLASH ── */
-.flash{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:var(--green);color:white;padding:8px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;white-space:nowrap;pointer-events:none;}
-
-.ced-input select, select.ced-input {
-  -webkit-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='2' fill='none'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
+/* ── FLASH TOAST ── */
+.toast{
+  position:fixed;top:calc(80px + var(--safe-top));
+  left:50%;transform:translateX(-50%);
+  background:var(--green);color:white;
+  padding:8px 20px;border-radius:20px;
+  font-size:13px;font-weight:700;z-index:9999;
+  white-space:nowrap;pointer-events:none;
+  font-family:var(--sans);
 }
 
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:32px 16px;color:rgba(255,255,255,.25);font-size:13px;line-height:1.7;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- ════════ HEADER ════════ -->
 <div class="hdr">
-  <img class="hdr-logo" src="https://opengrace.org/og_logo.jpg" alt="OG">
-  <div class="hdr-info">
-    <div class="hdr-org">Open Grace LLC &nbsp;|&nbsp; Director</div>
-    <div class="hdr-greeting" id="greeting-time">Good morning, <span>Joshua</span></div>
+  <img class="hdr-logo" src="https://opengrace.org/og_logo.jpg" alt="OG" onerror="this.style.display='none'">
+  <div class="hdr-text">
+    <div class="hdr-name">Open Grace LLC &nbsp;·&nbsp; Director</div>
+    <div class="hdr-greeting" id="greeting">Good morning, <em>Joshua</em></div>
     <div class="hdr-date" id="hdr-date"></div>
   </div>
-  <div class="hdr-badge" id="hdr-badge">&#9679; Active</div>
+  <div class="hdr-alert" id="hdr-badge" onclick="switchTab(0)">● Active</div>
 </div>
 
-<!-- SCREENS -->
+<!-- ════════ SCREENS ════════ -->
 <div class="screens">
 
-  <!-- ══ HOME ══ -->
-  <div class="screen active" id="screen-0">
+<!-- ══ TAB 0: HOME ══ -->
+<div class="screen active" id="s0">
 
-    <div class="sec-label">At a Glance</div>
+  <div class="sec">At a Glance</div>
 
-    <!-- ACTIVE CLIENTS CARD -->
-    <div class="card" style="cursor:pointer;" onclick="openClientEditor()">
-      <div class="info-row" style="margin-bottom:0;">
-        <div>
-          <div class="card-label">Active Clients</div>
-          <div class="card-val" id="client-count">—</div>
-          <div id="client-names" style="font-size:12px;color:rgba(255,255,255,.5);margin-top:6px;line-height:1.7;"></div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;opacity:.55;">
-          <div style="font-size:28px;">&#9998;&#65039;</div>
-          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);">Edit / Add</div>
-          <div id="sync-time" style="font-size:9px;color:rgba(255,255,255,.3);text-align:center;"></div>
-        </div>
+  <!-- CLIENT CARD — tap to edit -->
+  <div class="card" style="cursor:pointer;" onclick="openClientSheet()">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div style="flex:1;">
+        <div class="card-label">Active Clients</div>
+        <div class="card-val" id="client-count">—</div>
+        <div id="client-names" class="card-sub"></div>
       </div>
-    </div>
-
-    <!-- QPR ALERTS -->
-    <div id="qpr-panel"></div>
-
-    <!-- QUICK ACTIONS -->
-    <div class="sec-label">Quick Actions</div>
-    <a class="action-btn" href="https://form.jotform.com/261451201542040" target="_blank">&#128203; New Client Referral</a>
-    <a class="action-btn navy" href="https://form.jotform.com/261555850958066" target="_blank">&#128084; Employment Application</a>
-    <button class="action-btn purple" onclick="switchTab(5)">&#128228; Send to Family / Staff / Prospect</button>
-
-    <!-- STATS ROW -->
-    <div class="sec-label">System Status</div>
-    <div class="info-row">
-      <div class="card" style="text-align:center;">
-        <div class="card-label">Jotform Forms</div>
-        <div class="card-val">6</div>
-        <div class="card-sub">Active & receiving</div>
-      </div>
-      <div class="card" style="text-align:center;">
-        <div class="card-label">Site Pages</div>
-        <div class="card-val">12</div>
-        <div class="card-sub">opengrace.org</div>
-      </div>
-    </div>
-    <div class="info-row">
-      <div class="card" style="text-align:center;">
-        <div class="card-label">GitHub</div>
-        <div class="card-val" style="font-size:16px;margin-top:4px;">&#9989;</div>
-        <div class="card-sub">Auto-deploy active</div>
-      </div>
-      <div class="card" style="text-align:center;">
-        <div class="card-label">Vendor Status</div>
-        <div class="card-val" style="font-size:16px;color:var(--green);margin-top:4px;">&#9679; PJ6208</div>
-        <div class="card-sub">IRC Vendorized</div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ══ FORMS ══ -->
-  <div class="screen" id="screen-1">
-    <div class="sec-label">Client Forms</div>
-    <a class="link-row" href="https://form.jotform.com/261451201542040" target="_blank">
-      <div class="link-icon">&#128203;</div>
-      <div class="link-info"><div class="link-label">Client Referral Intake</div><div class="link-sub">New family referrals from IRC</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://form.jotform.com/261451993406057" target="_blank">
-      <div class="link-icon">&#9989;</div>
-      <div class="link-info"><div class="link-label">CFS Service Acknowledgment</div><div class="link-sub">Required before services begin</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-
-    <div class="sec-label">Staff Forms</div>
-    <a class="link-row" href="https://form.jotform.com/jayraykay2/daily-contact-log-open-grace-" target="_blank">
-      <div class="link-icon">&#128221;</div>
-      <div class="link-info"><div class="link-label">Daily Contact Log</div><div class="link-sub">Required same day as every visit</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank">
-      <div class="link-icon">&#128680;</div>
-      <div class="link-info"><div class="link-label">Incident Report</div><div class="link-sub">File same day — notifies Director</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://form.jotform.com/261451114945050" target="_blank">
-      <div class="link-icon">&#128101;</div>
-      <div class="link-info"><div class="link-label">Staff Onboarding Form</div><div class="link-sub">Send to new hires after offer accepted</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-
-    <div class="sec-label">Hiring</div>
-    <a class="link-row" href="https://form.jotform.com/261555850958066" target="_blank">
-      <div class="link-icon">&#128084;</div>
-      <div class="link-info"><div class="link-label">Employment Application</div><div class="link-sub">Wired to careers page pre-screen</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-
-    <div class="sec-label">Daily Contact Log</div>
-    <a class="link-row" href="https://opengrace.org/contact-log.html" target="_blank"><div class="link-icon">&#128221;</div><div class="link-info"><div class="link-label">Staff Contact Log Portal</div><div class="link-sub">HIPAA-compliant access verification</div></div><div class="link-arrow">&#8594;</div></a>
-    <a class="link-row" href="https://form.jotform.com/261562041031038" target="_blank"><div class="link-icon">&#128202;</div><div class="link-info"><div class="link-label">View Log Submissions</div><div class="link-sub">Jotform director only</div></div><div class="link-arrow">&#8594;</div></a>
-    <div class="link-row" style="cursor:pointer;" onclick="openAccessManager()"><div class="link-icon">&#128273;</div><div class="link-info"><div class="link-label">Manage Staff Access Codes</div><div class="link-sub">Add deactivate revoke instantly</div></div><div class="link-arrow">&#9998;</div></div>
-    <div class="sec-label">Jotform Dashboard</div>
-    <a class="link-row" href="https://www.jotform.com/myforms/" target="_blank">
-      <div class="link-icon">&#128202;</div>
-      <div class="link-info"><div class="link-label">View All Submissions</div><div class="link-sub">jotform.com — all forms in one place</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-  </div>
-
-  <!-- ══ PORTALS ══ -->
-  <div class="screen" id="screen-2">
-    <div class="sec-label">Public Website</div>
-    <a class="link-row" href="https://opengrace.org" target="_blank">
-      <div class="link-icon">&#127968;</div>
-      <div class="link-info"><div class="link-label">Landing Page — English</div><div class="link-sub">opengrace.org</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://opengrace.org/es.html" target="_blank">
-      <div class="link-icon">&#127760;</div>
-      <div class="link-info"><div class="link-label">Landing Page — Español</div><div class="link-sub">opengrace.org/es.html</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://opengrace.org/coordinators.html" target="_blank">
-      <div class="link-icon">&#128084;</div>
-      <div class="link-info"><div class="link-label">IRC Coordinator Info</div><div class="link-sub">opengrace.org/coordinators.html</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://opengrace.org/resources.html" target="_blank">
-      <div class="link-icon">&#127760;</div>
-      <div class="link-info"><div class="link-label">Community Resources</div><div class="link-sub">opengrace.org/resources.html</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://opengrace.org/cfs-services.html" target="_blank">
-      <div class="link-icon">&#128203;</div>
-      <div class="link-info"><div class="link-label">CFS Services & FAQ</div><div class="link-sub">opengrace.org/cfs-services.html</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://opengrace.org/careers.html" target="_blank">
-      <div class="link-icon">&#128084;</div>
-      <div class="link-info"><div class="link-label">Careers Page</div><div class="link-sub">opengrace.org/careers.html</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-
-    <div class="sec-label">Staff & Client Portals</div>
-    <a class="link-row" href="https://opengrace.org/staff-portal.html" target="_blank">
-      <div class="link-icon">&#128101;</div>
-      <div class="link-info"><div class="link-label">Staff Portal</div><div class="link-sub">opengrace.org/staff-portal.html</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://opengrace.org/client-portal.html" target="_blank">
-      <div class="link-icon">&#127968;</div>
-      <div class="link-info"><div class="link-label">Client & Family Portal</div><div class="link-sub">opengrace.org/client-portal.html</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://opengrace.org/onboarding.html" target="_blank">
-      <div class="link-icon">&#128203;</div>
-      <div class="link-info"><div class="link-label">Staff Onboarding Prep</div><div class="link-sub">opengrace.org/onboarding.html</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-  </div>
-
-  <!-- ══ DOCS ══ -->
-  <div class="screen" id="screen-3">
-    <div class="sec-label">Director Tools</div>
-    <a class="link-row" href="https://opengrace.org/Open_Grace_Interview_Scorecard.html" target="_blank">
-      <div class="link-icon">&#128203;</div>
-      <div class="link-info"><div class="link-label">Interview Scorecard</div><div class="link-sub">Score candidates — auto-save results</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://github.com/jayraykay2/Open-Grace-Staff" target="_blank">
-      <div class="link-icon">&#128296;</div>
-      <div class="link-info"><div class="link-label">GitHub Repository</div><div class="link-sub">jayraykay2/Open-Grace-Staff</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://www.jotform.com/myforms/" target="_blank">
-      <div class="link-icon">&#128202;</div>
-      <div class="link-info"><div class="link-label">Jotform Dashboard</div><div class="link-sub">All forms and submissions</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-
-    <div class="sec-label">Family Documents</div>
-    <a class="link-row" href="https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf" target="_blank">
-      <div class="link-icon">&#127968;</div>
-      <div class="link-info"><div class="link-label">Client Welcome Packet</div><div class="link-sub">PDF — give to families at first meeting</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://opengrace.org/OpenGrace_Flyer_English.html" target="_blank">
-      <div class="link-icon">&#128196;</div>
-      <div class="link-info"><div class="link-label">Program Flyer — English</div><div class="link-sub">Print and distribute</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://opengrace.org/OpenGrace_Flyer_Spanish.html" target="_blank">
-      <div class="link-icon">&#128196;</div>
-      <div class="link-info"><div class="link-label">Program Flyer — Español</div><div class="link-sub">Imprimir y distribuir</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-
-    <div class="sec-label">Staff Documents</div>
-    <a class="link-row" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank">
-      <div class="link-icon">&#128209;</div>
-      <div class="link-info"><div class="link-label">Employee Handbook</div><div class="link-sub">Send after offer accepted</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="https://opengrace.org/Request_for_Live_Scan_-_Open_Grace.pdf" target="_blank">
-      <div class="link-icon">&#128273;</div>
-      <div class="link-info"><div class="link-label">Live Scan Form</div><div class="link-sub">ORI: AAP98 | Mail Code: 35349</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-  </div>
-
-  <!-- ══ CONTACTS ══ -->
-  <div class="screen" id="screen-4">
-
-    <div class="sec-label">Quick Actions</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;">
-      <button onclick="openContactEditor()" class="action-btn" style="margin:0;font-size:12px;padding:12px 8px;">&#43; Add Contact</button>
-      <button onclick="openQuickSend()" class="action-btn navy" style="margin:0;font-size:12px;padding:12px 8px;">&#128228; Quick Send</button>
-    </div>
-
-    <div class="sec-label">Saved Contacts</div>
-    <div id="contacts-list"></div>
-
-    <div class="sec-label">Emergency & Reporting</div>
-    <a class="link-row" href="tel:18007745000">
-      <div class="link-icon">&#128737;</div>
-      <div class="link-info"><div class="link-label">Adult Protective Services</div><div class="link-sub">1-800-774-5000</div></div>
-      <div style="display:flex;gap:6px;">
-        <a href="tel:18007745000" class="sbtn sms" style="padding:8px 10px;text-decoration:none;">&#128222;</a>
-      </div>
-    </a>
-    <a class="link-row" href="tel:18003405700">
-      <div class="link-icon">&#128118;</div>
-      <div class="link-info"><div class="link-label">Child Protective Services</div><div class="link-sub">1-800-340-5700</div></div>
-      <div style="display:flex;gap:6px;">
-        <a href="tel:18003405700" class="sbtn sms" style="padding:8px 10px;text-decoration:none;">&#128222;</a>
-      </div>
-    </a>
-    <a class="link-row" href="tel:9098904800">
-      <div class="link-icon">&#127968;</div>
-      <div class="link-info"><div class="link-label">Inland Counties Regional Center</div><div class="link-sub">(909) 890-4800</div></div>
-      <div style="display:flex;gap:6px;">
-        <a href="tel:9098904800" class="sbtn sms" style="padding:8px 10px;text-decoration:none;">&#128222;</a>
-      </div>
-    </a>
-    <a class="link-row" href="tel:988">
-      <div class="link-icon">&#129505;</div>
-      <div class="link-info"><div class="link-label">988 Crisis Lifeline</div><div class="link-sub">Call or text 988</div></div>
-      <div style="display:flex;gap:6px;">
-        <a href="tel:988" class="sbtn sms" style="padding:8px 10px;text-decoration:none;">&#128222;</a>
-      </div>
-    </a>
-    <a class="link-row" href="tel:911">
-      <div class="link-icon">&#128680;</div>
-      <div class="link-info"><div class="link-label">Emergency Services</div><div class="link-sub">9-1-1</div></div>
-      <div style="display:flex;gap:6px;">
-        <a href="tel:911" class="sbtn sms" style="padding:8px 10px;text-decoration:none;">&#128222;</a>
-      </div>
-    </a>
-  </div>
-
-  <!-- CONTACT EDITOR MODAL -->
-  <div class="client-editor-modal" id="contact-editor-modal">
-    <div class="client-editor-sheet">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <div class="ced-title" id="ced-modal-title">Add Contact</div>
-        <button onclick="closeContactEditor()" style="background:rgba(255,255,255,.1);border:none;color:white;width:28px;height:28px;border-radius:8px;font-size:15px;cursor:pointer;">&#10005;</button>
-      </div>
-      <div class="ced-sub">Saved contacts appear in your Contacts tab with one-tap call, text, and email buttons.</div>
-      <div class="ced-field-group">
-        <div class="ced-field-label">Full Name *</div>
-        <input class="ced-input" id="cc-name" type="text" placeholder="e.g. Delisa Trammel">
-      </div>
-      <div class="ced-field-group">
-        <div class="ced-field-label">Role / Relationship</div>
-        <input class="ced-input" id="cc-role" type="text" placeholder="e.g. Mother/Caregiver — Burks, Jaybrion">
-      </div>
-      <div class="ced-row">
-        <div class="ced-field-group">
-          <div class="ced-field-label">Phone Number</div>
-          <input class="ced-input" id="cc-phone" type="tel" placeholder="(XXX) XXX-XXXX">
-        </div>
-        <div class="ced-field-group">
-          <div class="ced-field-label">Contact Type</div>
-          <select class="ced-input" id="cc-type" style="-webkit-appearance:none;">
-            <option value="family">&#127968; Family</option>
-            <option value="coord">&#128084; Coordinator</option>
-            <option value="staff">&#128101; Staff</option>
-            <option value="other">&#128172; Other</option>
-          </select>
-        </div>
-      </div>
-      <div class="ced-field-group">
-        <div class="ced-field-label">Email Address</div>
-        <input class="ced-input" id="cc-email" type="email" placeholder="email@example.com">
-      </div>
-      <input type="hidden" id="cc-edit-idx" value="">
-      <div class="ced-btns">
-        <button class="ced-cancel" onclick="closeContactEditor()">Cancel</button>
-        <button class="ced-save" onclick="saveContact()">Save Contact</button>
+      <div style="text-align:center;padding-left:12px;">
+        <div style="font-size:26px;">✏️</div>
+        <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.3);margin-top:3px;">EDIT</div>
+        <div id="sync-time" style="font-size:8px;color:rgba(255,255,255,.2);margin-top:2px;"></div>
       </div>
     </div>
   </div>
 
-  <!-- QUICK SEND PICKER MODAL -->
-  <div class="client-editor-modal" id="quick-send-modal">
-    <div class="client-editor-sheet">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <div class="ced-title">&#128228; Quick Send</div>
-        <button onclick="document.getElementById('quick-send-modal').classList.remove('open')" style="background:rgba(255,255,255,.1);border:none;color:white;width:28px;height:28px;border-radius:8px;font-size:15px;cursor:pointer;">&#10005;</button>
-      </div>
-      <div class="ced-sub">Pick a contact then select what to send.</div>
-      <div id="qs-contacts" style="margin-bottom:14px;max-height:220px;overflow-y:auto;"></div>
-      <div id="qs-messages" style="display:none;">
-        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">Sending to: <span id="qs-to-name" style="color:var(--orange);"></span></div>
-        <div id="qs-msg-list"></div>
-        <button onclick="document.getElementById('qs-messages').style.display='none';document.getElementById('qs-contacts').style.display='block';" class="ced-cancel" style="width:100%;margin-top:10px;">&#8592; Change Contact</button>
-      </div>
-      <button onclick="document.getElementById('quick-send-modal').classList.remove('open')" class="ced-cancel" style="width:100%;margin-top:10px;">Close</button>
+  <!-- QPR ALERTS -->
+  <div id="qpr-panel"></div>
+
+  <!-- PIPELINE SUMMARY -->
+  <div class="info-grid">
+    <div class="card" style="cursor:pointer;text-align:center;" onclick="switchTab(5)">
+      <div class="card-label">Pending</div>
+      <div class="card-val" id="pipeline-pending">—</div>
+      <div class="card-sub">Referrals / Hiring</div>
+    </div>
+    <div class="card" style="cursor:pointer;text-align:center;" onclick="switchTab(5)">
+      <div class="card-label">In Progress</div>
+      <div class="card-val" id="pipeline-inprogress">—</div>
+      <div class="card-sub">Onboarding / Assessment</div>
     </div>
   </div>
 
-  <!-- ══ SEND ══ -->
-  <div class="screen" id="screen-5">
-    <div class="sec-label">Who are you sending to?</div>
-    <div class="aud-grid">
-      <button class="aud-btn active" id="aud-family"   onclick="setAud('family')">&#127968; Family</button>
-      <button class="aud-btn"        id="aud-coord"    onclick="setAud('coord')">&#128084; Coordinator</button>
-      <button class="aud-btn"        id="aud-prospect" onclick="setAud('prospect')">&#128101; Prospect</button>
-      <button class="aud-btn"        id="aud-staff"    onclick="setAud('staff')">&#128203; Staff</button>
+  <!-- QUICK ACTIONS -->
+  <div class="sec">Quick Actions</div>
+  <div class="action-row">
+    <a class="action orange" href="https://form.jotform.com/261451201542040" target="_blank">📋 New Referral</a>
+    <button class="action navy" onclick="switchTab(5)">🔄 Pipeline</button>
+  </div>
+  <div class="action-row">
+    <a class="action green" href="https://form.jotform.com/261555850958066" target="_blank">💼 Job Application</a>
+    <button class="action purple" onclick="switchTab(6)">📤 Send</button>
+  </div>
+  <button class="action ghost" onclick="openContactSheet()">➕ Add Contact</button>
+
+  <!-- SYSTEM STATUS -->
+  <div class="sec">System Status</div>
+  <div class="info-grid">
+    <div class="card" style="text-align:center;">
+      <div class="card-label">Jotform Forms</div>
+      <div class="card-val" style="font-size:20px;margin-top:4px;">✅</div>
+      <div class="card-sub">6 active forms</div>
     </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Recipient Name (optional)</div>
-      <input id="send-name" type="text" placeholder="e.g. Delisa Trammel" style="width:100%;padding:10px 14px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:white;font-size:14px;font-family:var(--sans);outline:none;">
-    </div>
-    <div id="send-options"></div>
-    <div class="sec-label" style="margin-top:16px;">Custom Message</div>
-    <div class="custom-box">
-      <textarea id="custom-msg" placeholder="Type a custom message — tap a send button to open pre-filled..."></textarea>
-      <div class="custom-actions">
-        <button onclick="sendCustom('sms')" style="background:var(--green);color:white;">&#128222; Text</button>
-        <button onclick="sendCustom('email')" style="background:var(--navy2);color:white;">&#9993; Email</button>
-        <button onclick="copyCustom()" style="background:rgba(255,255,255,.1);color:white;">&#128203; Copy</button>
-      </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-label">GitHub Deploy</div>
+      <div class="card-val" style="font-size:20px;margin-top:4px;">✅</div>
+      <div class="card-sub">Auto-push live</div>
     </div>
   </div>
+  <div class="info-grid">
+    <div class="card" style="text-align:center;">
+      <div class="card-label">IRC Vendor</div>
+      <div class="card-val" style="font-size:16px;color:var(--green);margin-top:6px;">● PJ6208</div>
+      <div class="card-sub">Vendorized active</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-label">Website</div>
+      <div class="card-val" style="font-size:14px;margin-top:6px;" onclick="window.open('https://opengrace.org','_blank')">opengrace.org</div>
+      <div class="card-sub">12 pages live</div>
+    </div>
+  </div>
+
+</div><!-- /s0 -->
+
+<!-- ══ TAB 1: FORMS ══ -->
+<div class="screen" id="s1">
+  <div class="sec">Client Forms</div>
+  <a class="lrow" href="https://form.jotform.com/261451201542040" target="_blank"><div class="lrow-icon">📋</div><div class="lrow-info"><div class="lrow-label">Client Referral Intake</div><div class="lrow-sub">New family referrals from IRC</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://form.jotform.com/261451993406057" target="_blank"><div class="lrow-icon">✅</div><div class="lrow-info"><div class="lrow-label">CFS Service Acknowledgment</div><div class="lrow-sub">Required before services begin</div></div><div class="lrow-arrow">→</div></a>
+
+  <div class="sec">Staff Forms</div>
+  <a class="lrow" href="https://opengrace.org/contact-log.html" target="_blank"><div class="lrow-icon">📝</div><div class="lrow-info"><div class="lrow-label">Daily Contact Log Portal</div><div class="lrow-sub">HIPAA-compliant — access verified</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://form.jotform.com/261562041031038" target="_blank"><div class="lrow-icon">📊</div><div class="lrow-info"><div class="lrow-label">View Contact Log Submissions</div><div class="lrow-sub">Jotform — director access only</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank"><div class="lrow-icon">🚨</div><div class="lrow-info"><div class="lrow-label">Incident Report</div><div class="lrow-sub">File same day — notifies Director</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://form.jotform.com/261451114945050" target="_blank"><div class="lrow-icon">👤</div><div class="lrow-info"><div class="lrow-label">Staff Onboarding Form</div><div class="lrow-sub">Send after offer accepted</div></div><div class="lrow-arrow">→</div></a>
+
+  <div class="sec">Hiring</div>
+  <a class="lrow" href="https://form.jotform.com/261555850958066" target="_blank"><div class="lrow-icon">💼</div><div class="lrow-info"><div class="lrow-label">Employment Application</div><div class="lrow-sub">Wired to careers page</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://opengrace.org/careers.html" target="_blank"><div class="lrow-icon">🔖</div><div class="lrow-info"><div class="lrow-label">Careers Page</div><div class="lrow-sub">opengrace.org/careers.html</div></div><div class="lrow-arrow">→</div></a>
+
+  <div class="sec">Staff Access</div>
+  <div class="lrow" onclick="openAccessSheet()"><div class="lrow-icon">🔑</div><div class="lrow-info"><div class="lrow-label">Manage Staff Access Codes</div><div class="lrow-sub">Add, deactivate, or revoke instantly</div></div><div class="lrow-arrow">✏</div></div>
+
+  <div class="sec">Jotform Dashboard</div>
+  <a class="lrow" href="https://www.jotform.com/myforms/" target="_blank"><div class="lrow-icon">📈</div><div class="lrow-info"><div class="lrow-label">All Forms & Submissions</div><div class="lrow-sub">jotform.com — full dashboard</div></div><div class="lrow-arrow">→</div></a>
+</div><!-- /s1 -->
+
+<!-- ══ TAB 2: PORTALS ══ -->
+<div class="screen" id="s2">
+  <div class="sec">Public Website</div>
+  <a class="lrow" href="https://opengrace.org" target="_blank"><div class="lrow-icon">🏠</div><div class="lrow-info"><div class="lrow-label">Landing Page — English</div><div class="lrow-sub">opengrace.org</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://opengrace.org/es.html" target="_blank"><div class="lrow-icon">🌎</div><div class="lrow-info"><div class="lrow-label">Landing Page — Español</div><div class="lrow-sub">opengrace.org/es.html</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://opengrace.org/coordinators.html" target="_blank"><div class="lrow-icon">🔖</div><div class="lrow-info"><div class="lrow-label">IRC Coordinator Info</div><div class="lrow-sub">opengrace.org/coordinators.html</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://opengrace.org/resources.html" target="_blank"><div class="lrow-icon">🌐</div><div class="lrow-info"><div class="lrow-label">Community Resources</div><div class="lrow-sub">opengrace.org/resources.html</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://opengrace.org/cfs-services.html" target="_blank"><div class="lrow-icon">📄</div><div class="lrow-info"><div class="lrow-label">CFS Services & FAQ</div><div class="lrow-sub">opengrace.org/cfs-services.html</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://opengrace.org/careers.html" target="_blank"><div class="lrow-icon">💼</div><div class="lrow-info"><div class="lrow-label">Careers Page</div><div class="lrow-sub">opengrace.org/careers.html</div></div><div class="lrow-arrow">→</div></a>
+
+  <div class="sec">Staff & Client Portals</div>
+  <a class="lrow" href="https://opengrace.org/staff-portal.html" target="_blank"><div class="lrow-icon">👥</div><div class="lrow-info"><div class="lrow-label">Staff Portal</div><div class="lrow-sub">opengrace.org/staff-portal.html</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://opengrace.org/client-portal.html" target="_blank"><div class="lrow-icon">🏘</div><div class="lrow-info"><div class="lrow-label">Client & Family Portal</div><div class="lrow-sub">opengrace.org/client-portal.html</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://opengrace.org/onboarding.html" target="_blank"><div class="lrow-icon">📋</div><div class="lrow-info"><div class="lrow-label">Staff Onboarding Prep</div><div class="lrow-sub">opengrace.org/onboarding.html</div></div><div class="lrow-arrow">→</div></a>
+</div><!-- /s2 -->
+
+<!-- ══ TAB 3: DOCS ══ -->
+<div class="screen" id="s3">
+  <div class="sec">Director Tools</div>
+  <a class="lrow" href="https://opengrace.org/Open_Grace_Interview_Scorecard.html" target="_blank"><div class="lrow-icon">📋</div><div class="lrow-info"><div class="lrow-label">Interview Scorecard</div><div class="lrow-sub">Score candidates — auto-save results</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://github.com/jayraykay2/Open-Grace-Staff" target="_blank"><div class="lrow-icon">🔧</div><div class="lrow-info"><div class="lrow-label">GitHub Repository</div><div class="lrow-sub">jayraykay2/Open-Grace-Staff</div></div><div class="lrow-arrow">→</div></a>
+
+  <div class="sec">Family Documents</div>
+  <a class="lrow" href="https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf" target="_blank"><div class="lrow-icon">🏠</div><div class="lrow-info"><div class="lrow-label">Client Welcome Packet</div><div class="lrow-sub">PDF — give to families at first meeting</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://opengrace.org/OpenGrace_Flyer_English.html" target="_blank"><div class="lrow-icon">📄</div><div class="lrow-info"><div class="lrow-label">Program Flyer — English</div><div class="lrow-sub">Print and distribute</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://opengrace.org/OpenGrace_Flyer_Spanish.html" target="_blank"><div class="lrow-icon">📄</div><div class="lrow-info"><div class="lrow-label">Program Flyer — Español</div><div class="lrow-sub">Imprimir y distribuir</div></div><div class="lrow-arrow">→</div></a>
+
+  <div class="sec">Staff Documents</div>
+  <a class="lrow" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank"><div class="lrow-icon">📘</div><div class="lrow-info"><div class="lrow-label">Employee Handbook</div><div class="lrow-sub">Send after offer accepted</div></div><div class="lrow-arrow">→</div></a>
+  <a class="lrow" href="https://opengrace.org/Request_for_Live_Scan_-_Open_Grace.pdf" target="_blank"><div class="lrow-icon">🔒</div><div class="lrow-info"><div class="lrow-label">Live Scan Form</div><div class="lrow-sub">ORI: AAP98 | Mail Code: 35349</div></div><div class="lrow-arrow">→</div></a>
+</div><!-- /s3 -->
+
+<!-- ══ TAB 4: CONTACTS ══ -->
+<div class="screen" id="s4">
+  <div class="sec">Saved Contacts</div>
+  <div id="contacts-list"></div>
+  <button class="action ghost" onclick="openContactSheet()">➕ Add Contact</button>
+
+  <div class="sec">Emergency & Reporting</div>
+  <div class="contact-card">
+    <div class="contact-name">Adult Protective Services</div>
+    <div class="contact-role">Report abuse or neglect of adults and elders</div>
+    <div class="contact-btns">
+      <a class="cbtn call" href="tel:18007745000">📞 Call</a>
+      <a class="cbtn text" href="sms:18007745000">💬 Text</a>
+    </div>
+  </div>
+  <div class="contact-card">
+    <div class="contact-name">Child Protective Services</div>
+    <div class="contact-role">Report suspected abuse or neglect of minors</div>
+    <div class="contact-btns">
+      <a class="cbtn call" href="tel:18003405700">📞 Call</a>
+      <a class="cbtn text" href="sms:18003405700">💬 Text</a>
+    </div>
+  </div>
+  <div class="contact-card">
+    <div class="contact-name">Inland Counties Regional Center</div>
+    <div class="contact-role">IRC main line — (909) 890-4800</div>
+    <div class="contact-btns">
+      <a class="cbtn call" href="tel:9098904800">📞 Call</a>
+      <a class="cbtn text" href="sms:9098904800">💬 Text</a>
+    </div>
+  </div>
+  <div class="contact-card">
+    <div class="contact-name">988 Crisis Lifeline</div>
+    <div class="contact-role">Mental health crisis support — 24/7</div>
+    <div class="contact-btns">
+      <a class="cbtn call" href="tel:988">📞 Call</a>
+      <a class="cbtn text" href="sms:988">💬 Text</a>
+    </div>
+  </div>
+</div><!-- /s4 -->
+
+<!-- ══ TAB 5: PIPELINE ══ -->
+<div class="screen" id="s5">
+  <div class="sec">Referrals — Pending Assessment</div>
+  <div id="pipe-referrals-pending"></div>
+  <button class="action orange" style="font-size:13px;padding:11px;" onclick="openPipeSheet('referral-pending')">➕ Add Pending Referral</button>
+
+  <div class="sec">Referrals — Awaiting Staff Assignment</div>
+  <div id="pipe-referrals-assign"></div>
+  <button class="action navy" style="font-size:13px;padding:11px;" onclick="openPipeSheet('referral-assign')">➕ Add to Awaiting Assignment</button>
+
+  <div class="sec">New Hires — Onboarding Status</div>
+  <div id="pipe-onboarding"></div>
+  <button class="action green" style="font-size:13px;padding:11px;" onclick="openPipeSheet('onboarding')">➕ Add New Hire</button>
+
+  <div class="sec">Completed This Month</div>
+  <div id="pipe-completed"></div>
+</div><!-- /s5 -->
+
+<!-- ══ TAB 6: SEND ══ -->
+<div class="screen" id="s6">
+  <div class="sec">Who are you sending to?</div>
+  <div class="aud-grid">
+    <button class="aud-btn active" id="aud-family"   onclick="setAud('family')">🏠 Family</button>
+    <button class="aud-btn"        id="aud-coord"    onclick="setAud('coord')">🔖 Coord</button>
+    <button class="aud-btn"        id="aud-prospect" onclick="setAud('prospect')">💼 Prospect</button>
+    <button class="aud-btn"        id="aud-staff"    onclick="setAud('staff')">👤 Staff</button>
+  </div>
+
+  <div style="margin-bottom:12px;">
+    <div class="field-label" style="margin-bottom:5px;">Recipient name (optional — personalizes message)</div>
+    <input id="send-name" class="field-input" type="text" placeholder="e.g. Delisa Trammel">
+  </div>
+
+  <div id="send-options"></div>
+
+  <div class="sec" style="margin-top:14px;">Custom Message</div>
+  <div style="background:rgba(255,255,255,.05);border-radius:13px;padding:13px;">
+    <textarea id="custom-msg" class="field-input field-textarea" placeholder="Type a custom message..."></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="sbtn s" style="flex:1;padding:10px;" onclick="sendCustom('sms')">📱 Text</button>
+      <button class="sbtn e" style="flex:1;padding:10px;" onclick="sendCustom('email')">✉️ Email</button>
+      <button class="sbtn c" style="flex:1;padding:10px;" onclick="copyCustom()">📋 Copy</button>
+    </div>
+  </div>
+</div><!-- /s6 -->
 
 </div><!-- /screens -->
 
-<!-- TAB BAR -->
+<!-- ════════ TAB BAR ════════ -->
 <div class="tabbar">
-  <div class="tab active" onclick="switchTab(0)"><div class="tab-icon">&#127968;</div><div class="tab-label">Home</div></div>
-  <div class="tab" onclick="switchTab(1)"><div class="tab-icon">&#128203;</div><div class="tab-label">Forms</div></div>
-  <div class="tab" onclick="switchTab(2)"><div class="tab-icon">&#127760;</div><div class="tab-label">Portals</div></div>
-  <div class="tab" onclick="switchTab(3)"><div class="tab-icon">&#128209;</div><div class="tab-label">Docs</div></div>
-  <div class="tab" onclick="switchTab(4)"><div class="tab-icon">&#128222;</div><div class="tab-label">Contacts</div></div>
-  <div class="tab" onclick="switchTab(5)"><div class="tab-icon">&#128228;</div><div class="tab-label">Send</div></div>
+  <div class="tab active" onclick="switchTab(0)"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></div>
+  <div class="tab"        onclick="switchTab(1)"><div class="tab-icon">📋</div><div class="tab-label">Forms</div></div>
+  <div class="tab"        onclick="switchTab(2)"><div class="tab-icon">🌐</div><div class="tab-label">Portals</div></div>
+  <div class="tab"        onclick="switchTab(3)"><div class="tab-icon">📄</div><div class="tab-label">Docs</div></div>
+  <div class="tab"        onclick="switchTab(4)"><div class="tab-icon">📞</div><div class="tab-label">Contacts</div></div>
+  <div class="tab"        onclick="switchTab(5)"><div class="tab-icon">🔄</div><div class="tab-label">Pipeline</div></div>
+  <div class="tab"        onclick="switchTab(6)"><div class="tab-icon">📤</div><div class="tab-label">Send</div></div>
 </div>
 
-<!-- CLIENT EDITOR MODAL -->
-<div class="client-editor-modal" id="ced-modal">
-  <div class="client-editor-sheet">
-    <div class="ced-title">Client Roster</div>
-    <div class="ced-sub">QPR deadline auto-calculates at 90 days from service start.</div>
-    <div id="ced-fields"></div>
-    <button class="ced-add" onclick="cedAdd()">+ Add Client</button>
-    <div class="ced-btns">
-      <button class="ced-cancel" onclick="closeClientEditor()">Cancel</button>
-      <button class="ced-save" onclick="cedSave()">Save Clients</button>
+<!-- ════════ MODALS ════════ -->
+
+<!-- CLIENT EDITOR -->
+<div class="overlay" id="client-overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Client Roster</div>
+    <div class="sheet-sub">QPR deadline auto-calculates 90 days from service start. Tap a client to edit.</div>
+    <div id="client-fields"></div>
+    <button class="action ghost" style="margin-top:4px;" onclick="addClientBlock()">➕ Add Client</button>
+    <div class="sheet-btns">
+      <button class="sheet-cancel" onclick="closeOverlay('client-overlay')">Cancel</button>
+      <button class="sheet-save" onclick="saveClients()">Save Clients</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT EDITOR -->
+<div class="overlay" id="contact-overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="contact-sheet-title">Add Contact</div>
+    <div class="sheet-sub">Saved contacts appear with one-tap call, text, email, and send buttons.</div>
+    <div class="field"><div class="field-label">Full Name *</div><input class="field-input" id="cc-name" type="text" placeholder="e.g. Christina Castaneda"></div>
+    <div class="field"><div class="field-label">Role / Relationship</div><input class="field-input" id="cc-role" type="text" placeholder="e.g. IRC Service Coordinator — Burks, Jaybrion"></div>
+    <div class="field-row">
+      <div class="field"><div class="field-label">Phone</div><input class="field-input" id="cc-phone" type="tel" placeholder="(951) 555-0000"></div>
+      <div class="field"><div class="field-label">Type</div>
+        <select class="field-input field-select" id="cc-type">
+          <option value="family">🏠 Family</option>
+          <option value="coord">🔖 Coordinator</option>
+          <option value="staff">👤 Staff</option>
+          <option value="other">💬 Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><div class="field-label">Email</div><input class="field-input" id="cc-email" type="email" placeholder="email@example.com"></div>
+    <div class="sheet-btns">
+      <button class="sheet-danger" id="cc-delete-btn" onclick="deleteContact()" style="display:none;">Delete</button>
+      <button class="sheet-cancel" onclick="closeOverlay('contact-overlay')">Cancel</button>
+      <button class="sheet-save" onclick="saveContact()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- PIPELINE ITEM EDITOR -->
+<div class="overlay" id="pipe-overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="pipe-sheet-title">Add Item</div>
+    <div class="sheet-sub" id="pipe-sheet-sub"></div>
+    <div class="field"><div class="field-label">Name *</div><input class="field-input" id="pi-name" type="text" placeholder="Full name"></div>
+    <div class="field-row">
+      <div class="field"><div class="field-label">Phone</div><input class="field-input" id="pi-phone" type="tel" placeholder="(XXX) XXX-XXXX"></div>
+      <div class="field"><div class="field-label">Date Added</div><input class="field-input" id="pi-date" type="date"></div>
+    </div>
+    <div class="field"><div class="field-label">Notes</div><textarea class="field-input field-textarea" id="pi-notes" placeholder="Coordinator name, position applied for, onboarding steps completed, etc."></textarea></div>
+    <input type="hidden" id="pi-type">
+    <input type="hidden" id="pi-idx" value="">
+    <div class="sheet-btns">
+      <button class="sheet-danger" id="pi-delete-btn" onclick="deletePipeItem()" style="display:none;">Remove</button>
+      <button class="sheet-cancel" onclick="closeOverlay('pipe-overlay')">Cancel</button>
+      <button class="sheet-save" onclick="savePipeItem()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACCESS MANAGER -->
+<div class="overlay" id="access-overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🔑 Staff Access Codes</div>
+    <div class="sheet-sub">Toggle to revoke instantly. Staff locked out on next login attempt. Changes save to GitHub live.</div>
+    <div id="access-list"><div class="empty">Tap Load to view staff access codes</div></div>
+    <button class="action ghost" style="font-size:13px;padding:11px;margin-bottom:12px;" onclick="loadAccess()">🔄 Load / Refresh</button>
+    <div style="background:rgba(255,255,255,.04);border-radius:13px;padding:13px;margin-bottom:12px;">
+      <div style="font-size:9.5px;font-weight:800;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Add New Staff Member</div>
+      <div class="field"><div class="field-label">Full Name</div><input class="field-input" id="ns-name" type="text" placeholder="Staff full name"></div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Position</div><input class="field-input" id="ns-pos" type="text" placeholder="Family Coordinator"></div>
+        <div class="field"><div class="field-label">Hire Date</div><input class="field-input" id="ns-date" type="date"></div>
+      </div>
+      <div class="field"><div class="field-label">Assigned Clients (one per line)</div><textarea class="field-input field-textarea" id="ns-clients" placeholder="Burks, Jaybrion — UCI 6953825"></textarea></div>
+      <button class="action green" style="font-size:13px;padding:11px;margin-bottom:0;" onclick="addStaffMember()">➕ Add Staff Member</button>
+    </div>
+    <div id="access-status" style="display:none;border-radius:10px;padding:10px 13px;margin-bottom:10px;font-size:12px;font-weight:600;"></div>
+    <div class="sheet-btns">
+      <button class="sheet-cancel" onclick="closeOverlay('access-overlay')">Close</button>
+      <button class="sheet-save" onclick="saveAccess()">💾 Save to GitHub</button>
     </div>
   </div>
 </div>
 
 <script>
+'use strict';
 
-// ══════════════════════════════════
-// CONTACTS SYSTEM
-// ══════════════════════════════════
-const CONTACTS_KEY = 'og_contacts_v2';
+// ════════════════════════════════════════════
+// STORAGE KEYS
+// ════════════════════════════════════════════
+const K = {
+  clients:  'og_clients_v4',
+  contacts: 'og_contacts_v3',
+  pipeline: 'og_pipeline_v2',
+};
 
-const DEFAULT_CONTACTS = [
-  { name:'Christina Castaneda', role:'IRC Service Coordinator — Burks, Jaybrion', phone:'9512418102', email:'ccastaneda@inlandrc.org', type:'coord' },
-  { name:'Delisa Trammel', role:'Mother/Caregiver — Burks, Jaybrion', phone:'9518052', email:'', type:'family' },
-  { name:'Jaybrion Burks', role:'Consumer — UCI 6953825', phone:'9097220525', email:'', type:'family' },
-];
+const GH_TOKEN = localStorage.getItem('og_gh_token') || '';
+const GH_REPO  = 'jayraykay2/Open-Grace-Staff';
 
-function loadContacts() {
-  try {
-    const s = JSON.parse(localStorage.getItem(CONTACTS_KEY));
-    if (s && s.length) return s;
-  } catch(e) {}
-  return DEFAULT_CONTACTS;
+// ════════════════════════════════════════════
+// UTILITIES
+// ════════════════════════════════════════════
+function load(key, def) {
+  try { const v = JSON.parse(localStorage.getItem(key)); if (v) return v; } catch(e) {}
+  return def;
+}
+function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+function toast(msg, color) {
+  const d = document.createElement('div');
+  d.className = 'toast';
+  d.innerHTML = msg;
+  d.style.background = color || 'var(--green)';
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 2400);
 }
 
-function saveContactsToStorage(contacts) {
-  localStorage.setItem(CONTACTS_KEY, JSON.stringify(contacts));
+function closeOverlay(id) {
+  document.getElementById(id).classList.remove('open');
 }
 
-const TYPE_ICONS = { family:'&#127968;', coord:'&#128084;', staff:'&#128101;', other:'&#128172;' };
-const TYPE_LABELS = { family:'Family', coord:'Coordinator', staff:'Staff', other:'Other' };
+function openOverlay(id) {
+  document.getElementById(id).classList.add('open');
+}
 
-function renderContacts() {
-  const contacts = loadContacts();
-  const el = document.getElementById('contacts-list');
+function daysUntil(startDate, addDays) {
+  if (!startDate) return null;
+  const start = new Date(startDate);
+  if (isNaN(start)) return null;
+  const dl = new Date(start);
+  dl.setDate(dl.getDate() + addDays);
+  const today = new Date(); today.setHours(0,0,0,0);
+  return Math.ceil((dl - today) / 86400000);
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  const dt = new Date(d);
+  return isNaN(dt) ? d : dt.toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
+}
+
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+
+// ════════════════════════════════════════════
+// TABS
+// ════════════════════════════════════════════
+let currentTab = 0;
+function switchTab(idx) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  document.querySelectorAll('.screen').forEach((s,i) => s.classList.toggle('active', i===idx));
+  currentTab = idx;
+  if (idx === 4) renderContacts();
+  if (idx === 5) renderPipeline();
+  if (idx === 6) renderSend();
+}
+
+// ════════════════════════════════════════════
+// CLOCK & HEADER
+// ════════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greeting').innerHTML = `${greet}, <em>Joshua</em>`;
+  document.getElementById('hdr-date').textContent =
+    `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+}
+
+function updateBadge() {
+  const clients = load(K.clients, defaultClients());
+  const urgent = clients.filter(c => { const d = daysUntil(c.startDate, 90); return d !== null && d <= 14; });
+  const badge = document.getElementById('hdr-badge');
+  if (urgent.length) {
+    badge.textContent = `⚠️ ${urgent.length} QPR Alert${urgent.length>1?'s':''}`;
+    badge.className = 'hdr-alert warn';
+  } else {
+    badge.textContent = '● Active';
+    badge.className = 'hdr-alert';
+  }
+}
+
+// ════════════════════════════════════════════
+// CLIENTS
+// ════════════════════════════════════════════
+function defaultClients() {
+  return [{ name:'Burks, Jaybrion', uci:'6953825', startDate:'2026-04-22' }];
+}
+
+function renderHome() {
+  const clients = load(K.clients, defaultClients());
+  document.getElementById('client-count').textContent = clients.length || '0';
+  document.getElementById('sync-time').textContent =
+    'Updated ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+
+  // Client names with QPR tags
+  const namesEl = document.getElementById('client-names');
+  if (!clients.length) {
+    namesEl.innerHTML = '<span style="color:rgba(255,255,255,.25);">No active clients — tap to add</span>';
+  } else {
+    namesEl.innerHTML = clients.map(c => {
+      const d = daysUntil(c.startDate, 90);
+      let tag = '';
+      if (d !== null) {
+        if (d < 0)    tag = ' <span class="badge red">QPR OVERDUE</span>';
+        else if (d<=7) tag = ` <span class="badge red">${d}d left</span>`;
+        else if (d<=14)tag = ` <span class="badge gold">${d}d left</span>`;
+        else           tag = ` <span class="badge gray">QPR ${fmtDate(new Date(new Date(c.startDate).setDate(new Date(c.startDate).getDate()+90)))}</span>`;
+      }
+      return `<div style="margin-bottom:3px;">${c.name}${c.uci?` <span style="color:rgba(255,255,255,.25);font-size:10px;">UCI ${c.uci}</span>`:''}${tag}</div>`;
+    }).join('');
+  }
+
+  // QPR panel
+  const panel = document.getElementById('qpr-panel');
+  const alerts = clients.map(c => ({...c, days: daysUntil(c.startDate, 90)}))
+    .filter(c => c.days !== null && c.days <= 30)
+    .sort((a,b) => a.days - b.days);
+
+  if (!alerts.length) { panel.innerHTML=''; }
+  else {
+    panel.innerHTML = alerts.map(a => {
+      const cls = a.days < 0 ? 'danger' : a.days <= 7 ? 'danger' : 'warn';
+      const msg = a.days < 0 ? 'OVERDUE' : `${a.days} days remaining`;
+      const dl  = fmtDate(new Date(new Date(a.startDate).setDate(new Date(a.startDate).getDate()+90)));
+      return `<div class="qpr-card ${cls}">
+        <div class="qpr-tag">${a.days<0?'🚨':'⏰'} QPR DEADLINE ALERT</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-size:14px;font-weight:700;color:white;">${a.name}</div>
+          <div style="font-size:10.5px;color:rgba(255,255,255,.4);">Due ${dl}</div></div>
+          <div style="font-size:13px;font-weight:800;color:${a.days<0?'#FC8181':'#FCD34D'};">${msg}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Pipeline summary
+  const pipe = load(K.pipeline, defaultPipeline());
+  document.getElementById('pipeline-pending').textContent =
+    (pipe['referral-pending']||[]).length + (pipe['referral-assign']||[]).length;
+  document.getElementById('pipeline-inprogress').textContent =
+    (pipe['onboarding']||[]).length;
+
+  updateBadge();
+}
+
+// Client editor
+function openClientSheet() {
+  const clients = load(K.clients, defaultClients());
+  const container = document.getElementById('client-fields');
+  container.innerHTML = '';
+  clients.forEach((c,i) => addClientBlock(c.name, c.uci, c.startDate, i));
+  if (!clients.length) addClientBlock();
+  openOverlay('client-overlay');
+}
+
+function addClientBlock(name='', uci='', startDate='', idx=null) {
+  const container = document.getElementById('client-fields');
+  const div = document.createElement('div');
+  div.style.cssText = 'background:rgba(255,255,255,.06);border-radius:13px;padding:13px;margin-bottom:10px;position:relative;';
+  div.innerHTML = `
+    <button onclick="this.closest('div').remove()" style="position:absolute;top:10px;right:10px;background:rgba(220,38,38,.2);border:none;color:#FC8181;width:26px;height:26px;border-radius:7px;font-size:14px;cursor:pointer;">✕</button>
+    <div class="field"><div class="field-label">Client Name (Last, First)</div>
+      <input class="field-input cf-name" type="text" value="${name}" placeholder="e.g. Burks, Jaybrion" style="padding-right:40px;"></div>
+    <div class="field-row">
+      <div class="field"><div class="field-label">UCI Number</div>
+        <input class="field-input cf-uci" type="text" value="${uci}" placeholder="7-digit UCI"></div>
+      <div class="field"><div class="field-label">Service Start Date</div>
+        <input class="field-input cf-start" type="date" value="${startDate}"></div>
+    </div>`;
+  container.appendChild(div);
+}
+
+function saveClients() {
+  const blocks = document.querySelectorAll('.cf-name');
+  const clients = [];
+  document.querySelectorAll('#client-fields > div').forEach(block => {
+    const name = block.querySelector('.cf-name')?.value.trim();
+    if (!name) return;
+    clients.push({
+      name,
+      uci:       block.querySelector('.cf-uci')?.value.trim() || '',
+      startDate: block.querySelector('.cf-start')?.value || '',
+    });
+  });
+  save(K.clients, clients);
+  closeOverlay('client-overlay');
+  renderHome();
+  toast('✓ Clients saved');
+}
+
+// ════════════════════════════════════════════
+// PIPELINE
+// ════════════════════════════════════════════
+function defaultPipeline() {
+  return {
+    'referral-pending': [],
+    'referral-assign':  [],
+    'onboarding':       [],
+    'completed':        [],
+  };
+}
+
+const PIPE_CONFIG = {
+  'referral-pending': {
+    title: 'Add Pending Referral',
+    sub:   'Referral received — assessment not yet completed',
+    elId:  'pipe-referrals-pending',
+    badge: 'orange',
+    badgeLabel: 'Pending Assessment',
+  },
+  'referral-assign': {
+    title: 'Awaiting Staff Assignment',
+    sub:   'Assessment done — no Family Coordinator assigned yet',
+    elId:  'pipe-referrals-assign',
+    badge: 'gold',
+    badgeLabel: 'Needs Assignment',
+  },
+  'onboarding': {
+    title: 'Add New Hire — Onboarding',
+    sub:   'Track onboarding steps: Live Scan, Handbook, Jotform, CPR',
+    elId:  'pipe-onboarding',
+    badge: 'green',
+    badgeLabel: 'Onboarding',
+  },
+  'completed': {
+    title: 'Completed',
+    sub:   'Recently completed referrals or onboarding',
+    elId:  'pipe-completed',
+    badge: 'gray',
+    badgeLabel: 'Completed',
+  },
+};
+
+let pipeEditType = null;
+let pipeEditIdx  = null;
+
+function openPipeSheet(type, idx=null) {
+  pipeEditType = type;
+  pipeEditIdx  = idx;
+  const cfg = PIPE_CONFIG[type];
+  document.getElementById('pipe-sheet-title').textContent = idx !== null ? 'Edit Item' : cfg.title;
+  document.getElementById('pipe-sheet-sub').textContent = cfg.sub;
+  document.getElementById('pi-type').value = type;
+  document.getElementById('pi-idx').value  = idx !== null ? idx : '';
+
+  if (idx !== null) {
+    const pipe = load(K.pipeline, defaultPipeline());
+    const item = (pipe[type]||[])[idx];
+    if (item) {
+      document.getElementById('pi-name').value  = item.name  || '';
+      document.getElementById('pi-phone').value = item.phone || '';
+      document.getElementById('pi-date').value  = item.date  || '';
+      document.getElementById('pi-notes').value = item.notes || '';
+    }
+    document.getElementById('pi-delete-btn').style.display = 'block';
+  } else {
+    document.getElementById('pi-name').value  = '';
+    document.getElementById('pi-phone').value = '';
+    document.getElementById('pi-date').value  = todayStr();
+    document.getElementById('pi-notes').value = '';
+    document.getElementById('pi-delete-btn').style.display = 'none';
+  }
+  openOverlay('pipe-overlay');
+}
+
+function savePipeItem() {
+  const type  = document.getElementById('pi-type').value;
+  const idxEl = document.getElementById('pi-idx').value;
+  const idx   = idxEl !== '' ? parseInt(idxEl) : null;
+  const name  = document.getElementById('pi-name').value.trim();
+  if (!name) { toast('⚠ Name required', '#D97706'); return; }
+
+  const item = {
+    name,
+    phone: document.getElementById('pi-phone').value.trim(),
+    date:  document.getElementById('pi-date').value,
+    notes: document.getElementById('pi-notes').value.trim(),
+    added: todayStr(),
+  };
+
+  const pipe = load(K.pipeline, defaultPipeline());
+  if (!pipe[type]) pipe[type] = [];
+
+  if (idx !== null) pipe[type][idx] = item;
+  else pipe[type].push(item);
+
+  save(K.pipeline, pipe);
+  closeOverlay('pipe-overlay');
+  renderPipeline();
+  renderHome();
+  toast('✓ Saved');
+}
+
+function deletePipeItem() {
+  const type = document.getElementById('pi-type').value;
+  const idx  = parseInt(document.getElementById('pi-idx').value);
+  const pipe = load(K.pipeline, defaultPipeline());
+  if (pipe[type]) pipe[type].splice(idx, 1);
+  save(K.pipeline, pipe);
+  closeOverlay('pipe-overlay');
+  renderPipeline();
+  renderHome();
+  toast('Removed');
+}
+
+function markComplete(type, idx) {
+  const pipe = load(K.pipeline, defaultPipeline());
+  const item = (pipe[type]||[])[idx];
+  if (!item) return;
+  if (!pipe['completed']) pipe['completed'] = [];
+  item.completedFrom = type;
+  item.completedDate = todayStr();
+  pipe['completed'].unshift(item);
+  pipe[type].splice(idx, 1);
+  save(K.pipeline, pipe);
+  renderPipeline();
+  renderHome();
+  toast('✓ Marked complete');
+}
+
+function renderPipeSection(type, items) {
+  const cfg = PIPE_CONFIG[type];
+  const el  = document.getElementById(cfg.elId);
   if (!el) return;
 
-  if (!contacts.length) {
-    el.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.3);font-size:13px;">No contacts saved. Tap + Add Contact.</div>';
+  if (!items || !items.length) {
+    el.innerHTML = '<div class="empty" style="padding:14px 0 6px;">Nothing here — tap + to add</div>';
     return;
   }
 
-  // Group by type
-  const groups = { family:[], coord:[], staff:[], other:[] };
-  contacts.forEach((c,i) => { (groups[c.type]||groups.other).push({...c, idx:i}); });
-
-  let html = '';
-  for (const [type, list] of Object.entries(groups)) {
-    if (!list.length) continue;
-    html += `<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;margin:12px 0 8px;">${TYPE_ICONS[type]} ${TYPE_LABELS[type]}</div>`;
-    list.forEach(c => {
-      const phone = c.phone ? c.phone.replace(/\D/g,'') : '';
-      html += `
-        <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:13px 14px;margin-bottom:8px;">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;">
-            <div style="flex:1;min-width:0;">
-              <div style="font-size:14px;font-weight:700;color:white;margin-bottom:2px;">${c.name}</div>
-              <div style="font-size:11px;color:rgba(255,255,255,.35);line-height:1.4;">${c.role||''}</div>
-              ${phone ? `<div style="font-size:11px;color:rgba(255,255,255,.25);margin-top:2px;">${c.phone}</div>` : ''}
-            </div>
-            <button onclick="editContact(${c.idx})" style="background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.4);width:28px;height:28px;border-radius:8px;font-size:13px;cursor:pointer;flex-shrink:0;">&#9998;</button>
-          </div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            ${phone ? `
-              <a href="tel:${phone}" style="flex:1;min-width:60px;padding:9px 6px;background:var(--green);border-radius:10px;color:white;text-decoration:none;font-size:12px;font-weight:700;text-align:center;">&#128222; Call</a>
-              <a href="sms:${phone}" style="flex:1;min-width:60px;padding:9px 6px;background:var(--navy2);border-radius:10px;color:white;text-decoration:none;font-size:12px;font-weight:700;text-align:center;">&#128172; Text</a>
-            ` : ''}
-            ${c.email ? `
-              <a href="mailto:${c.email}" style="flex:1;min-width:60px;padding:9px 6px;background:rgba(255,255,255,.1);border-radius:10px;color:white;text-decoration:none;font-size:12px;font-weight:700;text-align:center;">&#9993; Email</a>
-            ` : ''}
-            <button onclick="quickSendTo(${c.idx})" style="flex:1;min-width:60px;padding:9px 6px;background:var(--orange);border:none;border-radius:10px;color:white;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);">&#128228; Send</button>
-          </div>
-        </div>`;
-    });
-  }
-  el.innerHTML = html;
+  el.innerHTML = items.map((item, i) => {
+    const phone = (item.phone||'').replace(/\D/g,'');
+    const smsHref   = phone ? `sms:${phone}` : '';
+    const emailNote = item.notes ? item.notes.split('\n')[0].substring(0,60) : '';
+    return `<div class="pipe-card">
+      <div class="pipe-header">
+        <div class="pipe-name">${item.name}</div>
+        <span class="badge ${cfg.badge}">${cfg.badgeLabel}</span>
+      </div>
+      <div class="pipe-meta">
+        ${item.date ? '📅 Added ' + fmtDate(item.date) : ''}
+        ${phone ? ` &nbsp;·&nbsp; 📞 ${item.phone}` : ''}
+        ${emailNote ? `<br>${emailNote}` : ''}
+      </div>
+      <div class="pipe-actions">
+        ${phone ? `<a class="pipe-btn sms" href="${smsHref}">💬 Text</a>` : ''}
+        <button class="pipe-btn mark" onclick="markComplete('${type}',${i})">✅ Done</button>
+        <button class="pipe-btn assign" onclick="openPipeSheet('${type}',${i})">✏️ Edit</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-// Contact editor
-let editingContactIdx = null;
+function renderPipeline() {
+  const pipe = load(K.pipeline, defaultPipeline());
+  Object.keys(PIPE_CONFIG).forEach(type => {
+    renderPipeSection(type, pipe[type]||[]);
+  });
+}
 
-function openContactEditor(idx=null) {
-  editingContactIdx = idx;
-  const contacts = loadContacts();
-  document.getElementById('ced-modal-title').textContent = idx !== null ? 'Edit Contact' : 'Add Contact';
+// ════════════════════════════════════════════
+// CONTACTS
+// ════════════════════════════════════════════
+function defaultContacts() {
+  return [
+    { name:'Christina Castaneda', role:'IRC Service Coordinator — Burks, Jaybrion', phone:'9512418102', email:'ccastaneda@inlandrc.org', type:'coord' },
+    { name:'Delisa Trammel', role:'Mother/Caregiver — Burks, Jaybrion', phone:'', email:'', type:'family' },
+    { name:'Jaybrion Burks', role:'Consumer — UCI 6953825', phone:'9097220525', email:'', type:'family' },
+  ];
+}
+
+const TYPE_ICON = { family:'🏠', coord:'🔖', staff:'👤', other:'💬' };
+
+let contactEditIdx = null;
+
+function openContactSheet(idx=null) {
+  contactEditIdx = idx;
+  const contacts = load(K.contacts, defaultContacts());
+  document.getElementById('contact-sheet-title').textContent = idx !== null ? 'Edit Contact' : 'Add Contact';
+  const deleteBtn = document.getElementById('cc-delete-btn');
   if (idx !== null && contacts[idx]) {
     const c = contacts[idx];
     document.getElementById('cc-name').value  = c.name  || '';
@@ -607,388 +982,188 @@ function openContactEditor(idx=null) {
     document.getElementById('cc-phone').value = c.phone || '';
     document.getElementById('cc-email').value = c.email || '';
     document.getElementById('cc-type').value  = c.type  || 'other';
+    deleteBtn.style.display = 'block';
   } else {
     ['cc-name','cc-role','cc-phone','cc-email'].forEach(id => document.getElementById(id).value='');
     document.getElementById('cc-type').value = 'family';
+    deleteBtn.style.display = 'none';
   }
-  document.getElementById('contact-editor-modal').classList.add('open');
-}
-
-function closeContactEditor() {
-  document.getElementById('contact-editor-modal').classList.remove('open');
-}
-
-function editContact(idx) {
-  openContactEditor(idx);
+  openOverlay('contact-overlay');
 }
 
 function saveContact() {
-  const name  = document.getElementById('cc-name').value.trim();
-  if (!name) { flash('&#9888; Name required'); return; }
+  const name = document.getElementById('cc-name').value.trim();
+  if (!name) { toast('⚠ Name required', '#D97706'); return; }
   const contact = {
-    name,
-    role:  document.getElementById('cc-role').value.trim(),
+    name, role:  document.getElementById('cc-role').value.trim(),
     phone: document.getElementById('cc-phone').value.trim(),
     email: document.getElementById('cc-email').value.trim(),
     type:  document.getElementById('cc-type').value,
   };
-  const contacts = loadContacts();
-  if (editingContactIdx !== null) {
-    contacts[editingContactIdx] = contact;
-  } else {
-    contacts.push(contact);
-  }
-  saveContactsToStorage(contacts);
-  closeContactEditor();
+  const contacts = load(K.contacts, defaultContacts());
+  if (contactEditIdx !== null) contacts[contactEditIdx] = contact;
+  else contacts.push(contact);
+  save(K.contacts, contacts);
+  closeOverlay('contact-overlay');
   renderContacts();
-  flash('&#10003; Contact saved');
+  toast('✓ Contact saved');
 }
 
-function deleteContact(idx) {
-  const contacts = loadContacts();
-  contacts.splice(idx, 1);
-  saveContactsToStorage(contacts);
-  closeContactEditor();
+function deleteContact() {
+  if (contactEditIdx === null) return;
+  const contacts = load(K.contacts, defaultContacts());
+  contacts.splice(contactEditIdx, 1);
+  save(K.contacts, contacts);
+  closeOverlay('contact-overlay');
   renderContacts();
-  flash('Contact removed');
+  toast('Contact removed');
 }
 
-// Quick Send with contact picker
-let qsContactIdx = null;
-
-const QUICK_MESSAGES = [
-  { label:'Welcome Packet', icon:'&#127968;', msg:'Hi {name}, welcome to Open Grace LLC. Here is your Client Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf — Questions? Call (951) 880-4132.' },
-  { label:'CFS Acknowledgment', icon:'&#128203;', msg:'Hi {name}, please complete your CFS Service Acknowledgment when you have a moment: https://form.jotform.com/261451993406057' },
-  { label:'Contact Log Portal', icon:'&#128221;', msg:'Hi {name}, here is the link to submit your Daily Contact Log: https://opengrace.org/contact-log.html — Use your access code. Required same day as every visit.' },
-  { label:'Onboarding Prep', icon:'&#128101;', msg:'Hi {name}, welcome to Open Grace LLC! Please review your onboarding steps here: https://opengrace.org/onboarding.html' },
-  { label:'Staff Onboarding Form', icon:'&#128228;', msg:'Hi {name}, here is your staff onboarding form: https://form.jotform.com/261451114945050 — Please complete all required uploads.' },
-  { label:'Careers Page', icon:'&#128084;', msg:'Hi {name}, I wanted to share an opportunity at Open Grace LLC. I think you would be a great fit: https://opengrace.org/careers.html — Call me at (951) 880-4132.' },
-  { label:'Resources', icon:'&#127760;', msg:'Hi {name}, here is a directory of local resources for your family — benefits, transportation, food, and more: https://opengrace.org/resources.html' },
-  { label:'Emergency Contacts', icon:'&#128680;', msg:'Hi {name}, important contacts:
-
-Open Grace: (951) 880-4132
-APS: 1-800-774-5000
-CPS: 1-800-340-5700
-211: Dial 211
-IRC: (909) 890-4800
-Emergency: 911' },
-  { label:'Provider Info (Coordinator)', icon:'&#128203;', msg:'Hello {name}, Joshua Kennedy, Director of Open Grace LLC (IRC Vendor PJ6208). Our provider information and referral guide: https://opengrace.org/coordinators.html — Currently accepting referrals.' },
-  { label:'Daily Log Reminder', icon:'&#9201;', msg:'Reminder {name}: please submit your Daily Contact Log for today's visit — https://opengrace.org/contact-log.html — Required same day.' },
-  { label:'Custom message', icon:'&#128172;', msg:'' },
-];
-
-function openQuickSend() {
-  document.getElementById('quick-send-modal').classList.add('open');
-  document.getElementById('qs-contacts').style.display = 'block';
-  document.getElementById('qs-messages').style.display = 'none';
-  renderQSContacts();
-}
-
-function renderQSContacts() {
-  const contacts = loadContacts();
-  const el = document.getElementById('qs-contacts');
-  el.innerHTML = contacts.map((c,i) => {
-    const phone = (c.phone||'').replace(/\D/g,'');
-    return `<div onclick="selectQSContact(${i})" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;">
-      <div style="font-size:20px;">${TYPE_ICONS[c.type]||'&#128172;'}</div>
-      <div style="flex:1;">
-        <div style="font-size:14px;font-weight:700;color:white;">${c.name}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.35);">${phone ? '('+phone.slice(0,3)+') '+phone.slice(3,6)+'-'+phone.slice(6) : 'No phone'}</div>
-      </div>
-      <div style="font-size:16px;color:rgba(255,255,255,.25);">&#8594;</div>
-    </div>`;
-  }).join('') || '<div style="color:rgba(255,255,255,.3);font-size:13px;text-align:center;padding:16px;">No contacts yet. Add contacts first.</div>';
-}
-
-function selectQSContact(idx) {
-  qsContactIdx = idx;
-  const contacts = loadContacts();
-  const c = contacts[idx];
-  document.getElementById('qs-to-name').textContent = c.name;
-  document.getElementById('qs-contacts').style.display = 'none';
-  document.getElementById('qs-messages').style.display = 'block';
-
-  const phone = (c.phone||'').replace(/\D/g,'');
-  const name  = c.name.split(' ')[0]; // First name for personalization
-
-  document.getElementById('qs-msg-list').innerHTML = QUICK_MESSAGES.map((m,i) => {
-    const personalizedMsg = m.msg.replace(/{name}/g, name);
-    const smsHref = phone ? `sms:${phone}&body=${encodeURIComponent(personalizedMsg)}` : '';
-    return `<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:12px;padding:11px 13px;margin-bottom:8px;">
-      <div style="font-size:18px;flex-shrink:0;">${m.icon}</div>
-      <div style="flex:1;font-size:13px;font-weight:700;color:white;">${m.label}</div>
-      <div style="display:flex;gap:5px;flex-shrink:0;">
-        ${phone ? `<a href="${smsHref}" style="padding:7px 10px;background:var(--green);border-radius:8px;color:white;text-decoration:none;font-size:11px;font-weight:700;">&#128222;</a>` : ''}
-        ${c.email && m.msg ? `<a href="mailto:${c.email}?body=${encodeURIComponent(personalizedMsg)}" style="padding:7px 10px;background:var(--navy2);border-radius:8px;color:white;text-decoration:none;font-size:11px;font-weight:700;">&#9993;</a>` : ''}
-        <button onclick="navigator.clipboard.writeText('${personalizedMsg.replace(/'/g, "\'")}').then(()=>flash('Copied'))" style="padding:7px 10px;background:rgba(255,255,255,.1);border:none;border-radius:8px;color:white;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);">&#128203;</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function quickSendTo(idx) {
-  selectQSContact(idx);
-  document.getElementById('quick-send-modal').classList.add('open');
-}
-
-// Init contacts on tab switch
-const _origSwitchTab = switchTab;
-function switchTab(idx) {
-  _origSwitchTab(idx);
-  if (idx === 4) renderContacts();
-}
-
-// ══════════════════════════════════
-// CLIENT MANAGEMENT
-// ══════════════════════════════════
-const CK = 'og_clients_v3';
-
-function loadClients() {
-  try {
-    const s = JSON.parse(localStorage.getItem(CK));
-    if (s && s.length) return s;
-  } catch(e) {}
-  return [{ name:'Burks, Jaybrion', uci:'6953825', startDate:'2026-04-22' }];
-}
-
-function saveClientsToStorage(clients) {
-  localStorage.setItem(CK, JSON.stringify(clients));
-}
-
-function daysUntilQPR(startDate) {
-  if (!startDate) return null;
-  const start = new Date(startDate);
-  if (isNaN(start)) return null;
-  const deadline = new Date(start);
-  deadline.setDate(deadline.getDate() + 90);
-  const today = new Date(); today.setHours(0,0,0,0);
-  return Math.ceil((deadline - today) / 86400000);
-}
-
-function qprDeadlineStr(startDate) {
-  if (!startDate) return '';
-  const start = new Date(startDate);
-  if (isNaN(start)) return '';
-  const dl = new Date(start);
-  dl.setDate(dl.getDate() + 90);
-  return dl.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-}
-
-function renderHome() {
-  const clients = loadClients();
-  const today = new Date(); today.setHours(0,0,0,0);
-
-  // Count & names
-  document.getElementById('client-count').textContent = clients.length || '0';
-  document.getElementById('sync-time').textContent = 'Updated ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-
-  const namesEl = document.getElementById('client-names');
-  if (!clients.length) {
-    namesEl.innerHTML = '<span style="color:rgba(255,255,255,.3);">No active clients</span>';
-  } else {
-    namesEl.innerHTML = clients.map(c => {
-      const days = daysUntilQPR(c.startDate);
-      let tag = '';
-      if (days !== null) {
-        if (days < 0) tag = ' <span style="background:#DC2626;color:white;font-size:9px;font-weight:800;padding:1px 7px;border-radius:5px;">QPR OVERDUE</span>';
-        else if (days <= 14) tag = ` <span style="background:#D97706;color:white;font-size:9px;font-weight:800;padding:1px 7px;border-radius:5px;">${days}d left</span>`;
-        else tag = ` <span style="font-size:9px;color:rgba(255,255,255,.3);">QPR ${qprDeadlineStr(c.startDate)}</span>`;
-      }
-      return `<div style="margin-bottom:3px;">${c.name}${c.uci ? ' <span style="color:rgba(255,255,255,.3);font-size:10px;">UCI '+c.uci+'</span>' : ''}${tag}</div>`;
-    }).join('');
+function renderContacts() {
+  const contacts = load(K.contacts, defaultContacts());
+  const el = document.getElementById('contacts-list');
+  if (!contacts.length) {
+    el.innerHTML = '<div class="empty">No contacts saved. Tap + Add Contact.</div>';
+    return;
   }
+  // Group
+  const groups = { coord:[], family:[], staff:[], other:[] };
+  contacts.forEach((c,i) => (groups[c.type]||groups.other).push({...c,idx:i}));
 
-  // QPR panel
-  const panel = document.getElementById('qpr-panel');
-  const alerts = clients.filter(c => {
-    const d = daysUntilQPR(c.startDate);
-    return d !== null && d <= 30;
-  }).map(c => ({ name: c.name, days: daysUntilQPR(c.startDate), dl: qprDeadlineStr(c.startDate) }));
-
-  if (!alerts.length) { panel.innerHTML = ''; return; }
-
-  panel.innerHTML = alerts.map(a => {
-    const cls = a.days < 0 ? 'danger' : a.days <= 14 ? 'warning' : 'ok';
-    const icon = a.days < 0 ? '&#9888;&#65039;' : '&#9200;';
-    const msg  = a.days < 0 ? 'OVERDUE' : `${a.days} days remaining`;
-    return `<div class="qpr-alert ${cls}">
-      <div class="qpr-alert-title">${icon} QPR Deadline Alert</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <div style="font-size:14px;font-weight:700;color:white;">${a.name}</div>
-          <div style="font-size:11px;color:rgba(255,255,255,.45);">Due ${a.dl}</div>
+  let html = '';
+  const ORDER = ['coord','family','staff','other'];
+  ORDER.forEach(type => {
+    if (!groups[type].length) return;
+    groups[type].forEach(c => {
+      const ph = (c.phone||'').replace(/\D/g,'');
+      const fn = (c.name||'').split(' ')[0];
+      html += `<div class="contact-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;">
+          <div>
+            <div class="contact-name">${TYPE_ICON[c.type]||'💬'} ${c.name}</div>
+            <div class="contact-role">${c.role||''}</div>
+          </div>
+          <button onclick="openContactSheet(${c.idx})" style="background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.4);width:28px;height:28px;border-radius:8px;font-size:13px;cursor:pointer;flex-shrink:0;">✏️</button>
         </div>
-        <div style="font-size:14px;font-weight:800;color:${a.days < 0 ? '#FC8181' : '#FCD34D'};">${msg}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// Client editor
-function openClientEditor() {
-  const clients = loadClients();
-  const container = document.getElementById('ced-fields');
-  container.innerHTML = '';
-  clients.forEach(c => cedAddBlock(c.name, c.uci, c.startDate || ''));
-  if (!clients.length) cedAddBlock();
-  document.getElementById('ced-modal').classList.add('open');
-}
-
-function closeClientEditor() {
-  document.getElementById('ced-modal').classList.remove('open');
-}
-
-function cedAddBlock(name='', uci='', startDate='') {
-  const container = document.getElementById('ced-fields');
-  const div = document.createElement('div');
-  div.className = 'ced-client-block';
-  div.innerHTML =
-    `<button class="ced-remove" onclick="this.closest('.ced-client-block').remove()">&#10005;</button>` +
-    `<div class="ced-field-group"><div class="ced-field-label">Client Name (Last, First)</div>` +
-    `<input class="ced-input cf-name" type="text" value="${name}" placeholder="e.g. Burks, Jaybrion"></div>` +
-    `<div class="ced-row">` +
-    `<div class="ced-field-group"><div class="ced-field-label">UCI Number</div><input class="ced-input cf-uci" type="text" value="${uci}" placeholder="7-digit UCI"></div>` +
-    `<div class="ced-field-group"><div class="ced-field-label">Service Start Date</div><input class="ced-input cf-start" type="date" value="${startDate}"></div>` +
-    `</div>`;
-  container.appendChild(div);
-}
-
-function cedAdd() { cedAddBlock(); }
-
-function cedSave() {
-  const blocks = document.querySelectorAll('.ced-client-block');
-  const clients = [];
-  blocks.forEach(b => {
-    const name = b.querySelector('.cf-name')?.value.trim();
-    const uci  = b.querySelector('.cf-uci')?.value.trim() || '';
-    const sd   = b.querySelector('.cf-start')?.value.trim() || '';
-    if (name) clients.push({ name, uci, startDate: sd });
+        <div class="contact-btns">
+          ${ph ? `<a class="cbtn call" href="tel:${ph}">📞 Call</a><a class="cbtn text" href="sms:${ph}&body=Hi ${fn}, ">💬 Text</a>` : ''}
+          ${c.email ? `<a class="cbtn mail" href="mailto:${c.email}">✉️ Email</a>` : ''}
+          <button class="cbtn send" onclick="sendToContact(${c.idx})">📤 Send</button>
+        </div>
+      </div>`;
+    });
   });
-  saveClientsToStorage(clients);
-  closeClientEditor();
-  renderHome();
-  flash('&#10003; Clients saved');
+  el.innerHTML = html;
 }
 
-// ══════════════════════════════════
-// SEND / COMMUNICATIONS HUB
-// ══════════════════════════════════
+function sendToContact(idx) {
+  const contacts = load(K.contacts, defaultContacts());
+  const c = contacts[idx];
+  if (!c) return;
+  // Set the name field in send tab and switch there
+  document.getElementById('send-name').value = c.name.split(' ')[0];
+  switchTab(6);
+  renderSend();
+  toast(`📤 Sending to ${c.name.split(' ')[0]}`);
+}
+
+// ════════════════════════════════════════════
+// SEND TAB
+// ════════════════════════════════════════════
 let currentAud = 'family';
 
 const SEND = {
   family: [
-    { icon:'&#127968;', label:'Client Welcome Packet', sub:'PDF — introduce Open Grace',
-      sms:'Hi {name}, welcome to Open Grace LLC. Here is your Client Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf — Reach us anytime at (951) 880-4132.',
-      email:{ sub:'Welcome to Open Grace LLC', body:'Dear {name},\n\nWelcome to Open Grace LLC. Your Client Welcome Packet is here:\n\nhttps://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf\n\nWe are honored to support your family.\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132 | info@opengrace.org' },
-      url:'https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf' },
-    { icon:'&#128203;', label:'CFS Service Acknowledgment', sub:'Required before services begin',
-      sms:'Hi {name}, please complete your CFS Service Acknowledgment: https://form.jotform.com/261451993406057 — Questions? Call (951) 880-4132.',
-      email:{ sub:'Action Needed — CFS Service Acknowledgment', body:'Dear {name},\n\nPlease complete your CFS Service Acknowledgment:\n\nhttps://form.jotform.com/261451993406057\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132 | info@opengrace.org' },
-      url:'https://form.jotform.com/261451993406057' },
-    { icon:'&#10067;', label:'New Family FAQ', sub:'Common questions answered',
-      sms:'Hi {name}, here are answers to common questions for new Open Grace families: https://opengrace.org/client-portal.html',
-      email:{ sub:'New Family Resources — Open Grace LLC', body:'Dear {name},\n\nHere are answers to common questions:\n\nhttps://opengrace.org/client-portal.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132 | info@opengrace.org' },
-      url:'https://opengrace.org/client-portal.html' },
-    { icon:'&#127760;', label:'Community Resources', sub:'Benefits, food, transportation, health',
-      sms:'Hi {name}, here is a directory of local resources for your family: https://opengrace.org/resources.html',
-      email:{ sub:'Community Resources — Inland Empire', body:'Dear {name},\n\nLocal resources for your family:\n\nhttps://opengrace.org/resources.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132' },
-      url:'https://opengrace.org/resources.html' },
-    { icon:'&#128680;', label:'Emergency Contacts', sub:'APS, CPS, 211, IRC, Open Grace',
-      sms:'Hi {name}, important contact numbers for your family:\n\nOpen Grace: (951) 880-4132\nAPS: 1-800-774-5000\nCPS: 1-800-340-5700\n211 Inland Empire: Dial 211\nIRC: (909) 890-4800\nEmergency: 911',
-      email:{ sub:'Important Contacts — Open Grace LLC', body:'Dear {name},\n\nImportant contacts for your family:\n\nOpen Grace LLC: (951) 880-4132\nAdult Protective Services: 1-800-774-5000\nChild Protective Services: 1-800-340-5700\n211 Inland Empire: Dial 211\nInland Counties Regional Center: (909) 890-4800\nEmergency: 911\n\nJoshua Kennedy, Director\nOpen Grace LLC | info@opengrace.org' },
-      url:'https://opengrace.org/resources.html' },
+    { icon:'🏠', label:'Client Welcome Packet',       sub:'PDF — introduce Open Grace',
+      sms:'Hi {n}, welcome to Open Grace LLC. Here is your Client Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf — Questions? (951) 880-4132.',
+      email:{sub:'Welcome to Open Grace LLC',body:'Dear {n},\n\nWelcome to Open Grace LLC. Your Client Welcome Packet:\n\nhttps://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132 | info@opengrace.org'}, url:'https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf' },
+    { icon:'📋', label:'CFS Service Acknowledgment',  sub:'Required before services begin',
+      sms:'Hi {n}, please complete your CFS Service Acknowledgment: https://form.jotform.com/261451993406057',
+      email:{sub:'Action Needed — CFS Service Acknowledgment',body:'Dear {n},\n\nPlease complete your CFS Service Acknowledgment:\n\nhttps://form.jotform.com/261451993406057\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132'}, url:'https://form.jotform.com/261451993406057' },
+    { icon:'❓', label:'New Family FAQ',               sub:'Common questions answered',
+      sms:'Hi {n}, here are answers to common questions for new Open Grace families: https://opengrace.org/client-portal.html',
+      email:{sub:'New Family Resources — Open Grace LLC',body:'Dear {n},\n\nFrequently asked questions:\n\nhttps://opengrace.org/client-portal.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132'}, url:'https://opengrace.org/client-portal.html' },
+    { icon:'🌐', label:'Community Resources',          sub:'Benefits, food, transport, health',
+      sms:'Hi {n}, here is a directory of local resources for your family: https://opengrace.org/resources.html',
+      email:{sub:'Community Resources — Inland Empire',body:'Dear {n},\n\nLocal resources:\n\nhttps://opengrace.org/resources.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132'}, url:'https://opengrace.org/resources.html' },
+    { icon:'🚨', label:'Emergency Contacts',           sub:'APS, CPS, 211, IRC, Open Grace',
+      sms:'Hi {n}, important contacts:\nOpen Grace: (951) 880-4132\nAPS: 1-800-774-5000\nCPS: 1-800-340-5700\n211: Dial 211\nIRC: (909) 890-4800\nEmergency: 911',
+      email:{sub:'Important Contacts — Open Grace LLC',body:'Dear {n},\n\nImportant contacts for your family:\n\nOpen Grace LLC: (951) 880-4132\nAPS: 1-800-774-5000\nCPS: 1-800-340-5700\n211 Inland Empire: Dial 211\nIRC: (909) 890-4800\nEmergency: 911\n\nJoshua Kennedy, Director\nOpen Grace LLC'}, url:'https://opengrace.org/resources.html' },
   ],
   coord: [
-    { icon:'&#128084;', label:'Open Grace Provider Info', sub:'Referral guide & coordinator page',
-      sms:'Hello, Joshua Kennedy, Director of Open Grace LLC (IRC Vendor PJ6208). Provider info and referral guide: https://opengrace.org/coordinators.html — Currently accepting referrals.',
-      email:{ sub:'Open Grace LLC — CFS Provider Information', body:'Hello,\n\nOpen Grace LLC is a vendorized CFS provider under IRC Vendor PJ6208. Provider info and referral guide:\n\nhttps://opengrace.org/coordinators.html\n\nCurrently accepting referrals — we contact families within 48 hours.\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132 | info@opengrace.org' },
-      url:'https://opengrace.org/coordinators.html' },
-    { icon:'&#128203;', label:'Client Referral Intake Form', sub:'For new family referrals',
-      sms:'Hi {name}, Open Grace LLC Client Referral Form: https://form.jotform.com/261451201542040 — Questions? (951) 880-4132.',
-      email:{ sub:'Open Grace LLC — Client Referral Form', body:'Hello {name},\n\nThank you for the referral. Please submit family information here:\n\nhttps://form.jotform.com/261451201542040\n\nWe follow up with the family within 48 hours.\n\nJoshua Kennedy, Director\nOpen Grace LLC | Vendor PJ6208 | (951) 880-4132' },
-      url:'https://form.jotform.com/261451201542040' },
-    { icon:'&#127760;', label:'CFS Services Overview', sub:'What Open Grace provides',
-      sms:'Hi {name}, overview of CFS services from Open Grace LLC: https://opengrace.org/cfs-services.html',
-      email:{ sub:'Open Grace LLC — CFS Services Overview', body:'Hello {name},\n\nCFS services overview:\n\nhttps://opengrace.org/cfs-services.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | Vendor PJ6208 | (951) 880-4132' },
-      url:'https://opengrace.org/cfs-services.html' },
+    { icon:'🔖', label:'Provider Info & Referral Guide', sub:'coordinators.html',
+      sms:'Hello {n}, Joshua Kennedy, Director of Open Grace LLC (IRC Vendor PJ6208). Provider info and referral guide: https://opengrace.org/coordinators.html — Accepting referrals.',
+      email:{sub:'Open Grace LLC — CFS Provider Information',body:'Hello {n},\n\nOpen Grace LLC provider info and referral guide:\n\nhttps://opengrace.org/coordinators.html\n\nCurrently accepting referrals — families contacted within 48 hours.\n\nJoshua Kennedy, Director\nOpen Grace LLC | Vendor PJ6208 | (951) 880-4132'}, url:'https://opengrace.org/coordinators.html' },
+    { icon:'📋', label:'Client Referral Intake Form',    sub:'New family referrals',
+      sms:'Hi {n}, Open Grace LLC referral form: https://form.jotform.com/261451201542040',
+      email:{sub:'Open Grace LLC — Client Referral Form',body:'Hello {n},\n\nClient referral form:\n\nhttps://form.jotform.com/261451201542040\n\nWe follow up with families within 48 hours.\n\nJoshua Kennedy, Director\nOpen Grace LLC | Vendor PJ6208 | (951) 880-4132'}, url:'https://form.jotform.com/261451201542040' },
+    { icon:'📄', label:'CFS Services Overview',          sub:'cfs-services.html',
+      sms:'Hi {n}, CFS services overview from Open Grace LLC: https://opengrace.org/cfs-services.html',
+      email:{sub:'Open Grace LLC — CFS Services',body:'Hello {n},\n\nCFS services overview:\n\nhttps://opengrace.org/cfs-services.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | Vendor PJ6208 | (951) 880-4132'}, url:'https://opengrace.org/cfs-services.html' },
   ],
   prospect: [
-    { icon:'&#128084;', label:'Careers Page — All Positions', sub:'View roles and apply',
-      sms:'Hi {name}, I wanted to personally share an opportunity at Open Grace LLC. I think you would be a great fit: https://opengrace.org/careers.html — Call me at (951) 880-4132.',
-      email:{ sub:'Open Opportunity at Open Grace LLC', body:'Hi {name},\n\nI wanted to personally reach out about an opportunity at Open Grace LLC. We are growing and looking for dedicated people:\n\nhttps://opengrace.org/careers.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132 | info@opengrace.org' },
-      url:'https://opengrace.org/careers.html' },
-    { icon:'&#127968;', label:'Family Coordinator Position', sub:'$18–$26/hr',
-      sms:'Hi {name}, Family Coordinator opportunity at Open Grace LLC ($18–$26/hr): https://opengrace.org/careers.html — Would love to connect.',
-      email:{ sub:'Family Coordinator Opportunity — Open Grace LLC', body:'Hi {name},\n\nFamily Coordinator opening at Open Grace LLC — $18–$26/hr, community-based work in the Inland Empire:\n\nhttps://opengrace.org/careers.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132' },
-      url:'https://opengrace.org/careers.html#pos-fc' },
-    { icon:'&#128203;', label:'Direct Application Link', sub:'Employment Application Jotform',
-      sms:'Hi {name}, here is the direct link to apply at Open Grace LLC: https://form.jotform.com/261555850958066',
-      email:{ sub:'Open Grace LLC — Employment Application', body:'Hi {name},\n\nDirect application link:\n\nhttps://form.jotform.com/261555850958066\n\nWe respond within 48 hours.\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132' },
-      url:'https://form.jotform.com/261555850958066' },
+    { icon:'💼', label:'Careers Page — All Positions', sub:'$18–$34/hr — view and apply',
+      sms:'Hi {n}, I wanted to personally share an opportunity at Open Grace LLC. I think you would be a great fit: https://opengrace.org/careers.html — Call me at (951) 880-4132.',
+      email:{sub:'Open Opportunity at Open Grace LLC',body:'Hi {n},\n\nI wanted to reach out about an opportunity at Open Grace LLC:\n\nhttps://opengrace.org/careers.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132 | info@opengrace.org'}, url:'https://opengrace.org/careers.html' },
+    { icon:'🏠', label:'Family Coordinator Role',       sub:'$18–$26/hr',
+      sms:'Hi {n}, Family Coordinator opening at Open Grace LLC ($18–$26/hr): https://opengrace.org/careers.html',
+      email:{sub:'Family Coordinator Opportunity — Open Grace LLC',body:'Hi {n},\n\nFamily Coordinator opening — $18–$26/hr:\n\nhttps://opengrace.org/careers.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132'}, url:'https://opengrace.org/careers.html#pos-fc' },
+    { icon:'📬', label:'Direct Application Link',       sub:'Employment Application Jotform',
+      sms:'Hi {n}, here is the direct link to apply at Open Grace LLC: https://form.jotform.com/261555850958066',
+      email:{sub:'Open Grace LLC — Employment Application',body:'Hi {n},\n\nDirect application link:\n\nhttps://form.jotform.com/261555850958066\n\nWe respond within 48 hours.\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132'}, url:'https://form.jotform.com/261555850958066' },
   ],
   staff: [
-    { icon:'&#128203;', label:'Onboarding Prep Page', sub:'Send to new hires first',
-      sms:'Hi {name}, welcome to Open Grace LLC! Start your onboarding here: https://opengrace.org/onboarding.html — Reach out with any questions.',
-      email:{ sub:'Welcome to Open Grace LLC — Onboarding Steps', body:'Dear {name},\n\nWelcome to Open Grace LLC. Please begin your onboarding here:\n\nhttps://opengrace.org/onboarding.html\n\nYour onboarding form link follows in a separate message.\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132' },
-      url:'https://opengrace.org/onboarding.html' },
-    { icon:'&#128101;', label:'Staff Onboarding Form', sub:'Send after offer accepted',
-      sms:'Hi {name}, here is your Open Grace LLC staff onboarding form: https://form.jotform.com/261451114945050 — Please complete all required uploads.',
-      email:{ sub:'Open Grace LLC — Staff Onboarding Form', body:'Dear {name},\n\nPlease complete your staff onboarding form:\n\nhttps://form.jotform.com/261451114945050\n\nYou will need: Government ID, Live Scan receipt, CPR certification, signed handbook acknowledgment.\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132' },
-      url:'https://form.jotform.com/261451114945050' },
-    { icon:'&#128209;', label:'Employee Handbook', sub:'Read before submitting onboarding',
-      sms:'Hi {name}, please read the Open Grace LLC Employee Handbook: https://opengrace.org/Open_Grace_Employee_Handbook.html — Sign and upload the acknowledgment page.',
-      email:{ sub:'Open Grace LLC — Employee Handbook', body:'Dear {name},\n\nPlease read the Employee Handbook and sign the acknowledgment page:\n\nhttps://opengrace.org/Open_Grace_Employee_Handbook.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132' },
-      url:'https://opengrace.org/Open_Grace_Employee_Handbook.html' },
-    { icon:'&#128273;', label:'Live Scan Form', sub:'Print and bring to appointment',
-      sms:'Hi {name}, your pre-filled Live Scan form: https://opengrace.org/Request_for_Live_Scan_-_Open_Grace.pdf — Print, bring with photo ID. Find a location at oag.ca.gov/fingerprints/locations',
-      email:{ sub:'Open Grace LLC — Live Scan Form', body:'Dear {name},\n\nYour pre-filled Live Scan form:\n\nhttps://opengrace.org/Request_for_Live_Scan_-_Open_Grace.pdf\n\nBring a valid photo ID. Find locations: https://oag.ca.gov/fingerprints/locations\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132' },
-      url:'https://opengrace.org/Request_for_Live_Scan_-_Open_Grace.pdf' },
-    { icon:'&#128221;', label:'Daily Contact Log Reminder', sub:'Required same day as every visit',
-      sms:'Reminder: please submit your Daily Contact Log for today\'s visit: https://form.jotform.com/jayraykay2/daily-contact-log-open-grace- — Required same day.',
-      email:{ sub:'Reminder — Daily Contact Log', body:'Hi {name},\n\nPlease submit your Daily Contact Log:\n\nhttps://form.jotform.com/jayraykay2/daily-contact-log-open-grace-\n\nContact logs must be submitted the same day as the visit.\n\nJoshua Kennedy, Director\nOpen Grace LLC' },
-      url:'https://form.jotform.com/jayraykay2/daily-contact-log-open-grace-' },
-    { icon:'&#127968;', label:'Staff Portal', sub:'All resources in one place',
-      sms:'Hi {name}, your Open Grace LLC staff portal — all forms and resources: https://opengrace.org/staff-portal.html',
-      email:{ sub:'Open Grace LLC — Staff Portal', body:'Dear {name},\n\nYour staff portal:\n\nhttps://opengrace.org/staff-portal.html\n\nBookmark this for quick access.\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132' },
-      url:'https://opengrace.org/staff-portal.html' },
-  ]
+    { icon:'📋', label:'Onboarding Prep Page',          sub:'Send to new hires first',
+      sms:'Hi {n}, welcome to Open Grace LLC! Please start your onboarding here: https://opengrace.org/onboarding.html',
+      email:{sub:'Welcome to Open Grace LLC — Onboarding Steps',body:'Dear {n},\n\nPlease begin your onboarding:\n\nhttps://opengrace.org/onboarding.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132'}, url:'https://opengrace.org/onboarding.html' },
+    { icon:'👤', label:'Staff Onboarding Form',          sub:'After offer accepted',
+      sms:'Hi {n}, your staff onboarding form: https://form.jotform.com/261451114945050 — Please complete all required uploads.',
+      email:{sub:'Open Grace LLC — Staff Onboarding Form',body:'Dear {n},\n\nStaff onboarding form:\n\nhttps://form.jotform.com/261451114945050\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132'}, url:'https://form.jotform.com/261451114945050' },
+    { icon:'📘', label:'Employee Handbook',              sub:'Read before submitting docs',
+      sms:'Hi {n}, please read the Open Grace LLC Employee Handbook: https://opengrace.org/Open_Grace_Employee_Handbook.html',
+      email:{sub:'Open Grace LLC — Employee Handbook',body:'Dear {n},\n\nEmployee Handbook:\n\nhttps://opengrace.org/Open_Grace_Employee_Handbook.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132'}, url:'https://opengrace.org/Open_Grace_Employee_Handbook.html' },
+    { icon:'🔒', label:'Live Scan Form',                 sub:'Print and bring to appointment',
+      sms:'Hi {n}, your pre-filled Live Scan form: https://opengrace.org/Request_for_Live_Scan_-_Open_Grace.pdf — Print, bring photo ID. Locations: oag.ca.gov/fingerprints/locations',
+      email:{sub:'Open Grace LLC — Live Scan Form',body:'Dear {n},\n\nPre-filled Live Scan form:\n\nhttps://opengrace.org/Request_for_Live_Scan_-_Open_Grace.pdf\n\nBring valid photo ID. Locations: https://oag.ca.gov/fingerprints/locations\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132'}, url:'https://opengrace.org/Request_for_Live_Scan_-_Open_Grace.pdf' },
+    { icon:'📝', label:'Daily Contact Log Portal',       sub:'Required same day as every visit',
+      sms:'Hi {n}, your Daily Contact Log portal: https://opengrace.org/contact-log.html — Use your access code. Required same day as every visit.',
+      email:{sub:'Open Grace LLC — Daily Contact Log',body:'Dear {n},\n\nDaily Contact Log portal:\n\nhttps://opengrace.org/contact-log.html\n\nSubmit same day as every visit.\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132'}, url:'https://opengrace.org/contact-log.html' },
+    { icon:'🏠', label:'Staff Portal',                   sub:'All resources in one place',
+      sms:'Hi {n}, your Open Grace LLC staff portal: https://opengrace.org/staff-portal.html',
+      email:{sub:'Open Grace LLC — Staff Portal',body:'Dear {n},\n\nStaff portal — bookmark this:\n\nhttps://opengrace.org/staff-portal.html\n\nJoshua Kennedy, Director\nOpen Grace LLC | (951) 880-4132'}, url:'https://opengrace.org/staff-portal.html' },
+  ],
 };
 
 function setAud(aud) {
   currentAud = aud;
   document.querySelectorAll('.aud-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('aud-' + aud).classList.add('active');
+  document.getElementById('aud-'+aud).classList.add('active');
   renderSend();
 }
 
-function getName() { return document.getElementById('send-name').value.trim() || ''; }
+function getName() { return (document.getElementById('send-name').value.trim()||'there'); }
 
-function fill(str) { return str.replace(/{name}/g, getName() || 'there'); }
+function fill(str) { return str.replace(/{n}/g, getName()); }
 
 function renderSend() {
-  const items = SEND[currentAud];
-  const container = document.getElementById('send-options');
-  container.innerHTML = '';
-  items.forEach((item, i) => {
-    const row = document.createElement('div');
-    row.className = 'send-row';
-    row.innerHTML =
-      `<div class="send-row-icon">${item.icon}</div>` +
-      `<div class="send-row-info"><div class="send-row-label">${item.label}</div><div class="send-row-sub">${item.sub}</div></div>` +
-      `<div class="send-btns">` +
-      `<button class="sbtn sms"   onclick="sendItem(${i},'sms')">&#128222;</button>` +
-      `<button class="sbtn email" onclick="sendItem(${i},'email')">&#9993;</button>` +
-      `<button class="sbtn copy"  onclick="copyItem(${i})">&#128203;</button>` +
-      `</div>`;
-    container.appendChild(row);
-  });
+  const items = SEND[currentAud]||[];
+  const el = document.getElementById('send-options');
+  el.innerHTML = items.map((item,i) => `
+    <div class="send-row">
+      <div class="send-icon">${item.icon}</div>
+      <div class="send-info"><div class="send-label">${item.label}</div><div class="send-sub">${item.sub}</div></div>
+      <div class="send-btns">
+        <button class="sbtn s" onclick="sendItem(${i},'sms')">📱</button>
+        <button class="sbtn e" onclick="sendItem(${i},'email')">✉️</button>
+        <button class="sbtn c" onclick="copyItem(${i})">📋</button>
+      </div>
+    </div>`).join('');
 }
 
 function sendItem(i, type) {
   const item = SEND[currentAud][i];
-  if (type === 'sms') {
-    window.location.href = 'sms:?body=' + encodeURIComponent(fill(item.sms));
-  } else {
+  if (type === 'sms') window.location.href = 'sms:?body=' + encodeURIComponent(fill(item.sms));
+  else {
     const e = item.email;
     window.location.href = 'mailto:?subject=' + encodeURIComponent(e.sub) + '&body=' + encodeURIComponent(fill(e.body));
   }
@@ -996,68 +1171,149 @@ function sendItem(i, type) {
 
 function copyItem(i) {
   const item = SEND[currentAud][i];
-  navigator.clipboard.writeText(item.url).then(() => flash('&#10003; Link copied'));
+  navigator.clipboard.writeText(item.url).then(() => toast('📋 Link copied'));
 }
 
 function sendCustom(type) {
   const msg = document.getElementById('custom-msg').value.trim();
-  if (!msg) { flash('&#9888; Type a message first'); return; }
+  if (!msg) { toast('⚠ Type a message first', '#D97706'); return; }
   if (type === 'sms') window.location.href = 'sms:?body=' + encodeURIComponent(msg);
   else window.location.href = 'mailto:?body=' + encodeURIComponent(msg);
 }
 
 function copyCustom() {
   const msg = document.getElementById('custom-msg').value.trim();
-  if (!msg) { flash('&#9888; Nothing to copy'); return; }
-  navigator.clipboard.writeText(msg).then(() => flash('&#10003; Copied'));
+  if (!msg) return;
+  navigator.clipboard.writeText(msg).then(() => toast('📋 Copied'));
 }
 
-// ══════════════════════════════════
-// TABS & CLOCK
-// ══════════════════════════════════
-function switchTab(idx) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
-  document.querySelectorAll('.screen').forEach((s,i) => s.classList.toggle('active', i===idx));
-  if (idx === 5) renderSend();
-}
+// ════════════════════════════════════════════
+// STAFF ACCESS MANAGER
+// ════════════════════════════════════════════
+let amData = null, amSha = null;
 
-function updateClock() {
-  const now = new Date();
-  const h = now.getHours();
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  document.getElementById('hdr-date').textContent =
-    `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
-  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('greeting-time').innerHTML = `${greet}, <span>Joshua</span>`;
+function openAccessSheet() { openOverlay('access-overlay'); loadAccess(); }
 
-  // QPR badge
-  const clients = loadClients();
-  const urgent = clients.filter(c => {
-    const d = daysUntilQPR(c.startDate);
-    return d !== null && d <= 14;
-  }).length;
-  const badge = document.getElementById('hdr-badge');
-  if (urgent > 0) {
-    badge.textContent = `⚠️ ${urgent} QPR Alert${urgent > 1 ? 's' : ''}`;
-    badge.style.background = '#DC2626';
-  } else {
-    badge.textContent = '● Active';
-    badge.style.background = 'var(--green)';
+async function loadAccess() {
+  document.getElementById('access-list').innerHTML = '<div class="empty">Loading...</div>';
+  try {
+    const r = await fetch(
+      `https://raw.githubusercontent.com/${GH_REPO}/main/staff_access.json?t=${Date.now()}`,
+      { cache: 'no-store' }
+    );
+    const d = await r.json();
+    amSha  = d.sha;
+    amData = d; amSha = null; // SHA obtained separately for writes
+    renderAccessList();
+  } catch(e) {
+    document.getElementById('access-list').innerHTML = '<div class="empty">Error loading. Check connection.</div>';
   }
 }
 
-function flash(msg) {
-  const d = document.createElement('div');
-  d.className = 'flash'; d.innerHTML = msg;
-  document.body.appendChild(d);
-  setTimeout(() => d.remove(), 2200);
+function renderAccessList() {
+  if (!amData) return;
+  const el = document.getElementById('access-list');
+  if (!amData.staff.length) {
+    el.innerHTML = '<div class="empty">No staff yet. Add one below.</div>';
+    return;
+  }
+  el.innerHTML = amData.staff.map((s,i) => `
+    <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:13px;margin-bottom:8px;border-left:3px solid ${s.active?'var(--green)':'var(--red)'};">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:700;color:white;">${s.name}</div>
+          <div style="font-size:10.5px;color:rgba(255,255,255,.35);">${s.position}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.2);font-family:monospace;margin-top:2px;">${s.code}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:2px;">${(s.clients||[]).join(' | ')||'No clients'}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
+          <span class="badge ${s.active?'green':'red'}">${s.active?'ACTIVE':'REVOKED'}</span>
+          <button onclick="toggleAccess(${i})" style="padding:6px 12px;border:none;border-radius:8px;background:${s.active?'rgba(220,38,38,.2)':'rgba(22,163,74,.2)'};color:${s.active?'#FC8181':'#6EE7B7'};font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);">${s.active?'Revoke':'Restore'}</button>
+        </div>
+      </div>
+    </div>`).join('');
 }
 
-// ── Init ──
-renderHome();
+function toggleAccess(i) {
+  if (!amData) return;
+  const s = amData.staff[i];
+  s.active = !s.active;
+  if (!s.active) s.terminated = todayStr(); else s.terminated = null;
+  amData.last_updated = todayStr();
+  renderAccessList();
+}
+
+function addStaffMember() {
+  if (!amData) { toast('⚠ Load codes first', '#D97706'); return; }
+  const name = document.getElementById('ns-name').value.trim();
+  if (!name) { toast('⚠ Enter name', '#D97706'); return; }
+  const clients = document.getElementById('ns-clients').value.trim().split('\n').map(c=>c.trim()).filter(Boolean);
+  amData.staff.push({
+    code: 'OG-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*900)+100),
+    name,
+    position: document.getElementById('ns-pos').value.trim() || 'Family Coordinator',
+    active: true, clients,
+    hired: document.getElementById('ns-date').value || todayStr(),
+    terminated: null, notes: ''
+  });
+  amData.last_updated = todayStr();
+  ['ns-name','ns-pos','ns-date','ns-clients'].forEach(id => document.getElementById(id).value='');
+  renderAccessList();
+  toast('✓ Added — tap Save to apply');
+}
+
+async function saveAccess() {
+  if (!amData) { toast('⚠ Load first', '#D97706'); return; }
+  // Get token from local storage or prompt
+  let token = localStorage.getItem('og_gh_token');
+  if (!token) {
+    token = prompt('Enter your GitHub Personal Access Token to save changes:\n(This is stored locally on this device only)');
+    if (!token) return;
+    localStorage.setItem('og_gh_token', token);
+  }
+  // Get current SHA for the write
+  const shaRes = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/staff_access.json',
+    { headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json' }});
+  const shaData = await shaRes.json();
+  const writeSha = shaData.sha;
+  const st = document.getElementById('access-status');
+  st.style.display='block';
+  st.style.background='rgba(255,255,255,.06)';
+  st.style.color='rgba(255,255,255,.5)';
+  st.textContent='Saving to GitHub...';
+  try {
+    const enc = btoa(unescape(encodeURIComponent(JSON.stringify(amData, null, 2))));
+    const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/staff_access.json`, {
+      method: 'PUT',
+      headers: { Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' },
+      body: JSON.stringify({ message:'Staff access update '+todayStr(), content:enc, sha:writeSha, branch:'main' })
+    });
+    const res = await r.json();
+    amSha = res.content?.sha || amSha;
+    st.style.background='rgba(22,163,74,.15)';
+    st.style.color='#6EE7B7';
+    st.textContent='✓ Saved — access changes are live immediately';
+    toast('✓ Staff access updated');
+  } catch(e) {
+    st.style.background='rgba(220,38,38,.15)';
+    st.style.color='#FC8181';
+    st.textContent='Error saving. Try again.';
+  }
+}
+
+// ════════════════════════════════════════════
+// OVERLAY — CLOSE ON BACKGROUND TAP
+// ════════════════════════════════════════════
+document.querySelectorAll('.overlay').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
+});
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
 updateClock();
 setInterval(updateClock, 30000);
+renderHome();
 renderSend();
 </script>
 </body>
