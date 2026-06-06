@@ -120,6 +120,15 @@ body{display:flex;flex-direction:column;}
 
 /* ── FLASH ── */
 .flash{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:var(--green);color:white;padding:8px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;white-space:nowrap;pointer-events:none;}
+
+.ced-input select, select.ced-input {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
 </style>
 </head>
 <body>
@@ -348,60 +357,115 @@ body{display:flex;flex-direction:column;}
     </a>
   </div>
 
-  <!-- ══ CONTACT ══ -->
+  <!-- ══ CONTACTS ══ -->
   <div class="screen" id="screen-4">
-    <div class="sec-label">IRC Service Coordinators</div>
-    <a class="link-row" href="tel:9512418102">
-      <div class="link-icon">&#128222;</div>
-      <div class="link-info"><div class="link-label">Christina Castaneda</div><div class="link-sub">Burks, Jaybrion — 951-241-8102</div></div>
-      <div class="link-arrow">&#9742;</div>
-    </a>
-    <a class="link-row" href="mailto:ccastaneda@inlandrc.org">
-      <div class="link-icon">&#9993;</div>
-      <div class="link-info"><div class="link-label">ccastaneda@inlandrc.org</div><div class="link-sub">Christina Castaneda — IRC</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
 
-    <div class="sec-label">Active Clients & Families</div>
-    <a class="link-row" href="tel:9097220525">
-      <div class="link-icon">&#128101;</div>
-      <div class="link-info"><div class="link-label">Jaybrion Burks</div><div class="link-sub">UCI 6953825 — 909-722-0525</div></div>
-      <div class="link-arrow">&#9742;</div>
-    </a>
+    <div class="sec-label">Quick Actions</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;">
+      <button onclick="openContactEditor()" class="action-btn" style="margin:0;font-size:12px;padding:12px 8px;">&#43; Add Contact</button>
+      <button onclick="openQuickSend()" class="action-btn navy" style="margin:0;font-size:12px;padding:12px 8px;">&#128228; Quick Send</button>
+    </div>
 
-    <div class="sec-label">Open Grace</div>
-    <a class="link-row" href="tel:9518804132">
-      <div class="link-icon">&#128222;</div>
-      <div class="link-info"><div class="link-label">Open Grace Main Line</div><div class="link-sub">(951) 880-4132</div></div>
-      <div class="link-arrow">&#9742;</div>
-    </a>
-    <a class="link-row" href="mailto:info@opengrace.org">
-      <div class="link-icon">&#9993;</div>
-      <div class="link-info"><div class="link-label">info@opengrace.org</div><div class="link-sub">Public / director email</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
-    <a class="link-row" href="mailto:onboarding@opengrace.org">
-      <div class="link-icon">&#128228;</div>
-      <div class="link-info"><div class="link-label">onboarding@opengrace.org</div><div class="link-sub">Staff & Jotform submissions inbox</div></div>
-      <div class="link-arrow">&#8594;</div>
-    </a>
+    <div class="sec-label">Saved Contacts</div>
+    <div id="contacts-list"></div>
 
-    <div class="sec-label">Reporting</div>
+    <div class="sec-label">Emergency & Reporting</div>
     <a class="link-row" href="tel:18007745000">
       <div class="link-icon">&#128737;</div>
-      <div class="link-info"><div class="link-label">Adult Protective Services</div><div class="link-sub">1-800-774-5000 — APS</div></div>
-      <div class="link-arrow">&#9742;</div>
+      <div class="link-info"><div class="link-label">Adult Protective Services</div><div class="link-sub">1-800-774-5000</div></div>
+      <div style="display:flex;gap:6px;">
+        <a href="tel:18007745000" class="sbtn sms" style="padding:8px 10px;text-decoration:none;">&#128222;</a>
+      </div>
     </a>
     <a class="link-row" href="tel:18003405700">
       <div class="link-icon">&#128118;</div>
-      <div class="link-info"><div class="link-label">Child Protective Services</div><div class="link-sub">1-800-340-5700 — CPS</div></div>
-      <div class="link-arrow">&#9742;</div>
+      <div class="link-info"><div class="link-label">Child Protective Services</div><div class="link-sub">1-800-340-5700</div></div>
+      <div style="display:flex;gap:6px;">
+        <a href="tel:18003405700" class="sbtn sms" style="padding:8px 10px;text-decoration:none;">&#128222;</a>
+      </div>
     </a>
     <a class="link-row" href="tel:9098904800">
       <div class="link-icon">&#127968;</div>
-      <div class="link-info"><div class="link-label">Inland Counties Regional Center</div><div class="link-sub">(909) 890-4800 — IRC main line</div></div>
-      <div class="link-arrow">&#9742;</div>
+      <div class="link-info"><div class="link-label">Inland Counties Regional Center</div><div class="link-sub">(909) 890-4800</div></div>
+      <div style="display:flex;gap:6px;">
+        <a href="tel:9098904800" class="sbtn sms" style="padding:8px 10px;text-decoration:none;">&#128222;</a>
+      </div>
     </a>
+    <a class="link-row" href="tel:988">
+      <div class="link-icon">&#129505;</div>
+      <div class="link-info"><div class="link-label">988 Crisis Lifeline</div><div class="link-sub">Call or text 988</div></div>
+      <div style="display:flex;gap:6px;">
+        <a href="tel:988" class="sbtn sms" style="padding:8px 10px;text-decoration:none;">&#128222;</a>
+      </div>
+    </a>
+    <a class="link-row" href="tel:911">
+      <div class="link-icon">&#128680;</div>
+      <div class="link-info"><div class="link-label">Emergency Services</div><div class="link-sub">9-1-1</div></div>
+      <div style="display:flex;gap:6px;">
+        <a href="tel:911" class="sbtn sms" style="padding:8px 10px;text-decoration:none;">&#128222;</a>
+      </div>
+    </a>
+  </div>
+
+  <!-- CONTACT EDITOR MODAL -->
+  <div class="client-editor-modal" id="contact-editor-modal">
+    <div class="client-editor-sheet">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="ced-title" id="ced-modal-title">Add Contact</div>
+        <button onclick="closeContactEditor()" style="background:rgba(255,255,255,.1);border:none;color:white;width:28px;height:28px;border-radius:8px;font-size:15px;cursor:pointer;">&#10005;</button>
+      </div>
+      <div class="ced-sub">Saved contacts appear in your Contacts tab with one-tap call, text, and email buttons.</div>
+      <div class="ced-field-group">
+        <div class="ced-field-label">Full Name *</div>
+        <input class="ced-input" id="cc-name" type="text" placeholder="e.g. Delisa Trammel">
+      </div>
+      <div class="ced-field-group">
+        <div class="ced-field-label">Role / Relationship</div>
+        <input class="ced-input" id="cc-role" type="text" placeholder="e.g. Mother/Caregiver — Burks, Jaybrion">
+      </div>
+      <div class="ced-row">
+        <div class="ced-field-group">
+          <div class="ced-field-label">Phone Number</div>
+          <input class="ced-input" id="cc-phone" type="tel" placeholder="(XXX) XXX-XXXX">
+        </div>
+        <div class="ced-field-group">
+          <div class="ced-field-label">Contact Type</div>
+          <select class="ced-input" id="cc-type" style="-webkit-appearance:none;">
+            <option value="family">&#127968; Family</option>
+            <option value="coord">&#128084; Coordinator</option>
+            <option value="staff">&#128101; Staff</option>
+            <option value="other">&#128172; Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="ced-field-group">
+        <div class="ced-field-label">Email Address</div>
+        <input class="ced-input" id="cc-email" type="email" placeholder="email@example.com">
+      </div>
+      <input type="hidden" id="cc-edit-idx" value="">
+      <div class="ced-btns">
+        <button class="ced-cancel" onclick="closeContactEditor()">Cancel</button>
+        <button class="ced-save" onclick="saveContact()">Save Contact</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK SEND PICKER MODAL -->
+  <div class="client-editor-modal" id="quick-send-modal">
+    <div class="client-editor-sheet">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="ced-title">&#128228; Quick Send</div>
+        <button onclick="document.getElementById('quick-send-modal').classList.remove('open')" style="background:rgba(255,255,255,.1);border:none;color:white;width:28px;height:28px;border-radius:8px;font-size:15px;cursor:pointer;">&#10005;</button>
+      </div>
+      <div class="ced-sub">Pick a contact then select what to send.</div>
+      <div id="qs-contacts" style="margin-bottom:14px;max-height:220px;overflow-y:auto;"></div>
+      <div id="qs-messages" style="display:none;">
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">Sending to: <span id="qs-to-name" style="color:var(--orange);"></span></div>
+        <div id="qs-msg-list"></div>
+        <button onclick="document.getElementById('qs-messages').style.display='none';document.getElementById('qs-contacts').style.display='block';" class="ced-cancel" style="width:100%;margin-top:10px;">&#8592; Change Contact</button>
+      </div>
+      <button onclick="document.getElementById('quick-send-modal').classList.remove('open')" class="ced-cancel" style="width:100%;margin-top:10px;">Close</button>
+    </div>
   </div>
 
   <!-- ══ SEND ══ -->
@@ -456,6 +520,224 @@ body{display:flex;flex-direction:column;}
 </div>
 
 <script>
+
+// ══════════════════════════════════
+// CONTACTS SYSTEM
+// ══════════════════════════════════
+const CONTACTS_KEY = 'og_contacts_v2';
+
+const DEFAULT_CONTACTS = [
+  { name:'Christina Castaneda', role:'IRC Service Coordinator — Burks, Jaybrion', phone:'9512418102', email:'ccastaneda@inlandrc.org', type:'coord' },
+  { name:'Delisa Trammel', role:'Mother/Caregiver — Burks, Jaybrion', phone:'9518052', email:'', type:'family' },
+  { name:'Jaybrion Burks', role:'Consumer — UCI 6953825', phone:'9097220525', email:'', type:'family' },
+];
+
+function loadContacts() {
+  try {
+    const s = JSON.parse(localStorage.getItem(CONTACTS_KEY));
+    if (s && s.length) return s;
+  } catch(e) {}
+  return DEFAULT_CONTACTS;
+}
+
+function saveContactsToStorage(contacts) {
+  localStorage.setItem(CONTACTS_KEY, JSON.stringify(contacts));
+}
+
+const TYPE_ICONS = { family:'&#127968;', coord:'&#128084;', staff:'&#128101;', other:'&#128172;' };
+const TYPE_LABELS = { family:'Family', coord:'Coordinator', staff:'Staff', other:'Other' };
+
+function renderContacts() {
+  const contacts = loadContacts();
+  const el = document.getElementById('contacts-list');
+  if (!el) return;
+
+  if (!contacts.length) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.3);font-size:13px;">No contacts saved. Tap + Add Contact.</div>';
+    return;
+  }
+
+  // Group by type
+  const groups = { family:[], coord:[], staff:[], other:[] };
+  contacts.forEach((c,i) => { (groups[c.type]||groups.other).push({...c, idx:i}); });
+
+  let html = '';
+  for (const [type, list] of Object.entries(groups)) {
+    if (!list.length) continue;
+    html += `<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;margin:12px 0 8px;">${TYPE_ICONS[type]} ${TYPE_LABELS[type]}</div>`;
+    list.forEach(c => {
+      const phone = c.phone ? c.phone.replace(/\D/g,'') : '';
+      html += `
+        <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:13px 14px;margin-bottom:8px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:14px;font-weight:700;color:white;margin-bottom:2px;">${c.name}</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.35);line-height:1.4;">${c.role||''}</div>
+              ${phone ? `<div style="font-size:11px;color:rgba(255,255,255,.25);margin-top:2px;">${c.phone}</div>` : ''}
+            </div>
+            <button onclick="editContact(${c.idx})" style="background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.4);width:28px;height:28px;border-radius:8px;font-size:13px;cursor:pointer;flex-shrink:0;">&#9998;</button>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            ${phone ? `
+              <a href="tel:${phone}" style="flex:1;min-width:60px;padding:9px 6px;background:var(--green);border-radius:10px;color:white;text-decoration:none;font-size:12px;font-weight:700;text-align:center;">&#128222; Call</a>
+              <a href="sms:${phone}" style="flex:1;min-width:60px;padding:9px 6px;background:var(--navy2);border-radius:10px;color:white;text-decoration:none;font-size:12px;font-weight:700;text-align:center;">&#128172; Text</a>
+            ` : ''}
+            ${c.email ? `
+              <a href="mailto:${c.email}" style="flex:1;min-width:60px;padding:9px 6px;background:rgba(255,255,255,.1);border-radius:10px;color:white;text-decoration:none;font-size:12px;font-weight:700;text-align:center;">&#9993; Email</a>
+            ` : ''}
+            <button onclick="quickSendTo(${c.idx})" style="flex:1;min-width:60px;padding:9px 6px;background:var(--orange);border:none;border-radius:10px;color:white;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);">&#128228; Send</button>
+          </div>
+        </div>`;
+    });
+  }
+  el.innerHTML = html;
+}
+
+// Contact editor
+let editingContactIdx = null;
+
+function openContactEditor(idx=null) {
+  editingContactIdx = idx;
+  const contacts = loadContacts();
+  document.getElementById('ced-modal-title').textContent = idx !== null ? 'Edit Contact' : 'Add Contact';
+  if (idx !== null && contacts[idx]) {
+    const c = contacts[idx];
+    document.getElementById('cc-name').value  = c.name  || '';
+    document.getElementById('cc-role').value  = c.role  || '';
+    document.getElementById('cc-phone').value = c.phone || '';
+    document.getElementById('cc-email').value = c.email || '';
+    document.getElementById('cc-type').value  = c.type  || 'other';
+  } else {
+    ['cc-name','cc-role','cc-phone','cc-email'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('cc-type').value = 'family';
+  }
+  document.getElementById('contact-editor-modal').classList.add('open');
+}
+
+function closeContactEditor() {
+  document.getElementById('contact-editor-modal').classList.remove('open');
+}
+
+function editContact(idx) {
+  openContactEditor(idx);
+}
+
+function saveContact() {
+  const name  = document.getElementById('cc-name').value.trim();
+  if (!name) { flash('&#9888; Name required'); return; }
+  const contact = {
+    name,
+    role:  document.getElementById('cc-role').value.trim(),
+    phone: document.getElementById('cc-phone').value.trim(),
+    email: document.getElementById('cc-email').value.trim(),
+    type:  document.getElementById('cc-type').value,
+  };
+  const contacts = loadContacts();
+  if (editingContactIdx !== null) {
+    contacts[editingContactIdx] = contact;
+  } else {
+    contacts.push(contact);
+  }
+  saveContactsToStorage(contacts);
+  closeContactEditor();
+  renderContacts();
+  flash('&#10003; Contact saved');
+}
+
+function deleteContact(idx) {
+  const contacts = loadContacts();
+  contacts.splice(idx, 1);
+  saveContactsToStorage(contacts);
+  closeContactEditor();
+  renderContacts();
+  flash('Contact removed');
+}
+
+// Quick Send with contact picker
+let qsContactIdx = null;
+
+const QUICK_MESSAGES = [
+  { label:'Welcome Packet', icon:'&#127968;', msg:'Hi {name}, welcome to Open Grace LLC. Here is your Client Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf — Questions? Call (951) 880-4132.' },
+  { label:'CFS Acknowledgment', icon:'&#128203;', msg:'Hi {name}, please complete your CFS Service Acknowledgment when you have a moment: https://form.jotform.com/261451993406057' },
+  { label:'Contact Log Portal', icon:'&#128221;', msg:'Hi {name}, here is the link to submit your Daily Contact Log: https://opengrace.org/contact-log.html — Use your access code. Required same day as every visit.' },
+  { label:'Onboarding Prep', icon:'&#128101;', msg:'Hi {name}, welcome to Open Grace LLC! Please review your onboarding steps here: https://opengrace.org/onboarding.html' },
+  { label:'Staff Onboarding Form', icon:'&#128228;', msg:'Hi {name}, here is your staff onboarding form: https://form.jotform.com/261451114945050 — Please complete all required uploads.' },
+  { label:'Careers Page', icon:'&#128084;', msg:'Hi {name}, I wanted to share an opportunity at Open Grace LLC. I think you would be a great fit: https://opengrace.org/careers.html — Call me at (951) 880-4132.' },
+  { label:'Resources', icon:'&#127760;', msg:'Hi {name}, here is a directory of local resources for your family — benefits, transportation, food, and more: https://opengrace.org/resources.html' },
+  { label:'Emergency Contacts', icon:'&#128680;', msg:'Hi {name}, important contacts:
+
+Open Grace: (951) 880-4132
+APS: 1-800-774-5000
+CPS: 1-800-340-5700
+211: Dial 211
+IRC: (909) 890-4800
+Emergency: 911' },
+  { label:'Provider Info (Coordinator)', icon:'&#128203;', msg:'Hello {name}, Joshua Kennedy, Director of Open Grace LLC (IRC Vendor PJ6208). Our provider information and referral guide: https://opengrace.org/coordinators.html — Currently accepting referrals.' },
+  { label:'Daily Log Reminder', icon:'&#9201;', msg:'Reminder {name}: please submit your Daily Contact Log for today's visit — https://opengrace.org/contact-log.html — Required same day.' },
+  { label:'Custom message', icon:'&#128172;', msg:'' },
+];
+
+function openQuickSend() {
+  document.getElementById('quick-send-modal').classList.add('open');
+  document.getElementById('qs-contacts').style.display = 'block';
+  document.getElementById('qs-messages').style.display = 'none';
+  renderQSContacts();
+}
+
+function renderQSContacts() {
+  const contacts = loadContacts();
+  const el = document.getElementById('qs-contacts');
+  el.innerHTML = contacts.map((c,i) => {
+    const phone = (c.phone||'').replace(/\D/g,'');
+    return `<div onclick="selectQSContact(${i})" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;">
+      <div style="font-size:20px;">${TYPE_ICONS[c.type]||'&#128172;'}</div>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:700;color:white;">${c.name}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.35);">${phone ? '('+phone.slice(0,3)+') '+phone.slice(3,6)+'-'+phone.slice(6) : 'No phone'}</div>
+      </div>
+      <div style="font-size:16px;color:rgba(255,255,255,.25);">&#8594;</div>
+    </div>`;
+  }).join('') || '<div style="color:rgba(255,255,255,.3);font-size:13px;text-align:center;padding:16px;">No contacts yet. Add contacts first.</div>';
+}
+
+function selectQSContact(idx) {
+  qsContactIdx = idx;
+  const contacts = loadContacts();
+  const c = contacts[idx];
+  document.getElementById('qs-to-name').textContent = c.name;
+  document.getElementById('qs-contacts').style.display = 'none';
+  document.getElementById('qs-messages').style.display = 'block';
+
+  const phone = (c.phone||'').replace(/\D/g,'');
+  const name  = c.name.split(' ')[0]; // First name for personalization
+
+  document.getElementById('qs-msg-list').innerHTML = QUICK_MESSAGES.map((m,i) => {
+    const personalizedMsg = m.msg.replace(/{name}/g, name);
+    const smsHref = phone ? `sms:${phone}&body=${encodeURIComponent(personalizedMsg)}` : '';
+    return `<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:12px;padding:11px 13px;margin-bottom:8px;">
+      <div style="font-size:18px;flex-shrink:0;">${m.icon}</div>
+      <div style="flex:1;font-size:13px;font-weight:700;color:white;">${m.label}</div>
+      <div style="display:flex;gap:5px;flex-shrink:0;">
+        ${phone ? `<a href="${smsHref}" style="padding:7px 10px;background:var(--green);border-radius:8px;color:white;text-decoration:none;font-size:11px;font-weight:700;">&#128222;</a>` : ''}
+        ${c.email && m.msg ? `<a href="mailto:${c.email}?body=${encodeURIComponent(personalizedMsg)}" style="padding:7px 10px;background:var(--navy2);border-radius:8px;color:white;text-decoration:none;font-size:11px;font-weight:700;">&#9993;</a>` : ''}
+        <button onclick="navigator.clipboard.writeText('${personalizedMsg.replace(/'/g, "\'")}').then(()=>flash('Copied'))" style="padding:7px 10px;background:rgba(255,255,255,.1);border:none;border-radius:8px;color:white;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);">&#128203;</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function quickSendTo(idx) {
+  selectQSContact(idx);
+  document.getElementById('quick-send-modal').classList.add('open');
+}
+
+// Init contacts on tab switch
+const _origSwitchTab = switchTab;
+function switchTab(idx) {
+  _origSwitchTab(idx);
+  if (idx === 4) renderContacts();
+}
+
 // ══════════════════════════════════
 // CLIENT MANAGEMENT
 // ══════════════════════════════════
