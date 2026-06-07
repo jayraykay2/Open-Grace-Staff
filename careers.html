@@ -347,7 +347,7 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
     </div>
 
     <!-- POSITION 2: CASE MANAGER -->
-    <div class="pos-card purple" id="pos-cm" onclick="togglePos('pos-cm')">
+    <div class="pos-card purple" id="pos-cm" style="display:none;" onclick="togglePos('pos-cm')">
       <div class="pos-header">
         <div class="pos-icon purple">&#128203;</div>
         <div class="pos-title-group">
@@ -438,7 +438,7 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
     </div>
 
     <!-- POSITION 3: LEAD COORDINATOR -->
-    <div class="pos-card gold" id="pos-lead" onclick="togglePos('pos-lead')">
+    <div class="pos-card gold" id="pos-lead" style="display:none;" onclick="togglePos('pos-lead')">
       <div class="pos-header">
         <div class="pos-icon gold">&#11088;</div>
         <div class="pos-title-group">
@@ -843,5 +843,54 @@ function submitApp() {
   }, 600);
 }
 </script>
+
+<script>
+// ── DYNAMIC POSITION VISIBILITY ──
+// Reads positions.json from GitHub and shows/hides position cards
+const POSITIONS_URL = 'https://raw.githubusercontent.com/jayraykay2/Open-Grace-Staff/main/positions.json';
+
+const POS_MAP = {
+  'family-coordinator': 'pos-fc',
+  'case-manager':       'pos-cm',
+  'lead-coordinator':   'pos-lead',
+};
+
+async function loadPositionVisibility() {
+  try {
+    const r = await fetch(POSITIONS_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    const data = await r.json();
+    let anyActive = false;
+
+    data.positions.forEach(pos => {
+      const elId = POS_MAP[pos.id];
+      if (!elId) return;
+      const el = document.getElementById(elId);
+      if (!el) return;
+      if (pos.active) {
+        el.style.display = '';
+        anyActive = true;
+      } else {
+        el.style.display = 'none';
+      }
+    });
+
+    // Show "no positions" message if nothing is active
+    const noMsg = document.getElementById('no-positions-msg');
+    if (noMsg) noMsg.style.display = anyActive ? 'none' : 'block';
+
+  } catch(e) {
+    // On error show all positions (safe fallback)
+    console.log('Position visibility check failed — showing all');
+    ['pos-fc','pos-cm','pos-lead'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = '';
+    });
+  }
+}
+
+// Run on page load
+loadPositionVisibility();
+</script>
+
 </body>
 </html>
