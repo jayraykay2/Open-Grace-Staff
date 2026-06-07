@@ -791,12 +791,90 @@ function saveClients() {
 // PIPELINE
 // ════════════════════════════════════════════
 function defaultPipeline() {
+  // Check localStorage first — only use defaults if nothing saved yet
   return {
     'referral-pending': [],
     'referral-assign':  [],
     'onboarding':       [],
     'completed':        [],
   };
+}
+
+// Pre-populate pipeline from email data if localStorage is empty
+function initPipelineFromEmailData() {
+  const stored = localStorage.getItem('og_pipeline_v2');
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      // Check if any items exist already
+      const hasItems = Object.values(parsed).some(arr => arr && arr.length > 0);
+      if (hasItems) return; // Already has data — don't overwrite
+    } catch(e) {}
+  }
+
+  // First time or empty — seed with known referrals and candidates from email
+  const seedData = {
+    'referral-pending': [
+      {
+        name: 'Pinto, Arianna',
+        phone: '(323) 490-6850',
+        date: '2026-05-29',
+        notes: 'UCI 7446993 | Mother: Veronica Falcon (323) 490-6850 | Coordinator: Tarah Bass (909) 890-3420 | Referral received May 29 | Assessment meeting Mon June 9 via Teams | IPP/CDER pending from Tarah — 2026 versions coming next week, 2025 available now | POS on hold until after July — end of fiscal year',
+        added: '2026-05-29'
+      },
+      {
+        name: 'Beinbrech, Marykate',
+        phone: '(562) 631-7043',
+        date: '2026-05-18',
+        notes: 'UCI 8283031 | Mother: Christi Beinbrech (562) 631-7043 | Coordinator: Tarah Bass (909) 890-3420 | Referral received May 18, 2026 at 9:37 AM | Needs support applying for generic services and exploring other options | Follow-up call with Christi still needed',
+        added: '2026-05-18'
+      }
+    ],
+    'referral-assign': [],
+    'onboarding': [
+      {
+        name: 'Ramirez-Tellez, Daisy',
+        phone: '',
+        date: '2026-06-05',
+        notes: 'Position: Family Coordinator — Direct Support Specialist | Interview rescheduling to next week | Applied via Indeed | Send application link to confirm',
+        added: '2026-06-05'
+      }
+    ],
+    'completed': []
+  };
+
+  save('og_pipeline_v2', seedData);
+}
+
+// Prospect employees — seed contacts if empty
+function initProspectContacts() {
+  const stored = localStorage.getItem('og_contacts_v3');
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      const hasAmbre = parsed.some(c => c.name && c.name.toLowerCase().includes('ambre'));
+      if (hasAmbre) return;
+      // Add Ambre to existing contacts
+      parsed.push({
+        name: 'Carter-Earl, Ambre',
+        role: 'Prospect — Case Manager / Navigator | Applied June 7, 2026 2:19 PM via Jotform',
+        phone: '3106060578',
+        email: '',
+        type: 'other'
+      });
+      save('og_contacts_v3', parsed);
+      return;
+    } catch(e) {}
+  }
+  // No contacts yet — create with defaults plus Ambre
+  const contacts = [
+    { name:'Christina Castaneda', role:'IRC Service Coordinator — Burks, Jaybrion', phone:'9512418102', email:'ccastaneda@inlandrc.org', type:'coord' },
+    { name:'Delisa Trammel', role:'Mother/Caregiver — Burks, Jaybrion', phone:'', email:'', type:'family' },
+    { name:'Jaybrion Burks', role:'Consumer — UCI 6953825', phone:'9097220525', email:'', type:'family' },
+    { name:'Carter-Earl, Ambre', role:'Prospect — Case Manager / Navigator | Applied June 7, 2026 at 2:19 PM via Jotform', phone:'3106060578', email:'', type:'other' },
+    { name:'Ramirez-Tellez, Daisy', role:'Prospect — Family Coordinator | Interview rescheduling to next week', phone:'', email:'', type:'other' },
+  ];
+  save('og_contacts_v3', contacts);
 }
 
 const PIPE_CONFIG = {
