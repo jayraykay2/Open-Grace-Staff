@@ -344,6 +344,8 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
   <a class="lrow" href="https://opengrace.org/careers.html" target="_blank"><div class="lrow-icon">🔖</div><div class="lrow-info"><div class="lrow-label">Careers Page</div><div class="lrow-sub">opengrace.org/careers.html</div></div><div class="lrow-arrow">→</div></a>
 
   <div class="sec">Staff Access</div>
+    <div class="lrow" onclick="openPositionsManager()"><div class="lrow-icon">💼</div><div class="lrow-info"><div class="lrow-label">Manage Open Positions</div><div class="lrow-sub">Toggle which roles are visible on careers page</div></div><div class="lrow-arrow">✏</div></div>
+
   <div class="lrow" onclick="openAccessSheet()"><div class="lrow-icon">🔑</div><div class="lrow-info"><div class="lrow-label">Manage Staff Access Codes</div><div class="lrow-sub">Add, deactivate, or revoke instantly</div></div><div class="lrow-arrow">✏</div></div>
 
   <div class="sec">Jotform Dashboard</div>
@@ -1321,6 +1323,123 @@ updateClock();
 setInterval(updateClock, 30000);
 renderHome();
 renderSend();
+</script>
+
+<!-- POSITIONS MANAGER MODAL -->
+<div class="overlay" id="positions-overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">💼 Open Positions</div>
+    <div class="sheet-sub">Toggle positions on to show them on your careers page. Toggle off to hide — applicants cannot see or apply for inactive positions.</div>
+
+    <div style="background:rgba(255,184,0,.08);border:1px solid rgba(255,184,0,.2);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:11px;color:rgba(255,255,255,.5);line-height:1.6;">
+      <strong style="color:var(--gold);">How it works:</strong> Changes save to GitHub and go live on opengrace.org/careers.html within 60 seconds. Only active positions appear to applicants.
+    </div>
+
+    <div id="positions-list"><div class="empty">Tap Load to view positions</div></div>
+    <button class="action ghost" style="font-size:13px;padding:11px;margin-bottom:12px;" onclick="loadPositions()">🔄 Load / Refresh</button>
+
+    <div id="positions-status" style="display:none;border-radius:10px;padding:10px 13px;margin-bottom:10px;font-size:12px;font-weight:600;"></div>
+
+    <div class="sheet-btns">
+      <button class="sheet-cancel" onclick="closeOverlay('positions-overlay')">Close</button>
+      <button class="sheet-save" onclick="savePositions()">💾 Save to GitHub</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── POSITIONS MANAGER ──
+const POS_URL = 'https://raw.githubusercontent.com/jayraykay2/Open-Grace-Staff/main/positions.json';
+const POS_API = 'https://api.github.com/repos/jayraykay2/Open-Grace-Staff/contents/positions.json';
+let posData = null, posSha = null;
+
+function openPositionsManager() {
+  openOverlay('positions-overlay');
+  loadPositions();
+}
+
+async function loadPositions() {
+  document.getElementById('positions-list').innerHTML = '<div class="empty">Loading...</div>';
+  try {
+    const r = await fetch(POS_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    posData = await r.json();
+    // Get SHA separately for writes
+    const token = localStorage.getItem('og_gh_token');
+    if (token) {
+      const r2 = await fetch(POS_API, { headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json' }});
+      const d2 = await r2.json();
+      posSha = d2.sha;
+    }
+    renderPositions();
+  } catch(e) {
+    document.getElementById('positions-list').innerHTML = '<div class="empty">Error loading. Check connection.</div>';
+  }
+}
+
+function renderPositions() {
+  if (!posData) return;
+  const el = document.getElementById('positions-list');
+  el.innerHTML = posData.positions.map((p, i) => `
+    <div style="background:rgba(255,255,255,.06);border-radius:13px;padding:14px;margin-bottom:10px;border-left:3px solid ${p.active ? 'var(--green)' : 'rgba(255,255,255,.15)'};">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;color:white;margin-bottom:3px;">${p.title}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.4);">${p.pay} &nbsp;·&nbsp; ${p.type}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+          <span class="badge ${p.active ? 'green' : 'gray'}">${p.active ? 'ACTIVE' : 'INACTIVE'}</span>
+          <button onclick="togglePosition(${i})" style="padding:7px 14px;border:none;border-radius:9px;background:${p.active ? 'rgba(220,38,38,.2)' : 'rgba(22,163,74,.2)'};color:${p.active ? '#FC8181' : '#6EE7B7'};font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);">${p.active ? 'Deactivate' : 'Activate'}</button>
+        </div>
+      </div>
+      ${p.notes ? `<div style="font-size:10px;color:rgba(255,255,255,.25);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);">${p.notes}</div>` : ''}
+    </div>`).join('');
+}
+
+function togglePosition(i) {
+  if (!posData) return;
+  posData.positions[i].active = !posData.positions[i].active;
+  posData.last_updated = new Date().toISOString().split('T')[0];
+  renderPositions();
+}
+
+async function savePositions() {
+  if (!posData) { toast('⚠ Load first', '#D97706'); return; }
+  let token = localStorage.getItem('og_gh_token');
+  if (!token) {
+    token = prompt('Enter your GitHub token to save:');
+    if (!token) return;
+    localStorage.setItem('og_gh_token', token);
+  }
+  const st = document.getElementById('positions-status');
+  st.style.display = 'block';
+  st.style.background = 'rgba(255,255,255,.06)';
+  st.style.color = 'rgba(255,255,255,.5)';
+  st.textContent = 'Saving...';
+  try {
+    // Get fresh SHA
+    const r0 = await fetch(POS_API, { headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json' }});
+    const d0 = await r0.json();
+    posSha = d0.sha;
+
+    const enc = btoa(unescape(encodeURIComponent(JSON.stringify(posData, null, 2))));
+    const r = await fetch(POS_API, {
+      method: 'PUT',
+      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'Update job positions visibility ' + posData.last_updated, content: enc, sha: posSha, branch: 'main' })
+    });
+    const res = await r.json();
+    posSha = res.content?.sha || posSha;
+    st.style.background = 'rgba(22,163,74,.15)';
+    st.style.color = '#6EE7B7';
+    st.textContent = '✓ Saved — careers page updates within 60 seconds';
+    toast('✓ Positions updated');
+  } catch(e) {
+    st.style.background = 'rgba(220,38,38,.15)';
+    st.style.color = '#FC8181';
+    st.textContent = 'Error saving. Try again.';
+  }
+}
 </script>
 </body>
 </html>
