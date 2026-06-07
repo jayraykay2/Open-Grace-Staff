@@ -1,0 +1,30 @@
+{
+  "_readme": "Open Grace LLC \u2014 Job Positions Visibility Control. Set active:true to show on careers page, active:false to hide.",
+  "last_updated": "2026-06-07",
+  "positions": [
+    {
+      "id": "family-coordinator",
+      "title": "Family Coordinator \u2014 Direct Support Specialist",
+      "pay": "$18\u2013$26/hr",
+      "type": "Part-Time / Full-Time",
+      "active": true,
+      "notes": "Primary hire \u2014 direct support role"
+    },
+    {
+      "id": "case-manager",
+      "title": "Case Manager / Navigator",
+      "pay": "$22\u2013$34/hr",
+      "type": "Full-Time",
+      "active": false,
+      "notes": "Requires CORI access authorization"
+    },
+    {
+      "id": "lead-coordinator",
+      "title": "Lead Family Coordinator",
+      "pay": "$24\u2013$34/hr",
+      "type": "Full-Time",
+      "active": false,
+      "notes": "Supervisory \u2014 hire after team grows"
+    }
+  ]
+}
