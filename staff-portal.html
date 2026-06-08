@@ -325,11 +325,45 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);line-height
     </div>
   </div>
 
+  <!-- SECTION 6: STAFF MEETINGS -->
+  <div class="section">
+    <div class="section-head" onclick="toggle(this)">
+      <div class="section-num" style="background:#6264A7;">6</div>
+      <h3>Staff Meetings — Join via Microsoft Teams</h3>
+      <div class="chev">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <div class="highlight" style="background:#EEF0FF;border-left-color:#6264A7;color:#3B3D8D;">
+        A meeting link will be sent or posted here before each staff meeting. Tap the button below to join when the meeting is active.
+      </div>
+
+      <div style="margin-top:18px;background:linear-gradient(135deg,#6264A7 0%,#464775 100%);border-radius:16px;padding:22px 20px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:6px;">📹</div>
+        <div style="font-size:16px;font-weight:800;color:white;font-family:'Fraunces',serif;margin-bottom:4px;">Open Grace Staff Meeting</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.7);margin-bottom:18px;">Microsoft Teams — Link updated before each session</div>
+        <a href="PLACEHOLDER_TEAMS_LINK" id="teams-join-btn" onclick="checkTeamsLink(event)" style="display:inline-block;background:white;color:#6264A7;font-weight:800;font-size:15px;font-family:'DM Sans',sans-serif;padding:14px 32px;border-radius:12px;text-decoration:none;letter-spacing:.3px;">
+          Join Meeting
+        </a>
+        <div style="margin-top:12px;font-size:11px;color:rgba(255,255,255,.55);">Link will open Microsoft Teams or the Teams web app</div>
+      </div>
+
+      <div style="margin-top:14px;background:var(--g100);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:11px;font-weight:700;color:var(--g400);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;">Meeting Reminders</div>
+        <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--g700);line-height:2;">
+          <li>Join from your phone, tablet, or computer</li>
+          <li>Test your audio and camera before the meeting starts</li>
+          <li>Mute yourself when not speaking</li>
+          <li>Contact Director Joshua Kennedy if you have trouble connecting</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
   <!-- CONTACT -->
   <div class="contact-card">
     <img src="https://opengrace.org/og_logo.jpg" alt="Open Grace Logo">
     <div class="info">
-      <h4>Joshua Ellis — Director</h4>
+      <h4>Joshua Kennedy — Director</h4>
       <p>Open Grace LLC &bull; IRC Vendor PJ6208</p>
     </div>
     <div class="contact-links">
@@ -339,10 +373,10 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);line-height
     </div>
   </div>
 
-  <!-- SECTION 6: QUICK SEND TO FAMILIES -->
+  <!-- SECTION 7: QUICK SEND TO FAMILIES -->
   <div class="section">
     <div class="section-head" onclick="toggle(this)">
-      <div class="section-num" style="background:var(--purple);">6</div>
+      <div class="section-num" style="background:var(--purple);">7</div>
       <h3>Quick Send to Families</h3>
       <div class="chev">&#9660;</div>
     </div>
@@ -405,6 +439,20 @@ function toggle(head) {
   head.classList.toggle('open');
   head.nextElementSibling.classList.toggle('open');
 }
+
+function checkTeamsLink(e) {
+  const btn = document.getElementById('teams-join-btn');
+  if (!btn) return;
+  const href = btn.getAttribute('href');
+  if (!href || href === 'PLACEHOLDER_TEAMS_LINK') {
+    e.preventDefault();
+    alert('The meeting link has not been set yet. The director will share the link before the next staff meeting.');
+  }
+}
+  head.classList.toggle('open');
+  head.nextElementSibling.classList.toggle('open');
+}
 </script>
 </body>
 </html>
+
