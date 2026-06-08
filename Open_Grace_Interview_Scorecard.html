@@ -591,6 +591,18 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
       <div class="rec-btn hold" onclick="setRec(this,'hold')"><div class="rec-icon">&#128196;</div><div class="rec-label">Keep on File</div><div class="rec-sub">Score 2.5–3.4</div></div>
       <div class="rec-btn decline" onclick="setRec(this,'decline')"><div class="rec-icon">&#10060;</div><div class="rec-label">Do Not Hire</div><div class="rec-sub">Below 2.5</div></div>
     </div>
+
+    <!-- INLINE HIRE PANEL — appears when Hire is selected -->
+    <div id="hire-panel-inline" style="display:none;margin-top:14px;background:#F0FDF4;border:2px solid #22C55E;border-radius:14px;padding:16px;">
+      <div style="font-size:11px;font-weight:700;color:#15803D;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">🎉 Send Application Link</div>
+      <div style="font-size:13px;color:#166534;margin-bottom:10px;line-height:1.5;">Great candidate! Send them the employment application to complete before the offer.</div>
+      <div style="background:white;border:1.5px solid #BBF7D0;border-radius:10px;padding:10px 12px;font-size:11px;font-family:monospace;color:#15803D;word-break:break-all;margin-bottom:12px;">https://form.jotform.com/261555850958066</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="copyAppLink()" style="flex:1;padding:13px 8px;border:none;border-radius:10px;background:#22C55E;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);">📋 Copy Link</button>
+        <button onclick="sendAppLink()" style="flex:1;padding:13px 8px;border:none;border-radius:10px;background:#15803D;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);">📤 Send via SMS</button>
+      </div>
+      <div id="copy-confirm-inline" style="display:none;text-align:center;margin-top:8px;font-size:12px;color:#15803D;font-weight:600;">✅ Link copied!</div>
+    </div>
     <div class="field-group single" style="margin-top:14px;">
       <div class="field"><label>Overall Notes &amp; Reasoning</label>
         <textarea id="final_notes" placeholder="Summary of impression, key strengths, concerns..." rows="4" style="padding:9px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:13px;font-family:var(--sans);color:var(--g900);background:var(--off);resize:vertical;outline:none;width:100%;"></textarea>
@@ -624,6 +636,18 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
       <div style="font-size:10px;font-weight:700;color:var(--g400);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;">Final Notes</div>
       <div id="modal-notes" style="font-size:13px;color:var(--g700);background:var(--g100);padding:11px;border-radius:9px;line-height:1.65;"></div>
     </div>
+    <!-- HIRE ACTION PANEL — only visible when rec = hire -->
+    <div id="hire-panel" style="display:none;margin-top:16px;background:#F0FDF4;border:2px solid #22C55E;border-radius:14px;padding:16px;">
+      <div style="font-size:11px;font-weight:700;color:#15803D;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;">🎉 Send Application Link</div>
+      <div style="font-size:13px;color:#166534;margin-bottom:12px;line-height:1.5;">This candidate scored well. Send them the employment application to complete before moving to the offer stage.</div>
+      <div style="background:white;border:1.5px solid #BBF7D0;border-radius:10px;padding:10px 12px;font-size:12px;font-family:monospace;color:#15803D;word-break:break-all;margin-bottom:12px;" id="app-link-display">https://form.jotform.com/261555850958066</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="copyAppLinkModal()" style="flex:1;min-width:100px;padding:12px;border:none;border-radius:10px;background:#22C55E;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);">📋 Copy Link</button>
+        <button onclick="sendAppLink('modal')" style="flex:1;min-width:100px;padding:12px;border:none;border-radius:10px;background:#15803D;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);">📤 Send via SMS / Email</button>
+      </div>
+      <div id="copy-confirm" style="display:none;text-align:center;margin-top:8px;font-size:12px;color:#15803D;font-weight:600;">✅ Link copied to clipboard!</div>
+    </div>
+
     <div class="modal-btns">
       <button class="modal-btn close" onclick="closeModal()">Close</button>
       <button class="modal-btn email" onclick="emailSummary()">&#9993; Email</button>
@@ -723,6 +747,10 @@ function loadInterview(id) {
     const recBtn = document.querySelector(`.rec-btn.${rec}`);
     if (recBtn) recBtn.classList.add('selected');
   }
+
+  // Restore hire panel visibility
+  const inlinePanel = document.getElementById('hire-panel-inline');
+  if (inlinePanel) inlinePanel.style.display = (rec === 'hire') ? 'block' : 'none';
 
   updateScoreDisplays();
   updateProgress();
@@ -909,6 +937,57 @@ function setRec(btn, type) {
   btn.classList.add('selected');
   rec = type;
   triggerSave();
+
+  // Show hire panel inline on the scorecard page when Hire is selected
+  const inlinePanel = document.getElementById('hire-panel-inline');
+  if (inlinePanel) {
+    inlinePanel.style.display = (type === 'hire') ? 'block' : 'none';
+  }
+}
+
+// ── HIRE PANEL (inline, on scorecard page) ──
+function copyAppLink() {
+  const link = 'https://form.jotform.com/261555850958066';
+  navigator.clipboard.writeText(link).then(() => {
+    const confirm = document.getElementById('copy-confirm-inline');
+    if (confirm) { confirm.style.display = 'block'; setTimeout(() => confirm.style.display = 'none', 3000); }
+  }).catch(() => {
+    // fallback for older browsers
+    const el = document.createElement('textarea');
+    el.value = link;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    const confirm = document.getElementById('copy-confirm-inline');
+    if (confirm) { confirm.style.display = 'block'; setTimeout(() => confirm.style.display = 'none', 3000); }
+  });
+}
+
+function copyAppLinkModal() {
+  const link = 'https://form.jotform.com/261555850958066';
+  navigator.clipboard.writeText(link).then(() => {
+    const confirm = document.getElementById('copy-confirm');
+    if (confirm) { confirm.style.display = 'block'; setTimeout(() => confirm.style.display = 'none', 3000); }
+  }).catch(() => {
+    const el = document.createElement('textarea');
+    el.value = link;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    const confirm = document.getElementById('copy-confirm');
+    if (confirm) { confirm.style.display = 'block'; setTimeout(() => confirm.style.display = 'none', 3000); }
+  });
+}
+
+function sendAppLink(source) {
+  const name = document.getElementById('candidateName')?.value?.trim() || '';
+  const link = 'https://form.jotform.com/261555850958066';
+  const greeting = name ? `Hi ${name.split(' ')[0]},` : 'Hi,';
+  const msg = `${greeting} congratulations on your interview with Open Grace LLC! Please complete your employment application here:\n\n${link}\n\nWe look forward to hearing from you.\n— Open Grace LLC`;
+  const encoded = encodeURIComponent(msg);
+  window.open(`sms:?&body=${encoded}`, '_blank');
 }
 
 // ── PROGRESS ──
@@ -966,6 +1045,12 @@ function showSummary() {
   document.getElementById('modal-notes').textContent = document.getElementById('final_notes').value || 'No notes entered.';
 
   document.getElementById('modal').classList.add('open');
+
+  // Show hire panel in modal only if rec = hire
+  const hirePanel = document.getElementById('hire-panel');
+  if (hirePanel) hirePanel.style.display = (rec === 'hire') ? 'block' : 'none';
+  const copyConfirm = document.getElementById('copy-confirm');
+  if (copyConfirm) copyConfirm.style.display = 'none';
 }
 
 function closeModal() {
@@ -1065,3 +1150,4 @@ init();
 </script>
 </body>
 </html>
+
