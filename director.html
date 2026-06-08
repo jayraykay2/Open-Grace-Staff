@@ -19,7 +19,7 @@
   --g100:#F2F1FA; --g200:#E4E2F0; --g400:#9895B5; --g700:#3D3B52;
   --sans:'DM Sans',system-ui,sans-serif;
   --display:'Fraunces',Georgia,serif;
-  --tab-h:62px;
+  --tab-h:80px;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bot:env(safe-area-inset-bottom,0px);
 }
@@ -68,12 +68,12 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
   -webkit-tap-highlight-color:transparent;
 }
 .tab.active{opacity:1;}
-.tab-icon{font-size:19px;line-height:1;}
-.tab-label{font-size:8.5px;font-weight:700;color:white;letter-spacing:.2px;text-align:center;}
+.tab-icon{font-size:26px;line-height:1;}
+.tab-label{font-size:11px;font-weight:700;color:white;letter-spacing:.2px;text-align:center;}
 
 /* ── SECTION LABEL ── */
 .sec{
-  font-size:9.5px;font-weight:800;color:rgba(255,255,255,.3);
+  font-size:11px;font-weight:800;color:rgba(255,255,255,.3);
   letter-spacing:2px;text-transform:uppercase;
   margin:16px 0 8px;display:flex;align-items:center;gap:8px;
 }
@@ -81,9 +81,9 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 
 /* ── CARDS ── */
 .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;margin-bottom:10px;}
-.card-label{font-size:9.5px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
-.card-val{font-size:28px;font-weight:800;color:white;font-family:var(--display);line-height:1;}
-.card-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:4px;line-height:1.55;}
+.card-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
+.card-val{font-size:30px;font-weight:800;color:white;font-family:var(--display);line-height:1;}
+.card-sub{font-size:13px;color:rgba(255,255,255,.4);margin-top:4px;line-height:1.55;}
 
 /* ── INFO GRID ── */
 .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
@@ -100,9 +100,9 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 
 /* ── ACTION BUTTONS ── */
 .action{
-  display:block;width:100%;padding:13px;margin-bottom:8px;
-  border:none;border-radius:13px;
-  font-size:14px;font-weight:700;font-family:var(--sans);
+  display:block;width:100%;padding:17px;margin-bottom:10px;
+  border:none;border-radius:15px;
+  font-size:16px;font-weight:700;font-family:var(--sans);
   cursor:pointer;text-align:center;text-decoration:none;
   -webkit-tap-highlight-color:transparent;transition:opacity .15s;
 }
@@ -117,18 +117,18 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 
 /* ── LINK ROWS ── */
 .lrow{
-  display:flex;align-items:center;gap:12px;
-  background:rgba(255,255,255,.06);border-radius:12px;
-  padding:12px 13px;margin-bottom:8px;
+  display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,.06);border-radius:14px;
+  padding:16px 15px;margin-bottom:10px;
   text-decoration:none;cursor:pointer;
   -webkit-tap-highlight-color:transparent;
   border:1px solid rgba(255,255,255,.05);
 }
 .lrow:active{background:rgba(255,255,255,.1);}
-.lrow-icon{font-size:20px;width:30px;text-align:center;flex-shrink:0;}
+.lrow-icon{font-size:26px;width:36px;text-align:center;flex-shrink:0;}
 .lrow-info{flex:1;min-width:0;}
-.lrow-label{font-size:13.5px;font-weight:700;color:white;}
-.lrow-sub{font-size:10.5px;color:rgba(255,255,255,.35);margin-top:2px;}
+.lrow-label{font-size:16px;font-weight:700;color:white;}
+.lrow-sub{font-size:12.5px;color:rgba(255,255,255,.35);margin-top:2px;}
 .lrow-arrow{font-size:13px;color:rgba(255,255,255,.2);flex-shrink:0;}
 
 /* ── STATUS BADGE ── */
@@ -362,6 +362,20 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
   <a class="lrow" href="https://opengrace.org/cfs-services.html" target="_blank"><div class="lrow-icon">📄</div><div class="lrow-info"><div class="lrow-label">CFS Services & FAQ</div><div class="lrow-sub">opengrace.org/cfs-services.html</div></div><div class="lrow-arrow">→</div></a>
   <a class="lrow" href="https://opengrace.org/careers.html" target="_blank"><div class="lrow-icon">💼</div><div class="lrow-info"><div class="lrow-label">Careers Page</div><div class="lrow-sub">opengrace.org/careers.html</div></div><div class="lrow-arrow">→</div></a>
 
+  <div class="sec">IRC Billing</div>
+  <a class="lrow" href="https://www.inlandrc.org" target="_blank"><div class="lrow-icon">💰</div><div class="lrow-info"><div class="lrow-label">IRC E-Billing Portal</div><div class="lrow-sub">inlandrc.org → Providers → Online Billing</div></div><div class="lrow-arrow">→</div></a>
+  <div class="lrow" style="cursor:default;">
+    <div class="lrow-icon">📅</div>
+    <div class="lrow-info">
+      <div class="lrow-label">FY 2025–26 Cut-Off Dates</div>
+      <div class="lrow-sub" style="line-height:1.9;white-space:nowrap;font-size:12px;">
+        June → Jul 6 &nbsp;|&nbsp; July → Aug 4 &nbsp;|&nbsp; Aug → Sep 4<br>
+        Sep → Oct 3 &nbsp;|&nbsp; Oct → Nov 4 &nbsp;|&nbsp; Nov → Dec 4<br>
+        Dec → Jan 5 &nbsp;·&nbsp; Cut-off time: 4:30 PM
+      </div>
+    </div>
+  </div>
+
   <div class="sec">Staff & Client Portals</div>
   <a class="lrow" href="https://opengrace.org/staff-portal.html" target="_blank"><div class="lrow-icon">👥</div><div class="lrow-info"><div class="lrow-label">Staff Portal</div><div class="lrow-sub">opengrace.org/staff-portal.html</div></div><div class="lrow-arrow">→</div></a>
   <a class="lrow" href="https://opengrace.org/client-portal.html" target="_blank"><div class="lrow-icon">🏘</div><div class="lrow-info"><div class="lrow-label">Client & Family Portal</div><div class="lrow-sub">opengrace.org/client-portal.html</div></div><div class="lrow-arrow">→</div></a>
@@ -371,6 +385,7 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 <!-- ══ TAB 3: DOCS ══ -->
 <div class="screen" id="s3">
   <div class="sec">Director Tools</div>
+  <a class="lrow" href="https://www.inlandrc.org" target="_blank"><div class="lrow-icon">💳</div><div class="lrow-info"><div class="lrow-label">IRC E-Billing</div><div class="lrow-sub">Submit invoices — inlandrc.org → Providers</div></div><div class="lrow-arrow">→</div></a>
   <a class="lrow" href="https://opengrace.org/Open_Grace_Interview_Scorecard.html" target="_blank"><div class="lrow-icon">📋</div><div class="lrow-info"><div class="lrow-label">Interview Scorecard</div><div class="lrow-sub">Score candidates — auto-save results</div></div><div class="lrow-arrow">→</div></a>
   <a class="lrow" href="https://github.com/jayraykay2/Open-Grace-Staff" target="_blank"><div class="lrow-icon">🔧</div><div class="lrow-info"><div class="lrow-label">GitHub Repository</div><div class="lrow-sub">jayraykay2/Open-Grace-Staff</div></div><div class="lrow-arrow">→</div></a>
 
@@ -1523,3 +1538,4 @@ async function savePositions() {
 </script>
 </body>
 </html>
+
