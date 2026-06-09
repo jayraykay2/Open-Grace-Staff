@@ -22,7 +22,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:15px;line-height:1.7;overflow-x:hidden;}
+body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:17px;line-height:1.7;overflow-x:hidden;}
 
 /* NAV */
 .nav{background:var(--navy);padding:0 32px;height:64px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:999;box-shadow:0 2px 20px rgba(0,0,0,.25);}
@@ -172,7 +172,7 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
 .success-screen p{font-size:14px;color:var(--g400);line-height:1.7;max-width:340px;}
 
 /* STICKY NAV */
-.sticky-nav{position:sticky;bottom:0;background:white;border-top:2px solid var(--g200);padding:8px 12px;display:flex;gap:6px;overflow-x:auto;z-index:98;}
+.sticky-nav{position:sticky;bottom:0;background:white;border-top:2px solid var(--g200);padding:11px 12px;display:flex;gap:6px;overflow-x:auto;z-index:98;}
 .sticky-nav button{background:var(--g100);border:none;color:var(--g700);font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;font-family:var(--sans);}
 .sticky-nav button:hover{background:var(--navy2);color:white;}
 
@@ -184,6 +184,10 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
 </style>
 </head>
 <body>
+<!-- BACK BAR -->
+<div class="backbar" style="background:#2D2B7F;padding:12px 24px;display:flex;align-items:center;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.25);">
+  <a href="index.html" style="color:white;text-decoration:none;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;opacity:0.9;">&#8592; Back to Home</a>
+</div>
 
 <!-- NAV -->
 <nav class="nav">
