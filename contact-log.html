@@ -20,7 +20,7 @@ body{
   font-family:var(--sans);
   background:linear-gradient(160deg,var(--navy) 0%,#0f0d2e 100%);
   min-height:100vh;
-  display:flex;flex-direction:column;align-items:center;
+  font-size:17px;display:flex;flex-direction:column;align-items:center;
   padding:24px 16px calc(24px + env(safe-area-inset-bottom,0px));
   padding-top:calc(24px + env(safe-area-inset-top,0px));
 }
@@ -98,6 +98,10 @@ body{
 </style>
 </head>
 <body>
+<!-- BACK BAR -->
+<div class="backbar" style="background:#2D2B7F;padding:12px 24px;display:flex;align-items:center;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.25);">
+  <a href="staff-portal.html" style="color:white;text-decoration:none;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;opacity:0.9;">&#8592; Back to Staff Portal</a>
+</div>
 
 <!-- ── SCREEN 1: ACCESS CODE ENTRY ── -->
 <div class="screen active" id="screen-entry">
