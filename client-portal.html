@@ -19,7 +19,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:var(--sans);background:var(--off);color:var(--g700);line-height:1.7;font-size:15px;max-width:480px;margin:0 auto;}
+body{font-family:var(--sans);background:var(--off);color:var(--g700);line-height:1.7;font-size:17px;max-width:480px;margin:0 auto;}
 
 /* HERO */
 .hero{background:linear-gradient(160deg,var(--navy) 0%,#151340 55%,#0f0d2e 100%);padding:52px 28px 44px;text-align:center;position:relative;overflow:hidden;}
@@ -108,6 +108,10 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);line-height
 </style>
 </head>
 <body>
+<!-- BACK BAR -->
+<div class="backbar" style="background:#2D2B7F;padding:12px 24px;display:flex;align-items:center;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.25);">
+  <a href="index.html" style="color:white;text-decoration:none;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;opacity:0.9;">&#8592; Back to Home</a>
+</div>
 
 <!-- HERO -->
 <div class="hero">
@@ -302,7 +306,7 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);line-height
   <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
     style="width:48px;height:48px;border-radius:50%;background:#2D2B7F;border:none;color:white;font-size:20px;cursor:pointer;box-shadow:0 4px 16px rgba(30,28,94,0.35);display:flex;align-items:center;justify-content:center;">&#8679;</button>
 </div>
-<div style="position:sticky;bottom:0;background:white;border-top:2px solid #E4E2F0;padding:8px 12px;display:flex;gap:6px;overflow-x:auto;z-index:98;">
+<div style="position:sticky;bottom:0;background:white;border-top:2px solid #E4E2F0;padding:11px 12px;display:flex;gap:6px;overflow-x:auto;z-index:98;">
   <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:#FFF0E8;border:none;color:#FF6B1A;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;">&#127968; Home</button>
   <button onclick="document.querySelector('.action-cards').scrollIntoView({behavior:'smooth'})" style="background:#E8E7FF;border:none;color:#2D2B7F;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;">&#9997; Forms</button>
   <button onclick="document.querySelector('.service-grid').scrollIntoView({behavior:'smooth'})" style="background:#F3EAFF;border:none;color:#7B35C1;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;">&#128101; Services</button>
