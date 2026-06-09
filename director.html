@@ -445,6 +445,14 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 
 <!-- ══ TAB 5: PIPELINE ══ -->
 <div class="screen" id="s5">
+
+  <!-- SCAN INBOX BUTTON -->
+  <button class="action" id="scan-btn" onclick="openScanOverlay()" style="width:100%;margin-bottom:4px;background:linear-gradient(135deg,#2D2B7F,#1a1860);color:#fff;border:none;font-size:14px;padding:14px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--sans);cursor:pointer;">
+    <span style="font-size:18px;">📬</span>
+    <span style="font-weight:700;">Scan Inbox for Referrals</span>
+    <span style="font-size:11px;opacity:.6;margin-left:auto;">IRC emails · last 60 days</span>
+  </button>
+
   <div class="sec">Referrals — Pending Assessment</div>
   <div id="pipe-referrals-pending"></div>
   <button class="action orange" style="font-size:13px;padding:11px;" onclick="openPipeSheet('referral-pending')">➕ Add Pending Referral</button>
@@ -1544,7 +1552,264 @@ async function savePositions() {
     st.textContent = 'Error saving. Try again.';
   }
 }
+
+// ════════════════════════════════════════════
+// INBOX REFERRAL SCANNER
+// ════════════════════════════════════════════
+
+function openScanOverlay() {
+  // Reset to idle state
+  document.getElementById('scan-idle').style.display = 'block';
+  document.getElementById('scan-loading').style.display = 'none';
+  document.getElementById('scan-results').style.display = 'none';
+  document.getElementById('scan-error').style.display = 'none';
+  document.getElementById('scan-sub').textContent = 'Scan your Outlook inbox for IRC referral emails.';
+  openOverlay('scan-overlay');
+}
+
+function setScanState(state, msg) {
+  ['idle','loading','results','error'].forEach(s =>
+    document.getElementById('scan-' + s).style.display = s === state ? 'block' : 'none'
+  );
+  if (msg) {
+    if (state === 'loading') document.getElementById('scan-status-msg').textContent = msg;
+    if (state === 'error')   document.getElementById('scan-error-msg').textContent = msg;
+    if (state === 'results') document.getElementById('scan-sub').textContent = msg;
+  }
+}
+
+async function runScan() {
+  setScanState('loading', 'Connecting to Outlook…');
+
+  try {
+    // Step 1: Search Outlook via Anthropic API + Microsoft 365 MCP
+    setScanState('loading', 'Searching emails from inlandrc.org…');
+
+    const emailResp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        mcp_servers: [{
+          type: 'url',
+          url: 'https://microsoft365.mcp.claude.com/mcp',
+          name: 'microsoft365'
+        }],
+        messages: [{
+          role: 'user',
+          content: 'Search Outlook emails from the last 60 days where the sender is from inlandrc.org. Use the outlook_email_search tool with sender="inlandrc.org" and afterDateTime="60 days ago" and limit=25. Return ONLY a JSON array (no markdown, no extra text) of objects with fields: subject, sender, receivedDateTime, summary. Include every email found.'
+        }]
+      })
+    });
+
+    const emailData = await emailResp.json();
+
+    // Extract text from MCP tool result blocks
+    let emailsJson = '[]';
+    const blocks = emailData.content || [];
+
+    // Try to find MCP tool result content
+    for (const block of blocks) {
+      if (block.type === 'mcp_tool_result') {
+        const raw = block.content?.[0]?.text || '';
+        // Extract JSON array if present
+        const match = raw.match(/\[([\s\S]*?)\]/);
+        if (match) { emailsJson = '[' + match[1] + ']'; break; }
+      }
+    }
+
+    // Fallback: look in text blocks for JSON
+    if (emailsJson === '[]') {
+      for (const block of blocks) {
+        if (block.type === 'text') {
+          const match = block.text.match(/\[([\s\S]*?)\]/s);
+          if (match) { emailsJson = '[' + match[1] + ']'; break; }
+        }
+      }
+    }
+
+    let emails = [];
+    try { emails = JSON.parse(emailsJson); } catch(e) {}
+
+    if (!emails.length) {
+      // Last resort — pass raw summary text to analysis step
+      const allText = blocks.filter(b => b.type === 'text').map(b => b.text).join('\n');
+      emails = [{ subject: 'Raw scan', summary: allText.substring(0, 3000) }];
+    }
+
+    setScanState('loading', 'Analyzing emails for referral signals…');
+
+    // Step 2: Analyze extracted emails for referral signals
+    const pipeline = load(K.pipeline, defaultPipeline());
+    const existingNames = [
+      ...(pipeline['referral-pending'] || []),
+      ...(pipeline['referral-assign'] || []),
+      ...(pipeline['completed'] || [])
+    ].map(i => (i.name || '').toLowerCase());
+
+    const analysisPrompt = `You are helping a CFS (Coordinated Family Support) director identify referrals in emails.
+
+Existing pipeline clients (already tracked, skip these): ${existingNames.join(', ') || 'none'}
+
+Email data from the last 60 days (from IRC / inlandrc.org senders):
+${JSON.stringify(emails, null, 2)}
+
+Identify any emails that contain a referral for a new consumer/client for CFS services. Extract the following for each referral found. Skip emails that are: out-of-office replies, general announcements, compliance notices, or updates on already-existing clients.
+
+Respond ONLY with valid JSON — no markdown, no extra text:
+[{
+  "clientName": "Full name of referred consumer",
+  "uci": "UCI number if mentioned, else null",
+  "coordinatorName": "IRC coordinator who sent the referral",
+  "coordinatorEmail": "coordinator email address",
+  "dateReceived": "YYYY-MM-DD format",
+  "notes": "1-2 sentence summary of referral reason and family contact",
+  "isNewReferral": true
+}]
+
+If no new referrals are found, return an empty array: []`;
+
+    const analysisResp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: analysisPrompt }]
+      })
+    });
+
+    const analysisData = await analysisResp.json();
+    const analysisText = (analysisData.content || []).find(b => b.type === 'text')?.text || '[]';
+    const clean = analysisText.replace(/```json|```/g, '').trim();
+
+    let referrals = [];
+    try { referrals = JSON.parse(clean); } catch(e) {}
+
+    renderScanResults(referrals, emails.length);
+
+  } catch(err) {
+    console.error('Scan error:', err);
+    setScanState('error', 'Scan failed: ' + (err.message || 'Unknown error. Check connection and try again.'));
+  }
+}
+
+function renderScanResults(referrals, emailCount) {
+  const list = document.getElementById('scan-results-list');
+
+  if (!referrals || referrals.length === 0) {
+    list.innerHTML = `
+      <div style="text-align:center;padding:24px 0;">
+        <div style="font-size:32px;margin-bottom:10px;">✅</div>
+        <p style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">No new referrals found</p>
+        <p style="font-size:12px;color:var(--sub);">Scanned ${emailCount} email${emailCount !== 1 ? 's' : ''} from inlandrc.org. All referrals appear to be in your pipeline already.</p>
+      </div>`;
+    setScanState('results', 'Scanned ' + emailCount + ' IRC emails — pipeline is up to date');
+    return;
+  }
+
+  setScanState('results', 'Found ' + referrals.length + ' potential referral' + (referrals.length !== 1 ? 's' : '') + ' in ' + emailCount + ' emails');
+
+  list.innerHTML = referrals.map((r, i) => `
+    <div class="pipe-card" id="scan-card-${i}" style="margin-bottom:12px;border:1px solid rgba(244,124,32,0.35);">
+      <div class="pipe-header">
+        <div class="pipe-name">${r.clientName || 'Unknown'}${r.uci ? ' <span style="font-size:11px;opacity:.6;">· UCI ' + r.uci + '</span>' : ''}</div>
+        <span class="badge orange">New Referral</span>
+      </div>
+      <div class="pipe-meta" style="margin-bottom:10px;">
+        ${r.coordinatorName ? '🔖 ' + r.coordinatorName : ''}
+        ${r.dateReceived ? ' &nbsp;·&nbsp; 📅 ' + r.dateReceived : ''}
+        ${r.notes ? '<br><span style="opacity:.75;">' + r.notes + '</span>' : ''}
+      </div>
+      <div class="pipe-actions">
+        <button class="pipe-btn mark" onclick="addScannedReferral(${i})" style="background:rgba(244,124,32,.15);color:#F47C20;border-color:rgba(244,124,32,.3);">➕ Add to Pipeline</button>
+        <button class="pipe-btn assign" onclick="dismissScanCard(${i})">✕ Dismiss</button>
+      </div>
+    </div>
+  `).join('');
+
+  // Store referrals for later use
+  window._scanReferrals = referrals;
+}
+
+function addScannedReferral(i) {
+  const r = (window._scanReferrals || [])[i];
+  if (!r) return;
+
+  const pipe = load(K.pipeline, defaultPipeline());
+  if (!pipe['referral-pending']) pipe['referral-pending'] = [];
+
+  pipe['referral-pending'].push({
+    name:  r.clientName || 'Unknown',
+    phone: '',
+    date:  r.dateReceived || todayStr(),
+    notes: [
+      r.uci ? 'UCI: ' + r.uci : '',
+      r.coordinatorName ? 'Coordinator: ' + r.coordinatorName : '',
+      r.coordinatorEmail ? r.coordinatorEmail : '',
+      r.notes || ''
+    ].filter(Boolean).join(' · '),
+    added: todayStr(),
+  });
+
+  save(K.pipeline, pipe);
+  renderPipeline();
+  renderHome();
+
+  // Update card to show added
+  const card = document.getElementById('scan-card-' + i);
+  if (card) {
+    card.style.opacity = '0.5';
+    card.querySelector('.pipe-actions').innerHTML = '<span style="font-size:13px;color:var(--green);">✅ Added to pipeline</span>';
+  }
+  toast('✓ ' + (r.clientName || 'Referral') + ' added to pipeline');
+}
+
+function dismissScanCard(i) {
+  const card = document.getElementById('scan-card-' + i);
+  if (card) card.style.display = 'none';
+}
+
 </script>
+
+<!-- ════════ SCAN INBOX OVERLAY ════════ -->
+<div class="overlay" id="scan-overlay">
+  <div class="sheet" style="max-height:88vh;overflow-y:auto;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">📬 Inbox Referral Scan</div>
+    <div class="sheet-sub" id="scan-sub">Scanning last 60 days of email from inlandrc.org for referrals…</div>
+
+    <!-- IDLE STATE -->
+    <div id="scan-idle" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:40px;margin-bottom:12px;">📬</div>
+      <p style="font-size:14px;color:var(--sub);line-height:1.7;margin-bottom:20px;">This will scan your Outlook inbox for emails from IRC coordinators that contain referral information, and surface any new potential clients not yet in your pipeline.</p>
+      <button class="action orange" style="font-size:14px;padding:13px;" onclick="runScan()">Start Scan →</button>
+    </div>
+
+    <!-- LOADING STATE -->
+    <div id="scan-loading" style="display:none;text-align:center;padding:30px 0;">
+      <div style="font-size:36px;margin-bottom:14px;">🔍</div>
+      <p style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;" id="scan-status-msg">Connecting to Outlook…</p>
+      <p style="font-size:12px;color:var(--sub);">This takes a few seconds</p>
+    </div>
+
+    <!-- RESULTS STATE -->
+    <div id="scan-results" style="display:none;">
+      <div id="scan-results-list"></div>
+      <button class="sheet-cancel" style="width:100%;margin-top:8px;" onclick="closeOverlay('scan-overlay')">Done</button>
+    </div>
+
+    <!-- ERROR STATE -->
+    <div id="scan-error" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:32px;margin-bottom:10px;">⚠️</div>
+      <p style="font-size:13px;color:#FC8181;" id="scan-error-msg">Scan failed. Check your connection and try again.</p>
+      <button class="action ghost" style="margin-top:14px;font-size:13px;padding:11px;" onclick="runScan()">Try Again</button>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
 
