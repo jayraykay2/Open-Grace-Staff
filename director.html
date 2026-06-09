@@ -446,12 +446,14 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 <!-- ══ TAB 5: PIPELINE ══ -->
 <div class="screen" id="s5">
 
-  <!-- SCAN INBOX BUTTON -->
-  <button class="action" id="scan-btn" onclick="openScanOverlay()" style="width:100%;margin-bottom:4px;background:linear-gradient(135deg,#2D2B7F,#1a1860);color:#fff;border:none;font-size:14px;padding:14px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--sans);cursor:pointer;">
-    <span style="font-size:18px;">📬</span>
-    <span style="font-weight:700;">Scan Inbox for Referrals</span>
-    <span style="font-size:11px;opacity:.6;margin-left:auto;">IRC emails · last 60 days</span>
-  </button>
+    <!-- SCAN INFO CARD -->
+  <div style="background:rgba(45,43,127,0.35);border:1px solid rgba(255,255,255,0.1);border-radius:13px;padding:13px 16px;margin-bottom:4px;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:20px;flex-shrink:0;">📬</span>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;">Inbox Referral Scan</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);line-height:1.5;">Tell Claude to scan for new referrals — updates pipeline automatically.</div>
+    </div>
+  </div>
 
   <div class="sec">Referrals — Pending Assessment</div>
   <div id="pipe-referrals-pending"></div>
@@ -1553,182 +1555,8 @@ async function savePositions() {
   }
 }
 
-// ════════════════════════════════════════════
-// INBOX REFERRAL SCANNER — IMPORT MODE
-// ════════════════════════════════════════════
-
-function openScanOverlay() {
-  document.getElementById('scan-paste').style.display = 'block';
-  document.getElementById('scan-results').style.display = 'none';
-  document.getElementById('scan-json-input').value = '';
-  document.getElementById('scan-paste-error').style.display = 'none';
-  document.getElementById('scan-sub').textContent = 'Paste JSON from a Claude referral scan to import into your pipeline.';
-  openOverlay('scan-overlay');
-}
-
-function importScanJSON() {
-  const raw = document.getElementById('scan-json-input').value.trim();
-  const errEl = document.getElementById('scan-paste-error');
-  errEl.style.display = 'none';
-
-  if (!raw) {
-    errEl.textContent = 'Please paste the JSON output from Claude first.';
-    errEl.style.display = 'block';
-    return;
-  }
-
-  let referrals = [];
-  try {
-    // Strip markdown fences if present
-    const clean = raw.replace(/```json|```/g, '').trim();
-    referrals = JSON.parse(clean);
-    if (!Array.isArray(referrals)) throw new Error('Expected an array');
-  } catch(e) {
-    errEl.textContent = 'Invalid JSON — make sure you copied the full output from Claude.';
-    errEl.style.display = 'block';
-    return;
-  }
-
-  // Filter out already-tracked clients
-  const pipeline = load(K.pipeline, defaultPipeline());
-  const existingNames = [
-    ...(pipeline['referral-pending'] || []),
-    ...(pipeline['referral-assign'] || []),
-    ...(pipeline['completed'] || [])
-  ].map(i => (i.name || '').toLowerCase().trim());
-
-  const newReferrals = referrals.filter(r => {
-    const name = (r.clientName || '').toLowerCase().trim();
-    return name && !existingNames.some(e => e.includes(name) || name.includes(e));
-  });
-
-  window._scanReferrals = referrals; // store all for addScannedReferral
-  renderScanResults(newReferrals, referrals.length);
-}
-
-function renderScanResults(referrals, totalScanned) {
-  document.getElementById('scan-paste').style.display = 'none';
-  document.getElementById('scan-results').style.display = 'block';
-  const list = document.getElementById('scan-results-list');
-
-  if (!referrals || referrals.length === 0) {
-    const alreadyMsg = totalScanned > 0
-      ? `All ${totalScanned} referral${totalScanned !== 1 ? 's' : ''} in the scan are already in your pipeline.`
-      : 'No referrals were found in the scan results.';
-    list.innerHTML = `
-      <div style="text-align:center;padding:24px 0;">
-        <div style="font-size:32px;margin-bottom:10px;">✅</div>
-        <p style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">Pipeline is up to date</p>
-        <p style="font-size:12px;color:var(--sub);">${alreadyMsg}</p>
-      </div>`;
-    document.getElementById('scan-sub').textContent = 'No new referrals to add.';
-    return;
-  }
-
-  document.getElementById('scan-sub').textContent =
-    referrals.length + ' new referral' + (referrals.length !== 1 ? 's' : '') + ' found — tap to add each one';
-
-  list.innerHTML = referrals.map((r, i) => `
-    <div class="pipe-card" id="scan-card-${i}" style="margin-bottom:12px;border:1px solid rgba(244,124,32,0.35);">
-      <div class="pipe-header">
-        <div class="pipe-name">${r.clientName || 'Unknown'}${r.uci ? ' <span style="font-size:11px;opacity:.6;">· UCI ' + r.uci + '</span>' : ''}</div>
-        <span class="badge orange">New Referral</span>
-      </div>
-      <div class="pipe-meta" style="margin-bottom:10px;">
-        ${r.coordinatorName ? '🔖 ' + r.coordinatorName : ''}
-        ${r.dateReceived ? ' &nbsp;·&nbsp; 📅 ' + r.dateReceived : ''}
-        ${r.notes ? '<br><span style="opacity:.75;">' + r.notes + '</span>' : ''}
-      </div>
-      <div class="pipe-actions">
-        <button class="pipe-btn mark" onclick="addScannedReferral(${i})" style="background:rgba(244,124,32,.15);color:#F47C20;border-color:rgba(244,124,32,.3);">➕ Add to Pipeline</button>
-        <button class="pipe-btn assign" onclick="dismissScanCard(${i})">✕ Skip</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function addScannedReferral(i) {
-  const all = window._scanReferrals || [];
-  // Map display index back — find by DOM card
-  const card = document.getElementById('scan-card-' + i);
-  const nameEl = card?.querySelector('.pipe-name');
-  const name = nameEl?.textContent?.split('·')[0]?.trim() || '';
-
-  // Find the referral in the full list by name match
-  const r = all.find(x => (x.clientName||'').toLowerCase().includes(name.toLowerCase())) || all[i] || {};
-
-  const pipe = load(K.pipeline, defaultPipeline());
-  if (!pipe['referral-pending']) pipe['referral-pending'] = [];
-
-  pipe['referral-pending'].push({
-    name:  r.clientName || 'Unknown',
-    phone: '',
-    date:  r.dateReceived || todayStr(),
-    notes: [
-      r.uci            ? 'UCI: ' + r.uci : '',
-      r.coordinatorName  ? 'Coordinator: ' + r.coordinatorName : '',
-      r.coordinatorEmail ? r.coordinatorEmail : '',
-      r.notes          || ''
-    ].filter(Boolean).join(' · '),
-    added: todayStr(),
-  });
-
-  save(K.pipeline, pipe);
-  renderPipeline();
-  renderHome();
-
-  if (card) {
-    card.style.opacity = '0.45';
-    card.querySelector('.pipe-actions').innerHTML =
-      '<span style="font-size:13px;color:var(--green);">✅ Added to pipeline</span>';
-  }
-  toast('✓ ' + (r.clientName || 'Referral') + ' added');
-}
-
-function dismissScanCard(i) {
-  const card = document.getElementById('scan-card-' + i);
-  if (card) card.style.display = 'none';
-}
 
 </script>
-
-<!-- ════════ SCAN INBOX OVERLAY ════════ -->
-<div class="overlay" id="scan-overlay">
-  <div class="sheet" style="max-height:88vh;overflow-y:auto;">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">📬 Import Referral Scan</div>
-    <div class="sheet-sub" id="scan-sub">Paste the JSON output from a Claude referral scan.</div>
-
-    <!-- PASTE STATE -->
-    <div id="scan-paste">
-      <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:14px;margin-bottom:14px;">
-        <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">How to scan</div>
-        <div style="font-size:13px;color:var(--sub);line-height:1.75;">
-          1. Open <strong style="color:var(--text);">Claude.ai</strong> in a new tab<br>
-          2. Type: <em style="color:#F5A623;">"Scan my Outlook inbox for new CFS referrals from inlandrc.org in the last 60 days and return the results as JSON"</em><br>
-          3. Copy the JSON output Claude returns<br>
-          4. Paste it below and tap Import
-        </div>
-      </div>
-      <div class="field">
-        <div class="field-label">Paste JSON Results</div>
-        <textarea class="field-input field-textarea" id="scan-json-input" rows="6" placeholder='[{"clientName":"...", "uci":"...", "coordinatorName":"...", "coordinatorEmail":"...", "dateReceived":"YYYY-MM-DD", "notes":"..."}]'></textarea>
-      </div>
-      <div id="scan-paste-error" style="font-size:12px;color:#FC8181;margin-bottom:10px;display:none;"></div>
-      <div style="display:flex;gap:8px;">
-        <button class="sheet-cancel" onclick="closeOverlay('scan-overlay')">Cancel</button>
-        <button class="sheet-save" onclick="importScanJSON()">Import →</button>
-      </div>
-    </div>
-
-    <!-- RESULTS STATE -->
-    <div id="scan-results" style="display:none;">
-      <div id="scan-results-list"></div>
-      <button class="sheet-cancel" style="width:100%;margin-top:8px;" onclick="closeOverlay('scan-overlay')">Done</button>
-    </div>
-
-  </div>
-</div>
 
 </body>
 </html>
