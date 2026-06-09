@@ -21,7 +21,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:15px;line-height:1.6;padding-bottom:110px;}
+body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:17px;line-height:1.6;padding-bottom:110px;}
 
 /* NAV */
 .nav{background:var(--navy);padding:0 16px;height:56px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:999;box-shadow:0 2px 20px rgba(0,0,0,.3);}
@@ -34,9 +34,9 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
 /* CANDIDATE SWITCHER */
 .switcher{background:white;border-bottom:2px solid var(--g200);padding:10px 16px;display:flex;gap:8px;align-items:center;overflow-x:auto;}
 .switcher-label{font-size:11px;font-weight:700;color:var(--g400);letter-spacing:.8px;text-transform:uppercase;white-space:nowrap;}
-.switcher select{flex:1;padding:8px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:13px;font-family:var(--sans);color:var(--g900);background:var(--off);outline:none;min-width:120px;}
+.switcher select{flex:1;padding:11px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:13px;font-family:var(--sans);color:var(--g900);background:var(--off);outline:none;min-width:120px;}
 .switcher-btns{display:flex;gap:6px;flex-shrink:0;}
-.sw-btn{padding:8px 12px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);white-space:nowrap;}
+.sw-btn{padding:11px 12px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);white-space:nowrap;}
 .sw-btn.new{background:var(--navy2);color:white;}
 .sw-btn.del{background:var(--red2);color:var(--red);}
 
@@ -76,13 +76,13 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
 .field-group.single{grid-template-columns:1fr;}
 .field{display:flex;flex-direction:column;gap:4px;}
 .field label{font-size:10px;font-weight:700;color:var(--g400);letter-spacing:.8px;text-transform:uppercase;}
-.field input,.field textarea,.field select{padding:9px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:13px;font-family:var(--sans);color:var(--g900);background:var(--off);transition:border-color .2s;outline:none;width:100%;}
+.field input,.field textarea,.field select{padding:12px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:13px;font-family:var(--sans);color:var(--g900);background:var(--off);transition:border-color .2s;outline:none;width:100%;}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--navy2);background:white;}
 .field textarea{resize:vertical;min-height:52px;}
 
 /* CHECKLIST */
 .check-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-.check-item{display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--g100);border-radius:10px;cursor:pointer;transition:all .2s;user-select:none;border:1.5px solid transparent;}
+.check-item{display:flex;align-items:center;gap:9px;padding:12px 12px;background:var(--g100);border-radius:10px;cursor:pointer;transition:all .2s;user-select:none;border:1.5px solid transparent;}
 .check-item.checked{background:var(--green2);border-color:var(--green);}
 .check-box{width:18px;height:18px;border:2px solid var(--g400);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .2s;background:white;}
 .check-item.checked .check-box{background:var(--green);border-color:var(--green);color:white;}
@@ -96,7 +96,7 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
 .q-block.gold{border-left-color:var(--gold);}
 .q-text{font-size:13px;font-weight:600;color:var(--g900);margin-bottom:5px;line-height:1.5;}
 .q-listen{font-size:11px;color:var(--g400);margin-bottom:9px;font-style:italic;line-height:1.5;}
-.q-notes{width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:9px;font-size:13px;font-family:var(--sans);color:var(--g900);background:white;resize:vertical;min-height:48px;outline:none;transition:border-color .2s;}
+.q-notes{width:100%;padding:12px 12px;border:1.5px solid var(--g200);border-radius:9px;font-size:13px;font-family:var(--sans);color:var(--g900);background:white;resize:vertical;min-height:48px;outline:none;transition:border-color .2s;}
 .q-notes:focus{border-color:var(--navy2);}
 
 /* SCORE BUTTONS */
@@ -116,9 +116,9 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
 .scenario-num{width:26px;height:26px;border-radius:7px;background:var(--purple);color:white;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .scenario-head h4{font-size:13px;font-weight:700;color:var(--g900);}
 .scenario-body{padding:12px 14px;}
-.scenario-q{font-size:13px;font-weight:600;color:var(--g900);margin-bottom:9px;line-height:1.5;padding:9px 12px;background:var(--g100);border-radius:8px;border-left:3px solid var(--purple);}
+.scenario-q{font-size:13px;font-weight:600;color:var(--g900);margin-bottom:9px;line-height:1.5;padding:12px 12px;background:var(--g100);border-radius:8px;border-left:3px solid var(--purple);}
 .answer-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px;}
-.answer-box{padding:9px 11px;border-radius:8px;font-size:11px;line-height:1.55;}
+.answer-box{padding:12px 11px;border-radius:8px;font-size:11px;line-height:1.55;}
 .answer-box.good{background:var(--green2);border-left:3px solid var(--green);color:#14532D;}
 .answer-box.bad{background:var(--red2);border-left:3px solid var(--red);color:#7F1D1D;}
 .answer-box strong{display:block;font-size:9px;letter-spacing:.8px;text-transform:uppercase;margin-bottom:3px;}
@@ -126,7 +126,7 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
 /* FINAL TABLE */
 .scoring-table{width:100%;border-collapse:separate;border-spacing:0 5px;}
 .scoring-table th{font-size:10px;font-weight:700;color:var(--g400);letter-spacing:1px;text-transform:uppercase;padding:3px 10px;text-align:left;}
-.scoring-table td{padding:9px 10px;background:var(--g100);font-size:13px;color:var(--g700);}
+.scoring-table td{padding:12px 10px;background:var(--g100);font-size:13px;color:var(--g700);}
 .scoring-table tr td:first-child{border-radius:9px 0 0 9px;font-weight:600;color:var(--g900);}
 .scoring-table tr td:last-child{border-radius:0 9px 9px 0;}
 .scoring-table .wt{color:var(--orange);font-weight:700;font-size:11px;}
@@ -212,6 +212,10 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
 </style>
 </head>
 <body>
+<!-- BACK BAR -->
+<div class="backbar" style="background:#2D2B7F;padding:12px 24px;display:flex;align-items:center;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.25);">
+  <a href="staff-portal.html" style="color:white;text-decoration:none;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;opacity:0.9;">&#8592; Back to Staff Portal</a>
+</div>
 
 <!-- NAV -->
 <nav class="nav">
@@ -536,7 +540,7 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
     <div class="highlight green">Strong candidates ask about: the role, documentation, client support, performance review, team culture. Concerning if they only ask about pay, hours, and start date.</div>
     <div class="field-group single" style="margin-top:12px;">
       <div class="field"><label>Questions the candidate asked</label>
-        <textarea id="cand_questions" placeholder="Write what they asked..." rows="3" style="padding:9px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:13px;font-family:var(--sans);color:var(--g900);background:var(--off);resize:vertical;outline:none;width:100%;"></textarea>
+        <textarea id="cand_questions" placeholder="Write what they asked..." rows="3" style="padding:12px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:13px;font-family:var(--sans);color:var(--g900);background:var(--off);resize:vertical;outline:none;width:100%;"></textarea>
       </div>
     </div>
     <div class="score-wrap" style="margin-top:10px;"><span class="score-label">Question Quality</span>
@@ -605,7 +609,7 @@ body{font-family:var(--sans);background:var(--off);color:var(--g700);font-size:1
     </div>
     <div class="field-group single" style="margin-top:14px;">
       <div class="field"><label>Overall Notes &amp; Reasoning</label>
-        <textarea id="final_notes" placeholder="Summary of impression, key strengths, concerns..." rows="4" style="padding:9px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:13px;font-family:var(--sans);color:var(--g900);background:var(--off);resize:vertical;outline:none;width:100%;"></textarea>
+        <textarea id="final_notes" placeholder="Summary of impression, key strengths, concerns..." rows="4" style="padding:12px 12px;border:1.5px solid var(--g200);border-radius:10px;font-size:13px;font-family:var(--sans);color:var(--g900);background:var(--off);resize:vertical;outline:none;width:100%;"></textarea>
       </div>
     </div>
   </div>
