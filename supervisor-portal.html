@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Open Grace LLC — Supervisor Portal</title>
+<style>
+  :root {
+    --navy: #2D2B7F; --orange: #F47C20; --gold: #F5A623;
+    --green: #1D9E75; --red: #D84040;
+    --bg: #0F0D2E; --card: #1A1760; --border: rgba(255,255,255,0.1);
+    --sans: 'Segoe UI', Arial, sans-serif;
+    --text: #fff; --sub: rgba(255,255,255,0.55);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── LOCK SCREEN ── */
+  #lock-screen {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px 20px;
+    background: radial-gradient(ellipse at top, #2D2B7F22 0%, transparent 70%);
+  }
+  .lock-logo {
+    width: 64px; height: 64px; background: var(--navy);
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    font-size: 32px; margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .lock-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .lock-sub { font-size: 14px; color: var(--sub); margin-bottom: 32px; text-align: center; }
+  .lock-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px 24px; width: 100%; max-width: 380px;
+  }
+  .lock-label { font-size: 12px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .lock-input {
+    width: 100%; background: rgba(255,255,255,0.07); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px; font-size: 20px; color: var(--text);
+    font-family: var(--sans); letter-spacing: 4px; text-align: center;
+    outline: none; margin-bottom: 14px; transition: border-color 0.2s;
+  }
+  .lock-input:focus { border-color: var(--orange); }
+  .lock-input.error { border-color: var(--red); animation: shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .lock-btn {
+    width: 100%; padding: 17px; background: var(--navy); color: #fff;
+    border: none; border-radius: 12px; font-size: 16px; font-weight: 700;
+    font-family: var(--sans); cursor: pointer; transition: background 0.15s;
+  }
+  .lock-btn:active { background: #1e1c5e; }
+  .lock-error { font-size: 13px; color: #FC8181; text-align: center; margin-top: 12px; min-height: 18px; }
+  .lock-note { font-size: 12px; color: var(--sub); text-align: center; margin-top: 20px; line-height: 1.6; }
+
+  /* ── PORTAL ── */
+  #portal-screen { display: none; }
+
+  .topbar {
+    background: var(--navy); padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px;
+    position: sticky; top: 0; z-index: 100;
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-icon { font-size: 22px; }
+  .topbar-title { font-size: 15px; font-weight: 700; }
+  .topbar-sub { font-size: 11px; color: var(--sub); margin-top: 1px; }
+  .topbar-lock { margin-left: auto; font-size: 20px; cursor: pointer; opacity: 0.6; }
+  .topbar-lock:hover { opacity: 1; }
+
+  .wrap { padding: 20px 16px 80px; max-width: 480px; margin: 0 auto; }
+
+  .sec { font-size: 10px; font-weight: 800; color: var(--orange); letter-spacing: 2.5px; text-transform: uppercase; margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; }
+  .sec::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* COMING SOON BANNER */
+  .coming-soon {
+    background: linear-gradient(135deg, #2D2B7F, #1a1860);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px; padding: 24px 20px; margin-bottom: 20px; text-align: center;
+  }
+  .cs-badge {
+    display: inline-block; background: var(--orange); color: #fff;
+    font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 20px; margin-bottom: 14px;
+  }
+  .cs-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+  .cs-body { font-size: 14px; color: var(--sub); line-height: 1.7; }
+
+  /* PLANNED MODULES */
+  .module-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 18px; margin-bottom: 10px;
+    display: flex; align-items: flex-start; gap: 14px;
+    position: relative; overflow: hidden;
+  }
+  .module-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; background: var(--navy);
+  }
+  .module-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+  .module-title { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+  .module-sub { font-size: 13px; color: var(--sub); line-height: 1.5; }
+  .module-badge {
+    display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+    padding: 3px 8px; border-radius: 6px; margin-top: 6px;
+  }
+  .badge-planned { background: rgba(244,124,32,0.15); color: var(--orange); }
+  .badge-ready { background: rgba(29,158,117,0.15); color: var(--green); }
+
+  /* QUICK ACCESS — links to director functions supervisor can use now */
+  .qlink {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; margin-bottom: 8px;
+    text-decoration: none; color: var(--text); transition: border-color 0.15s;
+  }
+  .qlink:hover { border-color: rgba(255,255,255,0.3); }
+  .qlink-icon { font-size: 22px; flex-shrink: 0; }
+  .qlink-info { flex: 1; }
+  .qlink-label { font-size: 15px; font-weight: 700; }
+  .qlink-sub { font-size: 12px; color: var(--sub); margin-top: 2px; }
+  .qlink-arrow { font-size: 16px; color: var(--sub); }
+
+  /* LANE GUIDE */
+  .lane-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 18px; margin-bottom: 10px;
+  }
+  .lane-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+  .lane-row:last-child { margin-bottom: 0; }
+  .lane-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .lane-label { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .lane-sub { font-size: 12px; color: var(--sub); line-height: 1.5; }
+
+  .footer { text-align: center; padding: 20px 16px; font-size: 11px; color: var(--sub); border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<!-- ══ LOCK SCREEN ══ -->
+<div id="lock-screen">
+  <div class="lock-logo">🏢</div>
+  <div class="lock-title">Supervisor Portal</div>
+  <div class="lock-sub">Open Grace LLC &bull; Restricted Access</div>
+  <div class="lock-card">
+    <div class="lock-label">Supervisor Access Code</div>
+    <input class="lock-input" id="code-input" type="password" inputmode="numeric"
+      maxlength="6" placeholder="••••••" autocomplete="off"
+      onkeydown="if(event.key==='Enter')unlock()" />
+    <button class="lock-btn" onclick="unlock()">Access Portal</button>
+    <div class="lock-error" id="lock-error"></div>
+  </div>
+  <div class="lock-note">
+    This portal is restricted to Open Grace LLC supervisors.<br>
+    Contact the Director for access: 951-880-4132
+  </div>
+</div>
+
+<!-- ══ PORTAL ══ -->
+<div id="portal-screen">
+
+  <div class="topbar">
+    <div class="topbar-icon">🏢</div>
+    <div>
+      <div class="topbar-title">Supervisor Portal</div>
+      <div class="topbar-sub">Open Grace LLC &bull; Restricted</div>
+    </div>
+    <div class="topbar-lock" onclick="lock()" title="Lock portal">🔒</div>
+  </div>
+
+  <div class="wrap">
+
+    <div class="coming-soon">
+      <div class="cs-badge">In Development</div>
+      <div class="cs-title">Supervisor Tools Coming Soon</div>
+      <div class="cs-body">
+        This portal will give supervisors the tools to lead and manage Family Coordinators — staff oversight, caseload review, documentation compliance, and team communication — without requiring full Director-level access.
+      </div>
+    </div>
+
+    <div class="sec">Planned Modules</div>
+
+    <div class="module-card">
+      <div class="module-icon">👥</div>
+      <div>
+        <div class="module-title">Staff Caseload Overview</div>
+        <div class="module-sub">View which coordinators are assigned to which clients, hours worked, and active service periods.</div>
+        <span class="module-badge badge-planned">Planned</span>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-icon">📋</div>
+      <div>
+        <div class="module-title">Documentation Compliance Tracker</div>
+        <div class="module-sub">Monitor daily contact log submissions, flag missing entries, and review documentation quality across the team.</div>
+        <span class="module-badge badge-planned">Planned</span>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-icon">📊</div>
+      <div>
+        <div class="module-title">Team Performance Dashboard</div>
+        <div class="module-sub">Attendance, on-time submissions, client engagement, and goal progress across your team of coordinators.</div>
+        <span class="module-badge badge-planned">Planned</span>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-icon">🔔</div>
+      <div>
+        <div class="module-title">Escalation & Incident Review</div>
+        <div class="module-sub">Receive flagged incidents from coordinators, review responses, and escalate to the Director when required.</div>
+        <span class="module-badge badge-planned">Planned</span>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-icon">📅</div>
+      <div>
+        <div class="module-title">QPR &amp; IPP Deadline Monitor</div>
+        <div class="module-sub">See upcoming QPR deadlines for all clients across your team with advance alerts.</div>
+        <span class="module-badge badge-planned">Planned</span>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-icon">💬</div>
+      <div>
+        <div class="module-title">Team Communication Hub</div>
+        <div class="module-sub">Send announcements, updates, and one-on-one messages to coordinators in your team without Director involvement.</div>
+        <span class="module-badge badge-planned">Planned</span>
+      </div>
+    </div>
+
+    <div class="sec">Available Now</div>
+    <p style="font-size:13px;color:var(--sub);margin-bottom:14px;line-height:1.6;">While supervisor-specific tools are in development, you can access these Director-level resources. Contact the Director to request access to any additional tools.</p>
+
+    <a class="qlink" href="https://opengrace.org/contact-log.html" target="_blank">
+      <div class="qlink-icon">📝</div>
+      <div class="qlink-info">
+        <div class="qlink-label">Staff Daily Contact Log</div>
+        <div class="qlink-sub">View and submit contact log entries</div>
+      </div>
+      <div class="qlink-arrow">→</div>
+    </a>
+
+    <a class="qlink" href="https://opengrace.org/Open_Grace_Interview_Scorecard.html" target="_blank">
+      <div class="qlink-icon">📋</div>
+      <div class="qlink-info">
+        <div class="qlink-label">Interview Scorecard</div>
+        <div class="qlink-sub">Evaluate candidates for coordinator positions</div>
+      </div>
+      <div class="qlink-arrow">→</div>
+    </a>
+
+    <a class="qlink" href="https://opengrace.org/onboarding.html" target="_blank">
+      <div class="qlink-icon">🚀</div>
+      <div class="qlink-info">
+        <div class="qlink-label">Staff Onboarding Page</div>
+        <div class="qlink-sub">Share with new hires to begin onboarding</div>
+      </div>
+      <div class="qlink-arrow">→</div>
+    </a>
+
+    <a class="qlink" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank">
+      <div class="qlink-icon">📘</div>
+      <div class="qlink-info">
+        <div class="qlink-label">Employee Handbook</div>
+        <div class="qlink-sub">Review and share with your team</div>
+      </div>
+      <div class="qlink-arrow">→</div>
+    </a>
+
+    <div class="sec">Portal Access Lanes</div>
+    <div class="lane-card">
+      <div class="lane-row">
+        <div class="lane-dot" style="background:#F47C20;"></div>
+        <div>
+          <div class="lane-label">Family Portal</div>
+          <div class="lane-sub">Families only — forms, resources, grievance info, pre-screening assessment. No access to staff or director tools.</div>
+        </div>
+      </div>
+      <div class="lane-row">
+        <div class="lane-dot" style="background:#1D9E75;"></div>
+        <div>
+          <div class="lane-label">Staff Portal</div>
+          <div class="lane-sub">Family Coordinators only — contact log, onboarding, handbook, incident reporting. No director or family portal access.</div>
+        </div>
+      </div>
+      <div class="lane-row">
+        <div class="lane-dot" style="background:#2D2B7F;"></div>
+        <div>
+          <div class="lane-label">Supervisor Portal</div>
+          <div class="lane-sub">Supervisors — team oversight, caseload management, compliance monitoring. No billing, vendor, or IRC-level director tools.</div>
+        </div>
+      </div>
+      <div class="lane-row" style="margin-bottom:0;">
+        <div class="lane-dot" style="background:#F5A623;"></div>
+        <div>
+          <div class="lane-label">Director Dashboard</div>
+          <div class="lane-sub">Director only — full access including IRC coordination, pipeline, hiring, vendor compliance, staff access management, and all portals.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    Open Grace LLC &bull; IRC Vendor PJ6208 &bull; 951-880-4132 &bull; joshua.kennedy@opengrace.org
+  </div>
+
+</div>
+
+<script>
+// Access code — change this to whatever you want the supervisor code to be
+// Uses same pattern as contact-log.html (plain JS, no server)
+const SUPERVISOR_CODE = "OG2026";
+
+function unlock() {
+  const input = document.getElementById('code-input');
+  const err = document.getElementById('lock-error');
+  const val = input.value.trim().toUpperCase();
+
+  if (val === SUPERVISOR_CODE) {
+    document.getElementById('lock-screen').style.display = 'none';
+    document.getElementById('portal-screen').style.display = 'block';
+    sessionStorage.setItem('og_sup_auth', '1');
+    err.textContent = '';
+  } else {
+    input.classList.add('error');
+    err.textContent = 'Incorrect code. Contact the Director at 951-880-4132.';
+    input.value = '';
+    setTimeout(() => input.classList.remove('error'), 400);
+  }
+}
+
+function lock() {
+  sessionStorage.removeItem('og_sup_auth');
+  document.getElementById('portal-screen').style.display = 'none';
+  document.getElementById('lock-screen').style.display = 'flex';
+  document.getElementById('code-input').value = '';
+  document.getElementById('lock-error').textContent = '';
+}
+
+// Auto-unlock if session still active
+if (sessionStorage.getItem('og_sup_auth') === '1') {
+  document.getElementById('lock-screen').style.display = 'none';
+  document.getElementById('portal-screen').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
