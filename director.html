@@ -455,14 +455,6 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
     </div>
   </div>
 
-  <button onclick="forceSyncPipeline()" style="width:100%;margin-bottom:10px;
-    padding:12px 16px;background:rgba(29,158,117,0.15);color:#1D9E75;
-    border:1px solid rgba(29,158,117,0.3);border-radius:13px;font-size:13px;
-    font-weight:700;font-family:var(--sans);cursor:pointer;display:flex;
-    align-items:center;justify-content:center;gap:8px;">
-    🔄 Sync Pipeline Data
-  </button>
-
   <div class="sec">Referrals — Pending Assessment</div>
   <div id="pipe-referrals-pending"></div>
   <button class="action orange" style="font-size:13px;padding:11px;" onclick="openPipeSheet('referral-pending')">➕ Add Pending Referral</button>
@@ -1127,34 +1119,82 @@ function markComplete(type, idx) {
   toast('✓ Marked complete');
 }
 
+function parseCoordFromNotes(notes) {
+  if (!notes) return null;
+  const m = notes.match(/Coordinator:\s*([^|\n]+)/i);
+  if (!m) return null;
+  const raw = m[1].trim();
+  const em = notes.match(/([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/);
+  const pm = raw.match(/\(?([0-9]{3})\)?[\s.\-]?([0-9]{3})[\s.\-]?([0-9]{4})/);
+  let name = raw.replace(/\(.*?\)/g,'').replace(em?em[0]:'','').split('\u2014')[0].split(' - ')[0].trim();
+  return { name:name||raw, phone:pm?pm[0].replace(/\D/g,''):'', phoneRaw:pm?pm[0]:'', email:em?em[0]:'' };
+}
+
+function openCoordContact(name, phone, email, clientName) {
+  document.getElementById('coord-contact-name').textContent = name || 'IRC Coordinator';
+  document.getElementById('coord-contact-role').textContent = 'IRC Service Coordinator' + (clientName ? ' \u2014 ' + clientName : '');
+  const ph = (phone||'').replace(/\D/g,'');
+  const callBtn  = document.getElementById('coord-call-btn');
+  const smsBtn   = document.getElementById('coord-sms-btn');
+  const emailBtn = document.getElementById('coord-email-btn');
+  document.getElementById('coord-phone-row').style.display = ph ? 'flex' : 'none';
+  if (ph) {
+    callBtn.href = 'tel:'+ph; callBtn.style.display = 'flex';
+    smsBtn.href  = 'sms:'+ph; smsBtn.style.display  = 'flex';
+    document.getElementById('coord-phone-num').textContent = phone || ph;
+  } else { callBtn.style.display='none'; smsBtn.style.display='none'; }
+  if (email) {
+    emailBtn.href='mailto:'+email; emailBtn.style.display='flex';
+    document.getElementById('coord-email-addr').textContent = email;
+  } else { emailBtn.style.display='none'; }
+  openOverlay('coord-contact-overlay');
+}
+
 function renderPipeSection(type, items) {
   const cfg = PIPE_CONFIG[type];
   const el  = document.getElementById(cfg.elId);
   if (!el) return;
-
   if (!items || !items.length) {
-    el.innerHTML = '<div class="empty" style="padding:14px 0 6px;">Nothing here — tap + to add</div>';
+    el.innerHTML = '<div class="empty" style="padding:14px 0 6px;">Nothing here \u2014 tap + to add</div>';
     return;
   }
-
   el.innerHTML = items.map((item, i) => {
-    const phone = (item.phone||'').replace(/\D/g,'');
-    const smsHref   = phone ? `sms:${phone}` : '';
-    const emailNote = item.notes ? item.notes.split('\n')[0].substring(0,60) : '';
+    const phone   = (item.phone||'').replace(/\D/g,'');
+    const smsHref = phone ? `sms:${phone}` : '';
+    const isRef   = type === 'referral-pending' || type === 'referral-assign';
+    const coord   = isRef ? parseCoordFromNotes(item.notes) : null;
+    const uciM    = (item.notes||'').match(/UCI\s*([0-9]{7})/i);
+    const uci     = uciM ? uciM[1] : '';
+    const cN = coord ? (coord.name||'').replace(/'/g,"\\'") : '';
+    const cP = coord ? coord.phone : '';
+    const cE = coord ? coord.email : '';
+    const iN = (item.name||'').replace(/'/g,"\\'");
+    const coordBtn = coord ? `
+      <button onclick="openCoordContact('${cN}','${cP}','${cE}','${iN}')"
+        style="width:100%;margin:8px 0 4px;padding:10px 14px;background:rgba(45,43,127,0.35);
+        border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;
+        font-family:var(--sans);cursor:pointer;display:flex;align-items:center;gap:10px;text-align:left;">
+        <span style="font-size:18px;flex-shrink:0;">\uD83D\uDD16</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:700;">IRC Coordinator</div>
+          <div style="font-size:11px;opacity:.6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${coord.name}${coord.phoneRaw?' \u00B7 '+coord.phoneRaw:''}</div>
+        </div>
+        <span style="opacity:.4;font-size:14px;">\u2192</span>
+      </button>` : '';
     return `<div class="pipe-card">
       <div class="pipe-header">
-        <div class="pipe-name">${item.name}</div>
+        <div class="pipe-name">${item.name}${uci?` <span style="font-size:11px;opacity:.5;font-weight:400;">UCI ${uci}</span>`:''}</div>
         <span class="badge ${cfg.badge}">${cfg.badgeLabel}</span>
       </div>
       <div class="pipe-meta">
-        ${item.date ? '📅 Added ' + fmtDate(item.date) : ''}
-        ${phone ? ` &nbsp;·&nbsp; 📞 ${item.phone}` : ''}
-        ${emailNote ? `<br>${emailNote}` : ''}
+        ${item.date ? '\uD83D\uDCC5 ' + fmtDate(item.date) : ''}
+        ${phone ? ' &nbsp;\u00B7&nbsp; \uD83D\uDCDE ' + item.phone : ''}
       </div>
+      ${coordBtn}
       <div class="pipe-actions">
-        ${phone ? `<a class="pipe-btn sms" href="${smsHref}">💬 Text</a>` : ''}
-        <button class="pipe-btn mark" onclick="markComplete('${type}',${i})">✅ Done</button>
-        <button class="pipe-btn assign" onclick="openPipeSheet('${type}',${i})">✏️ Edit</button>
+        ${phone ? `<a class="pipe-btn sms" href="${smsHref}">\uD83D\uDCAC Text</a>` : ''}
+        <button class="pipe-btn mark" onclick="markComplete('${type}',${i})">\u2705 Done</button>
+        <button class="pipe-btn assign" onclick="openPipeSheet('${type}',${i})">\u270F\uFE0F Edit</button>
       </div>
     </div>`;
   }).join('');
@@ -2192,86 +2232,6 @@ function openNewStaffSheet() {
   document.getElementById('se-active').checked = true;
   document.getElementById('se-deactivate-row').style.display = 'none';
   openOverlay('staff-edit-overlay');
-}
-
-
-// ── FORCE SYNC PIPELINE ──────────────────────────────────
-function forceSyncPipeline() {
-  if (!confirm('This will reset your pipeline to the latest known data, merging in any missing entries. Entries you\'ve manually added will be preserved. Continue?')) return;
-
-  const stored = localStorage.getItem('og_pipeline_v2');
-  let current = { 'referral-pending': [], 'referral-assign': [], 'onboarding': [], 'completed': [] };
-  try { if (stored) current = JSON.parse(stored); } catch(e) {}
-
-  // Latest known seed data
-  const seed = {
-    'referral-pending': [
-      {
-        name: 'Burks, Jaybrion', phone: '(909) 722-0525', date: '2026-04-22',
-        notes: 'UCI 6953825 | Coordinator: Christina Castaneda — ccastaneda@inlandrc.org (951) 241-8102 | Family: Delisa Trammel (mother), Sarion Burks (sister/advocate) | Service start 04/22/2026 | QPR due 07/21/2026 | ASSESSMENT PENDING — initial meeting held | Follow up to complete CFS Section 2 needs assessment',
-        added: '2026-04-22'
-      },
-      {
-        name: 'Pinto, Arianna', phone: '(323) 490-6850', date: '2026-05-29',
-        notes: 'UCI 7446993 | Mother: Veronica Falcon (323) 490-6850 | Coordinator: Tarah Bass (909) 890-3420 | Referral received May 29 | Assessment meeting Mon June 9 via Teams | IPP/CDER pending from Tarah | POS on hold until after July — end of fiscal year',
-        added: '2026-05-29'
-      },
-      {
-        name: 'Beinbrech, Marykate', phone: '(562) 631-7043', date: '2026-05-18',
-        notes: 'UCI 8283031 | Mother: Christi Beinbrech (562) 631-7043 | Coordinator: Tarah Bass (909) 890-3420 | Referral received May 18, 2026 | Needs support applying for generic services | Follow-up call with Christi still needed',
-        added: '2026-05-18'
-      }
-    ],
-    'referral-assign': [],
-    'onboarding': [
-      {
-        name: 'Ramirez-Tellez, Daisy', phone: '', date: '2026-06-05',
-        notes: 'Position: Family Coordinator — Direct Support Specialist | Interview rescheduling to next week | Applied via Indeed',
-        added: '2026-06-05'
-      },
-      {
-        name: 'Escajeda, Sandra', phone: '(714) 340-9366', date: '2026-06-09',
-        notes: 'Position: Family Coordinator | Applied via Jotform June 9 | sandraescajeda68@aol.com | Experience: IHSS, Medi-Cal, SSI, IRC coaching | Interview June 8',
-        added: '2026-06-09'
-      },
-      {
-        name: 'Allah, Mecca', phone: '(310) 760-6833', date: '2026-06-08',
-        notes: "Position: Case Manager / Navigator | Applied via Jotform June 8 | allah.meccaz@gmail.com | Master's in Special Education | 5 years special education and student services",
-        added: '2026-06-08'
-      },
-      {
-        name: 'Carter-Earl, Ambre', phone: '(310) 606-0578', date: '2026-06-07',
-        notes: 'Position: Applied for 3 roles — Lead FC, Family Coordinator, Case Manager | Applied via Jotform June 7 | simoneaearl@icloud.com | Case Manager and Transition Coordinator experience',
-        added: '2026-06-07'
-      }
-    ],
-    'completed': []
-  };
-
-  // Merge seed into current — add any seed entries not already present
-  let added = 0;
-  ['referral-pending','referral-assign','onboarding','completed'].forEach(section => {
-    if (!current[section]) current[section] = [];
-    (seed[section] || []).forEach(seedItem => {
-      const exists = current[section].some(existing =>
-        (existing.name || '').toLowerCase().trim() === (seedItem.name || '').toLowerCase().trim()
-      );
-      if (!exists) {
-        current[section].push(seedItem);
-        added++;
-      }
-    });
-  });
-
-  save('og_pipeline_v2', current);
-  renderPipeline();
-  renderHome();
-
-  if (added > 0) {
-    toast('✓ Pipeline synced — ' + added + ' entr' + (added === 1 ? 'y' : 'ies') + ' added');
-  } else {
-    toast('✓ Pipeline already up to date');
-  }
 }
 
 </script>
