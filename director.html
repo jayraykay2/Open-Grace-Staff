@@ -455,6 +455,14 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
     </div>
   </div>
 
+  <button onclick="forceSyncPipeline()" style="width:100%;margin-bottom:10px;
+    padding:12px 16px;background:rgba(29,158,117,0.15);color:#1D9E75;
+    border:1px solid rgba(29,158,117,0.3);border-radius:13px;font-size:13px;
+    font-weight:700;font-family:var(--sans);cursor:pointer;display:flex;
+    align-items:center;justify-content:center;gap:8px;">
+    🔄 Sync Pipeline Data
+  </button>
+
   <div class="sec">Referrals — Pending Assessment</div>
   <div id="pipe-referrals-pending"></div>
   <button class="action orange" style="font-size:13px;padding:11px;" onclick="openPipeSheet('referral-pending')">➕ Add Pending Referral</button>
@@ -2184,6 +2192,86 @@ function openNewStaffSheet() {
   document.getElementById('se-active').checked = true;
   document.getElementById('se-deactivate-row').style.display = 'none';
   openOverlay('staff-edit-overlay');
+}
+
+
+// ── FORCE SYNC PIPELINE ──────────────────────────────────
+function forceSyncPipeline() {
+  if (!confirm('This will reset your pipeline to the latest known data, merging in any missing entries. Entries you\'ve manually added will be preserved. Continue?')) return;
+
+  const stored = localStorage.getItem('og_pipeline_v2');
+  let current = { 'referral-pending': [], 'referral-assign': [], 'onboarding': [], 'completed': [] };
+  try { if (stored) current = JSON.parse(stored); } catch(e) {}
+
+  // Latest known seed data
+  const seed = {
+    'referral-pending': [
+      {
+        name: 'Burks, Jaybrion', phone: '(909) 722-0525', date: '2026-04-22',
+        notes: 'UCI 6953825 | Coordinator: Christina Castaneda — ccastaneda@inlandrc.org (951) 241-8102 | Family: Delisa Trammel (mother), Sarion Burks (sister/advocate) | Service start 04/22/2026 | QPR due 07/21/2026 | ASSESSMENT PENDING — initial meeting held | Follow up to complete CFS Section 2 needs assessment',
+        added: '2026-04-22'
+      },
+      {
+        name: 'Pinto, Arianna', phone: '(323) 490-6850', date: '2026-05-29',
+        notes: 'UCI 7446993 | Mother: Veronica Falcon (323) 490-6850 | Coordinator: Tarah Bass (909) 890-3420 | Referral received May 29 | Assessment meeting Mon June 9 via Teams | IPP/CDER pending from Tarah | POS on hold until after July — end of fiscal year',
+        added: '2026-05-29'
+      },
+      {
+        name: 'Beinbrech, Marykate', phone: '(562) 631-7043', date: '2026-05-18',
+        notes: 'UCI 8283031 | Mother: Christi Beinbrech (562) 631-7043 | Coordinator: Tarah Bass (909) 890-3420 | Referral received May 18, 2026 | Needs support applying for generic services | Follow-up call with Christi still needed',
+        added: '2026-05-18'
+      }
+    ],
+    'referral-assign': [],
+    'onboarding': [
+      {
+        name: 'Ramirez-Tellez, Daisy', phone: '', date: '2026-06-05',
+        notes: 'Position: Family Coordinator — Direct Support Specialist | Interview rescheduling to next week | Applied via Indeed',
+        added: '2026-06-05'
+      },
+      {
+        name: 'Escajeda, Sandra', phone: '(714) 340-9366', date: '2026-06-09',
+        notes: 'Position: Family Coordinator | Applied via Jotform June 9 | sandraescajeda68@aol.com | Experience: IHSS, Medi-Cal, SSI, IRC coaching | Interview June 8',
+        added: '2026-06-09'
+      },
+      {
+        name: 'Allah, Mecca', phone: '(310) 760-6833', date: '2026-06-08',
+        notes: "Position: Case Manager / Navigator | Applied via Jotform June 8 | allah.meccaz@gmail.com | Master's in Special Education | 5 years special education and student services",
+        added: '2026-06-08'
+      },
+      {
+        name: 'Carter-Earl, Ambre', phone: '(310) 606-0578', date: '2026-06-07',
+        notes: 'Position: Applied for 3 roles — Lead FC, Family Coordinator, Case Manager | Applied via Jotform June 7 | simoneaearl@icloud.com | Case Manager and Transition Coordinator experience',
+        added: '2026-06-07'
+      }
+    ],
+    'completed': []
+  };
+
+  // Merge seed into current — add any seed entries not already present
+  let added = 0;
+  ['referral-pending','referral-assign','onboarding','completed'].forEach(section => {
+    if (!current[section]) current[section] = [];
+    (seed[section] || []).forEach(seedItem => {
+      const exists = current[section].some(existing =>
+        (existing.name || '').toLowerCase().trim() === (seedItem.name || '').toLowerCase().trim()
+      );
+      if (!exists) {
+        current[section].push(seedItem);
+        added++;
+      }
+    });
+  });
+
+  save('og_pipeline_v2', current);
+  renderPipeline();
+  renderHome();
+
+  if (added > 0) {
+    toast('✓ Pipeline synced — ' + added + ' entr' + (added === 1 ? 'y' : 'ies') + ' added');
+  } else {
+    toast('✓ Pipeline already up to date');
+  }
 }
 
 </script>
