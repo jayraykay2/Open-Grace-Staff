@@ -1,0 +1,831 @@
+<!-- WORTHY HUMANS, INC. — Digital Employee Onboarding Packet
+     Self-contained. No external libraries, no network, no browser storage.
+     Save progress = downloads a .json the user controls. Copies = Print / Save as PDF. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Worthy Humans — Digital Onboarding</title>
+<style>
+  :root{
+    --ink:#16323D; --teal:#117A86; --teal-deep:#0C5A63;
+    --seafoam:#E8F2F2; --seafoam-line:#CBE3E3;
+    --paper:#F4F7F7; --card:#FFFFFF; --gray:#5C6B72;
+    --line:#DCE5E7; --amber:#B97A1F; --amber-bg:#FBF1E0;
+    --green:#2E7D5B; --green-bg:#E7F3EC; --danger:#B23A48;
+    --serif:Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --script:"Snell Roundhand","Brush Script MT","Segoe Script",cursive;
+    --shadow:0 1px 2px rgba(22,50,61,.06),0 8px 24px rgba(22,50,61,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--teal-deep)}
+
+  /* ---------- top brand + progress ---------- */
+  .letterhead{background:#fff;text-align:center;padding:24px 20px 14px;border-bottom:1px solid var(--line)}
+  .letterhead img.logo{height:66px;width:auto;display:inline-block}
+  @media(max-width:480px){.letterhead img.logo{height:52px}}
+  .brand{background:linear-gradient(180deg,var(--teal) 0%,var(--teal-deep) 100%);color:#fff;padding:20px 20px 22px}
+  .brand-inner{max-width:920px;margin:0 auto}
+  .brand .eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.82;margin:0}
+  .brand h1{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.15;margin:6px 0 4px}
+  .brand .sub{font-style:italic;font-family:var(--serif);opacity:.92;margin:0 0 2px}
+  .brand .confidential{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.72;margin-top:12px}
+
+  .progress-wrap{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.94);backdrop-filter:saturate(1.1) blur(6px);border-bottom:1px solid var(--line)}
+  .progress-inner{max-width:920px;margin:0 auto;padding:11px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .pbar{flex:1 1 240px;min-width:200px;height:9px;background:var(--seafoam);border-radius:999px;overflow:hidden}
+  .pbar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--green));transition:width .35s ease;border-radius:999px}
+  .pstat{font-size:13px;color:var(--gray);white-space:nowrap}
+  .pstat b{color:var(--ink)}
+  .pbtns{display:flex;gap:8px;flex-wrap:wrap}
+
+  .btn{font:inherit;font-size:13.5px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 13px;border-radius:9px;cursor:pointer;transition:.15s}
+  .btn:hover{border-color:var(--teal);color:var(--teal-deep)}
+  .btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+  .btn.primary:hover{background:var(--teal-deep);color:#fff}
+  .btn.ghost{background:transparent}
+  .btn:focus-visible,input:focus-visible,textarea:focus-visible,.ack:focus-within{outline:3px solid var(--seafoam-line);outline-offset:2px}
+
+  /* ---------- layout ---------- */
+  .page{max-width:920px;margin:0 auto;padding:26px 20px 80px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin:18px 0;box-shadow:var(--shadow)}
+  .card h2{font-family:var(--serif);font-size:21px;font-weight:600;margin:0 0 2px;display:flex;align-items:baseline;gap:10px}
+  .sec-no{font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--teal);background:var(--seafoam);border-radius:6px;padding:3px 8px;white-space:nowrap}
+  .card .lede{color:var(--gray);font-size:14px;margin:2px 0 16px}
+  .body p{margin:10px 0}
+  .body h4{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-deep);margin:18px 0 6px}
+  .body ul{margin:8px 0;padding-left:20px}
+  .body li{margin:5px 0}
+  .callout{background:var(--amber-bg);border:1px solid #ECD9B0;border-left:4px solid var(--amber);border-radius:8px;padding:12px 14px;font-size:14px;margin:14px 0}
+  .timeline{background:var(--seafoam);border-radius:10px;padding:12px 16px;margin:14px 0}
+  .timeline b{color:var(--teal-deep)}
+
+  /* fields */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 16px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .field label{display:block;font-size:12px;font-weight:600;letter-spacing:.03em;color:var(--gray);margin-bottom:4px;text-transform:uppercase}
+  .field input,.field textarea{width:100%;font:inherit;font-size:15px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+  .field input[readonly]{background:var(--seafoam);color:var(--teal-deep);font-weight:600}
+  .field .hint{font-size:12px;color:var(--gray);margin-top:3px}
+  .req:after{content:" *";color:var(--danger)}
+
+  /* acknowledgement checklist */
+  .acks{margin:14px 0 4px;border-top:1px dashed var(--line);padding-top:14px}
+  .acks-title{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-deep);font-weight:700;margin-bottom:8px}
+  .ack{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:9px;margin:6px 0;background:#fff;cursor:pointer;transition:.12s}
+  .ack:hover{border-color:var(--seafoam-line);background:#FCFEFE}
+  .ack.on{background:var(--seafoam);border-color:var(--seafoam-line)}
+  .ack input{margin-top:3px;width:17px;height:17px;accent-color:var(--teal);flex:none;cursor:pointer}
+  .ack span{font-size:14px}
+  .ckgroup{margin:10px 0}
+  .ckgroup > .acks-title{margin-bottom:6px}
+
+  /* signature block */
+  .sign{margin-top:16px;border:1px dashed var(--seafoam-line);border-radius:12px;padding:14px 16px;background:#FAFDFD}
+  .sign.signed{border-style:solid;border-color:var(--green);background:var(--green-bg)}
+  .sign .row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .sig-render{font-family:var(--script);font-size:30px;line-height:1.1;color:var(--ink);min-height:34px}
+  .sig-meta{font-size:12.5px;color:var(--gray)}
+  .sig-meta b{color:var(--ink)}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:.04em;padding:4px 10px;border-radius:999px}
+  .badge.pending{color:var(--amber);background:var(--amber-bg)}
+  .badge.done{color:var(--green);background:var(--green-bg)}
+  .annual-note{font-size:12px;color:var(--amber);margin-top:8px;font-weight:600}
+
+  /* identity setup */
+  .setup{border:2px solid var(--teal);background:linear-gradient(180deg,#fff,#F7FCFC)}
+  .consent{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:12px;border-radius:10px;background:var(--seafoam)}
+  .consent input{margin-top:3px;width:18px;height:18px;accent-color:var(--teal);flex:none}
+  .consent label{font-size:13.5px}
+
+  .director-toggle{margin-top:10px}
+  details.director{border:1px solid var(--line);border-radius:10px;padding:0;margin-top:14px;overflow:hidden}
+  details.director > summary{cursor:pointer;padding:12px 16px;font-weight:600;font-size:14px;background:#fff;list-style:none}
+  details.director > summary::-webkit-details-marker{display:none}
+  details.director > summary:before{content:"▸ ";color:var(--teal)}
+  details.director[open] > summary:before{content:"▾ "}
+  details.director .inner{padding:0 16px 16px}
+
+  .toc{columns:2;column-gap:28px;font-size:14px;margin:4px 0}
+  @media(max-width:560px){.toc{columns:1}}
+  .toc a{display:block;padding:5px 0;text-decoration:none;color:var(--ink);border-bottom:1px solid var(--line)}
+  .toc a:hover{color:var(--teal-deep)}
+  .toc a .n{color:var(--teal);font-weight:700;margin-right:8px}
+  .toc a .tick{float:right;color:var(--green);font-weight:700}
+
+  /* summary table */
+  table.summary{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+  table.summary th,table.summary td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  table.summary th{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--gray)}
+  table.summary td.s-done{color:var(--green);font-weight:600}
+  table.summary td.s-pending{color:var(--amber);font-weight:600}
+
+  .footer-note{font-size:12px;color:var(--gray);text-align:center;margin-top:30px;line-height:1.7}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.3s;z-index:90;box-shadow:var(--shadow)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  .print-only{display:none}
+
+  /* signature style toggle + draw pad */
+  .sigmode{display:flex;gap:8px;margin:14px 0 6px;align-items:center;flex-wrap:wrap}
+  .sigmode .lbl{font-size:12px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--gray);margin-right:4px}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{font:inherit;font-size:13.5px;font-weight:600;border:none;background:#fff;color:var(--gray);padding:7px 16px;cursor:pointer}
+  .seg button.on{background:var(--teal);color:#fff}
+  .padwrap{margin-top:10px}
+  .padwrap.hide{display:none}
+  canvas.sigpad{width:100%;height:150px;border:1px dashed var(--seafoam-line);border-radius:10px;background:#fff;touch-action:none;cursor:crosshair;display:block}
+  .padrow{display:flex;gap:8px;margin-top:8px;align-items:center}
+  .padrow .baseline{flex:1;font-size:12px;color:var(--gray)}
+  .sig-img{height:46px;display:block}
+
+  /* finish / submit */
+  .finish{border:2px solid var(--teal);background:linear-gradient(180deg,#fff,#F7FCFC)}
+  .finish .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .finish .pending-list{font-size:13px;color:var(--amber);margin-top:10px}
+
+  /* ---------- print / PDF ---------- */
+  @media print{
+    @page{margin:14mm 14mm 18mm}
+    body{background:#fff;font-size:11px}
+    .progress-wrap,.pbtns,.toc-card,.toast,.no-print,.director-toggle summary,details.director > summary{display:none !important}
+    .brand{background:#fff !important;color:var(--ink) !important;border-bottom:2px solid var(--teal);padding:0 0 12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .letterhead{border-bottom:none;padding:0 0 8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .letterhead img.logo{height:58px}
+    .brand .confidential,.brand .eyebrow{color:var(--gray) !important;opacity:1}
+    .page{padding:0;max-width:none}
+    .card{box-shadow:none;border:1px solid #ccc;border-radius:0;page-break-inside:avoid;break-inside:avoid;margin:0 0 10px}
+    .card.sec{page-break-before:always}
+    details.director{border:none}
+    details.director[open] .inner,details.director .inner{padding:0}
+    details.director > summary{display:none}
+    .ack{border:none;padding:2px 0;background:none !important}
+    .ack input{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .sign{background:none !important;border:1px solid #999}
+    .sig-render{color:#000}
+    .sig-img{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .sigmode,.padwrap,.finish,.seg{display:none !important}
+    .print-only{display:block}
+    a{color:inherit;text-decoration:none}
+    .callout,.timeline,.consent,.sec-no,.badge,.field input[readonly]{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+
+<div class="letterhead">
+  <img class="logo" src="data:image/jpeg;base64,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" alt="Worthy Humans — Coordinating Resources for Families">
+</div>
+<div class="brand">
+  <div class="brand-inner">
+    <p class="eyebrow">Worthy Humans, Inc.</p>
+    <h1>Employee Onboarding Packet</h1>
+    <p class="sub">Coordinated Family Supports Program</p>
+    <p class="confidential">Confidential — retained in personnel file</p>
+    <div class="print-only" id="printStamp" style="margin-top:10px;font-size:11px;color:#444"></div>
+  </div>
+</div>
+
+<div class="progress-wrap no-print">
+  <div class="progress-inner">
+    <div class="pbar"><i id="pfill"></i></div>
+    <div class="pstat"><b id="pdone">0</b>/<span id="ptotal">0</span> required acknowledgments signed · <b id="ppct">0%</b></div>
+    <div class="pbtns">
+      <button class="btn" onclick="saveProgress()">Save progress</button>
+      <label class="btn" style="cursor:pointer">Load progress<input type="file" accept=".json" style="display:none" onchange="loadProgress(this)"></label>
+      <button class="btn primary" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================================
+   DATA — section content preserved faithfully from the original packet.
+   ========================================================================= */
+const employeeIdentity = {name:"",initials:"",email:""};
+const directorIdentity = {name:"Bruse A. Gibson",initials:"BAG",email:""};
+const state = {}; // sectionId -> {acks:{}, signed:bool, date, by, fields:{}}
+
+/* checklist groups for Section 1 */
+const checklistGroups = [
+  {title:"Pre-Employment (Before First Day)", items:[
+    "Completed Employment Application (signed)",
+    "LIVESCAN fingerprint clearance — confirmed clear",
+    "CPR & First Aid certification obtained (within 30 days of hire)",
+    "Valid California Driver's License — copy on file",
+    "Current auto liability insurance — copy on file",
+    "Social Security card or work authorization documentation verified",
+    "IRS Form W-4 completed",
+    "Direct deposit form submitted (if applicable)"
+  ]},
+  {title:"Day 1 — Orientation Documents Signed", items:[
+    "At-Will Employment & Offer Letter acknowledged",
+    "Job Description reviewed and signed",
+    "Confidentiality & HIPAA Agreement signed",
+    "Zero Tolerance / Mandated Reporter Policy signed",
+    "Whistleblower Policy signed",
+    "Drug-Free Workplace Policy signed",
+    "Technology & Social Media Policy signed",
+    "Grievance Procedure Acknowledgment signed",
+    "Arbitration Agreement signed",
+    "Emergency & Incident Reporting Protocol reviewed",
+    "Staff Signature Summary Sheet signed",
+    "DDS Client Rights poster reviewed",
+    "Employee Handbook received and acknowledged"
+  ]},
+  {title:"First Two Weeks — Training", items:[
+    "Shadow orientation with Director or experienced CFS staff (minimum 2 days)",
+    "Shadow log completed and submitted",
+    "Title 17 overview training completed",
+    "HIPAA training completed",
+    "Mandated Reporter training completed",
+    "SIR (Special Incident Report) procedures reviewed",
+    "CFS Plan of Action process reviewed with Director",
+    "IPP overview training completed",
+    "Regional Center system orientation completed",
+    "Consumer Rights training completed",
+    "Positive Behavior Support training completed",
+    "Cultural Competency training completed",
+    "Behavioral Health Services overview completed",
+    "First Aid / CPR certification verified and copy on file"
+  ]}
+];
+
+/* The 12 sections. body = HTML string of the legal text; acks = active acknowledgment statements. */
+const sections = [
+  {id:"s1", no:"Section 1", title:"New Employee Checklist", lede:"Complete all items before end of first week.",
+   type:"checklist", annual:false,
+   body:`<p>Your supervisor will review this checklist with you during orientation. Check each item as it is reviewed and completed. The signed checklist is retained by the CFS Director.</p>`},
+
+  {id:"s2", no:"Section 2", title:"At-Will & Employment Acknowledgment", lede:"Please read carefully before signing.",
+   annual:false,
+   body:`<p>WORTHY HUMANS, INC. is an at-will employer. This means that either you or the company may terminate the employment relationship at any time, with or without cause, and with or without advance notice, subject to applicable law.</p>
+   <p>No supervisor, manager, or representative of WORTHY HUMANS, INC. — other than the Executive Director — has any authority to enter into any agreement for employment for any specified period of time or to make any agreement contrary to the at-will policy. Any such agreement must be in writing and signed by the Executive Director.</p>
+   <p>Nothing in this packet, the Employee Handbook, or any other company document should be construed as creating a contract of employment for a specific duration. The at-will nature of employment cannot be modified except by a written agreement signed by the Executive Director.</p>`,
+   acks:[
+    "I understand my employment is at-will and may be terminated by either party at any time.",
+    "I understand that no oral or written statements made during hiring constitute an employment contract.",
+    "I understand I must comply with all company policies, procedures, and applicable laws as a condition of employment.",
+    "I understand that violation of company policies may result in disciplinary action, up to and including immediate termination.",
+    "I confirm all information in my employment application is accurate and complete, and that misrepresentation may result in immediate termination.",
+    "I authorize Worthy Humans to verify all information provided during the application process.",
+    "I understand my position may require evening, weekend, and variable hours depending on the needs of Persons Served.",
+    "I understand I must maintain a valid California Driver's License and current auto liability insurance as a condition of employment."
+   ]},
+
+  {id:"s3", no:"Section 3", title:"Job Description Acknowledgment", lede:"Confirm you have reviewed your role and responsibilities.",
+   annual:false,
+   body:`<p>I acknowledge that I have received, read, and understood the job description for my position at WORTHY HUMANS, INC. I understand the duties, responsibilities, and minimum qualifications associated with my role.</p>
+   <p>I understand my job description is not all-inclusive and that I may be asked to perform additional duties as needed to meet the ongoing needs of the organization and Individuals Served. I understand my job description may be updated from time to time, and I will be notified of any significant changes.</p>`,
+   acks:[
+    "I have read and understand the full job description for my position (CFS Director or Family Support Coordinator, as applicable).",
+    "I understand I may not provide CFS services to any Individual who resides in the same home as me.",
+    "I understand I must maintain current CPR and First Aid certification at all times as a condition of employment.",
+    "I understand I must pass and maintain a LIVESCAN clearance as a condition of employment.",
+    "I understand I must attend all mandatory In-Service training sessions semi-annually, and failure to do so may result in disciplinary action.",
+    "I understand I must maintain accurate, current, and legible records at all times.",
+    "I understand my role requires positive, professional relationships with Regional Center staff and each Individual's circle of support.",
+    "I will value the dignity and worth of every Person Served and treat them with respect at all times."
+   ]},
+
+  {id:"s4", no:"Section 4", title:"Confidentiality & HIPAA Agreement", lede:"Protecting the privacy of every Person Served.",
+   annual:false,
+   body:`<p>As an employee of WORTHY HUMANS, INC., you will have access to sensitive and confidential information about Individuals Served, their families, and the organization. This information is protected by HIPAA (1996), California law, and Worthy Humans policy.</p>
+   <h4>Permitted Disclosures</h4>
+   <p>Confidential information may be shared only: (1) with the written authorization of the Person Served or their legal conservator; (2) as required by law (e.g., mandatory abuse reporting); (3) within the treatment/support team on a need-to-know basis; or (4) as directed by the CFS Director in accordance with applicable law.</p>`,
+   acks:[
+    "I will not disclose personally identifiable information about any Person Served to any unauthorized person, including family members not in the circle of support.",
+    "I will access client records only to the extent necessary to perform my assigned duties.",
+    "I will not discuss client information in public settings such as restaurants, waiting rooms, or social gatherings.",
+    "I will not post, share, or reference any information about Persons Served on any social media platform or online forum.",
+    "I will store all physical documents in a secure, locked location at all times.",
+    "I will use locking clipboards or briefcases when transporting mobile documents.",
+    "I will immediately notify the CFS Director of any suspected breach or lost, stolen, or improperly accessed confidential documents.",
+    "I understand my confidentiality obligation continues after my employment ends.",
+    "I understand HIPAA violations may carry civil and criminal penalties and may result in immediate termination."
+   ]},
+
+  {id:"s5", no:"Section 5", title:"Zero Tolerance / Mandated Reporter Policy", lede:"Mandated reporting of abuse & neglect.",
+   annual:true,
+   body:`<p>As an individual who provides support to Persons Served by a Regional Center, I understand I am a mandated reporter of suspected abuse and neglect. A zero-tolerance policy is established for the organization's employees, families, volunteers, and participants. Abuse and neglect of any kind — including physical abuse, mishandling of finances, inappropriate sexual behaviors, belittling or offensive verbalizations, abandonment, isolation, abduction, and the deprivation of services — will not be tolerated.</p>
+   <p>Upon becoming aware of an allegation, I will take immediate action to ensure the health and safety of the involved Person Served and all others. Any agency representative accused of abuse or neglect will be immediately removed from contact with Persons Served. If the investigation supports the allegation, the employee will be immediately terminated.</p>
+   <div class="timeline"><b>Required reporting timeline</b><br>• Call the Regional Center AND police/APS <b>immediately</b> upon awareness of suspected abuse or neglect.<br>• Submit a written report to the Regional Center within <b>two (2) working days</b>.<br>Failure to report abuse is a misdemeanor punishable by up to six months in county jail and/or a fine up to $1,000.00.</div>`,
+   acks:[
+    "I certify that I am committed to providing a healthy environment for the Persons I serve and support.",
+    "I understand I am a mandated reporter and must report any reasonable suspicion or known abuse/neglect to the Regional Center and all applicable authorities (police, APS) immediately, with a written report within two working days.",
+    "I will annually review the zero-tolerance policy and the mandatory abuse and neglect reporting laws.",
+    "I will participate in mandatory training on protecting Persons Served, recognizing signs of abuse/neglect, the reporting process, and the consequences of failing to follow the law or this policy.",
+    "I understand the Regional Center and the agency expect full compliance with this policy and the reporting laws."
+   ]},
+
+  {id:"s6", no:"Section 6", title:"Whistleblower Policy", lede:"Reporting concerns without fear of retaliation.",
+   annual:true,
+   body:`<p>This policy ensures that Persons Served, families, providers, agencies, community members, and regional center staff can report suspicions, concerns, or evidence of illegal, unethical, or inappropriate activity without fear of retaliation.</p>
+   <h4>No retaliation</h4>
+   <p>No individual who reports a violation shall suffer harassment, retaliation, or adverse consequence. A staff member who retaliates is subject to discipline up to and including immediate termination.</p>
+   <h4>How to report</h4>
+   <p>Worthy Humans has an open-door policy. In most cases, your supervisor is best positioned to address a concern; if you are not comfortable, speak with another member of management. Supervisors must report suspected violations to the Director.<br>Executive contact: <b>WorthyHumans.execboard@gmail.com</b></p>
+   <p>The Director will acknowledge receipt of a reported violation within five (5) business days. All reports are promptly investigated, and appropriate corrective action is taken if warranted.</p>`,
+   acks:[
+    "I have read and understand the Whistleblower Policy and the no-retaliation protections it provides.",
+    "I understand how to report a concern and that supervisors must escalate suspected violations to the Director."
+   ]},
+
+  {id:"s7", no:"Section 7", title:"Drug-Free Workplace Policy", lede:"Maintaining a safe environment for staff and clients.",
+   annual:true,
+   body:`<p>WORTHY HUMANS, INC. maintains a strict policy against the use of alcohol and the unlawful use of drugs. Violation will result in disciplinary action up to and including immediate termination. The company reserves the right to conduct reasonable-suspicion testing consistent with California law.</p>`,
+   acks:[
+    "I will not consume or possess alcohol, or use, possess, sell, purchase, or transfer illegal drugs at any time during work.",
+    "I will not report to work with illegal drugs (or their metabolites) or alcohol in my system.",
+    "Although marijuana is legal in California, I will not report to work under the influence of marijuana.",
+    "I will not be impaired by any prescription medication while performing direct service duties, and I will notify the CFS Director if a medication may impair my work.",
+    "I will immediately report to the CFS Director if a Person Served discloses substance use or if I suspect substance use in the home of a Person Served."
+   ]},
+
+  {id:"s8", no:"Section 8", title:"Technology & Social Media Policy", lede:"Responsible use of devices and online platforms.",
+   annual:true,
+   body:`<p>The use of technology — including personal smartphones, tablets, and social media — must never compromise the privacy, dignity, or safety of any Person Served. This policy applies during work hours and any time when referencing Worthy Humans or its clients. Personal cell phone use during direct service hours should be minimized and reserved for emergencies or work-related communication.</p>
+   <p>Any violation — particularly any breach of client privacy — will be treated as a serious disciplinary matter and may result in termination and/or referral to appropriate authorities.</p>`,
+   acks:[
+    "I will not take photos or videos of any Person Served, their home, or family without explicit written consent.",
+    "I will not share identifying information about Persons Served on social media, including indirect references that could allow identification.",
+    "I will not post complaints about clients, coworkers, or the organization on any public online platform.",
+    "I will not use personal devices to access or store client records unless explicitly authorized by the CFS Director.",
+    "I will not use company or client information for personal gain or commercial purposes.",
+    "I will not engage in online conduct that could damage the organization's reputation or be perceived as discriminatory, harassing, or abusive.",
+    "I will report any policy violations by coworkers to the CFS Director."
+   ]},
+
+  {id:"s9", no:"Section 9", title:"Grievance Procedure Acknowledgment", lede:"Understanding conflict resolution and client rights.",
+   annual:true,
+   body:`<p>Worthy Humans maintains a written grievance procedure pursuant to Welfare & Institutions Code Section 4705. All employees must be familiar with this procedure so they can inform Persons Served of their rights.</p>
+   <div class="timeline"><b>Client grievance process</b><br>1. The Person Served or representative informs the CFS Director (phone, email, or grievance form).<br>2. The CFS Director documents the issue.<br>3. The Director and assigned Family Support Coordinator work together to resolve it.<br>4. If unresolved within 10 calendar days, the Director assists the Person Served in contacting their Consumer Services Coordinator at the Inland Regional Center.</div>`,
+   acks:[
+    "I will provide the grievance procedure form and explanation to every new Person Served within the first 7 days of service.",
+    "I will ensure Persons Served (or their conservators) sign the grievance acknowledgment on day one.",
+    "I will ensure each Person Served reviews this written grievance procedure annually, per WIC Section 4705.",
+    "I will immediately notify the CFS Director of any complaint or concern raised by a Person Served or their family.",
+    "I will never discourage a Person Served from exercising their right to file a grievance.",
+    "I understand that retaliating against a Person Served for filing a grievance is grounds for immediate termination."
+   ]},
+
+  {id:"s10", no:"Section 10", title:"Arbitration Agreement", lede:"Provided as a separate document in this packet.",
+   annual:false,
+   body:`<div class="callout"><b>Note to employee:</b> The Mutual Agreement to Arbitrate is provided as a separate document. Please read it carefully and in full before signing. You are encouraged to consult your own legal counsel before signing the arbitration agreement.</div>
+   <p>The Arbitration Agreement covers resolution of employment-related claims through binding arbitration rather than court proceedings. Key points:</p>
+   <ul>
+     <li>Covers claims related to wages, discrimination, harassment (excluding sexual harassment/assault), and other employment matters.</li>
+     <li>Sexual harassment and sexual assault claims are specifically excluded and may be pursued in court.</li>
+     <li>California PAGA individual claims are subject to arbitration; non-individual PAGA claims are stayed pending arbitration.</li>
+     <li>The company pays arbitration fees and expenses unique to arbitration.</li>
+     <li>Does not affect your rights to file charges with the EEOC, DOL, NLRB, or other agencies.</li>
+     <li>Survives the end of your employment.</li>
+   </ul>`,
+   acks:[
+    "I acknowledge that I have received the Arbitration Agreement and have been given the opportunity to review it and consult with legal counsel of my choosing."
+   ]},
+
+  {id:"s11", no:"Section 11", title:"Emergency & Incident Reporting Protocols", lede:"What to do when things go wrong.",
+   annual:false,
+   body:`<p>All Worthy Humans staff are state-mandated reporters and must be familiar with both medical-emergency and staffing-emergency procedures. The SIR form is provided separately — know where it is before you need it.</p>
+   <div class="timeline"><b>Client medical emergency</b><br>1. Call 911 immediately and assist the Person Served.<br>2. Contact the Person Served's designated Emergency Contact.<br>3. Notify the CFS Director immediately.<br>4. Notify the Regional Center within 24 hours.<br>5. Submit a written Special Incident Report (SIR) to the Regional Center within 48 hours.</div>
+   <div class="timeline"><b>Staffing emergency (staff unable to report)</b><br>1. Immediately notify the CFS Director.<br>2. Remind the Director of the Individual Served's scheduled services for the day.<br>3. The Director locates a replacement or fills in personally.<br>4. The Director informs the Person Served and/or family of the schedule change.</div>
+   <h4>Incidents requiring an SIR</h4>
+   <ul style="columns:2;column-gap:24px"><li>Suspected or known abuse/neglect</li><li>Serious injury or accident</li><li>Unplanned hospitalization</li><li>Death of a Person Served</li><li>Crimes against a Person Served</li><li>Missing person</li><li>Psychiatric emergency (incl. 5150 hold)</li><li>Medication error</li></ul>`,
+   fields:[
+     {key:"irc_main", label:"Inland Regional Center (main)"},
+     {key:"irc_oncall", label:"IRC After-Hours / On-Call"},
+     {key:"irc_sir", label:"IRC SIR Fax / Email"},
+     {key:"aps", label:"Adult Protective Services (APS)", value:"1-877-565-2020"},
+     {key:"sheriff", label:"Riverside County Sheriff (non-emergency)"},
+     {key:"director_cell", label:"CFS Director Cell"}
+   ],
+   fieldsTitle:"Key contact numbers — complete on Day 1",
+   acks:[
+    "I have reviewed the emergency and incident reporting protocols and know where to find the SIR form."
+   ]}
+];
+
+/* =========================================================================
+   RENDER
+   ========================================================================= */
+const page = document.getElementById('page');
+
+function el(html){const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild;}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
+function today(){const d=new Date();return d.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});}
+function nowStamp(){return new Date().toLocaleString('en-US',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}
+
+/* ---- Employee info + e-signature setup ---- */
+function buildSetup(){
+  const c=el(`<div class="card setup" id="setup">
+    <h2><span class="sec-no">Start here</span> Employee Information & Electronic Signature</h2>
+    <p class="lede">Enter your details once. Your typed name becomes your electronic signature throughout this packet.</p>
+    <div class="grid">
+      <div class="field"><label class="req">Full legal name</label><input id="empName" placeholder="First M. Last"></div>
+      <div class="field"><label class="req">Initials</label><input id="empInitials" maxlength="5" placeholder="e.g. JMD"></div>
+      <div class="field"><label>Work email (for your copy)</label><input id="empEmail" type="email" placeholder="name@worthyhumans.org"></div>
+      <div class="field"><label>Position / Title</label><input id="empPos" placeholder="Family Support Coordinator"></div>
+      <div class="field"><label>First day of employment</label><input id="empStart" type="date"></div>
+      <div class="field"><label>Department</label><input value="Coordinated Family Supports (CFS)" readonly></div>
+    </div>
+    <div class="consent">
+      <input type="checkbox" id="esign" onchange="recalc()">
+      <label for="esign"><b>Electronic signature consent.</b> I agree to use an electronic signature for this onboarding packet. I understand that typing my name or drawing it, and acknowledging each section, constitutes my legally binding signature, equivalent to a handwritten one, under the federal ESIGN Act and California UETA. Each acknowledgment is date- and time-stamped at the moment I sign it.</label>
+    </div>
+
+    <div class="sigmode">
+      <span class="lbl">Signature style</span>
+      <div class="seg">
+        <button type="button" id="modeType" class="on" onclick="setSigMode('type')">Type my name</button>
+        <button type="button" id="modeDraw" onclick="setSigMode('draw')">Draw it</button>
+      </div>
+      <span class="sig-meta" style="margin-left:6px">Applied to every section you sign.</span>
+    </div>
+    <div class="padwrap hide" id="padwrap">
+      <canvas class="sigpad" id="sigpad" width="900" height="300" aria-label="Signature drawing area"></canvas>
+      <div class="padrow">
+        <span class="baseline">Draw your signature above with a mouse, trackpad, or finger.</span>
+        <button type="button" class="btn" onclick="clearPad()">Clear</button>
+        <button type="button" class="btn primary" onclick="savePad()">Use this signature</button>
+      </div>
+    </div>
+
+    <details class="director">
+      <summary>Director / Supervisor co-signature (optional — for ${directorIdentity.name})</summary>
+      <div class="inner">
+        <p class="lede" style="margin-top:12px">The CFS Director completes this to co-sign the packet and the Section 12 summary.</p>
+        <div class="grid">
+          <div class="field"><label>Director name</label><input id="dirName" value="${directorIdentity.name}"></div>
+          <div class="field"><label>Director initials</label><input id="dirInitials" value="${directorIdentity.initials}" maxlength="5"></div>
+          <div class="field"><label>Director email (where completed packets are sent)</label><input id="dirEmail" type="email" value="worthyhumans.execboard@gmail.com" placeholder="director@worthyhumans.org"></div>
+        </div>
+        <div class="consent" style="margin-top:12px"><input type="checkbox" id="dirEsign"><label for="dirEsign">I, the CFS Director, consent to electronically sign this packet.</label></div>
+      </div>
+    </details>
+  </div>`);
+  page.appendChild(c);
+
+  const sync=()=>{ employeeIdentity.name=v('empName'); employeeIdentity.initials=v('empInitials').toUpperCase(); employeeIdentity.email=v('empEmail'); refreshSignatures(); };
+  ['empName','empInitials','empEmail'].forEach(id=>document.getElementById(id).addEventListener('input',sync));
+  document.getElementById('dirName').addEventListener('input',()=>{directorIdentity.name=v('dirName');refreshSignatures();});
+  document.getElementById('dirInitials').addEventListener('input',()=>{directorIdentity.initials=v('dirInitials').toUpperCase();});
+}
+function v(id){const e=document.getElementById(id);return e?e.value.trim():"";}
+function esignOK(){const e=document.getElementById('esign');return e&&e.checked;}
+
+/* ---- signature style: type vs draw ---- */
+let sigMode='type';
+let drawnSig=null;        // dataURL of the employee's drawn signature
+function setSigMode(m){
+  sigMode=m;
+  document.getElementById('modeType').classList.toggle('on',m==='type');
+  document.getElementById('modeDraw').classList.toggle('on',m==='draw');
+  document.getElementById('padwrap').classList.toggle('hide',m!=='draw');
+  refreshSignatures();
+}
+function clearPad(){
+  const cv=document.getElementById('sigpad');const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height); cv._has=false; drawnSig=null; refreshSignatures();
+}
+function savePad(){
+  const cv=document.getElementById('sigpad');
+  if(!cv._has){ toast("Draw your signature in the box first."); return; }
+  drawnSig=cv.toDataURL('image/png');
+  refreshSignatures(); toast("Signature saved — it will appear on every section you sign.");
+}
+function initSignaturePad(){
+  const cv=document.getElementById('sigpad'); if(!cv)return;
+  const ctx=cv.getContext('2d');
+  ctx.lineCap='round'; ctx.lineJoin='round'; ctx.lineWidth=4; ctx.strokeStyle='#16323D';
+  let drawing=false,last=null;
+  const pt=e=>{const r=cv.getBoundingClientRect();const t=(e.touches&&e.touches[0])||e;
+    return {x:(t.clientX-r.left)*(cv.width/r.width), y:(t.clientY-r.top)*(cv.height/r.height)};};
+  const down=e=>{drawing=true;last=pt(e);ctx.beginPath();ctx.arc(last.x,last.y,ctx.lineWidth/2,0,Math.PI*2);ctx.fillStyle=ctx.strokeStyle;ctx.fill();cv._has=true;e.preventDefault();};
+  const move=e=>{if(!drawing)return;const p=pt(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;cv._has=true;e.preventDefault();};
+  const up=()=>{drawing=false;};
+  cv.addEventListener('mousedown',down);cv.addEventListener('mousemove',move);
+  window.addEventListener('mouseup',up);
+  cv.addEventListener('touchstart',down,{passive:false});cv.addEventListener('touchmove',move,{passive:false});
+  cv.addEventListener('touchend',up);
+}
+
+/* ---- a generic section card ---- */
+function buildSection(s){
+  state[s.id]={acks:{}, signed:false, date:"", time:"", fields:{}, checks:{}};
+  const card=el(`<div class="card sec" id="${s.id}"><h2><span class="sec-no">${s.no}</span> ${s.title}</h2><p class="lede">${s.lede}</p><div class="body">${s.body}</div></div>`);
+
+  // Section 1 checklist
+  if(s.type==="checklist"){
+    checklistGroups.forEach((g,gi)=>{
+      const grp=el(`<div class="ckgroup"><div class="acks-title">${g.title}</div></div>`);
+      g.items.forEach((it,ii)=>{
+        const key=`g${gi}i${ii}`;
+        const row=el(`<label class="ack"><input type="checkbox"><span>${it}</span></label>`);
+        row.querySelector('input').addEventListener('change',e=>{state[s.id].checks[key]=e.target.checked;row.classList.toggle('on',e.target.checked);});
+        grp.appendChild(row);
+      });
+      card.appendChild(grp);
+    });
+  }
+
+  // editable fields (Section 11 contacts)
+  if(s.fields){
+    const fwrap=el(`<div class="acks"><div class="acks-title">${s.fieldsTitle||'Details'}</div><div class="grid"></div></div>`);
+    const grid=fwrap.querySelector('.grid');
+    s.fields.forEach(f=>{
+      const fld=el(`<div class="field"><label>${f.label}</label><input data-fk="${f.key}" value="${f.value||''}"></div>`);
+      fld.querySelector('input').addEventListener('input',e=>state[s.id].fields[f.key]=e.target.value);
+      if(f.value)state[s.id].fields[f.key]=f.value;
+      grid.appendChild(fld);
+    });
+    card.appendChild(fwrap);
+  }
+
+  // acknowledgment checkboxes
+  if(s.acks){
+    const aw=el(`<div class="acks"><div class="acks-title">Acknowledgments — check each to confirm</div></div>`);
+    s.acks.forEach((a,i)=>{
+      const row=el(`<label class="ack"><input type="checkbox"><span>${a}</span></label>`);
+      row.querySelector('input').addEventListener('change',e=>{state[s.id].acks[i]=e.target.checked;row.classList.toggle('on',e.target.checked);});
+      aw.appendChild(row);
+    });
+    card.appendChild(aw);
+  }
+
+  // signature block
+  const annual = s.annual ? `<div class="annual-note no-print">↻ This policy must be re-signed annually.</div>` : "";
+  const sign=el(`<div class="sign" id="sign-${s.id}">
+    <div class="row">
+      <div>
+        <div class="sig-render" id="sig-${s.id}"></div>
+        <div class="sig-meta" id="sigmeta-${s.id}">Employee signature — pending</div>
+      </div>
+      <div style="text-align:right">
+        <span class="badge pending" id="badge-${s.id}">Not signed</span><br>
+        <button class="btn primary no-print" id="signbtn-${s.id}" style="margin-top:10px">Acknowledge & sign</button>
+      </div>
+    </div>
+    ${annual}
+  </div>`);
+  card.appendChild(sign);
+  page.appendChild(card);
+
+  document.getElementById(`signbtn-${s.id}`).addEventListener('click',()=>toggleSign(s));
+}
+
+function allAcksChecked(s){
+  if(!s.acks)return true;
+  return s.acks.every((_,i)=>state[s.id].acks[i]);
+}
+function checklistDone(s){
+  if(s.type!=="checklist")return true;
+  // require at least Day-1 items + all groups fully checked
+  let total=0,done=0;
+  checklistGroups.forEach((g,gi)=>g.items.forEach((_,ii)=>{total++;if(state[s.id].checks[`g${gi}i${ii}`])done++;}));
+  return done===total;
+}
+
+function toggleSign(s){
+  const st=state[s.id];
+  if(st.signed){ st.signed=false; st.date=""; st.time=""; renderSign(s); recalc(); return; }
+  if(!employeeIdentity.name||!esignOK()){ toast("Complete your name and electronic-signature consent at the top first."); document.getElementById('setup').scrollIntoView({block:'center'}); flash('setup'); return; }
+  if(sigMode==='draw' && !drawnSig){ toast("Draw and save your signature at the top first."); document.getElementById('setup').scrollIntoView({block:'center'}); flash('setup'); return; }
+  if(s.type==="checklist" && !checklistDone(s)){ toast("Check every checklist item before signing."); return; }
+  if(!allAcksChecked(s)){ toast("Check each acknowledgment before signing this section."); return; }
+  st.signed=true; st.date=today(); st.time=nowStamp(); st.by=employeeIdentity.name;
+  renderSign(s); recalc(); toast(`${s.no} signed.`);
+}
+
+function renderSign(s){
+  const st=state[s.id];
+  const sigEl=document.getElementById(`sig-${s.id}`);
+  const meta=document.getElementById(`sigmeta-${s.id}`);
+  const badge=document.getElementById(`badge-${s.id}`);
+  const btn=document.getElementById(`signbtn-${s.id}`);
+  const wrap=document.getElementById(`sign-${s.id}`);
+  if(st.signed){
+    if(sigMode==='draw' && drawnSig){ sigEl.innerHTML=`<img class="sig-img" src="${drawnSig}" alt="signature">`; }
+    else { sigEl.textContent=st.by||employeeIdentity.name; }
+    meta.innerHTML=`Employee signature · <b>${st.by||employeeIdentity.name}</b> — signed ${st.time}`;
+    badge.className="badge done"; badge.textContent="✓ Signed";
+    btn.textContent="Undo signature"; btn.classList.remove('primary'); btn.classList.add('ghost');
+    wrap.classList.add('signed');
+  }else{
+    sigEl.textContent="";
+    meta.textContent="Employee signature — pending";
+    badge.className="badge pending"; badge.textContent="Not signed";
+    btn.textContent="Acknowledge & sign"; btn.classList.add('primary'); btn.classList.remove('ghost');
+    wrap.classList.remove('signed');
+  }
+}
+function refreshSignatures(){ sections.forEach(s=>{ if(state[s.id]&&state[s.id].signed){state[s.id].by=employeeIdentity.name;renderSign(s);} }); }
+
+/* ---- Section 12 summary (auto-rolling) ---- */
+function buildSummary(){
+  const rows=sections.map(s=>`<tr><td>${s.no} — ${s.title}</td><td id="sum-date-${s.id}">—</td><td id="sum-stat-${s.id}" class="s-pending">Pending</td></tr>`).join("");
+  const c=el(`<div class="card sec" id="s12"><h2><span class="sec-no">Section 12</span> Staff Signature Summary Sheet</h2>
+    <p class="lede">Director's master record — auto-populated from your signatures above.</p>
+    <div class="grid" style="margin-bottom:14px">
+      <div class="field"><label>Employee name</label><input id="sum-name" readonly></div>
+      <div class="field"><label>Position</label><input id="sum-pos" readonly></div>
+      <div class="field"><label>Start date</label><input id="sum-start" readonly></div>
+      <div class="field"><label>LIVESCAN clearance date</label><input id="sum-livescan"></div>
+      <div class="field"><label>CPR/First Aid certification date</label><input id="sum-cpr"></div>
+      <div class="field"><label>CPR/First Aid expiration date</label><input id="sum-cprexp"></div>
+      <div class="field"><label>Driver's License #</label><input id="sum-dl"></div>
+      <div class="field"><label>Auto insurance expiration</label><input id="sum-ins"></div>
+    </div>
+    <table class="summary"><thead><tr><th>Document</th><th>Date signed</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="sign signed" style="margin-top:18px">
+      <div class="row">
+        <div>
+          <div class="sig-render" id="sig-dir"></div>
+          <div class="sig-meta" id="sigmeta-dir">CFS Director signature — pending</div>
+        </div>
+        <div style="text-align:right">
+          <span class="badge pending" id="badge-dir">Not signed</span><br>
+          <button class="btn primary no-print" id="signbtn-dir" style="margin-top:10px">Director: sign packet</button>
+        </div>
+      </div>
+      <div class="sig-meta" style="margin-top:10px">Date onboarding completed: <b id="dir-date">—</b></div>
+    </div>
+    <p class="footer-note" style="margin-top:18px">By signing, both the employee and the CFS Director confirm all documents in this packet were reviewed, explained, and signed on or before the date indicated. This document is confidential and must be retained in the employee's personnel file for the duration of employment and a minimum of five (5) years thereafter, or as required by applicable law.</p>
+  </div>`);
+  page.appendChild(c);
+  // mirror summary detail fields into state
+  ['sum-livescan','sum-cpr','sum-cprexp','sum-dl','sum-ins'].forEach(id=>{
+    document.getElementById(id).addEventListener('input',()=>state.summary=Object.assign(state.summary||{},{[id]:v(id)}));
+  });
+  document.getElementById('signbtn-dir').addEventListener('click',toggleDirSign);
+}
+function toggleDirSign(){
+  state.dir=state.dir||{};
+  if(state.dir.signed){state.dir={};renderDir();recalc();return;}
+  const c=document.getElementById('dirEsign');
+  if(!c||!c.checked){ toast("Enable Director co-signature consent in the Start-here section."); document.querySelector('details.director').open=true; document.getElementById('setup').scrollIntoView({block:'center'}); return; }
+  state.dir={signed:true,by:directorIdentity.name,time:nowStamp()};
+  renderDir();recalc();toast("Director signature applied.");
+}
+function renderDir(){
+  const sig=document.getElementById('sig-dir'),meta=document.getElementById('sigmeta-dir'),badge=document.getElementById('badge-dir'),btn=document.getElementById('signbtn-dir'),dd=document.getElementById('dir-date');
+  if(state.dir&&state.dir.signed){
+    sig.textContent=state.dir.by;meta.innerHTML=`CFS Director · <b>${state.dir.by}</b> — signed ${state.dir.time}`;
+    badge.className="badge done";badge.textContent="✓ Signed";btn.textContent="Undo Director signature";btn.classList.remove('primary');btn.classList.add('ghost');
+    dd.textContent=state.dir.time;
+  }else{sig.textContent="";meta.textContent="CFS Director signature — pending";badge.className="badge pending";badge.textContent="Not signed";btn.textContent="Director: sign packet";btn.classList.add('primary');btn.classList.remove('ghost');dd.textContent="—";}
+}
+
+/* ---- progress + summary refresh ---- */
+function recalc(){
+  let total=0,done=0;
+  sections.forEach(s=>{ total++; if(state[s.id].signed)done++; });
+  const pct=Math.round(done/total*100);
+  document.getElementById('pfill').style.width=pct+"%";
+  document.getElementById('pdone').textContent=done;
+  document.getElementById('ptotal').textContent=total;
+  document.getElementById('ppct').textContent=pct+"%";
+
+  // summary table
+  sections.forEach(s=>{
+    const d=document.getElementById('sum-date-'+s.id), st=document.getElementById('sum-stat-'+s.id);
+    if(state[s.id].signed){d.textContent=state[s.id].date;st.textContent="✓ Signed";st.className="s-done";}
+    else{d.textContent="—";st.textContent="Pending";st.className="s-pending";}
+  });
+  // summary header mirrors
+  setVal('sum-name',employeeIdentity.name);
+  setVal('sum-pos',v('empPos'));
+  setVal('sum-start',v('empStart'));
+
+  // print stamp
+  document.getElementById('printStamp').innerHTML =
+    `Employee: <b>${employeeIdentity.name||'—'}</b> &nbsp;·&nbsp; ${done}/${total} sections signed &nbsp;·&nbsp; Generated ${nowStamp()}`;
+}
+function setVal(id,val){const e=document.getElementById(id);if(e)e.value=val||"";}
+function flash(id){const e=document.getElementById(id);e.style.transition='box-shadow .3s';e.style.boxShadow='0 0 0 4px var(--seafoam-line)';setTimeout(()=>e.style.boxShadow='',900);}
+
+/* ---- Table of contents ---- */
+function buildTOC(){
+  const links=sections.map(s=>`<a href="#${s.id}"><span class="n">${s.no.replace('Section ','§')}</span>${s.title}<span class="tick" id="toc-${s.id}"></span></a>`).join("");
+  const c=el(`<div class="card toc-card no-print"><h2 style="font-size:18px">Packet contents</h2><div class="toc">${links}<a href="#s12"><span class="n">§12</span>Staff Signature Summary<span class="tick" id="toc-s12"></span></a></div></div>`);
+  page.insertBefore(c, page.children[1]);
+}
+
+/* =========================================================================
+   SAVE / LOAD  (file-based — no browser storage)
+   ========================================================================= */
+function snapshot(){
+  return {
+    _meta:{app:"WorthyHumans-Onboarding",version:1,savedAt:nowStamp()},
+    employee:{name:employeeIdentity.name,initials:employeeIdentity.initials,email:employeeIdentity.email,
+      position:v('empPos'),start:v('empStart'),esign:esignOK()},
+    director:{name:v('dirName'),initials:v('dirInitials'),email:v('dirEmail'),esign:document.getElementById('dirEsign').checked, sig:state.dir||{}},
+    signature:{mode:sigMode,drawn:drawnSig},
+    summary:{livescan:v('sum-livescan'),cpr:v('sum-cpr'),cprexp:v('sum-cprexp'),dl:v('sum-dl'),ins:v('sum-ins')},
+    state
+  };
+}
+function saveProgress(){
+  const data=snapshot();
+  const safe=(employeeIdentity.name||'employee').replace(/[^a-z0-9]+/gi,'_');
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`WorthyHumans_Onboarding_${safe}.json`;a.click();URL.revokeObjectURL(a.href);
+  toast("Progress saved to a file you control.");
+}
+function loadProgress(input){
+  const f=input.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      document.getElementById('empName').value=d.employee.name||"";
+      document.getElementById('empInitials').value=d.employee.initials||"";
+      document.getElementById('empEmail').value=d.employee.email||"";
+      document.getElementById('empPos').value=d.employee.position||"";
+      document.getElementById('empStart').value=d.employee.start||"";
+      document.getElementById('esign').checked=!!d.employee.esign;
+      employeeIdentity.name=d.employee.name||"";employeeIdentity.initials=d.employee.initials||"";employeeIdentity.email=d.employee.email||"";
+      if(d.director){document.getElementById('dirName').value=d.director.name||directorIdentity.name;document.getElementById('dirInitials').value=d.director.initials||"";if(d.director.email!=null)document.getElementById('dirEmail').value=d.director.email;document.getElementById('dirEsign').checked=!!d.director.esign;directorIdentity.name=d.director.name||directorIdentity.name;state.dir=d.director.sig||{};}
+      if(d.signature){ drawnSig=d.signature.drawn||null; setSigMode(d.signature.mode||'type'); }
+      if(d.summary){setVal('sum-livescan',d.summary.livescan);setVal('sum-cpr',d.summary.cpr);setVal('sum-cprexp',d.summary.cprexp);setVal('sum-dl',d.summary.dl);setVal('sum-ins',d.summary.ins);}
+      // restore section state
+      sections.forEach(s=>{
+        const saved=d.state&&d.state[s.id];if(!saved)return;
+        Object.assign(state[s.id],saved);
+        // reflect checkboxes
+        const card=document.getElementById(s.id);
+        if(s.acks){const boxes=card.querySelectorAll('.acks .ack input');let ai=0;
+          // acks are the last group of .ack inside .acks blocks; re-map by index
+        }
+        // simplest robust approach: re-tick by stored maps
+        if(saved.acks){const ackRows=[...card.querySelectorAll('.acks')].slice(-1)[0];if(ackRows){[...ackRows.querySelectorAll('.ack')].forEach((row,i)=>{const on=!!saved.acks[i];row.querySelector('input').checked=on;row.classList.toggle('on',on);});}}
+        if(saved.checks){[...card.querySelectorAll('.ckgroup')].forEach((grp,gi)=>{[...grp.querySelectorAll('.ack')].forEach((row,ii)=>{const on=!!saved.checks[`g${gi}i${ii}`];row.querySelector('input').checked=on;row.classList.toggle('on',on);});});}
+        if(saved.fields){card.querySelectorAll('input[data-fk]').forEach(inp=>{const val=saved.fields[inp.dataset.fk];if(val!=null)inp.value=val;});}
+        renderSign(s);
+      });
+      renderDir();recalc();refreshSignatures();
+      toast("Progress loaded.");
+    }catch(e){toast("Couldn't read that file — is it a saved progress file?");}
+  };
+  r.readAsText(f);input.value="";
+}
+
+/* =========================================================================
+   FINISH & SEND
+   ========================================================================= */
+function buildFinish(){
+  const c=el(`<div class="card finish no-print" id="finish">
+    <h2><span class="sec-no">Final step</span> Finish &amp; send your packet</h2>
+    <p class="lede">When every section is signed, save your PDF copy and send it to your CFS Director — you each keep an identical signed record.</p>
+    <ol style="margin:6px 0 0;padding-left:20px;font-size:14px;line-height:1.85">
+      <li><b>Save your PDF.</b> Produces the signed copy for your own records.</li>
+      <li><b>Open the email.</b> It opens pre-addressed to your Director with a summary filled in — attach the PDF you just saved, then send.</li>
+    </ol>
+    <div class="actions">
+      <button class="btn primary" onclick="window.print()">Save signed PDF</button>
+      <button class="btn" id="emailBtn" onclick="finishAndSend()">Open email to Director</button>
+    </div>
+    <div class="pending-list" id="finishPending"></div>
+  </div>`);
+  page.appendChild(c);
+}
+function finishAndSend(){
+  const fp=document.getElementById('finishPending');
+  if(!employeeIdentity.name||!esignOK()){ toast("Complete the Start-here section first."); document.getElementById('setup').scrollIntoView({block:'center'}); return false; }
+  const pending=sections.filter(s=>!state[s.id].signed).map(s=>s.no.replace('Section ','§'));
+  if(pending.length){ fp.textContent="Still unsigned: "+pending.join(", ")+". Please sign every section before sending."; toast("Some sections are still unsigned."); return false; }
+  fp.textContent="";
+  const to=v('dirEmail')||'worthyhumans.execboard@gmail.com';
+  const subj=`Completed Onboarding Packet — ${employeeIdentity.name}`;
+  const body=[
+    "Hello,","",
+    "My onboarding packet is complete. All required sections are electronically signed and dated.","",
+    "Name: "+employeeIdentity.name,
+    "Position: "+(v('empPos')||"—"),
+    "Start date: "+(v('empStart')||"—"),
+    "Completed: "+nowStamp(),"",
+    "The signed PDF is attached. (If your email window opened without it, please attach the PDF you just saved.)","",
+    "Thank you,",employeeIdentity.name
+  ].join("\n");
+  window.location.href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+  return true;
+}
+
+/* =========================================================================
+   BOOT
+   ========================================================================= */
+buildSetup();
+initSignaturePad();
+sections.forEach(buildSection);
+buildSummary();
+buildFinish();
+buildTOC();
+document.getElementById('empPos')&&document.getElementById('empPos').addEventListener('input',recalc);
+document.getElementById('empStart')&&document.getElementById('empStart').addEventListener('input',recalc);
+recalc();
+</script>
