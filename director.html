@@ -568,7 +568,16 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
   <div id="contacts-staff-section"></div>
   <div id="contacts-other-section"></div>
 
-  <button class="action ghost" style="margin-bottom:10px;" onclick="openContactSheet()">➕ Add Contact</button>
+  <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px;">
+    <button class="action ghost" style="margin-bottom:0;" onclick="openContactSheet()">➕ Add Contact</button>
+    <button id="contacts-reset-btn" onclick="resetContacts()"
+      style="padding:0 18px;background:rgba(220,38,38,.15);color:#FC8181;
+        border:1px solid rgba(220,38,38,.25);border-radius:15px;font-size:14px;
+        font-weight:700;font-family:var(--sans);cursor:pointer;white-space:nowrap;
+        -webkit-tap-highlight-color:transparent;min-height:60px;">
+      🔄 Reset
+    </button>
+  </div>
 
   <!-- Emergency -->
   <div class="sec">Emergency & Reporting</div>
@@ -2596,6 +2605,25 @@ function toggleHub(btn) {
   btn.classList.toggle('open');
   const body = btn.nextElementSibling;
   if (body) body.classList.toggle('open');
+}
+
+
+// ── CONTACTS RESET ────────────────────────────────────────
+function resetContacts() {
+  if (!confirm('Reset contacts to the latest default data? This will restore all 3 client support systems and staff contacts. Any contacts you added manually will be removed.')) return;
+  save(K.contacts, defaultContacts());
+  renderContacts();
+  toast('✓ Contacts reset to latest data');
+  // Hide reset button after use — one-time action
+  const btn = document.getElementById('contacts-reset-btn');
+  if (btn) {
+    btn.textContent = '✓ Done';
+    btn.style.background = 'rgba(22,163,74,.15)';
+    btn.style.color = '#6EE7B7';
+    btn.style.borderColor = 'rgba(22,163,74,.25)';
+    btn.disabled = true;
+    setTimeout(() => { if (btn) btn.style.display = 'none'; }, 3000);
+  }
 }
 
 </script>
