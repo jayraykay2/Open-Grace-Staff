@@ -412,7 +412,10 @@ const CHAPTERS = [
       {q:"A coordinator asks you to approve extra service hours beyond what's in the consumer's POS because the family needs more support. You should:",
        options:["Approve it — that's a supervision decision","Deny it and notify the Director — POS changes require IRC authorization","Tell the coordinator to just document fewer hours","Allow it this one time and note it in the file"],
        answer:1, explanation:"Authorized hours are set by IRC through the POS. No supervisor or director can approve service hours beyond that authorization. This requires contacting IRC for a POS modification."},
-    ]
+    ,
+      {q:"The Director is unavailable and an IRC coordinator calls asking for a formal update on a consumer\'s services. You should:",options:["Provide the update — IRC is a partner and delays aren\'t helpful","Take notes and let the coordinator know the Director will follow up within one business day","Refer them to the coordinator directly","Provide whatever information you have and document it afterward"],answer:1,explanation:"All formal IRC communication goes through the Director. Even when the Director is unavailable, do not provide formal updates or make commitments. A one-business-day turnaround is professional and appropriate."},
+      {q:"A coordinator approaches you frustrated about a policy they disagree with. The correct supervisory response is:",options:["Side with the coordinator — they have direct field experience","Direct them to raise it with the Director through you at the appropriate time","Change the policy based on their feedback","Tell them policies are non-negotiable and end the conversation"],answer:1,explanation:"Supervisors should create a channel for feedback — directing coordinators to raise concerns through appropriate channels. Never unilaterally change policy, and never shut down feedback. Document the concern and bring it to the Director."},
+      {q:"Your scope as supervisor covers up to how many Family Coordinators?",options:["Up to 4","Up to 8","Up to 12","There is no limit"],answer:1,explanation:"The supervisor role at Open Grace is designed to manage up to 8 Family Coordinators. Beyond that, the structure requires additional supervisory capacity."}]
   },
   {
     id:"C02", icon:"👥", title:"Managing Your Team of Coordinators", dur:"20 min",
@@ -437,7 +440,10 @@ const CHAPTERS = [
       {q:"The most important question to end every 1:1 supervision meeting with is:",
        options:["Did you complete everything on your task list?","What do you need from me?","Are you going to meet your documentation deadline this week?","Do you have any complaints about your caseload?"],
        answer:1, explanation:"'What do you need from me?' keeps the supervisory relationship bidirectional and supportive rather than purely evaluative. It surfaces issues early and builds trust."},
-    ]
+    ,
+      {q:"During a 1:1, a coordinator says everything is fine but their documentation has been slipping all week. How do you respond?",options:["Accept their self-report — they know their situation best","Raise the documentation issues specifically — name the entries, the standard, and your expectation","Wait another week to see if it self-corrects","Escalate immediately to the Director"],answer:1,explanation:"Supervisory feedback must be specific. A general self-report does not override what you\'ve observed in documentation. Name the specific entries, explain the standard, and set a clear expectation."},
+      {q:"What is required when a coordinator\'s performance issue reaches Level 2 — Corrective?",options:["Handle it verbally and monitor for improvement","A formal corrective conversation, written documentation, and same-day Director notification","Recommend immediate termination to the Director","Give them one more week before acting"],answer:1,explanation:"Level 2 requires a formal corrective conversation, written documentation, and same-day Director notification. The written summary protects everyone and creates the paper trail needed if the situation escalates."},
+      {q:"How often should you hold 1:1 supervision meetings with each coordinator?",options:["Monthly","Bi-weekly","Weekly","Quarterly"],answer:2,explanation:"Weekly 1:1 meetings are the standard at Open Grace. Monthly or bi-weekly is insufficient to catch documentation issues, caseload concerns, or performance problems early enough."}]
   },
   {
     id:"C03", icon:"📋", title:"Documentation Compliance & Oversight", dur:"20 min",
@@ -462,7 +468,10 @@ const CHAPTERS = [
       {q:"A consumer's QPR is due in 10 days and no draft exists. What do you do?",
        options:["Wait to see if the coordinator starts it this week","Notify the Director immediately and ensure a draft is created today","Write it yourself to avoid the deadline","Email IRC to request an extension"],
        answer:1, explanation:"At 10 days out with no draft, this is an urgent situation. Notify the Director immediately and take action to ensure the draft is created today. Missing a QPR deadline is a serious compliance event."},
-    ]
+    ,
+      {q:"A contact log entry reads: \'Met with Jaybrion, UCI 6953825, from 10–11am at his home. Practiced grocery list creation (IPP Goal 2: Community Independence). Consumer engaged and selected three items independently. Follow-up: confirm purchase at next visit.\' This entry is:",options:["Too detailed — keep it brief","Non-compliant — it lacks important information","Compliant and audit-ready","Acceptable but needs the coordinator\'s signature"],answer:2,explanation:"This is a strong, audit-ready entry. It includes name, UCI, time, location, a concrete activity tied to a named IPP goal, consumer response, and a follow-up note. Model this standard for your team."},
+      {q:"A coordinator says their QPR is submitted, but the Director has no record of receiving it. What do you do?",options:["Take the coordinator\'s word — they said it was submitted","Ask the coordinator to show submission confirmation and resolve the discrepancy with the Director today","Assume it was lost and submit a new one","Note it and follow up next week"],answer:1,explanation:"Documentation discrepancies must be resolved immediately. Ask for confirmation of submission, then involve the Director to determine whether the QPR was received or needs to be resubmitted. Same-day resolution is required."},
+      {q:"The supervisor\'s primary role in documentation oversight is:",options:["Editing coordinator contact logs to improve quality","Rewriting non-compliant entries on their behalf","Identifying non-compliant entries and coaching coordinators to correct their own work","Submitting documentation on behalf of coordinators who are behind"],answer:2,explanation:"Supervisors flag and coach — they do not edit, rewrite, or submit documentation for coordinators. Doing so creates a false record and removes accountability."}]
   },
   {
     id:"C04", icon:"⚠️", title:"Incident Management & Escalation", dur:"15 min",
@@ -487,7 +496,10 @@ const CHAPTERS = [
       {q:"How quickly must you notify the Director after receiving a report of a SIR-level incident?",
        options:["By end of business that day","Within 48 hours","Within 1 hour of receiving the report","At your next scheduled check-in"],
        answer:2, explanation:"The Director must be notified within 1 hour of receiving a SIR-level incident report. This gives the Director time to assess and file the initial SIR with IRC within the required 24-hour window."},
-    ]
+    ,
+      {q:"A coordinator leaves a voicemail about a behavioral incident but says it \'resolved on its own.\' You should:",options:["Trust their judgment — they were there","Return the call to gather specifics and determine if this is SIR-level","Wait to see if anything else happens","Only respond if a formal report is submitted"],answer:1,explanation:"You cannot determine SIR-level status from a brief voicemail summary. Return the call, gather the specifics — behavior, property damage, injury — and then make a determination."},
+      {q:"After a serious incident, a coordinator is visibly shaken and asks to leave early. You should:",options:["Insist they complete all documentation before leaving","Contact the Director, support the coordinator, and make a reasonable plan for documentation","Tell them to push through","Only allow them to leave if a replacement is available"],answer:1,explanation:"Staff wellbeing after a crisis matters. Contact the Director, provide support, and make a plan for documentation. A traumatized coordinator makes errors — pushing through is not a compliance strategy."},
+      {q:"Written incident documentation must reach the Director within how many hours?",options:["Within 48 hours","Same day as the incident","Within 7 days","By end of the following business day"],answer:1,explanation:"The initial SIR must be filed with IRC within 24 hours of the incident. Written documentation must reach the Director same day — well within that window."}]
   },
   {
     id:"C05", icon:"🎓", title:"Staff Development & Training Oversight", dur:"15 min",
@@ -510,7 +522,10 @@ const CHAPTERS = [
       {q:"The best way to reinforce training content in supervision is to:",
        options:["Require coordinators to re-read the module","Ask them to describe how the training content applies to their current caseload","Give them a written test on the material","Have them watch training videos again"],
        answer:1, explanation:"Application-based questions connect training to real practice. Asking coordinators to describe how content applies to their specific families is far more effective than re-reading or re-testing."},
-    ]
+    ,
+      {q:"A coordinator finished all 18 training modules in 28 days. At the 30-day review you should:",options:["Skip the training review since it\'s complete","Acknowledge completion and shift focus to how they\'re applying the content in practice","Assign additional reading","Flag it as suspicious — 28 days is unusually fast"],answer:1,explanation:"Early completion is a positive outcome. Use the 30-day review to assess application — how are they connecting training content to their caseload? The goal is practice, not just completion."},
+      {q:"The best example of reinforcing training through supervision is:",options:["Requiring a coordinator to retake a module they scored low on","Asking: \'You finished Crisis De-escalation — walk me through how you\'d handle a consumer at peak behavior during a community outing\'","Giving a written quiz on training content","Telling them to review the training manual before the next 1:1"],answer:1,explanation:"Application-based questions connect training to real situations and reveal whether understanding is genuine or superficial. This is the most effective form of training reinforcement."},
+      {q:"A coordinator is at day 16 and still hasn\'t completed two Tier 2 modules. What level of response is appropriate?",options:["Coaching — it\'s only two days past deadline","Corrective — deadline has passed, requires formal conversation and Director notification","Escalation — notify Director to consider termination","Nothing yet — give them until day 30"],answer:1,explanation:"Tier 2 deadline is 14 days. At day 16 with two modules incomplete, this is corrective — a formal conversation, written summary, and Director notification. The deadline is a compliance requirement, not a suggestion."}]
   },
   {
     id:"C06", icon:"🆕", title:"Onboarding New Coordinators", dur:"15 min",
@@ -535,7 +550,10 @@ const CHAPTERS = [
       {q:"The 30-day review conversation should be approached as:",
        options:["A formal performance evaluation that could affect employment","A coaching and support conversation focused on development","A quiz on training content","A review of every error the coordinator has made"],
        answer:1, explanation:"The 30-day review is a development conversation — supportive, goal-setting, and bidirectional. Approaching it as a performance evaluation at 30 days damages trust and is premature."},
-    ]
+    ,
+      {q:"A new coordinator\'s Teams access isn\'t set up by their first day. Who resolves this?",options:["The coordinator — they should follow up with Microsoft","The Director — all system access is their responsibility","The supervisor — confirm it\'s resolved as part of the pre-arrival checklist","IT — submit a ticket and wait"],answer:2,explanation:"The supervisor pre-arrival checklist includes confirming Teams access before Day 1. If it isn\'t set up, escalate to the Director immediately."},
+      {q:"During a new coordinator\'s first 1:1, the most important thing to establish is:",options:["A full review of every client file","Clear expectations: documentation standards, your availability, and escalation protocol","A performance improvement plan","A list of 90-day goals"],answer:1,explanation:"The first 1:1 sets the tone for the entire supervisory relationship. Clear expectations about documentation standards, escalation, and your availability prevent most early problems before they start."},
+      {q:"The 30-day review conversation should conclude with:",options:["A formal written warning if any issues were identified","A list of all errors the coordinator made in their first month","Jointly set 60-day goals and a written summary to the Director","A pass/fail determination on continued employment"],answer:2,explanation:"The 30-day review ends with jointly developed 60-day goals and a Director summary. It is a development conversation — not a judgment."}]
   },
   {
     id:"C07", icon:"🔄", title:"Warm Handoff Procedures", dur:"15 min",
@@ -560,7 +578,10 @@ const CHAPTERS = [
       {q:"A 'cold handoff' means:",
        options:["A handoff that happens in winter","A consumer receives a new coordinator without any introduction from the outgoing coordinator","A handoff that happens quickly due to emergency","A handoff where the supervisor manages the transition directly"],
        answer:1, explanation:"A cold handoff is when a consumer's coordinator changes without a warm introduction — they simply receive a different person without explanation or continuity. This is never acceptable at Open Grace. Warm introductions are required whenever possible."},
-    ]
+    ,
+      {q:"During a warm handoff, who is responsible for introducing the receiving coordinator to the consumer\'s family?",options:["The Director — they have the most authority","The receiving coordinator — they need to establish the relationship","The outgoing coordinator — they hold the existing relationship","The supervisor — to maintain neutrality"],answer:2,explanation:"The outgoing coordinator owns the warm introduction because they hold the trust relationship with the family. A cold introduction from anyone else signals disruption rather than continuity."},
+      {q:"A \'parallel period\' in a warm handoff means:",options:["Both coordinators serve the consumer at least once before the transition completes","The supervisor covers the caseload while the transition is arranged","Documentation is transferred between coordinator files","IRC is notified of the coordinator change"],answer:0,explanation:"A parallel period means both coordinators overlap for at least one service contact per consumer before the outgoing coordinator is deactivated. This protects continuity and lets the consumer meet the new coordinator with familiar support present."},
+      {q:"A coordinator gives two weeks notice. When should you initiate the handoff process?",options:["On their last day","Immediately — notify the Director the same day and begin planning","After the Director confirms the resignation is final","During the exit interview in week two"],answer:1,explanation:"Two weeks is not much time for a proper warm handoff across multiple clients. Notify the Director immediately and begin planning the same day."}]
   },
   {
     id:"C08", icon:"⏱", title:"Hours Tracking & Authorization Compliance", dur:"15 min",
@@ -583,7 +604,10 @@ const CHAPTERS = [
       {q:"Inflating documented service hours (recording more time than actually spent) creates risk of:",
        options:["A minor compliance note in the next audit","Audit risk and potential fraud exposure for Open Grace","Nothing significant if the coordinator was genuinely providing support","Reduced QPR quality"],
        answer:1, explanation:"Fraudulent billing — even unintentional inflation — creates serious legal and compliance risk including loss of vendor status, repayment demands, and potential criminal liability. This is treated as a Level 3 escalation."},
-    ]
+    ,
+      {q:"A consumer has used 78% of their authorized hours with three weeks remaining. What do you do?",options:["Nothing — they haven\'t hit 80%","Monitor closely and prepare to review with the coordinator at 80%","Immediately contact the Director for a POS extension","Tell the coordinator to pause services for two weeks"],answer:1,explanation:"At 78% you are approaching the 80% threshold. Monitor closely and prepare your review conversation so you can act immediately when the alert fires."},
+      {q:"A coordinator logs 3 hours for a visit but the family mentions the coordinator was there for only 90 minutes. This requires:",options:["Accepting the documented time — the coordinator is the professional","A coaching conversation at the next 1:1","Immediate Director notification — time inflation is escalation-level","Contacting the family to confirm before acting"],answer:2,explanation:"Documentation discrepancies involving possible time inflation are a Level 3 escalation. This is not a coaching situation — it involves potential billing fraud. Notify the Director immediately."},
+      {q:"Services delivered after a POS end date are non-billable even if documented correctly.",options:["False — documentation is what matters for billing","True — POS end dates are absolute regardless of documentation quality","False — only if the coordinator didn\'t know the POS had expired","True — but the Director can authorize retroactive billing"],answer:1,explanation:"Services beyond the POS end date are non-billable regardless of documentation quality. The POS authorizes the service period — continuing beyond it is a compliance violation, not just a billing issue."}]
   },
   {
     id:"C09", icon:"💬", title:"Communication Standards", dur:"10 min",
@@ -606,7 +630,10 @@ const CHAPTERS = [
       {q:"After a corrective supervisory conversation with a coordinator, you should:",
        options:["Keep it verbal — written documentation feels punitive","Document the key points and send a written summary to the Director within 24 hours","Send the coordinator a formal written warning","Note it in your personal records only"],
        answer:1, explanation:"All corrective supervisory conversations must be documented in writing and shared with the Director within 24 hours. This protects everyone and creates the paper trail needed if further corrective action becomes necessary."},
-    ]
+    ,
+      {q:"A coordinator sends you a personal text at 9pm about a non-urgent caseload concern. Your best response is:",options:["Respond immediately — you\'re the supervisor and should be available","Respond the next morning via Teams during business hours","Ignore it — they should know not to text after hours","Call them immediately to resolve it"],answer:1,explanation:"Non-urgent matters should be handled during business hours through professional channels. Responding to late-night personal texts normalizes blurred boundaries and sets an unsustainable precedent."},
+      {q:"Which must be documented in writing and sent to the Director within 24 hours?",options:["A positive 1:1 where everything was on track","A corrective supervisory conversation","A coordinator\'s training completion","A team meeting agenda"],answer:1,explanation:"Every corrective supervisory conversation must be documented in writing and sent to the Director within 24 hours. This creates the paper trail needed for any future corrective or disciplinary action."},
+      {q:"When discussing a consumer in a Teams group channel, you should use:",options:["Their full name for clarity","Their UCI number only — not their full name","Initials and case number","First name only"],answer:1,explanation:"In group channels, use the UCI number — not the consumer\'s full name. Full identifying information may be used in individual direct messages to authorized parties when necessary."}]
   },
   {
     id:"C10", icon:"⚖️", title:"Supervisor Ethics & Boundaries", dur:"15 min",
@@ -629,7 +656,10 @@ const CHAPTERS = [
       {q:"During a 1:1 meeting, a coordinator discloses that a consumer's family member has been threatening them physically. This triggers your obligation as:",
        options:["Only a supervisor — document it and tell the coordinator to report to the Director","A mandated reporter — you must report if the situation meets reporting criteria, in addition to notifying the Director","Only the Director's concern — route it up and take no further action","An HR matter — not a mandated reporting situation"],
        answer:1, explanation:"Mandated reporter obligations apply to you as an individual, not just to coordinators. If a disclosure during supervision meets reporting criteria, you must report — and notify the Director."},
-    ]
+    ,
+      {q:"Two coordinators on your team have a conflict affecting team dynamics. The appropriate response is:",options:["Let them work it out — interpersonal dynamics aren\'t a supervision matter","Meet with each separately, assess the impact, and involve the Director if it affects performance or consumer care","Hold a team meeting and address it publicly","Side with the coordinator with the stronger performance record"],answer:1,explanation:"Interpersonal conflict affecting team dynamics is a supervision matter. Meet separately, assess professionally, and involve the Director if it rises to a performance or consumer safety concern. Never address personnel conflicts publicly."},
+      {q:"You gave a coordinator verbal feedback about a documentation issue two weeks ago. They\'ve improved significantly. What should you do?",options:["Say nothing — positive reinforcement can come across as patronizing","Specifically acknowledge the improvement — name what changed and why it matters","Move on to new concerns","Document the improvement in a formal corrective note"],answer:1,explanation:"Specific positive reinforcement is as important as corrective feedback. Name exactly what improved and why it matters. This reinforces behavior and builds a supervisory relationship where coordinators feel seen."},
+      {q:"A coordinator discloses they are struggling with a mental health condition affecting their work. You should:",options:["Keep it entirely confidential as they requested","Notify the Director regardless — all personnel matters go up","Listen with care, encourage support, and notify the Director that an accommodation conversation may be needed — without disclosing details unnecessarily","Tell other coordinators so the team can support them"],answer:2,explanation:"Mental health disclosures require both care and appropriate escalation. Listen supportively, encourage professional support, and notify the Director that an accommodation conversation may be needed. Personnel details stay confidential."}]
   },
   {
     id:"C11", icon:"📋", title:"Quick Reference & Certification", dur:"10 min",
@@ -652,7 +682,10 @@ const CHAPTERS = [
       {q:"Which of the following is NOT your responsibility as a supervisor?",
        options:["Monitoring training completion across your team","Filing the initial SIR with IRC after a reportable incident","Conducting weekly 1:1 supervision meetings","Initiating warm handoffs when coordinators depart"],
        answer:1, explanation:"Filing SIRs with IRC is the Director's responsibility. The supervisor's role is to receive the incident report from the coordinator, assess severity, and notify the Director — who then files the SIR with IRC."},
-    ]
+    ,
+      {q:"A coordinator is at Day 13 with two Tier 2 modules incomplete and a client visit tomorrow. What do you do?",options:["Allow the visit — one day over deadline is minor","Postpone the visit, require module completion today, and document the situation for the Director","Tell the coordinator to complete the modules after the visit","Reschedule the visit without notifying the Director"],answer:1,explanation:"Tier 2 must be complete within 14 days. At Day 13 with two incomplete and a visit tomorrow, postpone the visit, require completion today, and document for the Director."},
+      {q:"Which of the following is NOT a supervisor responsibility in the SIR process?",options:["Receiving the incident report from the coordinator","Assessing severity and notifying the Director","Filing the initial SIR with IRC","Supporting the coordinator in completing written documentation"],answer:2,explanation:"Filing the SIR with IRC is the Director\'s responsibility. The supervisor receives the report, assesses severity, notifies the Director, and supports documentation — but does not file with IRC."},
+      {q:"At your weekly review you see two coordinators are missing contact log entries from the prior week and one consumer is at 82% of authorized hours. What is your first action?",options:["Address all three at your next team meeting","Contact the Director about the hours alert first — then address documentation in individual 1:1s today","Wait to see if the coordinators self-correct on documentation","Handle the documentation first since it affects more people"],answer:1,explanation:"Hours at 82% is an active alert requiring immediate review with the affected coordinator and Director awareness. Address it first. Documentation issues — while also urgent — follow immediately through individual 1:1s the same day."}]
   },
 ];
 
