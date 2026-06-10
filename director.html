@@ -58,32 +58,32 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 .tabbar{
   flex-shrink:0;background:rgba(10,8,32,.98);
   border-top:1px solid rgba(255,255,255,.08);
-  display:grid;grid-template-columns:repeat(7,1fr);
+  display:grid;grid-template-columns:repeat(6,1fr);
   height:var(--tab-h);
   padding-bottom:var(--safe-bot);
 }
 .tab{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2px;cursor:pointer;opacity:.4;transition:opacity .15s;
-  -webkit-tap-highlight-color:transparent;
+  gap:3px;cursor:pointer;opacity:.4;transition:opacity .15s;
+  -webkit-tap-highlight-color:transparent;padding:0 2px;
 }
 .tab.active{opacity:1;}
-.tab-icon{font-size:26px;line-height:1;}
-.tab-label{font-size:11px;font-weight:700;color:white;letter-spacing:.2px;text-align:center;}
+.tab-icon{font-size:28px;line-height:1;}
+.tab-label{font-size:11px;font-weight:700;color:white;letter-spacing:.1px;text-align:center;}
 
 /* ── SECTION LABEL ── */
 .sec{
-  font-size:11px;font-weight:800;color:rgba(255,255,255,.3);
+  font-size:12px;font-weight:800;color:rgba(255,255,255,.35);
   letter-spacing:2px;text-transform:uppercase;
-  margin:16px 0 8px;display:flex;align-items:center;gap:8px;
+  margin:20px 0 10px;display:flex;align-items:center;gap:8px;
 }
 .sec::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07);}
 
 /* ── CARDS ── */
 .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;margin-bottom:10px;}
 .card-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
-.card-val{font-size:30px;font-weight:800;color:white;font-family:var(--display);line-height:1;}
-.card-sub{font-size:13px;color:rgba(255,255,255,.4);margin-top:4px;line-height:1.55;}
+.card-val{font-size:32px;font-weight:800;color:white;font-family:var(--display);line-height:1;}
+.card-sub{font-size:14px;color:rgba(255,255,255,.4);margin-top:5px;line-height:1.55;}
 
 /* ── INFO GRID ── */
 .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
@@ -100,11 +100,12 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 
 /* ── ACTION BUTTONS ── */
 .action{
-  display:block;width:100%;padding:17px;margin-bottom:10px;
+  display:block;width:100%;padding:19px;margin-bottom:10px;
   border:none;border-radius:15px;
-  font-size:16px;font-weight:700;font-family:var(--sans);
+  font-size:17px;font-weight:700;font-family:var(--sans);
   cursor:pointer;text-align:center;text-decoration:none;
   -webkit-tap-highlight-color:transparent;transition:opacity .15s;
+  min-height:60px;
 }
 .action:active{opacity:.8;}
 .action.orange{background:linear-gradient(135deg,var(--orange),#e04800);color:white;}
@@ -119,17 +120,18 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 .lrow{
   display:flex;align-items:center;gap:14px;
   background:rgba(255,255,255,.06);border-radius:14px;
-  padding:16px 15px;margin-bottom:10px;
+  padding:18px 16px;margin-bottom:10px;
   text-decoration:none;cursor:pointer;
   -webkit-tap-highlight-color:transparent;
   border:1px solid rgba(255,255,255,.05);
+  min-height:64px;
 }
 .lrow:active{background:rgba(255,255,255,.1);}
-.lrow-icon{font-size:26px;width:36px;text-align:center;flex-shrink:0;}
+.lrow-icon{font-size:28px;width:38px;text-align:center;flex-shrink:0;}
 .lrow-info{flex:1;min-width:0;}
-.lrow-label{font-size:16px;font-weight:700;color:white;}
-.lrow-sub{font-size:12.5px;color:rgba(255,255,255,.35);margin-top:2px;}
-.lrow-arrow{font-size:13px;color:rgba(255,255,255,.2);flex-shrink:0;}
+.lrow-label{font-size:17px;font-weight:700;color:white;}
+.lrow-sub{font-size:13px;color:rgba(255,255,255,.4);margin-top:3px;line-height:1.4;}
+.lrow-arrow{font-size:16px;color:rgba(255,255,255,.25);flex-shrink:0;}
 
 /* ── STATUS BADGE ── */
 .badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.3px;}
@@ -142,10 +144,10 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 /* ── PIPELINE CARDS ── */
 .pipe-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:13px;margin-bottom:8px;}
 .pipe-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-.pipe-name{font-size:14px;font-weight:700;color:white;}
-.pipe-meta{font-size:10.5px;color:rgba(255,255,255,.35);line-height:1.5;margin-bottom:10px;}
+.pipe-name{font-size:16px;font-weight:700;color:white;}
+.pipe-meta{font-size:13px;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:12px;}
 .pipe-actions{display:flex;gap:6px;flex-wrap:wrap;}
-.pipe-btn{padding:7px 12px;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);-webkit-tap-highlight-color:transparent;}
+.pipe-btn{padding:11px 14px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);-webkit-tap-highlight-color:transparent;min-height:44px;}
 .pipe-btn.sms{background:var(--green);color:white;}
 .pipe-btn.email{background:var(--navy2);color:white;}
 .pipe-btn.mark{background:rgba(255,255,255,.1);color:white;}
@@ -170,14 +172,14 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 
 /* ── FORM FIELDS IN SHEET ── */
 .field{margin-bottom:13px;}
-.field-label{font-size:9.5px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.field-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;}
 .field-input{
-  width:100%;padding:12px 14px;
+  width:100%;padding:15px 16px;
   background:rgba(255,255,255,.08);
   border:1.5px solid rgba(255,255,255,.1);
   border-radius:11px;color:white;
-  font-size:14px;font-family:var(--sans);outline:none;
-  -webkit-appearance:none;
+  font-size:16px;font-family:var(--sans);outline:none;
+  -webkit-appearance:none;min-height:52px;
 }
 .field-input:focus{border-color:var(--orange);}
 .field-input::placeholder{color:rgba(255,255,255,.2);}
@@ -187,9 +189,9 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 
 /* ── SHEET BUTTONS ── */
 .sheet-btns{display:flex;gap:10px;margin-top:16px;}
-.sheet-cancel{flex:1;padding:13px;background:rgba(255,255,255,.07);border:none;border-radius:12px;color:rgba(255,255,255,.5);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans);}
-.sheet-save{flex:2;padding:13px;background:var(--orange);border:none;border-radius:12px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sans);}
-.sheet-danger{flex:1;padding:13px;background:rgba(220,38,38,.2);border:none;border-radius:12px;color:#FC8181;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);}
+.sheet-cancel{flex:1;padding:16px;background:rgba(255,255,255,.07);border:none;border-radius:12px;color:rgba(255,255,255,.5);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans);min-height:54px;}
+.sheet-save{flex:2;padding:16px;background:var(--orange);border:none;border-radius:12px;color:white;font-size:16px;font-weight:700;cursor:pointer;font-family:var(--sans);min-height:54px;}
+.sheet-danger{flex:1;padding:16px;background:rgba(220,38,38,.2);border:none;border-radius:12px;color:#FC8181;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sans);min-height:54px;}
 
 /* ── SEND SCREEN ── */
 .aud-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;}
@@ -230,6 +232,36 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 
 /* ── EMPTY STATE ── */
 .empty{text-align:center;padding:32px 16px;color:rgba(255,255,255,.25);font-size:13px;line-height:1.7;}
+
+/* ── COLLAPSIBLE SECTIONS ── */
+.hub-section{margin-bottom:6px;}
+.hub-toggle{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 16px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.07);border-radius:14px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  width:100%;text-align:left;font-family:var(--sans);
+  margin-bottom:0;transition:background .15s;
+}
+.hub-toggle:active{background:rgba(255,255,255,.1);}
+.hub-toggle-icon{font-size:26px;flex-shrink:0;}
+.hub-toggle-label{font-size:17px;font-weight:700;color:white;flex:1;}
+.hub-toggle-count{font-size:12px;color:rgba(255,255,255,.3);margin-right:6px;}
+.hub-toggle-chevron{font-size:14px;color:rgba(255,255,255,.3);transition:transform .2s;flex-shrink:0;}
+.hub-toggle.open .hub-toggle-chevron{transform:rotate(180deg);}
+.hub-toggle.open{border-radius:14px 14px 0 0;border-bottom-color:transparent;}
+.hub-body{
+  display:none;background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);border-top:none;
+  border-radius:0 0 14px 14px;padding:10px 10px 6px;
+  margin-bottom:8px;
+}
+.hub-body.open{display:block;}
+.hub-body .lrow{border-radius:10px;padding:14px 12px;min-height:56px;margin-bottom:6px;}
+.hub-body .lrow-label{font-size:15px;}
+.hub-body .lrow-sub{font-size:12px;}
+.hub-quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.hub-quick .action{margin-bottom:0;font-size:15px;padding:15px 10px;min-height:52px;}
 </style>
 </head>
 <body>
@@ -330,77 +362,109 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 
 </div><!-- /s0 -->
 
-<!-- ══ TAB 1: FORMS ══ -->
+<!-- ══ HUB TAB — Forms, Portals, Docs consolidated ══ -->
 <div class="screen" id="s1">
-  <div class="sec">Client Forms</div>
-  <a class="lrow" href="https://form.jotform.com/261451201542040" target="_blank"><div class="lrow-icon">📋</div><div class="lrow-info"><div class="lrow-label">Client Referral Intake</div><div class="lrow-sub">New family referrals from IRC</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://form.jotform.com/261451993406057" target="_blank"><div class="lrow-icon">✅</div><div class="lrow-info"><div class="lrow-label">CFS Service Acknowledgment</div><div class="lrow-sub">Required before services begin</div></div><div class="lrow-arrow">→</div></a>
 
-  <div class="sec">Staff Forms</div>
-  <a class="lrow" href="https://opengrace.org/contact-log.html" target="_blank"><div class="lrow-icon">📝</div><div class="lrow-info"><div class="lrow-label">Daily Contact Log Portal</div><div class="lrow-sub">HIPAA-compliant — access verified</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://form.jotform.com/261562041031038" target="_blank"><div class="lrow-icon">📊</div><div class="lrow-info"><div class="lrow-label">View Contact Log Submissions</div><div class="lrow-sub">Jotform — director access only</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank"><div class="lrow-icon">🚨</div><div class="lrow-info"><div class="lrow-label">Incident Report</div><div class="lrow-sub">File same day — notifies Director</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://form.jotform.com/261451114945050" target="_blank"><div class="lrow-icon">👤</div><div class="lrow-info"><div class="lrow-label">Staff Onboarding Form</div><div class="lrow-sub">Send after offer accepted</div></div><div class="lrow-arrow">→</div></a>
+  <!-- QUICK ACTIONS -->
+  <div class="sec">Quick Actions</div>
+  <div class="hub-quick">
+    <a class="action orange" href="https://form.jotform.com/261451201542040" target="_blank">📋 New Referral</a>
+    <a class="action navy" href="https://opengrace.org/contact-log.html" target="_blank">📝 Contact Log</a>
+  </div>
+  <div class="hub-quick">
+    <a class="action green" href="https://form.jotform.com/261555850958066" target="_blank">💼 Job App</a>
+    <a class="action purple" href="https://opengrace.org/family-prescreening.html" target="_blank">📋 Pre-Screen</a>
+  </div>
+  <div class="hub-quick">
+    <button class="action ghost" onclick="openAccessSheet()">🔑 Staff Access</button>
+    <button class="action ghost" onclick="openPositionsManager()">💼 Open Positions</button>
+  </div>
 
-  <div class="sec">Hiring</div>
-  <a class="lrow" href="https://form.jotform.com/261555850958066" target="_blank"><div class="lrow-icon">💼</div><div class="lrow-info"><div class="lrow-label">Employment Application</div><div class="lrow-sub">Wired to careers page</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://opengrace.org/careers.html" target="_blank"><div class="lrow-icon">🔖</div><div class="lrow-info"><div class="lrow-label">Careers Page</div><div class="lrow-sub">opengrace.org/careers.html</div></div><div class="lrow-arrow">→</div></a>
+  <!-- FORMS -->
+  <div class="hub-section">
+    <button class="hub-toggle" onclick="toggleHub(this)">
+      <span class="hub-toggle-icon">📋</span>
+      <span class="hub-toggle-label">Forms & Submissions</span>
+      <span class="hub-toggle-count">7 items</span>
+      <span class="hub-toggle-chevron">▾</span>
+    </button>
+    <div class="hub-body">
+      <a class="lrow" href="https://form.jotform.com/261451201542040" target="_blank"><div class="lrow-icon">📋</div><div class="lrow-info"><div class="lrow-label">Client Referral Intake</div><div class="lrow-sub">New family referrals from IRC</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://form.jotform.com/261451993406057" target="_blank"><div class="lrow-icon">✅</div><div class="lrow-info"><div class="lrow-label">CFS Service Acknowledgment</div><div class="lrow-sub">Required before services begin</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://form.jotform.com/261562041031038" target="_blank"><div class="lrow-icon">📊</div><div class="lrow-info"><div class="lrow-label">View Contact Log Submissions</div><div class="lrow-sub">Director access only</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank"><div class="lrow-icon">🚨</div><div class="lrow-info"><div class="lrow-label">Incident Report Form</div><div class="lrow-sub">File same day — notifies Director</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://form.jotform.com/261451114945050" target="_blank"><div class="lrow-icon">👤</div><div class="lrow-info"><div class="lrow-label">Staff Onboarding Form</div><div class="lrow-sub">Send after offer accepted</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://form.jotform.com/261555850958066" target="_blank"><div class="lrow-icon">💼</div><div class="lrow-info"><div class="lrow-label">Employment Application</div><div class="lrow-sub">Wired to careers page</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://www.jotform.com/myforms/" target="_blank"><div class="lrow-icon">📈</div><div class="lrow-info"><div class="lrow-label">All Forms & Submissions</div><div class="lrow-sub">Jotform full dashboard</div></div><div class="lrow-arrow">→</div></a>
+    </div>
+  </div>
 
-  <div class="sec">Staff Access</div>
-    <div class="lrow" onclick="openPositionsManager()"><div class="lrow-icon">💼</div><div class="lrow-info"><div class="lrow-label">Manage Open Positions</div><div class="lrow-sub">Toggle which roles are visible on careers page</div></div><div class="lrow-arrow">✏</div></div>
+  <!-- PORTALS -->
+  <div class="hub-section">
+    <button class="hub-toggle" onclick="toggleHub(this)">
+      <span class="hub-toggle-icon">🌐</span>
+      <span class="hub-toggle-label">Portals & Websites</span>
+      <span class="hub-toggle-count">9 items</span>
+      <span class="hub-toggle-chevron">▾</span>
+    </button>
+    <div class="hub-body">
+      <a class="lrow" href="https://opengrace.org/client-portal.html" target="_blank"><div class="lrow-icon">🏘</div><div class="lrow-info"><div class="lrow-label">Family Portal</div><div class="lrow-sub">opengrace.org/client-portal.html</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/staff-portal.html" target="_blank"><div class="lrow-icon">👥</div><div class="lrow-info"><div class="lrow-label">Staff Portal</div><div class="lrow-sub">opengrace.org/staff-portal.html</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/coordinator.html" target="_blank"><div class="lrow-icon">👤</div><div class="lrow-info"><div class="lrow-label">Coordinator Portal</div><div class="lrow-sub">opengrace.org/coordinator.html</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/supervisor-portal.html" target="_blank"><div class="lrow-icon">🏢</div><div class="lrow-info"><div class="lrow-label">Supervisor Portal</div><div class="lrow-sub">Code: OG2026</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/training.html" target="_blank"><div class="lrow-icon">🎓</div><div class="lrow-info"><div class="lrow-label">Staff Training Academy</div><div class="lrow-sub">opengrace.org/training.html</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org" target="_blank"><div class="lrow-icon">🏠</div><div class="lrow-info"><div class="lrow-label">Public Website — English</div><div class="lrow-sub">opengrace.org</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/es.html" target="_blank"><div class="lrow-icon">🌎</div><div class="lrow-info"><div class="lrow-label">Public Website — Español</div><div class="lrow-sub">opengrace.org/es.html</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/careers.html" target="_blank"><div class="lrow-icon">💼</div><div class="lrow-info"><div class="lrow-label">Careers Page</div><div class="lrow-sub">opengrace.org/careers.html</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/family-prescreening.html" target="_blank"><div class="lrow-icon">📋</div><div class="lrow-info"><div class="lrow-label">Family Pre-Screening</div><div class="lrow-sub">opengrace.org/family-prescreening.html</div></div><div class="lrow-arrow">→</div></a>
+    </div>
+  </div>
 
-  <div class="lrow" onclick="openAccessSheet()"><div class="lrow-icon">🔑</div><div class="lrow-info"><div class="lrow-label">Manage Staff Access Codes</div><div class="lrow-sub">Add, deactivate, or revoke instantly</div></div><div class="lrow-arrow">✏</div></div>
+  <!-- DOCS & TOOLS -->
+  <div class="hub-section">
+    <button class="hub-toggle" onclick="toggleHub(this)">
+      <span class="hub-toggle-icon">📄</span>
+      <span class="hub-toggle-label">Documents & Tools</span>
+      <span class="hub-toggle-count">8 items</span>
+      <span class="hub-toggle-chevron">▾</span>
+    </button>
+    <div class="hub-body">
+      <a class="lrow" href="https://www.inlandrc.org" target="_blank"><div class="lrow-icon">💳</div><div class="lrow-info"><div class="lrow-label">IRC E-Billing Portal</div><div class="lrow-sub">inlandrc.org → Providers → Online Billing</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank"><div class="lrow-icon">📘</div><div class="lrow-info"><div class="lrow-label">Employee Handbook</div><div class="lrow-sub">Staff policies & procedures</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/Open_Grace_Interview_Scorecard.html" target="_blank"><div class="lrow-icon">📊</div><div class="lrow-info"><div class="lrow-label">Interview Scorecard</div><div class="lrow-sub">Score candidates — auto-save</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf" target="_blank"><div class="lrow-icon">🏠</div><div class="lrow-info"><div class="lrow-label">Client Welcome Packet</div><div class="lrow-sub">PDF — give to families at first meeting</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/OpenGrace_Flyer_English.html" target="_blank"><div class="lrow-icon">📄</div><div class="lrow-info"><div class="lrow-label">Program Flyer — English</div><div class="lrow-sub">Print or share digitally</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/OpenGrace_Flyer_Spanish.html" target="_blank"><div class="lrow-icon">📄</div><div class="lrow-info"><div class="lrow-label">Program Flyer — Español</div><div class="lrow-sub">Print or share digitally</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://opengrace.org/coordinators.html" target="_blank"><div class="lrow-icon">🔖</div><div class="lrow-info"><div class="lrow-label">IRC Coordinator Info Page</div><div class="lrow-sub">opengrace.org/coordinators.html</div></div><div class="lrow-arrow">→</div></a>
+      <a class="lrow" href="https://github.com/jayraykay2/Open-Grace-Staff" target="_blank"><div class="lrow-icon">🔧</div><div class="lrow-info"><div class="lrow-label">GitHub Repository</div><div class="lrow-sub">jayraykay2/Open-Grace-Staff</div></div><div class="lrow-arrow">→</div></a>
+    </div>
+  </div>
 
-  <div class="sec">Jotform Dashboard</div>
-  <a class="lrow" href="https://www.jotform.com/myforms/" target="_blank"><div class="lrow-icon">📈</div><div class="lrow-info"><div class="lrow-label">All Forms & Submissions</div><div class="lrow-sub">jotform.com — full dashboard</div></div><div class="lrow-arrow">→</div></a>
-</div><!-- /s1 -->
-
-<!-- ══ TAB 2: PORTALS ══ -->
-<div class="screen" id="s2">
-  <div class="sec">Public Website</div>
-  <a class="lrow" href="https://opengrace.org" target="_blank"><div class="lrow-icon">🏠</div><div class="lrow-info"><div class="lrow-label">Landing Page — English</div><div class="lrow-sub">opengrace.org</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://opengrace.org/es.html" target="_blank"><div class="lrow-icon">🌎</div><div class="lrow-info"><div class="lrow-label">Landing Page — Español</div><div class="lrow-sub">opengrace.org/es.html</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://opengrace.org/coordinators.html" target="_blank"><div class="lrow-icon">🔖</div><div class="lrow-info"><div class="lrow-label">IRC Coordinator Info</div><div class="lrow-sub">opengrace.org/coordinators.html</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://opengrace.org/resources.html" target="_blank"><div class="lrow-icon">🌐</div><div class="lrow-info"><div class="lrow-label">Community Resources</div><div class="lrow-sub">opengrace.org/resources.html</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://opengrace.org/cfs-services.html" target="_blank"><div class="lrow-icon">📄</div><div class="lrow-info"><div class="lrow-label">CFS Services & FAQ</div><div class="lrow-sub">opengrace.org/cfs-services.html</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://opengrace.org/careers.html" target="_blank"><div class="lrow-icon">💼</div><div class="lrow-info"><div class="lrow-label">Careers Page</div><div class="lrow-sub">opengrace.org/careers.html</div></div><div class="lrow-arrow">→</div></a>
-
-  <div class="sec">IRC Billing</div>
-  <a class="lrow" href="https://www.inlandrc.org" target="_blank"><div class="lrow-icon">💰</div><div class="lrow-info"><div class="lrow-label">IRC E-Billing Portal</div><div class="lrow-sub">inlandrc.org → Providers → Online Billing</div></div><div class="lrow-arrow">→</div></a>
-  <div class="lrow" style="cursor:default;">
-    <div class="lrow-icon">📅</div>
-    <div class="lrow-info">
-      <div class="lrow-label">FY 2025–26 Cut-Off Dates</div>
-      <div class="lrow-sub" style="line-height:1.9;white-space:nowrap;font-size:12px;">
-        June → Jul 6 &nbsp;|&nbsp; July → Aug 4 &nbsp;|&nbsp; Aug → Sep 4<br>
-        Sep → Oct 3 &nbsp;|&nbsp; Oct → Nov 4 &nbsp;|&nbsp; Nov → Dec 4<br>
-        Dec → Jan 5 &nbsp;·&nbsp; Cut-off time: 4:30 PM
+  <!-- IRC BILLING CUTOFFS -->
+  <div class="hub-section">
+    <button class="hub-toggle" onclick="toggleHub(this)">
+      <span class="hub-toggle-icon">📅</span>
+      <span class="hub-toggle-label">IRC Billing Cut-Off Dates</span>
+      <span class="hub-toggle-count">FY 2025–26</span>
+      <span class="hub-toggle-chevron">▾</span>
+    </button>
+    <div class="hub-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 2px;">
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:4px;">June</div><div style="font-size:16px;font-weight:700;color:white;">Jul 6</div></div>
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:4px;">July</div><div style="font-size:16px;font-weight:700;color:white;">Aug 4</div></div>
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:4px;">August</div><div style="font-size:16px;font-weight:700;color:white;">Sep 4</div></div>
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:4px;">September</div><div style="font-size:16px;font-weight:700;color:white;">Oct 3</div></div>
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:4px;">October</div><div style="font-size:16px;font-weight:700;color:white;">Nov 4</div></div>
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:4px;">November</div><div style="font-size:16px;font-weight:700;color:white;">Dec 4</div></div>
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:4px;">December</div><div style="font-size:16px;font-weight:700;color:white;">Jan 5</div></div>
+        <div style="background:rgba(255,80,26,.1);border:1px solid rgba(255,80,26,.25);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:4px;">Cut-off time</div><div style="font-size:16px;font-weight:700;color:#FF6B1A;">4:30 PM</div></div>
       </div>
     </div>
   </div>
 
-  <div class="sec">Staff & Client Portals</div>
-  <a class="lrow" href="https://opengrace.org/staff-portal.html" target="_blank"><div class="lrow-icon">👥</div><div class="lrow-info"><div class="lrow-label">Staff Portal</div><div class="lrow-sub">opengrace.org/staff-portal.html</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://opengrace.org/client-portal.html" target="_blank"><div class="lrow-icon">🏘</div><div class="lrow-info"><div class="lrow-label">Client & Family Portal</div><div class="lrow-sub">opengrace.org/client-portal.html</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://opengrace.org/onboarding.html" target="_blank"><div class="lrow-icon">📋</div><div class="lrow-info"><div class="lrow-label">Staff Onboarding Prep</div><div class="lrow-sub">opengrace.org/onboarding.html</div></div><div class="lrow-arrow">→</div></a>
-</div><!-- /s2 -->
+</div><!-- /s1-hub -->
 
-<!-- ══ TAB 3: DOCS ══ -->
-<div class="screen" id="s3">
-  <div class="sec">Director Tools</div>
-  <a class="lrow" href="https://www.inlandrc.org" target="_blank"><div class="lrow-icon">💳</div><div class="lrow-info"><div class="lrow-label">IRC E-Billing</div><div class="lrow-sub">Submit invoices — inlandrc.org → Providers</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://opengrace.org/Open_Grace_Interview_Scorecard.html" target="_blank"><div class="lrow-icon">📋</div><div class="lrow-info"><div class="lrow-label">Interview Scorecard</div><div class="lrow-sub">Score candidates — auto-save results</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://github.com/jayraykay2/Open-Grace-Staff" target="_blank"><div class="lrow-icon">🔧</div><div class="lrow-info"><div class="lrow-label">GitHub Repository</div><div class="lrow-sub">jayraykay2/Open-Grace-Staff</div></div><div class="lrow-arrow">→</div></a>
 
-  <div class="sec">Family Documents</div>
-  <a class="lrow" href="https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf" target="_blank"><div class="lrow-icon">🏠</div><div class="lrow-info"><div class="lrow-label">Client Welcome Packet</div><div class="lrow-sub">PDF — give to families at first meeting</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://opengrace.org/OpenGrace_Flyer_English.html" target="_blank"><div class="lrow-icon">📄</div><div class="lrow-info"><div class="lrow-label">Program Flyer — English</div><div class="lrow-sub">Print and distribute</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://opengrace.org/OpenGrace_Flyer_Spanish.html" target="_blank"><div class="lrow-icon">📄</div><div class="lrow-info"><div class="lrow-label">Program Flyer — Español</div><div class="lrow-sub">Imprimir y distribuir</div></div><div class="lrow-arrow">→</div></a>
-
-  <div class="sec">Staff Documents</div>
-  <a class="lrow" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank"><div class="lrow-icon">📘</div><div class="lrow-info"><div class="lrow-label">Employee Handbook</div><div class="lrow-sub">Send after offer accepted</div></div><div class="lrow-arrow">→</div></a>
-  <a class="lrow" href="https://opengrace.org/Request_for_Live_Scan_-_Open_Grace.pdf" target="_blank"><div class="lrow-icon">🔒</div><div class="lrow-info"><div class="lrow-label">Live Scan Form</div><div class="lrow-sub">ORI: AAP98 | Mail Code: 35349</div></div><div class="lrow-arrow">→</div></a>
-</div><!-- /s3 -->
 
 <!-- ══ TAB 4: CONTACTS ══ -->
 <div class="screen" id="s4">
@@ -507,9 +571,33 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
   </div>
 </div><!-- /s6 -->
 
-<!-- ══ TAB 7: TRAINING ══ -->
-<div class="screen" id="s7">
+<!-- ══ MANAGE TAB — Training + Staff combined ══ -->
+<div class="screen" id="s-manage">
+  <div class="sec">Staff Management</div>
+  <div class="sec">Coordinator Overview</div>
+  <div id="staff-summary" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;">
+    <div class="card" style="text-align:center;">
+      <div class="card-label">Active Staff</div>
+      <div class="card-val" id="sm-active">—</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-label">Hours Alerts</div>
+      <div class="card-val" id="sm-alerts" style="color:#FC8181;">—</div>
+    </div>
+  </div>
 
+  <div class="sec">Staff Roster</div>
+  <div id="staff-roster">
+    <div style="text-align:center;padding:24px;color:rgba(255,255,255,.35);font-size:13px;">Loading…</div>
+  </div>
+
+  <button class="action green" style="width:100%;font-size:13px;padding:12px;margin-top:4px;" onclick="openNewStaffSheet()">
+    ➕ Add New Staff Member
+  </button>
+  <button class="action navy" style="width:100%;font-size:13px;padding:12px;margin-top:6px;" onclick="loadStaffRoster()">
+    🔄 Refresh
+  </button>
+  <div class="sec" style="margin-top:24px;">Training Overview</div>
   <div class="sec">Staff Training Overview</div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;">
@@ -539,51 +627,20 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
       🎓 Open Training Academy
     </a>
   </div>
+</div><!-- /s-manage -->
 
-</div><!-- /s7 -->
 
-<!-- ══ TAB 8: STAFF MANAGEMENT ══ -->
-<div class="screen" id="s8">
-
-  <div class="sec">Coordinator Overview</div>
-  <div id="staff-summary" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;">
-    <div class="card" style="text-align:center;">
-      <div class="card-label">Active Staff</div>
-      <div class="card-val" id="sm-active">—</div>
-    </div>
-    <div class="card" style="text-align:center;">
-      <div class="card-label">Hours Alerts</div>
-      <div class="card-val" id="sm-alerts" style="color:#FC8181;">—</div>
-    </div>
-  </div>
-
-  <div class="sec">Staff Roster</div>
-  <div id="staff-roster">
-    <div style="text-align:center;padding:24px;color:rgba(255,255,255,.35);font-size:13px;">Loading…</div>
-  </div>
-
-  <button class="action green" style="width:100%;font-size:13px;padding:12px;margin-top:4px;" onclick="openNewStaffSheet()">
-    ➕ Add New Staff Member
-  </button>
-  <button class="action navy" style="width:100%;font-size:13px;padding:12px;margin-top:6px;" onclick="loadStaffRoster()">
-    🔄 Refresh
-  </button>
-
-</div><!-- /s8 -->
 
 </div><!-- /screens -->
 
 <!-- ════════ TAB BAR ════════ -->
 <div class="tabbar">
   <div class="tab active" onclick="switchTab(0)"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></div>
-  <div class="tab"        onclick="switchTab(1)"><div class="tab-icon">📋</div><div class="tab-label">Forms</div></div>
-  <div class="tab"        onclick="switchTab(2)"><div class="tab-icon">🌐</div><div class="tab-label">Portals</div></div>
-  <div class="tab"        onclick="switchTab(3)"><div class="tab-icon">📄</div><div class="tab-label">Docs</div></div>
+  <div class="tab"        onclick="switchTab(1)"><div class="tab-icon">⚡</div><div class="tab-label">Hub</div></div>
   <div class="tab"        onclick="switchTab(4)"><div class="tab-icon">📞</div><div class="tab-label">Contacts</div></div>
   <div class="tab"        onclick="switchTab(5)"><div class="tab-icon">🔄</div><div class="tab-label">Pipeline</div></div>
   <div class="tab"        onclick="switchTab(6)"><div class="tab-icon">📤</div><div class="tab-label">Send</div></div>
-  <div class="tab"        onclick="switchTab(7)"><div class="tab-icon">🎓</div><div class="tab-label">Training</div></div>
-  <div class="tab"        onclick="switchTab(8)"><div class="tab-icon">👥</div><div class="tab-label">Staff</div></div>
+  <div class="tab"        onclick="switchTab(99)"><div class="tab-icon">⚙️</div><div class="tab-label">Manage</div></div>
 </div>
 
 <!-- ════════ MODALS ════════ -->
@@ -745,14 +802,25 @@ function todayStr() {
 // ════════════════════════════════════════════
 let currentTab = 0;
 function switchTab(idx) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
-  document.querySelectorAll('.screen').forEach((s,i) => s.classList.toggle('active', i===idx));
+  // Map tab bar position to screen id
+  const TAB_MAP = {0:0, 1:1, 4:4, 5:5, 6:6, 99:99};
+  // Update tab bar active state (6 tabs: 0,1,2,3,4,5)
+  const TAB_IDX_MAP = {0:0, 1:1, 4:2, 5:3, 6:4, 99:5};
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===TAB_IDX_MAP[idx]));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  if (idx === 99) {
+    // Manage tab — show training + staff combined
+    const ms = document.getElementById('s-manage');
+    if (ms) ms.classList.add('active');
+  } else {
+    const s = document.getElementById('s'+idx);
+    if (s) s.classList.add('active');
+  }
   currentTab = idx;
   if (idx === 4) renderContacts();
   if (idx === 5) renderPipeline();
   if (idx === 6) renderSend();
-  if (idx === 7) loadTrainingReport();
-  if (idx === 8) loadStaffRoster();
+  if (idx === 99) { loadTrainingReport(); loadStaffRoster(); }
 }
 
 // ════════════════════════════════════════════
@@ -2291,6 +2359,14 @@ function forceSyncPipeline() {
   renderPipeline();
   renderHome();
   toast(added > 0 ? '✓ Pipeline synced — ' + added + ' entr' + (added===1?'y':'ies') + ' added' : '✓ Pipeline already up to date');
+}
+
+
+// ── HUB COLLAPSIBLE SECTIONS ──────────────────────────────
+function toggleHub(btn) {
+  btn.classList.toggle('open');
+  const body = btn.nextElementSibling;
+  if (body) body.classList.toggle('open');
 }
 
 </script>
