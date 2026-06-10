@@ -534,6 +534,35 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 
 </div><!-- /s7 -->
 
+<!-- ══ TAB 8: STAFF MANAGEMENT ══ -->
+<div class="screen" id="s8">
+
+  <div class="sec">Coordinator Overview</div>
+  <div id="staff-summary" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;">
+    <div class="card" style="text-align:center;">
+      <div class="card-label">Active Staff</div>
+      <div class="card-val" id="sm-active">—</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-label">Hours Alerts</div>
+      <div class="card-val" id="sm-alerts" style="color:#FC8181;">—</div>
+    </div>
+  </div>
+
+  <div class="sec">Staff Roster</div>
+  <div id="staff-roster">
+    <div style="text-align:center;padding:24px;color:rgba(255,255,255,.35);font-size:13px;">Loading…</div>
+  </div>
+
+  <button class="action green" style="width:100%;font-size:13px;padding:12px;margin-top:4px;" onclick="openNewStaffSheet()">
+    ➕ Add New Staff Member
+  </button>
+  <button class="action navy" style="width:100%;font-size:13px;padding:12px;margin-top:6px;" onclick="loadStaffRoster()">
+    🔄 Refresh
+  </button>
+
+</div><!-- /s8 -->
+
 </div><!-- /screens -->
 
 <!-- ════════ TAB BAR ════════ -->
@@ -546,6 +575,7 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
   <div class="tab"        onclick="switchTab(5)"><div class="tab-icon">🔄</div><div class="tab-label">Pipeline</div></div>
   <div class="tab"        onclick="switchTab(6)"><div class="tab-icon">📤</div><div class="tab-label">Send</div></div>
   <div class="tab"        onclick="switchTab(7)"><div class="tab-icon">🎓</div><div class="tab-label">Training</div></div>
+  <div class="tab"        onclick="switchTab(8)"><div class="tab-icon">👥</div><div class="tab-label">Staff</div></div>
 </div>
 
 <!-- ════════ MODALS ════════ -->
@@ -714,6 +744,7 @@ function switchTab(idx) {
   if (idx === 5) renderPipeline();
   if (idx === 6) renderSend();
   if (idx === 7) loadTrainingReport();
+  if (idx === 8) loadStaffRoster();
 }
 
 // ════════════════════════════════════════════
@@ -1732,7 +1763,552 @@ function getLastCompleted(p) {
   return entries[entries.length-1][1] || '—';
 }
 
+
+// ════════════════════════════════════════════
+// STAFF MANAGEMENT
+// ════════════════════════════════════════════
+
+const STAFF_MGR_URL = 'https://raw.githubusercontent.com/jayraykay2/Open-Grace-Staff/main/staff_access.json';
+const STAFF_API_URL = 'https://api.github.com/repos/jayraykay2/Open-Grace-Staff/contents/staff_access.json';
+// GH_TOKEN_MGR is stored in localStorage (set on first use)
+// Never hardcode tokens in source files
+function getGHToken() {
+  let t = localStorage.getItem('og_gh_token');
+  if (!t) {
+    t = prompt('Enter GitHub API token for staff management (stored locally, never shared):');
+    if (t) localStorage.setItem('og_gh_token', t);
+  }
+  return t || '';
+}
+const GH_TOKEN_MGR = getGHToken;
+
+const ONBOARD_KEYS = [
+  {key:'liveScan',      label:'Live Scan'},
+  {key:'cprFirstAid',   label:'CPR / First Aid'},
+  {key:'handbookSigned',label:'Handbook Signed'},
+  {key:'jotformOnboarding',label:'Jotform Onboarding'},
+  {key:'mandatedReporter',label:'Mandated Reporter'},
+  {key:'hipaaAck',      label:'HIPAA Ack'},
+  {key:'teamsSetup',    label:'Teams Setup'},
+  {key:'contactLogTest',label:'Contact Log Test'},
+  {key:'firstSupervision',label:'First Supervision'},
+];
+
+let staffCache = null;
+
+async function fetchStaffData(force=false) {
+  if (staffCache && !force) return staffCache;
+  const resp = await fetch(STAFF_MGR_URL + '?t=' + Date.now());
+  staffCache = await resp.json();
+  return staffCache;
+}
+
+async function loadStaffRoster() {
+  const rosterEl = document.getElementById('staff-roster');
+  const activeEl = document.getElementById('sm-active');
+  const alertsEl = document.getElementById('sm-alerts');
+  rosterEl.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.35);font-size:13px;">Loading…</div>';
+
+  try {
+    const data = await fetchStaffData(true);
+    const staff = data.staff || [];
+    const active = staff.filter(s => s.active);
+    activeEl.textContent = active.length;
+
+    // Count hours alerts across all staff
+    let alertCount = 0;
+    active.forEach(s => {
+      (s.clients||[]).forEach(c => {
+        if (c.usedHours && c.authorizedHours) {
+          const pct = (c.usedHours / c.authorizedHours) * 100;
+          if (pct >= (c.alertThreshold || 80)) alertCount++;
+        }
+      });
+    });
+    alertsEl.textContent = alertCount;
+
+    if (!staff.length) {
+      rosterEl.innerHTML = '<div style="text-align:center;padding:24px;color:rgba(255,255,255,.35);font-size:13px;">No staff on record.</div>';
+      return;
+    }
+
+    rosterEl.innerHTML = staff.map((s, si) => {
+      const clients = s.clients || [];
+      const ob = s.onboarding || {};
+      const obDone = ONBOARD_KEYS.filter(k => ob[k.key]).length;
+      const handoff = s.handoff || {};
+      const hoursAlerts = clients.filter(c => c.usedHours && c.authorizedHours &&
+        (c.usedHours/c.authorizedHours)*100 >= (c.alertThreshold||80));
+
+      return `<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,${s.active?'.12':'.04'});
+        border-radius:14px;padding:14px 16px;margin-bottom:10px;
+        ${!s.active?'opacity:.5;':''} ${handoff.inProgress?'border-color:rgba(216,64,64,.3);':''}">
+
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <div>
+            <div style="font-size:15px;font-weight:700;">${s.name}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.45);">${s.position||'Family Coordinator'} &bull; ${s.code} &bull; Hired ${s.hired||'—'}</div>
+            ${s.phone ? `<div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">${s.phone}${s.email?' &bull; '+s.email:''}</div>` : ''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+            <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;
+              background:${s.active?'rgba(29,158,117,.15)':'rgba(216,64,64,.15)'};
+              color:${s.active?'#1D9E75':'#FC8181'};">${s.active?'Active':'Inactive'}</span>
+            ${handoff.inProgress?'<span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;background:rgba(216,64,64,.2);color:#FC8181;">⚠ Handoff</span>':''}
+          </div>
+        </div>
+
+        ${hoursAlerts.length ? `<div style="background:rgba(216,64,64,.1);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:12px;color:#FC8181;">
+          ⚠ Hours alert: ${hoursAlerts.map(c=>`${c.name} (${Math.round((c.usedHours/c.authorizedHours)*100)}%)`).join(', ')}
+        </div>` : ''}
+
+        <!-- Clients -->
+        ${clients.length ? `<div style="margin-bottom:8px;">
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Clients (${clients.length})</div>
+          ${clients.map(c => {
+            const pct = c.authorizedHours ? Math.round((c.usedHours||0)/c.authorizedHours*100) : 0;
+            const clr = pct>=90?'#D84040':pct>=80?'#BA7517':'#1D9E75';
+            return `<div style="display:flex;justify-content:space-between;align-items:center;
+              font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+              <span style="color:rgba(255,255,255,.7);">${c.name} <span style="color:rgba(255,255,255,.3);">UCI ${c.uci}</span></span>
+              <span style="font-weight:700;color:${clr};">${c.usedHours||0}/${c.authorizedHours||'?'}h (${pct}%)</span>
+            </div>`;
+          }).join('')}
+        </div>` : '<div style="font-size:12px;color:rgba(255,255,255,.3);margin-bottom:8px;">No clients assigned</div>'}
+
+        <!-- Onboarding mini-bar -->
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.35);margin-bottom:4px;">
+            <span>Onboarding</span><span>${obDone}/${ONBOARD_KEYS.length}</span>
+          </div>
+          <div style="height:4px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;">
+            <div style="height:100%;width:${Math.round(obDone/ONBOARD_KEYS.length*100)}%;
+              background:${obDone===ONBOARD_KEYS.length?'#1D9E75':'#2D2B7F'};border-radius:99px;"></div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button onclick="openStaffEditor(${si})" style="flex:1;padding:9px 6px;background:rgba(45,43,127,.4);
+            color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:9px;font-size:12px;
+            font-weight:700;font-family:var(--sans);cursor:pointer;min-width:70px;">
+            ✏️ Edit
+          </button>
+          <button onclick="openOnboardingEditor(${si})" style="flex:1;padding:9px 6px;background:rgba(29,158,117,.15);
+            color:#1D9E75;border:1px solid rgba(29,158,117,.3);border-radius:9px;font-size:12px;
+            font-weight:700;font-family:var(--sans);cursor:pointer;min-width:70px;">
+            ✅ Onboarding
+          </button>
+          <button onclick="openHoursEditor(${si})" style="flex:1;padding:9px 6px;background:rgba(244,124,32,.12);
+            color:#F47C20;border:1px solid rgba(244,124,32,.3);border-radius:9px;font-size:12px;
+            font-weight:700;font-family:var(--sans);cursor:pointer;min-width:70px;">
+            ⏱ Hours
+          </button>
+          <button onclick="openHandoffEditor(${si})" style="flex:1;padding:9px 6px;background:${handoff.inProgress?'rgba(216,64,64,.2)':'rgba(255,255,255,.06)'};
+            color:${handoff.inProgress?'#FC8181':'rgba(255,255,255,.5)'};
+            border:1px solid ${handoff.inProgress?'rgba(216,64,64,.3)':'rgba(255,255,255,.08)'};
+            border-radius:9px;font-size:12px;font-weight:700;font-family:var(--sans);cursor:pointer;min-width:70px;">
+            🔄 Handoff
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    rosterEl.innerHTML = `<div style="color:#FC8181;text-align:center;padding:20px;font-size:13px;">Failed to load staff data.<br>${e.message}</div>`;
+  }
+}
+
+// ── SAVE STAFF DATA TO GITHUB ──────────────────────────────
+async function saveStaffData(data, message) {
+  try {
+    const metaResp = await fetch(STAFF_API_URL, {
+      headers: {'Authorization': 'token ' + GH_TOKEN_MGR(), 'User-Agent': 'OG-Director'}
+    });
+    const meta = await metaResp.json();
+    const sha = meta.sha;
+
+    data.last_updated = new Date().toISOString().split('T')[0];
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+
+    const resp = await fetch(STAFF_API_URL, {
+      method: 'PUT',
+      headers: {'Authorization':'token '+GH_TOKEN_MGR,'Content-Type':'application/json','User-Agent':'OG-Director'},
+      body: JSON.stringify({message, content: encoded, sha})
+    });
+    if (!resp.ok) throw new Error('GitHub save failed: ' + resp.status);
+    staffCache = data;
+    return true;
+  } catch(e) {
+    toast('⚠ Save failed: ' + e.message);
+    return false;
+  }
+}
+
+// ── STAFF EDITOR (name, code, active, deactivate) ─────────
+let editingStaffIdx = null;
+
+function openNewStaffSheet() {
+  editingStaffIdx = null;
+  document.getElementById('se-title').textContent = 'Add New Staff Member';
+  document.getElementById('se-name').value = '';
+  document.getElementById('se-code').value = 'OG-' + new Date().getFullYear() + '-';
+  document.getElementById('se-position').value = 'Family Coordinator';
+  document.getElementById('se-phone').value = '';
+  document.getElementById('se-email').value = '';
+  document.getElementById('se-hired').value = new Date().toISOString().split('T')[0];
+  document.getElementById('se-active').checked = true;
+  document.getElementById('se-notes').value = '';
+  document.getElementById('se-deactivate-row').style.display = 'none';
+  openOverlay('staff-edit-overlay');
+}
+
+async function openStaffEditor(idx) {
+  editingStaffIdx = idx;
+  const data = await fetchStaffData();
+  const s = data.staff[idx];
+  document.getElementById('se-title').textContent = 'Edit Staff Member';
+  document.getElementById('se-name').value = s.name || '';
+  document.getElementById('se-code').value = s.code || '';
+  document.getElementById('se-position').value = s.position || 'Family Coordinator';
+  document.getElementById('se-phone').value = s.phone || '';
+  document.getElementById('se-email').value = s.email || '';
+  document.getElementById('se-hired').value = s.hired || '';
+  document.getElementById('se-active').checked = !!s.active;
+  document.getElementById('se-notes').value = s.notes || '';
+  document.getElementById('se-deactivate-row').style.display = s.active ? 'block' : 'none';
+  openOverlay('staff-edit-overlay');
+}
+
+async function saveStaffEditor() {
+  const data = await fetchStaffData();
+  const isNew = editingStaffIdx === null;
+  const entry = isNew ? {
+    clients:[], onboarding:{liveScan:false,cprFirstAid:false,handbookSigned:false,
+      jotformOnboarding:false,mandatedReporter:false,hipaaAck:false,
+      teamsSetup:false,contactLogTest:false,firstSupervision:false,
+      completed:false,completedDate:null},
+    handoff:{inProgress:false,toStaffCode:null,toStaffName:null,
+      initiatedDate:null,reason:null,notes:null,completedDate:null},
+    terminated: null
+  } : {...data.staff[editingStaffIdx]};
+
+  entry.name     = document.getElementById('se-name').value.trim();
+  entry.code     = document.getElementById('se-code').value.trim().toUpperCase();
+  entry.position = document.getElementById('se-position').value;
+  entry.phone    = document.getElementById('se-phone').value.trim();
+  entry.email    = document.getElementById('se-email').value.trim();
+  entry.hired    = document.getElementById('se-hired').value;
+  entry.active   = document.getElementById('se-active').checked;
+  entry.notes    = document.getElementById('se-notes').value.trim();
+
+  if (!entry.name || !entry.code) { toast('⚠ Name and code required'); return; }
+
+  if (isNew) data.staff.push(entry);
+  else data.staff[editingStaffIdx] = entry;
+
+  const ok = await saveStaffData(data, (isNew?'Add':'Update') + ' staff: ' + entry.name);
+  if (ok) {
+    closeOverlay('staff-edit-overlay');
+    loadStaffRoster();
+    toast('✓ ' + entry.name + ' saved');
+  }
+}
+
+async function deactivateStaff() {
+  if (editingStaffIdx === null) return;
+  if (!confirm('Deactivate this staff member? They will lose portal access immediately.')) return;
+  const data = await fetchStaffData();
+  const s = data.staff[editingStaffIdx];
+  s.active = false;
+  s.terminated = new Date().toISOString().split('T')[0];
+  const ok = await saveStaffData(data, 'Deactivate staff: ' + s.name);
+  if (ok) { closeOverlay('staff-edit-overlay'); loadStaffRoster(); toast('✓ ' + s.name + ' deactivated'); }
+}
+
+// ── ONBOARDING EDITOR ───────────────────────────────────────
+async function openOnboardingEditor(idx) {
+  editingStaffIdx = idx;
+  const data = await fetchStaffData();
+  const s = data.staff[idx];
+  const ob = s.onboarding || {};
+  document.getElementById('ob-staff-name').textContent = s.name;
+  ONBOARD_KEYS.forEach(item => {
+    const el = document.getElementById('ob-' + item.key);
+    if (el) el.checked = !!ob[item.key];
+  });
+  openOverlay('onboard-edit-overlay');
+}
+
+async function saveOnboardingEditor() {
+  const data = await fetchStaffData();
+  const s = data.staff[editingStaffIdx];
+  if (!s.onboarding) s.onboarding = {};
+  ONBOARD_KEYS.forEach(item => {
+    const el = document.getElementById('ob-' + item.key);
+    if (el) s.onboarding[item.key] = el.checked;
+  });
+  const allDone = ONBOARD_KEYS.every(item => s.onboarding[item.key]);
+  s.onboarding.completed = allDone;
+  s.onboarding.completedDate = allDone && !s.onboarding.completedDate
+    ? new Date().toISOString().split('T')[0] : s.onboarding.completedDate;
+
+  const ok = await saveStaffData(data, 'Update onboarding: ' + s.name);
+  if (ok) { closeOverlay('onboard-edit-overlay'); loadStaffRoster(); toast('✓ Onboarding updated'); }
+}
+
+// ── HOURS EDITOR ────────────────────────────────────────────
+async function openHoursEditor(idx) {
+  editingStaffIdx = idx;
+  const data = await fetchStaffData();
+  const s = data.staff[idx];
+  const clients = s.clients || [];
+  document.getElementById('hours-staff-name').textContent = s.name;
+  const container = document.getElementById('hours-clients-list');
+  if (!clients.length) {
+    container.innerHTML = '<div style="color:rgba(255,255,255,.4);font-size:13px;text-align:center;padding:16px;">No clients assigned.<br>Edit staff profile to add clients.</div>';
+  } else {
+    container.innerHTML = clients.map((c,ci) => `
+      <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px;margin-bottom:8px;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px;">${c.name} <span style="font-size:11px;opacity:.5;">UCI ${c.uci}</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div>
+            <div class="field-label" style="font-size:10px;margin-bottom:4px;">Authorized Hrs/Wk</div>
+            <input class="field-input" type="number" id="hrs-auth-${ci}" value="${c.authorizedHours||0}" min="0" max="168">
+          </div>
+          <div>
+            <div class="field-label" style="font-size:10px;margin-bottom:4px;">Used Hrs (this period)</div>
+            <input class="field-input" type="number" id="hrs-used-${ci}" value="${c.usedHours||0}" min="0">
+          </div>
+        </div>
+        <div style="margin-top:8px;">
+          <div class="field-label" style="font-size:10px;margin-bottom:4px;">Alert Threshold (%)</div>
+          <input class="field-input" type="number" id="hrs-thresh-${ci}" value="${c.alertThreshold||80}" min="50" max="100">
+        </div>
+      </div>`).join('');
+  }
+  openOverlay('hours-edit-overlay');
+}
+
+async function saveHoursEditor() {
+  const data = await fetchStaffData();
+  const s = data.staff[editingStaffIdx];
+  (s.clients||[]).forEach((c,ci) => {
+    const auth  = document.getElementById('hrs-auth-' + ci);
+    const used  = document.getElementById('hrs-used-' + ci);
+    const thresh = document.getElementById('hrs-thresh-' + ci);
+    if (auth) c.authorizedHours = parseFloat(auth.value) || 0;
+    if (used) c.usedHours = parseFloat(used.value) || 0;
+    if (thresh) c.alertThreshold = parseFloat(thresh.value) || 80;
+  });
+  const ok = await saveStaffData(data, 'Update hours: ' + s.name);
+  if (ok) { closeOverlay('hours-edit-overlay'); loadStaffRoster(); toast('✓ Hours updated'); }
+}
+
+// ── HANDOFF EDITOR ──────────────────────────────────────────
+async function openHandoffEditor(idx) {
+  editingStaffIdx = idx;
+  const data = await fetchStaffData();
+  const s = data.staff[idx];
+  const h = s.handoff || {};
+  const others = (data.staff||[]).filter((_,i)=>i!==idx && _.active);
+
+  document.getElementById('hf-staff-name').textContent = s.name;
+  document.getElementById('hf-active').checked = !!h.inProgress;
+
+  const sel = document.getElementById('hf-to-staff');
+  sel.innerHTML = '<option value="">— Select receiving coordinator —</option>' +
+    others.map(o=>`<option value="${o.code}" ${h.toStaffCode===o.code?'selected':''}>${o.name}</option>`).join('');
+
+  document.getElementById('hf-reason').value = h.reason || '';
+  document.getElementById('hf-notes').value = h.notes || '';
+  document.getElementById('hf-initiated').value = h.initiatedDate || new Date().toISOString().split('T')[0];
+  openOverlay('handoff-edit-overlay');
+}
+
+async function saveHandoffEditor() {
+  const data = await fetchStaffData();
+  const s = data.staff[editingStaffIdx];
+  if (!s.handoff) s.handoff = {};
+
+  const active = document.getElementById('hf-active').checked;
+  const toCode = document.getElementById('hf-to-staff').value;
+  const toName = toCode ? (data.staff.find(x=>x.code===toCode)||{}).name : null;
+
+  s.handoff.inProgress    = active;
+  s.handoff.toStaffCode   = toCode || null;
+  s.handoff.toStaffName   = toName || null;
+  s.handoff.reason        = document.getElementById('hf-reason').value.trim();
+  s.handoff.notes         = document.getElementById('hf-notes').value.trim();
+  s.handoff.initiatedDate = document.getElementById('hf-initiated').value;
+  if (!active) s.handoff.completedDate = new Date().toISOString().split('T')[0];
+
+  const ok = await saveStaffData(data, (active?'Initiate':'Complete') + ' handoff: ' + s.name);
+  if (ok) { closeOverlay('handoff-edit-overlay'); loadStaffRoster(); toast('✓ Handoff ' + (active?'initiated':'completed')); }
+}
+
+function openNewStaffSheet() {
+  editingStaffIdx = null;
+  document.getElementById('se-title').textContent = 'Add New Staff Member';
+  ['se-name','se-code','se-phone','se-email','se-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('se-code').value = 'OG-' + new Date().getFullYear() + '-00' + (Math.floor(Math.random()*9)+2);
+  document.getElementById('se-position').value = 'Family Coordinator';
+  document.getElementById('se-hired').value = new Date().toISOString().split('T')[0];
+  document.getElementById('se-active').checked = true;
+  document.getElementById('se-deactivate-row').style.display = 'none';
+  openOverlay('staff-edit-overlay');
+}
+
 </script>
+
+
+<!-- ════════ STAFF EDIT OVERLAY ════════ -->
+<div class="overlay" id="staff-edit-overlay">
+  <div class="sheet" style="max-height:88vh;overflow-y:auto;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="se-title">Staff Member</div>
+    <div class="field"><div class="field-label">Full Name</div>
+      <input class="field-input" id="se-name" type="text" placeholder="Last, First"></div>
+    <div class="field"><div class="field-label">Access Code</div>
+      <input class="field-input" id="se-code" type="text" placeholder="OG-2026-001" style="text-transform:uppercase;letter-spacing:1px;"></div>
+    <div class="field"><div class="field-label">Position</div>
+      <select class="field-input" id="se-position">
+        <option>Family Coordinator</option>
+        <option>Lead Family Coordinator</option>
+        <option>Case Manager / Navigator</option>
+        <option>Supervisor</option>
+      </select></div>
+    <div class="field-row">
+      <div class="field"><div class="field-label">Phone</div>
+        <input class="field-input" id="se-phone" type="tel"></div>
+      <div class="field"><div class="field-label">Email</div>
+        <input class="field-input" id="se-email" type="email"></div>
+    </div>
+    <div class="field"><div class="field-label">Hire Date</div>
+      <input class="field-input" id="se-hired" type="date"></div>
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <input type="checkbox" id="se-active" style="width:20px;height:20px;accent-color:#1D9E75;">
+      <label for="se-active" style="font-size:13px;color:rgba(255,255,255,.7);">Account Active</label>
+    </div>
+    <div class="field"><div class="field-label">Notes</div>
+      <textarea class="field-input field-textarea" id="se-notes" rows="2"></textarea></div>
+    <div id="se-deactivate-row" style="display:none;margin-bottom:10px;">
+      <button onclick="deactivateStaff()" style="width:100%;padding:12px;background:rgba(216,64,64,.15);
+        color:#FC8181;border:1px solid rgba(216,64,64,.3);border-radius:10px;font-size:13px;
+        font-weight:700;font-family:var(--sans);cursor:pointer;">
+        🚫 Deactivate & Revoke Access
+      </button>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="sheet-cancel" onclick="closeOverlay('staff-edit-overlay')">Cancel</button>
+      <button class="sheet-save" onclick="saveStaffEditor()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ ONBOARDING EDIT OVERLAY ════════ -->
+<div class="overlay" id="onboard-edit-overlay">
+  <div class="sheet" style="max-height:85vh;overflow-y:auto;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Onboarding Checklist</div>
+    <div class="sheet-sub" id="ob-staff-name"></div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
+        <input type="checkbox" id="ob-liveScan" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
+        <span style="font-size:13px;color:rgba(255,255,255,.8);">Live Scan fingerprinting</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
+        <input type="checkbox" id="ob-cprFirstAid" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
+        <span style="font-size:13px;color:rgba(255,255,255,.8);">CPR / First Aid certification</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
+        <input type="checkbox" id="ob-handbookSigned" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
+        <span style="font-size:13px;color:rgba(255,255,255,.8);">Employee Handbook signed</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
+        <input type="checkbox" id="ob-jotformOnboarding" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
+        <span style="font-size:13px;color:rgba(255,255,255,.8);">Jotform onboarding form submitted</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
+        <input type="checkbox" id="ob-mandatedReporter" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
+        <span style="font-size:13px;color:rgba(255,255,255,.8);">Mandated Reporter training completed</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
+        <input type="checkbox" id="ob-hipaaAck" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
+        <span style="font-size:13px;color:rgba(255,255,255,.8);">HIPAA acknowledgement signed</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
+        <input type="checkbox" id="ob-teamsSetup" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
+        <span style="font-size:13px;color:rgba(255,255,255,.8);">Microsoft Teams / 365 access confirmed</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
+        <input type="checkbox" id="ob-contactLogTest" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
+        <span style="font-size:13px;color:rgba(255,255,255,.8);">Test contact log submission verified</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
+        <input type="checkbox" id="ob-firstSupervision" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
+        <span style="font-size:13px;color:rgba(255,255,255,.8);">First supervision meeting with Director</span>
+      </label>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="sheet-cancel" onclick="closeOverlay('onboard-edit-overlay')">Cancel</button>
+      <button class="sheet-save" onclick="saveOnboardingEditor()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ HOURS EDIT OVERLAY ════════ -->
+<div class="overlay" id="hours-edit-overlay">
+  <div class="sheet" style="max-height:85vh;overflow-y:auto;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Client Hours</div>
+    <div class="sheet-sub" id="hours-staff-name"></div>
+    <div id="hours-clients-list" style="margin-bottom:14px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="sheet-cancel" onclick="closeOverlay('hours-edit-overlay')">Cancel</button>
+      <button class="sheet-save" onclick="saveHoursEditor()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ HANDOFF EDIT OVERLAY ════════ -->
+<div class="overlay" id="handoff-edit-overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Warm Handoff</div>
+    <div class="sheet-sub" id="hf-staff-name"></div>
+    <div style="background:rgba(244,124,32,.08);border:1px solid rgba(244,124,32,.2);
+      border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;
+      color:rgba(255,255,255,.6);line-height:1.65;">
+      A warm handoff keeps clients supported during coordinator transitions.
+      The outgoing coordinator stays active until you mark it complete.
+    </div>
+    <div class="field" style="display:flex;align-items:center;gap:12px;">
+      <input type="checkbox" id="hf-active" style="width:20px;height:20px;accent-color:#F47C20;">
+      <label for="hf-active" style="font-size:13px;color:rgba(255,255,255,.7);">Handoff in progress</label>
+    </div>
+    <div class="field"><div class="field-label">Transitioning To</div>
+      <select class="field-input" id="hf-to-staff"></select></div>
+    <div class="field"><div class="field-label">Reason</div>
+      <select class="field-input" id="hf-reason">
+        <option value="">— Select reason —</option>
+        <option>Resignation</option>
+        <option>Termination</option>
+        <option>Leave of absence</option>
+        <option>Caseload rebalancing</option>
+        <option>Consumer request</option>
+        <option>Other</option>
+      </select></div>
+    <div class="field"><div class="field-label">Handoff Date</div>
+      <input class="field-input" type="date" id="hf-initiated"></div>
+    <div class="field"><div class="field-label">Notes for Receiving Coordinator</div>
+      <textarea class="field-input field-textarea" id="hf-notes" rows="3"
+        placeholder="Key info, family relationship notes, pending items..."></textarea></div>
+    <div style="display:flex;gap:8px;">
+      <button class="sheet-cancel" onclick="closeOverlay('handoff-edit-overlay')">Cancel</button>
+      <button class="sheet-save" onclick="saveHandoffEditor()">Save</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
