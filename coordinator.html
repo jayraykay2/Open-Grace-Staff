@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Open Grace — Coordinator Portal</title>
+<style>
+:root{
+  --navy:#2D2B7F;--orange:#F47C20;--gold:#F5A623;
+  --green:#1D9E75;--red:#D84040;--amber:#BA7517;
+  --bg:#0F0D2E;--card:#1A1760;--card2:#221E6E;
+  --border:rgba(255,255,255,0.1);--text:#fff;--sub:rgba(255,255,255,0.55);
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── LOCK ── */
+#lock{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:32px 20px;
+  background:radial-gradient(ellipse at top,rgba(45,43,127,.3) 0%,transparent 70%)}
+.lock-logo{width:72px;height:72px;border-radius:16px;overflow:hidden;margin-bottom:18px;
+  border:1px solid rgba(255,255,255,.15)}
+.lock-logo img{width:100%;height:100%;object-fit:cover}
+.lock-title{font-size:22px;font-weight:800;margin-bottom:4px;text-align:center}
+.lock-sub{font-size:13px;color:var(--sub);margin-bottom:28px;text-align:center}
+.lock-card{background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:26px 22px;width:100%;max-width:380px}
+.lock-label{font-size:11px;font-weight:800;color:var(--sub);text-transform:uppercase;
+  letter-spacing:1.5px;margin-bottom:10px}
+.lock-input{width:100%;background:rgba(255,255,255,.07);border:1px solid var(--border);
+  border-radius:12px;padding:15px;font-size:17px;color:var(--text);font-family:var(--sans);
+  letter-spacing:3px;text-align:center;outline:none;margin-bottom:12px}
+.lock-input:focus{border-color:var(--orange)}
+.lock-input.err{border-color:var(--red);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.lock-btn{width:100%;padding:16px;background:var(--navy);color:#fff;border:none;
+  border-radius:12px;font-size:15px;font-weight:700;font-family:var(--sans);cursor:pointer}
+.lock-err{font-size:12px;color:#FC8181;text-align:center;margin-top:10px;min-height:16px}
+.lock-note{font-size:12px;color:var(--sub);text-align:center;margin-top:18px;line-height:1.6}
+
+/* ── APP ── */
+#app{display:none}
+.topbar{background:var(--navy);padding:12px 18px;display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:200;border-bottom:1px solid var(--border)}
+.topbar-logo{width:30px;height:30px;border-radius:7px;overflow:hidden;flex-shrink:0}
+.topbar-logo img{width:100%;height:100%;object-fit:cover}
+.topbar-info{flex:1}
+.topbar-name{font-size:14px;font-weight:700}
+.topbar-role{font-size:10px;color:var(--sub)}
+.topbar-lock{font-size:18px;opacity:.5;cursor:pointer}
+
+/* TAB BAR */
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:var(--navy);
+  border-top:1px solid var(--border);display:flex;z-index:200;
+  padding-bottom:env(safe-area-inset-bottom)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;cursor:pointer;opacity:.4;transition:opacity .15s;padding:10px 4px}
+.tab.active{opacity:1}
+.tab-icon{font-size:22px;line-height:1}
+.tab-label{font-size:10px;font-weight:700;color:#fff;letter-spacing:.2px}
+
+/* SCREENS */
+.screens{padding-bottom:80px}
+.screen{display:none;padding:16px;max-width:520px;margin:0 auto}
+.screen.active{display:block}
+
+/* COMMON */
+.sec{font-size:10px;font-weight:800;color:var(--orange);letter-spacing:2.5px;
+  text-transform:uppercase;margin:18px 0 10px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.card-label{font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:4px}
+.card-val{font-size:28px;font-weight:800;line-height:1}
+.card-sub{font-size:11px;color:var(--sub);margin-top:3px}
+
+/* CLIENT CARDS */
+.client-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:16px;margin-bottom:10px;position:relative;overflow:hidden}
+.client-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--navy)}
+.client-card.alert::before{background:var(--red)}
+.client-card.warning::before{background:var(--amber)}
+.client-name{font-size:16px;font-weight:700;margin-bottom:2px}
+.client-uci{font-size:11px;color:var(--sub);margin-bottom:10px}
+.hours-bar{height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin-bottom:5px}
+.hours-fill{height:100%;border-radius:99px;transition:width .4s}
+.hours-meta{display:flex;justify-content:space-between;font-size:11px;margin-bottom:10px}
+.client-row{display:flex;justify-content:space-between;font-size:12px;
+  color:var(--sub);padding:5px 0;border-top:1px solid rgba(255,255,255,.05)}
+.client-row b{color:var(--text)}
+.alert-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;
+  padding:4px 10px;border-radius:20px;margin-bottom:8px}
+.alert-pill.red{background:rgba(216,64,64,.2);color:#FC8181}
+.alert-pill.amber{background:rgba(186,117,23,.2);color:#FCD34D}
+
+/* ONBOARDING CHECKLIST */
+.check-item{display:flex;align-items:center;gap:12px;padding:12px 14px;
+  background:rgba(255,255,255,.04);border-radius:10px;margin-bottom:6px}
+.check-box{width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+.check-box.done{background:var(--green);border-color:var(--green)}
+.check-text{flex:1;font-size:13px;color:var(--text)}
+.check-text.done{color:rgba(255,255,255,.4);text-decoration:line-through}
+.check-req{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;
+  background:rgba(216,64,64,.15);color:#FC8181;flex-shrink:0}
+.check-req.done{background:transparent;color:transparent}
+
+/* HANDOFF BANNER */
+.handoff-banner{background:linear-gradient(135deg,rgba(216,64,64,.2),rgba(186,117,23,.15));
+  border:1px solid rgba(216,64,64,.3);border-radius:13px;padding:14px 16px;margin-bottom:14px}
+.handoff-title{font-size:13px;font-weight:700;color:#FC8181;margin-bottom:4px}
+.handoff-body{font-size:12px;color:rgba(255,255,255,.65);line-height:1.6}
+
+/* TRAINING */
+.module-row{display:flex;align-items:center;gap:10px;padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.05)}
+.module-row:last-child{border:none}
+.module-icon{font-size:18px;flex-shrink:0}
+.module-info{flex:1}
+.module-title{font-size:13px;font-weight:600}
+.module-tier{font-size:10px;color:var(--sub)}
+.module-status{flex-shrink:0}
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;
+  padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px}
+.badge-done{background:rgba(29,158,117,.15);color:var(--green)}
+.badge-ready{background:rgba(244,124,32,.15);color:var(--orange)}
+.badge-locked{background:rgba(255,255,255,.07);color:rgba(255,255,255,.3)}
+
+/* RESOURCE LINKS */
+.rlink{display:flex;align-items:center;gap:14px;background:var(--card);
+  border:1px solid var(--border);border-radius:12px;padding:13px 16px;
+  margin-bottom:8px;text-decoration:none;color:var(--text)}
+.rlink-icon{font-size:22px;flex-shrink:0}
+.rlink-label{font-size:14px;font-weight:700}
+.rlink-sub{font-size:11px;color:var(--sub);margin-top:1px}
+.rlink-arrow{margin-left:auto;color:var(--sub);font-size:16px}
+
+/* ACTION BUTTONS */
+.action-btn{display:block;width:100%;padding:15px;border:none;border-radius:12px;
+  font-size:15px;font-weight:700;font-family:var(--sans);cursor:pointer;
+  margin-bottom:8px;text-align:center;text-decoration:none}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-green{background:var(--green);color:#fff}
+.btn-ghost{background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);border:1px solid var(--border)}
+
+/* PROGRESS BAR */
+.prog-wrap{margin-bottom:14px}
+.prog-label-row{display:flex;justify-content:space-between;font-size:12px;
+  color:var(--sub);margin-bottom:5px}
+.prog-bar{height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;border-radius:99px;transition:width .5s ease}
+
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);
+  background:#1A1760;color:#fff;padding:10px 18px;border-radius:10px;
+  font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:999;
+  border:1px solid var(--border);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ── LOCK ── -->
+<div id="lock">
+  <div class="lock-logo">
+    <img src="https://opengrace.org/og_logo.jpg" alt="Open Grace">
+  </div>
+  <div class="lock-title">Coordinator Portal</div>
+  <div class="lock-sub">Open Grace LLC &bull; IRC Vendor PJ6208</div>
+  <div class="lock-card">
+    <div class="lock-label">Your Staff Access Code</div>
+    <input class="lock-input" id="code-input" type="password" inputmode="text"
+      maxlength="12" placeholder="OG-XXXX-XXX" autocomplete="off"
+      onkeydown="if(event.key==='Enter')unlock()">
+    <button class="lock-btn" onclick="unlock()">Sign In</button>
+    <div class="lock-err" id="lock-err"></div>
+  </div>
+  <div class="lock-note">Contact the Director if you need your access code.<br>951-880-4132 &bull; joshua.kennedy@opengrace.org</div>
+</div>
+
+<!-- ── APP ── -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <img src="https://opengrace.org/og_logo.jpg" alt="Open Grace">
+    </div>
+    <div class="topbar-info">
+      <div class="topbar-name" id="top-name">—</div>
+      <div class="topbar-role" id="top-role">Family Coordinator &bull; Open Grace LLC</div>
+    </div>
+    <div class="topbar-lock" onclick="lockApp()" title="Sign out">🔒</div>
+  </div>
+
+  <div class="screens">
+
+    <!-- ── TAB 0: HOME ── -->
+    <div class="screen active" id="sc0">
+      <div id="handoff-banner-home"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px">
+        <div class="card">
+          <div class="card-label">My Clients</div>
+          <div class="card-val" id="h-clients">—</div>
+          <div class="card-sub">Assigned consumers</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Training</div>
+          <div class="card-val" id="h-training">—</div>
+          <div class="card-sub">Modules complete</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px">
+        <div class="card">
+          <div class="card-label">Onboarding</div>
+          <div class="card-val" id="h-onboard">—</div>
+          <div class="card-sub">Steps completed</div>
+        </div>
+        <div class="card" id="h-alert-card" style="border-color:rgba(216,64,64,.3)">
+          <div class="card-label">Hours Alerts</div>
+          <div class="card-val" id="h-alerts">—</div>
+          <div class="card-sub">Clients near limit</div>
+        </div>
+      </div>
+
+      <div class="sec">Quick Actions</div>
+      <a class="action-btn btn-navy" href="https://opengrace.org/contact-log.html" target="_blank">
+        📝 Submit Daily Contact Log
+      </a>
+      <a class="action-btn btn-orange" href="https://opengrace.org/training.html" target="_blank">
+        🎓 Open Training Academy
+      </a>
+      <button class="action-btn btn-ghost" onclick="switchTab(1)">
+        👥 View My Clients
+      </button>
+
+      <div class="sec">My Director</div>
+      <div class="card" style="display:flex;align-items:center;gap:14px;">
+        <div style="font-size:32px;flex-shrink:0;">👤</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;">Joshua Kennedy</div>
+          <div style="font-size:12px;color:var(--sub);">Director — Open Grace LLC</div>
+          <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+            <a href="tel:9518804132" style="font-size:12px;color:var(--orange);font-weight:700;text-decoration:none;">📞 951-880-4132</a>
+            <a href="mailto:joshua.kennedy@opengrace.org" style="font-size:12px;color:var(--orange);font-weight:700;text-decoration:none;">✉️ Email</a>
+            <a href="https://teams.microsoft.com" target="_blank" style="font-size:12px;color:var(--orange);font-weight:700;text-decoration:none;">💬 Teams</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB 1: MY CLIENTS ── -->
+    <div class="screen" id="sc1">
+      <div id="handoff-banner-clients"></div>
+      <div class="sec">Assigned Clients & Hours</div>
+      <div id="clients-list">
+        <div style="text-align:center;padding:30px;color:var(--sub);font-size:13px;">Loading…</div>
+      </div>
+    </div>
+
+    <!-- ── TAB 2: ONBOARDING ── -->
+    <div class="screen" id="sc2">
+      <div class="sec">My Onboarding Checklist</div>
+      <div id="onboarding-progress" class="prog-wrap"></div>
+      <div id="onboarding-list"></div>
+      <div style="margin-top:14px;padding:12px 14px;background:rgba(255,255,255,.04);
+        border-radius:10px;font-size:12px;color:var(--sub);line-height:1.65;">
+        ✓ items are confirmed by the Director.<br>
+        Questions about onboarding? Contact Joshua at 951-880-4132.
+      </div>
+    </div>
+
+    <!-- ── TAB 3: TRAINING ── -->
+    <div class="screen" id="sc3">
+      <div class="sec">My Training Progress</div>
+      <div id="training-progress" class="prog-wrap"></div>
+      <div id="training-list"></div>
+      <div style="margin-top:14px;">
+        <a class="action-btn btn-orange" href="https://opengrace.org/training.html" target="_blank">
+          🎓 Continue Training Academy
+        </a>
+      </div>
+    </div>
+
+    <!-- ── TAB 4: RESOURCES ── -->
+    <div class="screen" id="sc4">
+      <div class="sec">Field Tools</div>
+      <a class="rlink" href="https://opengrace.org/contact-log.html" target="_blank">
+        <div class="rlink-icon">📝</div>
+        <div><div class="rlink-label">Daily Contact Log</div><div class="rlink-sub">Submit service documentation</div></div>
+        <div class="rlink-arrow">→</div>
+      </a>
+      <a class="rlink" href="https://opengrace.org/training.html" target="_blank">
+        <div class="rlink-icon">🎓</div>
+        <div><div class="rlink-label">Training Academy</div><div class="rlink-sub">Modules, quizzes & certificates</div></div>
+        <div class="rlink-arrow">→</div>
+      </a>
+      <a class="rlink" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank">
+        <div class="rlink-icon">📘</div>
+        <div><div class="rlink-label">Employee Handbook</div><div class="rlink-sub">Policies, procedures & expectations</div></div>
+        <div class="rlink-arrow">→</div>
+      </a>
+
+      <div class="sec">Emergency Contacts</div>
+      <div class="card">
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:var(--sub);">Director (Joshua)</span>
+            <a href="tel:9518804132" style="color:var(--orange);font-weight:700;text-decoration:none;">951-880-4132</a>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:var(--sub);">Emergency</span>
+            <a href="tel:911" style="color:var(--red);font-weight:700;text-decoration:none;">911</a>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:var(--sub);">APS (Adult Protective Services)</span>
+            <a href="tel:18774773646" style="color:var(--orange);font-weight:700;text-decoration:none;">877-477-3646</a>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:var(--sub);">Crisis Line</span>
+            <a href="tel:988" style="color:var(--orange);font-weight:700;text-decoration:none;">988</a>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:var(--sub);">IRC Main</span>
+            <a href="tel:9098903000" style="color:var(--orange);font-weight:700;text-decoration:none;">909-890-3000</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">Forms & Documents</div>
+      <a class="rlink" href="https://form.jotform.com/261451114945050" target="_blank">
+        <div class="rlink-icon">📋</div>
+        <div><div class="rlink-label">Staff Onboarding Form</div><div class="rlink-sub">Submit documents and acknowledgments</div></div>
+        <div class="rlink-arrow">→</div>
+      </a>
+      <a class="rlink" href="https://opengrace.org/Open_Grace_Interview_Scorecard.html" target="_blank">
+        <div class="rlink-icon">📊</div>
+        <div><div class="rlink-label">Interview Scorecard</div><div class="rlink-sub">For supervisors assisting with hiring</div></div>
+        <div class="rlink-arrow">→</div>
+      </a>
+
+      <div class="sec">Account</div>
+      <button class="action-btn btn-ghost" onclick="lockApp()">🔒 Sign Out</button>
+    </div>
+
+  </div><!-- /screens -->
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab(0)">
+      <div class="tab-icon">🏠</div><div class="tab-label">Home</div>
+    </div>
+    <div class="tab" onclick="switchTab(1)">
+      <div class="tab-icon">👥</div><div class="tab-label">Clients</div>
+    </div>
+    <div class="tab" onclick="switchTab(2)">
+      <div class="tab-icon">✅</div><div class="tab-label">Onboarding</div>
+    </div>
+    <div class="tab" onclick="switchTab(3)">
+      <div class="tab-icon">🎓</div><div class="tab-label">Training</div>
+    </div>
+    <div class="tab" onclick="switchTab(4)">
+      <div class="tab-icon">📚</div><div class="tab-label">Resources</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STAFF_URL = 'https://raw.githubusercontent.com/jayraykay2/Open-Grace-Staff/main/staff_access.json';
+const TOTAL_MODULES = 18;
+
+const MODULES = [
+  {id:'M01',title:'Title 17 & CFS Requirements',tier:1,icon:'📋'},
+  {id:'M02',title:'HIPAA & Confidentiality',tier:1,icon:'🔒'},
+  {id:'M03',title:'Mandated Reporter',tier:1,icon:'🛡️'},
+  {id:'M04',title:'Open Grace Policies',tier:1,icon:'🏢'},
+  {id:'M05',title:'Incident Reporting & SIRs',tier:2,icon:'⚠️'},
+  {id:'M06',title:'Cultural Competency',tier:2,icon:'🌍'},
+  {id:'M07',title:'Boundaries & Ethics',tier:2,icon:'⚖️'},
+  {id:'M08',title:'Documentation Excellence',tier:2,icon:'📝'},
+  {id:'M09',title:'Emergency & Safety',tier:2,icon:'🚨'},
+  {id:'M10',title:'IRC & Regional Center Systems',tier:3,icon:'🏛️'},
+  {id:'M11',title:'Elevate Reimbursement',tier:3,icon:'💳'},
+  {id:'M12',title:'SSI/IHSS/Medi-Cal',tier:3,icon:'🏥'},
+  {id:'M13',title:'Person-Centered Thinking',tier:3,icon:'🎯'},
+  {id:'M14',title:'Family Engagement & MI',tier:3,icon:'🤝'},
+  {id:'M15',title:'Crisis De-escalation',tier:3,icon:'🧘'},
+  {id:'M16',title:'Disability Rights',tier:3,icon:'✊'},
+  {id:'M17',title:'Community Integration',tier:3,icon:'🌆'},
+  {id:'M18',title:'Professional Communication',tier:3,icon:'💬'},
+];
+
+const TIER_COLORS = {1:'#D84040',2:'#BA7517',3:'#2D2B7F'};
+const TIER_LABELS = {1:'Day 1 — Required',2:'Week 1–2',3:'30-Day Academy'};
+const ONBOARD_ITEMS = [
+  {key:'liveScan',      label:'Live Scan fingerprinting',         required:true},
+  {key:'cprFirstAid',   label:'CPR / First Aid certification',    required:true},
+  {key:'handbookSigned',label:'Employee Handbook signed',         required:true},
+  {key:'jotformOnboarding',label:'Jotform onboarding form submitted',required:true},
+  {key:'mandatedReporter',label:'Mandated Reporter training',     required:true},
+  {key:'hipaaAck',      label:'HIPAA acknowledgement signed',     required:true},
+  {key:'teamsSetup',    label:'Microsoft Teams / 365 access set up',required:false},
+  {key:'contactLogTest',label:'Test contact log submission',      required:false},
+  {key:'firstSupervision',label:'First supervision meeting with Director',required:false},
+];
+
+let currentStaff = null;
+let staffData = null;
+
+// ── LOCK / UNLOCK ──────────────────────────────────────────
+async function unlock() {
+  const code = document.getElementById('code-input').value.trim().toUpperCase();
+  const errEl = document.getElementById('lock-err');
+  const inputEl = document.getElementById('code-input');
+  if (!code) { errEl.textContent = 'Please enter your access code.'; return; }
+
+  try {
+    const resp = await fetch(STAFF_URL + '?t=' + Date.now());
+    const data = await resp.json();
+    // Cache for offline use
+    try { localStorage.setItem('og_staff_cache', JSON.stringify(data)); } catch(e) {}
+
+    const staff = (data.staff || []).find(s => s.code === code && s.active);
+    if (staff) {
+      currentStaff = staff;
+      staffData = data;
+      sessionStorage.setItem('og_coord_code', code);
+      showPortal();
+    } else {
+      inputEl.classList.add('err');
+      errEl.textContent = 'Code not found or account inactive. Contact the Director.';
+      setTimeout(() => inputEl.classList.remove('err'), 400);
+      inputEl.value = '';
+    }
+  } catch(e) {
+    // Offline fallback
+    const cached = localStorage.getItem('og_staff_cache');
+    if (cached) {
+      const data = JSON.parse(cached);
+      const staff = (data.staff || []).find(s => s.code === code && s.active);
+      if (staff) {
+        currentStaff = staff; staffData = data;
+        sessionStorage.setItem('og_coord_code', code);
+        showPortal();
+        toast('⚠ Offline mode — data may not be current');
+        return;
+      }
+    }
+    errEl.textContent = 'Connection error. Check internet and try again.';
+  }
+}
+
+function lockApp() {
+  sessionStorage.removeItem('og_coord_code');
+  currentStaff = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('lock').style.display = 'flex';
+  document.getElementById('code-input').value = '';
+  document.getElementById('lock-err').textContent = '';
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = sessionStorage.getItem('og_coord_code');
+  if (saved) { document.getElementById('code-input').value = saved; unlock(); }
+});
+
+// ── PORTAL ─────────────────────────────────────────────────
+function showPortal() {
+  document.getElementById('lock').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('top-name').textContent = currentStaff.name;
+  document.getElementById('top-role').textContent =
+    (currentStaff.position || 'Family Coordinator') + ' \u2022 Open Grace LLC';
+  renderHome();
+}
+
+function switchTab(idx) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  document.querySelectorAll('.screen').forEach((s,i) => s.classList.toggle('active', i===idx));
+  if (idx === 1) renderClients();
+  if (idx === 2) renderOnboarding();
+  if (idx === 3) renderTraining();
+  window.scrollTo(0, 0);
+}
+
+// ── HOME ───────────────────────────────────────────────────
+function renderHome() {
+  const clients = Array.isArray(currentStaff.clients) ? currentStaff.clients : [];
+  const onboard = currentStaff.onboarding || {};
+  const doneSteps = ONBOARD_ITEMS.filter(i => onboard[i.key]).length;
+  const trainingData = getTrainingProgress();
+  const doneMods = trainingData.completed.length;
+  const alerts = clients.filter(c => hoursPercent(c) >= (c.alertThreshold || 80));
+
+  document.getElementById('h-clients').textContent = clients.length;
+  document.getElementById('h-training').textContent = doneMods + '/' + TOTAL_MODULES;
+  document.getElementById('h-onboard').textContent = doneSteps + '/' + ONBOARD_ITEMS.length;
+  document.getElementById('h-alerts').textContent = alerts.length;
+  if (alerts.length > 0) {
+    document.getElementById('h-alert-card').style.borderColor = 'rgba(216,64,64,.5)';
+  }
+
+  // Handoff banner
+  renderHandoffBanner('handoff-banner-home');
+}
+
+// ── CLIENTS ────────────────────────────────────────────────
+function renderClients() {
+  const clients = Array.isArray(currentStaff.clients) ? currentStaff.clients : [];
+  const el = document.getElementById('clients-list');
+
+  if (!clients.length) {
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--sub);font-size:13px;">No clients assigned yet.<br>Contact the Director to confirm your caseload.</div>';
+    return;
+  }
+
+  el.innerHTML = clients.map(c => {
+    const pct = hoursPercent(c);
+    const isAlert = pct >= (c.alertThreshold || 80);
+    const isWarning = pct >= 65 && !isAlert;
+    const barColor = pct >= 90 ? '#D84040' : pct >= 80 ? '#BA7517' : '#1D9E75';
+    const cardClass = isAlert ? 'client-card alert' : isWarning ? 'client-card warning' : 'client-card';
+
+    const daysToQPR = c.qprDue ? Math.ceil((new Date(c.qprDue) - new Date()) / 86400000) : null;
+
+    return `<div class="${cardClass}">
+      ${isAlert ? `<div class="alert-pill red">⚠ ${pct}% of authorized hours used — near limit</div>` : ''}
+      ${isWarning ? `<div class="alert-pill amber">⚡ ${pct}% of authorized hours used</div>` : ''}
+      <div class="client-name">${c.name || '—'}</div>
+      <div class="client-uci">UCI ${c.uci || '—'} &bull; ${c.status || 'Active'}</div>
+
+      <div style="margin-bottom:3px;display:flex;justify-content:space-between;font-size:11px;color:var(--sub);">
+        <span>Hours used</span>
+        <span style="font-weight:700;color:${barColor};">${c.usedHours||0} / ${c.authorizedHours||'?'} hrs/wk</span>
+      </div>
+      <div class="hours-bar">
+        <div class="hours-fill" style="width:${Math.min(pct,100)}%;background:${barColor};"></div>
+      </div>
+      <div style="font-size:10px;color:var(--sub);margin-bottom:10px;">Alert threshold: ${c.alertThreshold||80}% (${Math.round((c.alertThreshold||80)/100*(c.authorizedHours||0))} hrs)</div>
+
+      <div class="client-row"><span>Service start</span><b>${c.serviceStart||'—'}</b></div>
+      <div class="client-row"><span>QPR due</span>
+        <b style="color:${daysToQPR !== null && daysToQPR <= 14 ? 'var(--red)' : daysToQPR !== null && daysToQPR <= 30 ? 'var(--amber)' : 'var(--text)'};">
+          ${c.qprDue||'—'}${daysToQPR !== null ? ' (' + (daysToQPR <= 0 ? 'OVERDUE' : daysToQPR + ' days') + ')' : ''}
+        </b>
+      </div>
+      <div class="client-row"><span>IRC Coordinator</span><b>${c.coordinator||'—'}</b></div>
+      ${c.coordinatorEmail ? `<div class="client-row"><span>Coordinator email</span>
+        <a href="mailto:${c.coordinatorEmail}" style="color:var(--orange);font-size:12px;font-weight:700;">${c.coordinatorEmail}</a></div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function hoursPercent(c) {
+  if (!c.authorizedHours || !c.usedHours) return 0;
+  return Math.round((c.usedHours / c.authorizedHours) * 100);
+}
+
+// ── ONBOARDING ─────────────────────────────────────────────
+function renderOnboarding() {
+  const ob = currentStaff.onboarding || {};
+  const done = ONBOARD_ITEMS.filter(i => ob[i.key]).length;
+  const total = ONBOARD_ITEMS.length;
+  const pct = Math.round((done/total)*100);
+
+  document.getElementById('onboarding-progress').innerHTML = `
+    <div class="prog-label-row"><span>Onboarding Progress</span><span><b>${done}</b>/${total} steps &bull; ${pct}%</span></div>
+    <div class="prog-bar">
+      <div class="prog-fill" style="width:${pct}%;background:${pct===100?'var(--green)':'var(--navy)'}"></div>
+    </div>
+    ${pct === 100 ? '<div style="font-size:12px;color:var(--green);text-align:center;margin-top:6px;font-weight:700;">✅ Onboarding complete!</div>' : ''}
+  `;
+
+  document.getElementById('onboarding-list').innerHTML = ONBOARD_ITEMS.map(item => {
+    const isDone = !!ob[item.key];
+    return `<div class="check-item">
+      <div class="check-box ${isDone?'done'}">${isDone?'✓':''}</div>
+      <div class="check-text ${isDone?'done'}">${item.label}</div>
+      ${item.required && !isDone ? '<span class="check-req">Required</span>' : '<span class="check-req done">.</span>'}
+    </div>`;
+  }).join('');
+}
+
+// ── TRAINING ───────────────────────────────────────────────
+function getTrainingProgress() {
+  const raw = localStorage.getItem('og_training_v1');
+  if (!raw) return {completed:[], quizScores:{}, dates:{}};
+  const all = JSON.parse(raw);
+  return all[currentStaff.code] || {completed:[], quizScores:{}, dates:{}};
+}
+
+function renderTraining() {
+  const p = getTrainingProgress();
+  const done = p.completed.length;
+  const pct = Math.round((done/TOTAL_MODULES)*100);
+
+  document.getElementById('training-progress').innerHTML = `
+    <div class="prog-label-row"><span>Overall Progress</span><span><b>${done}</b>/${TOTAL_MODULES} &bull; ${pct}%</span></div>
+    <div class="prog-bar">
+      <div class="prog-fill" style="width:${pct}%;background:${pct===100?'var(--green)':'var(--navy)'}"></div>
+    </div>
+  `;
+
+  const listEl = document.getElementById('training-list');
+  let html = '';
+  [1,2,3].forEach(tier => {
+    const mods = MODULES.filter(m=>m.tier===tier);
+    const tierDone = mods.filter(m=>p.completed.includes(m.id)).length;
+    html += `<div style="margin-bottom:4px;">
+      <div class="sec" style="color:${TIER_COLORS[tier]}">${TIER_LABELS[tier]} (${tierDone}/${mods.length})</div>
+      <div class="card" style="padding:8px 14px;">
+        ${mods.map(mod => {
+          const isDone = p.completed.includes(mod.id);
+          const score = p.quizScores && p.quizScores[mod.id];
+          const date = p.dates && p.dates[mod.id];
+          return `<div class="module-row">
+            <div class="module-icon">${mod.icon}</div>
+            <div class="module-info">
+              <div class="module-title">${mod.title}</div>
+              ${isDone && date ? `<div class="module-tier" style="color:var(--green);">Completed ${date}${score?' · '+score+'%':''}</div>` : ''}
+            </div>
+            <div class="module-status">
+              ${isDone
+                ? '<span class="badge badge-done">✓ Done</span>'
+                : tier===1 || (tier===2 && MODULES.filter(m=>m.tier===1).every(m=>p.completed.includes(m.id)))
+                  ? '<span class="badge badge-ready">Start</span>'
+                  : '<span class="badge badge-locked">🔒</span>'}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  listEl.innerHTML = html;
+}
+
+// ── HANDOFF BANNER ─────────────────────────────────────────
+function renderHandoffBanner(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const h = currentStaff.handoff;
+  if (!h || !h.inProgress) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="handoff-banner">
+    <div class="handoff-title">⚠ Warm Handoff In Progress</div>
+    <div class="handoff-body">
+      Your caseload is being transitioned to <b>${h.toStaffName||'a new coordinator'}</b>.
+      ${h.initiatedDate ? 'Initiated: ' + h.initiatedDate + '.' : ''}
+      ${h.reason ? '<br>Reason: ' + h.reason : ''}
+      ${h.notes ? '<br>' + h.notes : ''}
+      <br><br>Continue serving your clients until the Director confirms transition complete.
+      Questions? Contact Joshua: 951-880-4132.
+    </div>
+  </div>`;
+}
+
+// ── TOAST ──────────────────────────────────────────────────
+function toast(msg, dur=2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+</script>
+</body>
+</html>
