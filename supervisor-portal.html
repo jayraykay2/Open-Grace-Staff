@@ -2,355 +2,918 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Open Grace LLC — Supervisor Portal</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Open Grace — Supervisor Portal</title>
 <style>
-  :root {
-    --navy: #2D2B7F; --orange: #F47C20; --gold: #F5A623;
-    --green: #1D9E75; --red: #D84040;
-    --bg: #0F0D2E; --card: #1A1760; --border: rgba(255,255,255,0.1);
-    --sans: 'Segoe UI', Arial, sans-serif;
-    --text: #fff; --sub: rgba(255,255,255,0.55);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+:root{
+  --navy:#2D2B7F;--orange:#F47C20;--gold:#F5A623;
+  --green:#1D9E75;--red:#D84040;--amber:#BA7517;
+  --bg:#0F0D2E;--card:#1A1760;--card2:#221E6E;
+  --border:rgba(255,255,255,0.1);--text:#fff;--sub:rgba(255,255,255,0.55);
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
 
-  /* ── LOCK SCREEN ── */
-  #lock-screen {
-    min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 32px 20px;
-    background: radial-gradient(ellipse at top, #2D2B7F22 0%, transparent 70%);
-  }
-  .lock-logo {
-    width: 64px; height: 64px; background: var(--navy);
-    border-radius: 16px; display: flex; align-items: center; justify-content: center;
-    font-size: 32px; margin-bottom: 20px;
-    border: 1px solid rgba(255,255,255,0.15);
-  }
-  .lock-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
-  .lock-sub { font-size: 14px; color: var(--sub); margin-bottom: 32px; text-align: center; }
-  .lock-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 18px; padding: 28px 24px; width: 100%; max-width: 380px;
-  }
-  .lock-label { font-size: 12px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-  .lock-input {
-    width: 100%; background: rgba(255,255,255,0.07); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px 18px; font-size: 20px; color: var(--text);
-    font-family: var(--sans); letter-spacing: 4px; text-align: center;
-    outline: none; margin-bottom: 14px; transition: border-color 0.2s;
-  }
-  .lock-input:focus { border-color: var(--orange); }
-  .lock-input.error { border-color: var(--red); animation: shake 0.3s; }
-  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
-  .lock-btn {
-    width: 100%; padding: 17px; background: var(--navy); color: #fff;
-    border: none; border-radius: 12px; font-size: 16px; font-weight: 700;
-    font-family: var(--sans); cursor: pointer; transition: background 0.15s;
-  }
-  .lock-btn:active { background: #1e1c5e; }
-  .lock-error { font-size: 13px; color: #FC8181; text-align: center; margin-top: 12px; min-height: 18px; }
-  .lock-note { font-size: 12px; color: var(--sub); text-align: center; margin-top: 20px; line-height: 1.6; }
+/* ── LOCK ── */
+#lock{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:32px 20px;
+  background:radial-gradient(ellipse at top,rgba(45,43,127,.3) 0%,transparent 70%)}
+.lock-logo{width:72px;height:72px;border-radius:16px;overflow:hidden;
+  margin-bottom:18px;border:1px solid rgba(255,255,255,.15)}
+.lock-logo img{width:100%;height:100%;object-fit:cover}
+.lock-title{font-size:22px;font-weight:800;margin-bottom:4px;text-align:center}
+.lock-sub{font-size:13px;color:var(--sub);margin-bottom:28px;text-align:center}
+.lock-card{background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:26px 22px;width:100%;max-width:380px}
+.lock-label{font-size:11px;font-weight:800;color:var(--sub);text-transform:uppercase;
+  letter-spacing:1.5px;margin-bottom:10px}
+.lock-input{width:100%;background:rgba(255,255,255,.07);border:1px solid var(--border);
+  border-radius:12px;padding:15px;font-size:17px;color:var(--text);font-family:var(--sans);
+  letter-spacing:3px;text-align:center;outline:none;margin-bottom:12px}
+.lock-input:focus{border-color:var(--orange)}
+.lock-input.err{border-color:var(--red);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.lock-btn{width:100%;padding:16px;background:var(--navy);color:#fff;border:none;
+  border-radius:12px;font-size:15px;font-weight:700;font-family:var(--sans);cursor:pointer}
+.lock-err{font-size:12px;color:#FC8181;text-align:center;margin-top:10px;min-height:16px}
+.lock-note{font-size:12px;color:var(--sub);text-align:center;margin-top:18px;line-height:1.6}
 
-  /* ── PORTAL ── */
-  #portal-screen { display: none; }
+/* ── APP ── */
+#app{display:none}
+.topbar{background:var(--navy);padding:13px 18px;display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:200;border-bottom:1px solid var(--border)}
+.topbar-logo{width:30px;height:30px;border-radius:7px;overflow:hidden;flex-shrink:0}
+.topbar-logo img{width:100%;height:100%;object-fit:cover}
+.topbar-title{font-size:14px;font-weight:700}
+.topbar-sub{font-size:10px;color:var(--sub)}
+.topbar-lock{margin-left:auto;font-size:18px;opacity:.5;cursor:pointer}
 
-  .topbar {
-    background: var(--navy); padding: 14px 20px;
-    display: flex; align-items: center; gap: 12px;
-    position: sticky; top: 0; z-index: 100;
-    border-bottom: 1px solid var(--border);
-  }
-  .topbar-icon { font-size: 22px; }
-  .topbar-title { font-size: 15px; font-weight: 700; }
-  .topbar-sub { font-size: 11px; color: var(--sub); margin-top: 1px; }
-  .topbar-lock { margin-left: auto; font-size: 20px; cursor: pointer; opacity: 0.6; }
-  .topbar-lock:hover { opacity: 1; }
+/* ── TABS ── */
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:var(--navy);
+  border-top:1px solid var(--border);display:flex;z-index:200;
+  padding-bottom:env(safe-area-inset-bottom)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:2px;cursor:pointer;opacity:.4;padding:10px 4px;
+  transition:opacity .15s}
+.tab.active{opacity:1}
+.tab-icon{font-size:22px;line-height:1}
+.tab-label{font-size:10px;font-weight:700;color:#fff;letter-spacing:.2px}
 
-  .wrap { padding: 20px 16px 80px; max-width: 480px; margin: 0 auto; }
+/* ── SCREENS ── */
+.screens{padding-bottom:80px}
+.screen{display:none;padding:16px;max-width:520px;margin:0 auto}
+.screen.active{display:block}
 
-  .sec { font-size: 10px; font-weight: 800; color: var(--orange); letter-spacing: 2.5px; text-transform: uppercase; margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; }
-  .sec::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+/* ── COMMON ── */
+.sec{font-size:10px;font-weight:800;color:var(--orange);letter-spacing:2.5px;
+  text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:14px 16px;margin-bottom:10px}
 
-  /* COMING SOON BANNER */
-  .coming-soon {
-    background: linear-gradient(135deg, #2D2B7F, #1a1860);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 16px; padding: 24px 20px; margin-bottom: 20px; text-align: center;
-  }
-  .cs-badge {
-    display: inline-block; background: var(--orange); color: #fff;
-    font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
-    padding: 4px 12px; border-radius: 20px; margin-bottom: 14px;
-  }
-  .cs-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
-  .cs-body { font-size: 14px; color: var(--sub); line-height: 1.7; }
+/* ── MODULE CARDS ── */
+.module-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:14px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:14px;
+  cursor:pointer;transition:border-color .15s,background .15s;position:relative;overflow:hidden}
+.module-card:hover{border-color:rgba(255,255,255,.25);background:var(--card2)}
+.module-card.completed{border-color:rgba(29,158,117,.4)}
+.module-card.completed::before,.module-card.active-mod::before{content:'';position:absolute;
+  left:0;top:0;bottom:0;width:4px}
+.module-card.completed::before{background:var(--green)}
+.module-card.active-mod::before{background:var(--orange)}
+.mod-icon{font-size:24px;flex-shrink:0;margin-top:2px}
+.mod-title{font-size:14px;font-weight:700;margin-bottom:2px}
+.mod-meta{font-size:11px;color:var(--sub)}
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;
+  padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px}
+.badge-done{background:rgba(29,158,117,.15);color:var(--green)}
+.badge-ready{background:rgba(244,124,32,.15);color:var(--orange)}
 
-  /* PLANNED MODULES */
-  .module-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 14px; padding: 16px 18px; margin-bottom: 10px;
-    display: flex; align-items: flex-start; gap: 14px;
-    position: relative; overflow: hidden;
-  }
-  .module-card::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-    width: 4px; background: var(--navy);
-  }
-  .module-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
-  .module-title { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
-  .module-sub { font-size: 13px; color: var(--sub); line-height: 1.5; }
-  .module-badge {
-    display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
-    padding: 3px 8px; border-radius: 6px; margin-top: 6px;
-  }
-  .badge-planned { background: rgba(244,124,32,0.15); color: var(--orange); }
-  .badge-ready { background: rgba(29,158,117,0.15); color: var(--green); }
+/* ── MODULE DETAIL ── */
+.mod-detail{display:none;padding:16px;max-width:520px;margin:0 auto;padding-bottom:80px}
+.back-btn{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;
+  color:rgba(255,255,255,.6);background:none;border:none;padding:0;margin-bottom:16px;cursor:pointer}
+.mod-header{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:18px;margin-bottom:14px}
+.mod-h-icon{font-size:36px;margin-bottom:10px}
+.mod-h-chapter{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--orange);margin-bottom:6px}
+.mod-h-title{font-size:20px;font-weight:800;margin-bottom:8px;line-height:1.2}
+.mod-h-dur{font-size:12px;color:var(--sub)}
+.obj-box{background:rgba(255,255,255,.05);border-radius:10px;padding:12px 16px;margin-top:12px}
+.obj-label{font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:8px}
+.obj-item{font-size:13px;color:var(--sub);line-height:1.6;padding:4px 0;
+  padding-left:16px;position:relative}
+.obj-item::before{content:'✓';position:absolute;left:0;color:var(--orange);font-weight:700}
+.section-card{background:var(--card);border:1px solid var(--border);border-radius:13px;
+  padding:16px 18px;margin-bottom:10px}
+.section-heading{font-size:15px;font-weight:700;color:var(--orange);margin-bottom:10px}
+.section-body{font-size:14px;color:rgba(255,255,255,.8);line-height:1.75;white-space:pre-line}
 
-  /* QUICK ACCESS — links to director functions supervisor can use now */
-  .qlink {
-    display: flex; align-items: center; gap: 14px;
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 14px 16px; margin-bottom: 8px;
-    text-decoration: none; color: var(--text); transition: border-color 0.15s;
-  }
-  .qlink:hover { border-color: rgba(255,255,255,0.3); }
-  .qlink-icon { font-size: 22px; flex-shrink: 0; }
-  .qlink-info { flex: 1; }
-  .qlink-label { font-size: 15px; font-weight: 700; }
-  .qlink-sub { font-size: 12px; color: var(--sub); margin-top: 2px; }
-  .qlink-arrow { font-size: 16px; color: var(--sub); }
+/* ── QUIZ ── */
+.quiz-wrap{background:var(--card);border:1px solid var(--orange);border-radius:14px;
+  padding:18px;margin-bottom:12px}
+.quiz-label{font-size:10px;font-weight:800;color:var(--orange);text-transform:uppercase;
+  letter-spacing:1.5px;margin-bottom:14px}
+.quiz-q{font-size:15px;font-weight:700;line-height:1.5;margin-bottom:14px}
+.quiz-options{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.q-opt{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;font-size:13px;color:var(--text);text-align:left;
+  display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-family:var(--sans);
+  transition:border-color .15s,background .15s}
+.q-opt:hover:not(:disabled){border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)}
+.q-opt.correct{background:rgba(29,158,117,.15);border-color:rgba(29,158,117,.5)}
+.q-opt.wrong{background:rgba(216,64,64,.12);border-color:rgba(216,64,64,.4)}
+.q-opt:disabled{cursor:not-allowed}
+.q-letter{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;font-size:11px;
+  font-weight:700;flex-shrink:0;margin-top:1px}
+.q-explanation{background:rgba(255,255,255,.05);border-radius:8px;padding:10px 12px;
+  font-size:12px;color:var(--sub);line-height:1.6;margin-top:4px;display:none}
+.quiz-score{text-align:center;padding:14px;font-size:14px;font-weight:700;
+  border-radius:10px;margin-top:10px;display:none}
+.quiz-score.pass{background:rgba(29,158,117,.15);color:var(--green)}
+.quiz-score.fail{background:rgba(216,64,64,.12);color:var(--red)}
+.complete-btn{width:100%;padding:18px;background:var(--green);color:#fff;border:none;
+  border-radius:12px;font-size:16px;font-weight:700;margin-top:8px;
+  display:none;font-family:var(--sans);cursor:pointer}
+.retry-btn{width:100%;padding:14px;background:rgba(244,124,32,.15);color:var(--orange);
+  border:1px solid rgba(244,124,32,.3);border-radius:12px;font-size:14px;
+  font-weight:700;margin-top:8px;display:none;font-family:var(--sans);cursor:pointer}
 
-  /* LANE GUIDE */
-  .lane-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 14px; padding: 16px 18px; margin-bottom: 10px;
-  }
-  .lane-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
-  .lane-row:last-child { margin-bottom: 0; }
-  .lane-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-  .lane-label { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
-  .lane-sub { font-size: 12px; color: var(--sub); line-height: 1.5; }
+/* ── PROGRESS BAR ── */
+.prog-bar{height:5px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin-bottom:6px}
+.prog-fill{height:100%;border-radius:99px;transition:width .4s ease}
 
-  .footer { text-align: center; padding: 20px 16px; font-size: 11px; color: var(--sub); border-top: 1px solid var(--border); }
+/* ── QUICK LINKS ── */
+.qlink{display:flex;align-items:center;gap:14px;background:var(--card);
+  border:1px solid var(--border);border-radius:12px;padding:14px 16px;
+  margin-bottom:8px;text-decoration:none;color:var(--text);transition:border-color .15s}
+.qlink:hover{border-color:rgba(255,255,255,.3)}
+.qlink-icon{font-size:22px;flex-shrink:0}
+.qlink-label{font-size:15px;font-weight:700}
+.qlink-sub{font-size:12px;color:var(--sub);margin-top:2px}
+.qlink-arrow{margin-left:auto;color:var(--sub);font-size:16px}
+
+/* ── CERT ── */
+.cert-wrap{background:#fff;border-radius:14px;overflow:hidden;margin-bottom:14px}
+
+/* ── PLANNED ── */
+.planned-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:16px 18px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px}
+.plan-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;
+  padding:3px 8px;border-radius:6px;margin-top:6px;
+  background:rgba(244,124,32,.15);color:var(--orange)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);
+  background:#1A1760;color:#fff;padding:10px 18px;border-radius:10px;
+  font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:999;
+  border:1px solid var(--border);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
 
-<!-- ══ LOCK SCREEN ══ -->
-<div id="lock-screen">
-  <div class="lock-logo">🏢</div>
+<!-- ── LOCK ── -->
+<div id="lock">
+  <div class="lock-logo"><img src="https://opengrace.org/og_logo.jpg" alt="Open Grace"></div>
   <div class="lock-title">Supervisor Portal</div>
   <div class="lock-sub">Open Grace LLC &bull; Restricted Access</div>
   <div class="lock-card">
     <div class="lock-label">Supervisor Access Code</div>
-    <input class="lock-input" id="code-input" type="password" inputmode="numeric"
-      maxlength="6" placeholder="••••••" autocomplete="off"
-      onkeydown="if(event.key==='Enter')unlock()" />
+    <input class="lock-input" id="code-input" type="password" inputmode="text"
+      maxlength="8" placeholder="••••••" autocomplete="off"
+      onkeydown="if(event.key==='Enter')unlock()">
     <button class="lock-btn" onclick="unlock()">Access Portal</button>
-    <div class="lock-error" id="lock-error"></div>
+    <div class="lock-err" id="lock-err"></div>
   </div>
-  <div class="lock-note">
-    This portal is restricted to Open Grace LLC supervisors.<br>
-    Contact the Director for access: 951-880-4132
-  </div>
+  <div class="lock-note">Contact the Director for your access code.<br>951-880-4132 &bull; joshua.kennedy@opengrace.org</div>
 </div>
 
-<!-- ══ PORTAL ══ -->
-<div id="portal-screen">
-
+<!-- ── APP ── -->
+<div id="app">
   <div class="topbar">
-    <div class="topbar-icon">🏢</div>
+    <div class="topbar-logo"><img src="https://opengrace.org/og_logo.jpg" alt="Open Grace"></div>
     <div>
       <div class="topbar-title">Supervisor Portal</div>
       <div class="topbar-sub">Open Grace LLC &bull; Restricted</div>
     </div>
-    <div class="topbar-lock" onclick="lock()" title="Lock portal">🔒</div>
+    <div class="topbar-lock" onclick="lockApp()" title="Lock">🔒</div>
   </div>
 
-  <div class="wrap">
+  <div class="screens">
 
-    <div class="coming-soon">
-      <div class="cs-badge">In Development</div>
-      <div class="cs-title">Supervisor Tools Coming Soon</div>
-      <div class="cs-body">
-        This portal will give supervisors the tools to lead and manage Family Coordinators — staff oversight, caseload review, documentation compliance, and team communication — without requiring full Director-level access.
+    <!-- ── TAB 0: HOME ── -->
+    <div class="screen active" id="sc0">
+      <div class="card" style="background:linear-gradient(135deg,#2D2B7F,#1a1860);border-color:rgba(255,255,255,.12);margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:800;color:var(--orange);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Supervisor Portal</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Open Grace LLC</div>
+        <div style="font-size:12px;color:var(--sub);line-height:1.6;">IRC Vendor PJ6208 &bull; Coordinated Family Support<br>Riverside &amp; San Bernardino Counties</div>
       </div>
-    </div>
 
-    <div class="sec">Planned Modules</div>
-
-    <div class="module-card">
-      <div class="module-icon">👥</div>
-      <div>
-        <div class="module-title">Staff Caseload Overview</div>
-        <div class="module-sub">View which coordinators are assigned to which clients, hours worked, and active service periods.</div>
-        <span class="module-badge badge-planned">Planned</span>
-      </div>
-    </div>
-
-    <div class="module-card">
-      <div class="module-icon">📋</div>
-      <div>
-        <div class="module-title">Documentation Compliance Tracker</div>
-        <div class="module-sub">Monitor daily contact log submissions, flag missing entries, and review documentation quality across the team.</div>
-        <span class="module-badge badge-planned">Planned</span>
-      </div>
-    </div>
-
-    <div class="module-card">
-      <div class="module-icon">📊</div>
-      <div>
-        <div class="module-title">Team Performance Dashboard</div>
-        <div class="module-sub">Attendance, on-time submissions, client engagement, and goal progress across your team of coordinators.</div>
-        <span class="module-badge badge-planned">Planned</span>
-      </div>
-    </div>
-
-    <div class="module-card">
-      <div class="module-icon">🔔</div>
-      <div>
-        <div class="module-title">Escalation & Incident Review</div>
-        <div class="module-sub">Receive flagged incidents from coordinators, review responses, and escalate to the Director when required.</div>
-        <span class="module-badge badge-planned">Planned</span>
-      </div>
-    </div>
-
-    <div class="module-card">
-      <div class="module-icon">📅</div>
-      <div>
-        <div class="module-title">QPR &amp; IPP Deadline Monitor</div>
-        <div class="module-sub">See upcoming QPR deadlines for all clients across your team with advance alerts.</div>
-        <span class="module-badge badge-planned">Planned</span>
-      </div>
-    </div>
-
-    <div class="module-card">
-      <div class="module-icon">💬</div>
-      <div>
-        <div class="module-title">Team Communication Hub</div>
-        <div class="module-sub">Send announcements, updates, and one-on-one messages to coordinators in your team without Director involvement.</div>
-        <span class="module-badge badge-planned">Planned</span>
-      </div>
-    </div>
-
-    <div class="sec">Available Now</div>
-    <p style="font-size:13px;color:var(--sub);margin-bottom:14px;line-height:1.6;">While supervisor-specific tools are in development, you can access these Director-level resources. Contact the Director to request access to any additional tools.</p>
-
-    <a class="qlink" href="https://opengrace.org/contact-log.html" target="_blank">
-      <div class="qlink-icon">📝</div>
-      <div class="qlink-info">
-        <div class="qlink-label">Staff Daily Contact Log</div>
-        <div class="qlink-sub">View and submit contact log entries</div>
-      </div>
-      <div class="qlink-arrow">→</div>
-    </a>
-
-    <a class="qlink" href="https://opengrace.org/Open_Grace_Interview_Scorecard.html" target="_blank">
-      <div class="qlink-icon">📋</div>
-      <div class="qlink-info">
-        <div class="qlink-label">Interview Scorecard</div>
-        <div class="qlink-sub">Evaluate candidates for coordinator positions</div>
-      </div>
-      <div class="qlink-arrow">→</div>
-    </a>
-
-    <a class="qlink" href="https://opengrace.org/onboarding.html" target="_blank">
-      <div class="qlink-icon">🚀</div>
-      <div class="qlink-info">
-        <div class="qlink-label">Staff Onboarding Page</div>
-        <div class="qlink-sub">Share with new hires to begin onboarding</div>
-      </div>
-      <div class="qlink-arrow">→</div>
-    </a>
-
-    <a class="qlink" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank">
-      <div class="qlink-icon">📘</div>
-      <div class="qlink-info">
-        <div class="qlink-label">Employee Handbook</div>
-        <div class="qlink-sub">Review and share with your team</div>
-      </div>
-      <div class="qlink-arrow">→</div>
-    </a>
-
-    <div class="sec">Portal Access Lanes</div>
-    <div class="lane-card">
-      <div class="lane-row">
-        <div class="lane-dot" style="background:#F47C20;"></div>
-        <div>
-          <div class="lane-label">Family Portal</div>
-          <div class="lane-sub">Families only — forms, resources, grievance info, pre-screening assessment. No access to staff or director tools.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;">
+        <div class="card" style="text-align:center;">
+          <div style="font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Training</div>
+          <div style="font-size:24px;font-weight:800;" id="h-training-done">0/11</div>
+          <div style="font-size:11px;color:var(--sub);">Chapters complete</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Manual</div>
+          <div style="font-size:24px;font-weight:800;">📖</div>
+          <div style="font-size:11px;color:var(--sub);">Available below</div>
         </div>
       </div>
-      <div class="lane-row">
-        <div class="lane-dot" style="background:#1D9E75;"></div>
+
+      <div class="sec">Quick Actions</div>
+      <button onclick="switchTab(1)" style="width:100%;padding:15px;background:linear-gradient(135deg,#2D2B7F,#1a1860);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:10px;">
+        <span style="font-size:18px;">🎓</span> Start Supervisor Training
+      </button>
+      <a class="qlink" href="https://opengrace.org/OpenGrace_Supervisor_Manual.pdf" target="_blank">
+        <div class="qlink-icon">📄</div>
+        <div><div class="qlink-label">Download Training Manual</div><div class="qlink-sub">Full PDF — all 11 chapters</div></div>
+        <div class="qlink-arrow">↓</div>
+      </a>
+
+      <div class="sec">Available Tools</div>
+      <a class="qlink" href="https://opengrace.org/contact-log.html" target="_blank">
+        <div class="qlink-icon">📝</div>
+        <div><div class="qlink-label">Staff Daily Contact Log</div><div class="qlink-sub">Review and submit contact log entries</div></div>
+        <div class="qlink-arrow">→</div>
+      </a>
+      <a class="qlink" href="https://opengrace.org/Open_Grace_Interview_Scorecard.html" target="_blank">
+        <div class="qlink-icon">📋</div>
+        <div><div class="qlink-label">Interview Scorecard</div><div class="qlink-sub">Evaluate candidates for coordinator positions</div></div>
+        <div class="qlink-arrow">→</div>
+      </a>
+      <a class="qlink" href="https://opengrace.org/onboarding.html" target="_blank">
+        <div class="qlink-icon">🚀</div>
+        <div><div class="qlink-label">Staff Onboarding Page</div><div class="qlink-sub">Share with new hires to begin onboarding</div></div>
+        <div class="qlink-arrow">→</div>
+      </a>
+      <a class="qlink" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank">
+        <div class="qlink-icon">📘</div>
+        <div><div class="qlink-label">Employee Handbook</div><div class="qlink-sub">Policies, procedures and expectations</div></div>
+        <div class="qlink-arrow">→</div>
+      </a>
+      <a class="qlink" href="https://opengrace.org/training.html" target="_blank">
+        <div class="qlink-icon">🎓</div>
+        <div><div class="qlink-label">Staff Training Academy</div><div class="qlink-sub">Monitor coordinator training progress</div></div>
+        <div class="qlink-arrow">→</div>
+      </a>
+
+      <div class="sec">Planned Modules</div>
+      <p style="font-size:13px;color:var(--sub);margin-bottom:12px;line-height:1.6;">These supervisor-specific tools are in development and will be available in a future update.</p>
+      <div id="planned-list"></div>
+
+      <div class="sec">Your Director</div>
+      <div class="card" style="display:flex;align-items:center;gap:14px;">
+        <div style="font-size:32px;flex-shrink:0;">👤</div>
         <div>
-          <div class="lane-label">Staff Portal</div>
-          <div class="lane-sub">Family Coordinators only — contact log, onboarding, handbook, incident reporting. No director or family portal access.</div>
+          <div style="font-size:14px;font-weight:700;">Joshua Kennedy</div>
+          <div style="font-size:12px;color:var(--sub);">Director — Open Grace LLC</div>
+          <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
+            <a href="tel:9518804132" style="font-size:12px;color:var(--orange);font-weight:700;text-decoration:none;">📞 951-880-4132</a>
+            <a href="mailto:joshua.kennedy@opengrace.org" style="font-size:12px;color:var(--orange);font-weight:700;text-decoration:none;">✉️ Email</a>
+            <a href="https://teams.microsoft.com" target="_blank" style="font-size:12px;color:var(--orange);font-weight:700;text-decoration:none;">💬 Teams</a>
+          </div>
         </div>
       </div>
-      <div class="lane-row">
-        <div class="lane-dot" style="background:#2D2B7F;"></div>
-        <div>
-          <div class="lane-label">Supervisor Portal</div>
-          <div class="lane-sub">Supervisors — team oversight, caseload management, compliance monitoring. No billing, vendor, or IRC-level director tools.</div>
+    </div>
+
+    <!-- ── TAB 1: TRAINING ── -->
+    <div class="screen" id="sc1">
+      <div style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--sub);margin-bottom:6px;">
+          <span>Overall Progress</span>
+          <span id="prog-label">0 / 11 chapters</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%;background:var(--navy);"></div></div>
+      </div>
+
+      <div style="background:rgba(244,124,32,.08);border:1px solid rgba(244,124,32,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:rgba(255,255,255,.7);line-height:1.65;">
+        Complete all 11 chapters to earn your Supervisor certification. Each chapter ends with a knowledge check — score 80% or higher to complete.
+      </div>
+
+      <div id="chapter-list"></div>
+
+      <div style="margin-top:14px;">
+        <a class="qlink" href="https://opengrace.org/OpenGrace_Supervisor_Manual.pdf" target="_blank">
+          <div class="qlink-icon">📄</div>
+          <div><div class="qlink-label">Full Training Manual PDF</div><div class="qlink-sub">Download all 11 chapters for offline reading</div></div>
+          <div class="qlink-arrow">↓</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── TAB 2: RESOURCES ── -->
+    <div class="screen" id="sc2">
+      <div class="sec">Supervisor References</div>
+      <a class="qlink" href="https://opengrace.org/OpenGrace_Supervisor_Manual.pdf" target="_blank">
+        <div class="qlink-icon">📄</div>
+        <div><div class="qlink-label">Supervisor Training Manual</div><div class="qlink-sub">Full 11-chapter PDF</div></div>
+        <div class="qlink-arrow">↓</div>
+      </a>
+      <a class="qlink" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank">
+        <div class="qlink-icon">📘</div>
+        <div><div class="qlink-label">Employee Handbook</div><div class="qlink-sub">Staff policies and procedures</div></div>
+        <div class="qlink-arrow">→</div>
+      </a>
+      <a class="qlink" href="https://opengrace.org/training.html" target="_blank">
+        <div class="qlink-icon">🎓</div>
+        <div><div class="qlink-label">Staff Training Academy</div><div class="qlink-sub">18-module coordinator training</div></div>
+        <div class="qlink-arrow">→</div>
+      </a>
+
+      <div class="sec">Emergency Contacts</div>
+      <div class="card">
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:var(--sub);">Director (Joshua Kennedy)</span>
+            <a href="tel:9518804132" style="color:var(--orange);font-weight:700;text-decoration:none;">951-880-4132</a>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:var(--sub);">Emergency</span>
+            <a href="tel:911" style="color:var(--red);font-weight:700;text-decoration:none;">911</a>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:var(--sub);">APS</span>
+            <a href="tel:18774773646" style="color:var(--orange);font-weight:700;text-decoration:none;">877-477-3646</a>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:var(--sub);">IRC Main</span>
+            <a href="tel:9098903000" style="color:var(--orange);font-weight:700;text-decoration:none;">909-890-3000</a>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:var(--sub);">Crisis Line</span>
+            <a href="tel:988" style="color:var(--orange);font-weight:700;text-decoration:none;">988</a>
+          </div>
         </div>
       </div>
-      <div class="lane-row" style="margin-bottom:0;">
-        <div class="lane-dot" style="background:#F5A623;"></div>
-        <div>
-          <div class="lane-label">Director Dashboard</div>
-          <div class="lane-sub">Director only — full access including IRC coordination, pipeline, hiring, vendor compliance, staff access management, and all portals.</div>
-        </div>
-      </div>
+
+      <div class="sec">Account</div>
+      <button onclick="lockApp()" style="width:100%;padding:14px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);border:1px solid var(--border);border-radius:12px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;">
+        🔒 Lock Portal
+      </button>
     </div>
 
   </div>
 
-  <div class="footer">
-    Open Grace LLC &bull; IRC Vendor PJ6208 &bull; 951-880-4132 &bull; joshua.kennedy@opengrace.org
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab(0)">
+      <div class="tab-icon">🏠</div><div class="tab-label">Home</div>
+    </div>
+    <div class="tab" onclick="switchTab(1)">
+      <div class="tab-icon">🎓</div><div class="tab-label">Training</div>
+    </div>
+    <div class="tab" onclick="switchTab(2)">
+      <div class="tab-icon">📚</div><div class="tab-label">Resources</div>
+    </div>
   </div>
-
 </div>
 
+<!-- ── MODULE DETAIL VIEW (full screen) ── -->
+<div class="mod-detail" id="mod-detail">
+  <button class="back-btn" onclick="closeModule()">&#8592; Back to Training</button>
+  <div id="mod-detail-content"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-// Access code — change this to whatever you want the supervisor code to be
-// Uses same pattern as contact-log.html (plain JS, no server)
-const SUPERVISOR_CODE = "OG2026";
+const ACCESS_CODE = "OG2026";
+const PROGRESS_KEY = "og_supervisor_v1";
+const TOTAL_CHAPTERS = 11;
 
+const CHAPTERS = [
+  {
+    id:"C01", icon:"🏢", title:"The Supervisor Role at Open Grace", dur:"15 min",
+    objectives:[
+      "Understand the purpose, scope and authority of the supervisor role",
+      "Know clearly what the supervisor role is and is not",
+      "Understand your reporting relationship to the Director",
+      "Identify the boundaries of operational vs. organizational authority"
+    ],
+    sections:[
+      {heading:"Purpose of the Supervisor Role",
+       content:"The Open Grace Supervisor is the operational link between the Director and the Family Coordinator team. Your role is to ensure that every coordinator is performing at the standard required by Title 17, IRC, and Open Grace policy — and to catch and correct problems before they become compliance issues or consumer harms.\n\nYou are not the Director. You carry delegated authority within clearly defined boundaries. Decisions about vendor compliance, consumer authorization, staff termination, and IRC relationships remain with the Director."},
+      {heading:"What the Supervisor Role Is",
+       content:"Caseload oversight: You monitor every coordinator's assigned clients, documentation quality, and hours usage across your team.\n\nPerformance management: You identify problems early, provide coaching, and escalate to the Director when corrective action is needed.\n\nIncident first response: You receive escalations from coordinators and determine whether the Director needs to be involved immediately.\n\nTraining oversight: You monitor each coordinator's training progress and ensure all required modules are completed on schedule.\n\nOnboarding support: You assist the Director in ramping up new coordinators during their first 30 days.\n\nWarm handoff management: When a coordinator leaves or is reassigned, you manage the transition to protect consumer continuity."},
+      {heading:"What the Supervisor Role Is Not",
+       content:"The supervisor role does not include: hiring or terminating staff (Director only), making commitments to IRC on behalf of Open Grace, approving or modifying IPP service authorizations, handling consumer grievances independently, or overriding Director decisions.\n\nWhen you are unsure whether something falls within your authority — contact the Director before acting."},
+    ],
+    quiz:[
+      {q:"A family calls you directly to file a formal complaint about their coordinator. What is your first step?",
+       options:["Handle it yourself — that's what supervisors are for","Dismiss it — coordinator complaints go to the coordinator","Listen, document, and notify the Director the same day","Tell the family to call IRC directly"],
+       answer:2, explanation:"Consumer complaints are Director-level decisions. Listen professionally, take notes, and escalate immediately. Do not attempt to resolve or adjudicate independently."},
+      {q:"A coordinator asks you to approve extra service hours beyond what's in the consumer's POS because the family needs more support. You should:",
+       options:["Approve it — that's a supervision decision","Deny it and notify the Director — POS changes require IRC authorization","Tell the coordinator to just document fewer hours","Allow it this one time and note it in the file"],
+       answer:1, explanation:"Authorized hours are set by IRC through the POS. No supervisor or director can approve service hours beyond that authorization. This requires contacting IRC for a POS modification."},
+    ]
+  },
+  {
+    id:"C02", icon:"👥", title:"Managing Your Team of Coordinators", dur:"20 min",
+    objectives:[
+      "Establish a consistent weekly supervision rhythm",
+      "Run effective 1:1 supervision meetings",
+      "Apply the three-level performance management framework",
+      "Distinguish between coaching and corrective action"
+    ],
+    sections:[
+      {heading:"Weekly Supervision Rhythm",
+       content:"Daily (async): Review contact log submissions from the prior day. Flag any missing entries by 9am.\n\nWeekly 1:1 meetings: 30-minute individual check-in with each coordinator. Cover: caseload status, documentation quality, family concerns, training progress, and personal capacity.\n\nWeekly team meeting: 15–20 minute team huddle. Share updates, training reminders, compliance notices, and recognize good performance.\n\nMonthly caseload review: Full review of each coordinator's client list — hours used vs. authorized, QPR deadlines, onboarding checklist status, active incidents.\n\nAs needed: Respond to escalations, observe field contacts (with advance notice), review flagged documentation, conduct corrective conversations."},
+      {heading:"Running Effective 1:1 Meetings",
+       content:"Every 1:1 should follow a consistent structure:\n\n1. How are you doing? — Open with a genuine check-in. Burned-out coordinators miss things. This is not small talk — it is a performance indicator.\n\n2. Caseload status — Walk through each assigned client. Any concerns? Any families hard to reach?\n\n3. Documentation review — Have you reviewed their recent contact logs? Raise specific entries — good and bad. Be specific.\n\n4. Training progress — Where are they in the Academy? Are any Day 1 modules still incomplete?\n\n5. Upcoming deadlines — QPR due dates, IPP meetings, onboarding milestones.\n\n6. What do they need from you? — End every meeting with this question."},
+      {heading:"Performance Management Framework",
+       content:"Level 1 — Coaching: For missed documentation, late entries, disorganized notes. Address directly in 1:1. Give specific feedback and clear expectations. Document your conversation. Director involvement not required — but document.\n\nLevel 2 — Corrective: For repeated patterns after coaching, or when a consumer concern is raised. Formal corrective conversation. Written summary sent to Director. Notify Director same day.\n\nLevel 3 — Escalation: For policy violations, consumer harm risk, SIR-level incidents, non-compliance. Immediately notify Director. Do not handle independently. Director leads — supervisor supports."},
+    ],
+    quiz:[
+      {q:"A coordinator has submitted late contact log entries three weeks in a row despite your coaching. What level of response is appropriate?",
+       options:["Continue coaching — three weeks isn't that long","Level 2 — Corrective: formal conversation, written summary to Director","Level 3 — Escalation: notify Director to consider termination","Ignore it — documentation is ultimately their responsibility"],
+       answer:1, explanation:"A repeated pattern after coaching moves the situation to Level 2. This requires a formal corrective conversation and a written summary sent to the Director. Continued coaching without escalation allows the compliance risk to grow."},
+      {q:"The most important question to end every 1:1 supervision meeting with is:",
+       options:["Did you complete everything on your task list?","What do you need from me?","Are you going to meet your documentation deadline this week?","Do you have any complaints about your caseload?"],
+       answer:1, explanation:"'What do you need from me?' keeps the supervisory relationship bidirectional and supportive rather than purely evaluative. It surfaces issues early and builds trust."},
+    ]
+  },
+  {
+    id:"C03", icon:"📋", title:"Documentation Compliance & Oversight", dur:"20 min",
+    objectives:[
+      "Apply contact log review standards consistently across your team",
+      "Manage QPR deadlines proactively for all assigned consumers",
+      "Maintain audit-ready documentation standards at all times",
+      "Know what to flag and when to escalate documentation issues"
+    ],
+    sections:[
+      {heading:"Contact Log Review Standards",
+       content:"Review each coordinator's contact log submissions at least weekly. You are flagging entries that would fail an audit — not editing their notes.\n\nSame-day submission: Every service contact must be logged the day it occurs. Any entry submitted the next day or later requires a documented explanation.\n\nUCI numbers: Every entry must include the consumer's UCI number.\n\nGoal references: Documentation must connect to IPP goals by name. 'Worked on goals' is not compliant. 'Practiced grocery shopping (IPP Goal 3: Community Independence)' is compliant.\n\nDuration: Start and end time must be present. Specific times are required.\n\nLocation: Home visit, community outing, phone contact — location must be specified.\n\nConsumer response: Strong documentation describes how the consumer responded, not just what the coordinator did."},
+      {heading:"QPR Deadline Management",
+       content:"Quarterly Progress Reports are due before the end of the 3rd month of each consumer's service period — submitted no later than 14 days before that month ends.\n\nRule of thumb:\n• 30 days out: QPR should be on your radar\n• 14 days out: Draft should exist\n• 7 days out: Should be submitted or in final review with Director\n\nA missed QPR deadline is a serious compliance event. Notify the Director immediately if one is at risk."},
+      {heading:"Audit Readiness",
+       content:"IRC may audit Open Grace's records at any time. Your team's documentation must be audit-ready every day.\n\nAudit readiness means:\n• All contact logs submitted same-day and complete\n• No unexplained gaps in service documentation\n• Every documented service connected to an authorized IPP goal\n• No services documented outside the authorized POS dates\n• All SIRs filed on time and properly documented\n• Training completion records current for all coordinators\n• All onboarding compliance documents on file"},
+    ],
+    quiz:[
+      {q:"A coordinator's contact log entry reads: 'Visited consumer. Talked about goals. Had a good session.' This entry is:",
+       options:["Acceptable — it captures the basics","Non-compliant — it lacks UCI, goal references, times, location, and consumer response","Fine as long as the coordinator fills in more detail later","Only a problem if IRC specifically asks about it"],
+       answer:1, explanation:"This entry would fail an audit on multiple counts: no UCI number, no specific IPP goal referenced, no start/end time, no location, and no description of consumer response. Flag it immediately and coach the coordinator on the standard."},
+      {q:"A consumer's QPR is due in 10 days and no draft exists. What do you do?",
+       options:["Wait to see if the coordinator starts it this week","Notify the Director immediately and ensure a draft is created today","Write it yourself to avoid the deadline","Email IRC to request an extension"],
+       answer:1, explanation:"At 10 days out with no draft, this is an urgent situation. Notify the Director immediately and take action to ensure the draft is created today. Missing a QPR deadline is a serious compliance event."},
+    ]
+  },
+  {
+    id:"C04", icon:"⚠️", title:"Incident Management & Escalation", dur:"15 min",
+    objectives:[
+      "Identify what constitutes an SIR-level incident",
+      "Execute the escalation flow correctly and on time",
+      "Know your role and its limits during an incident",
+      "Support coordinators through incident documentation"
+    ],
+    sections:[
+      {heading:"Your Role in Incidents",
+       content:"When an incident occurs, the supervisor is the first point of escalation above the coordinator. You do not investigate, adjudicate, or resolve incidents independently. Your role is to receive, assess, and escalate appropriately.\n\nEscalation flow:\n1. Coordinator ensures safety, calls 911 if needed, notifies supervisor immediately\n2. Supervisor receives, assesses severity, notifies Director if SIR-level — within 1 hour\n3. Director determines SIR requirement, files initial SIR if required — within 24 hours\n4. Coordinator + Supervisor submit written documentation to Director — same day\n5. Director submits follow-up SIR — within 7 days"},
+      {heading:"What Qualifies as SIR-Level",
+       content:"Report to the Director immediately for any of the following:\n\n• Any injury to a consumer requiring medical attention\n• Alleged or suspected abuse or neglect — regardless of source\n• Behavioral incidents resulting in property damage, injury, or safety risk\n• Elopement or missing person involving a consumer\n• Law enforcement contact involving a consumer\n• Unexpected hospitalization or medical emergency\n• Death of a consumer\n• Any consumer rights violation\n\nWhen in doubt — it's an SIR. Notify the Director and let them make the determination. The cost of an unnecessary notification is zero. The cost of a missed SIR can be loss of vendor status."},
+      {heading:"Supporting Coordinators Post-Incident",
+       content:"After any incident, your coordinator needs two things: clear direction and emotional support.\n\nClear direction: Tell them exactly what to document, when to submit it, and to whom. Don't leave them guessing.\n\nEmotional support: Crisis work is hard. Check in after the incident is resolved. Debrief. If the coordinator is shaken, that matters — burned-out or traumatized coordinators make errors.\n\nNever: discuss the incident with anyone other than the Director and IRC. Never allow coordinators to discuss it with other staff or families beyond what is necessary."},
+    ],
+    quiz:[
+      {q:"A coordinator calls you to report that a consumer became aggressive and broke a lamp during a home visit. No one was injured. Is this SIR-level?",
+       options:["No — no one was hurt so it doesn't qualify","Yes — property destruction during a behavioral incident is SIR-level","Only if the consumer's family requests a report","Only if it happens again"],
+       answer:1, explanation:"Property destruction during a behavioral incident is explicitly SIR-level. Notify the Director immediately. The absence of physical injury does not exempt this from SIR reporting."},
+      {q:"How quickly must you notify the Director after receiving a report of a SIR-level incident?",
+       options:["By end of business that day","Within 48 hours","Within 1 hour of receiving the report","At your next scheduled check-in"],
+       answer:2, explanation:"The Director must be notified within 1 hour of receiving a SIR-level incident report. This gives the Director time to assess and file the initial SIR with IRC within the required 24-hour window."},
+    ]
+  },
+  {
+    id:"C05", icon:"🎓", title:"Staff Development & Training Oversight", dur:"15 min",
+    objectives:[
+      "Monitor training completion across your team",
+      "Enforce training tier deadlines consistently",
+      "Apply coaching vs. corrective distinctions to training gaps",
+      "Reinforce training content through supervision conversations"
+    ],
+    sections:[
+      {heading:"Training Tier Requirements",
+       content:"Tier 1 — Day 1 Required (before any client contact):\nTitle 17 & CFS, HIPAA, Mandated Reporter, Open Grace Policies\n→ If incomplete: coordinator may not see clients. Notify Director immediately.\n\nTier 2 — Week 1-2 (within 14 days of hire):\nIncident Reporting, Cultural Competency, Boundaries & Ethics, Documentation, Emergency Safety\n→ If incomplete: formal coaching conversation. Set completion date. Document.\n\nTier 3 — 30-Day Academy (within 30 days of hire):\nAll 9 Family Coordinator Academy modules\n→ If behind: weekly check-in on progress. Flag delays to Director at day 25."},
+      {heading:"Reinforcing Training in Supervision",
+       content:"Training doesn't stick by itself — it sticks through application. Your supervision conversations are the bridge between what coordinators learn in the Academy and how they practice in the field.\n\nAfter any module completion, ask:\n• 'You finished the MI module — tell me about a family where you've used reflective listening.'\n• 'You completed the Documentation module — pull up your last three contact logs. Walk me through how you referenced IPP goals.'\n• 'You finished Incident Reporting — what would you do if a consumer elopement happened during your next visit?'\n\nThis is not a test. It's professional development through conversation."},
+    ],
+    quiz:[
+      {q:"A new coordinator is on Day 3 and hasn't completed the HIPAA module. They are scheduled to see a consumer tomorrow. What do you do?",
+       options:["Let them proceed — one module shouldn't hold up a consumer visit","Reschedule the consumer visit and notify the Director immediately","Tell them to complete it tonight","Have another coordinator cover the visit without telling the new hire"],
+       answer:1, explanation:"Tier 1 modules must be complete before any client contact. HIPAA is a Tier 1 requirement. Reschedule the visit and notify the Director immediately. This is not flexible."},
+      {q:"The best way to reinforce training content in supervision is to:",
+       options:["Require coordinators to re-read the module","Ask them to describe how the training content applies to their current caseload","Give them a written test on the material","Have them watch training videos again"],
+       answer:1, explanation:"Application-based questions connect training to real practice. Asking coordinators to describe how content applies to their specific families is far more effective than re-reading or re-testing."},
+    ]
+  },
+  {
+    id:"C06", icon:"🆕", title:"Onboarding New Coordinators", dur:"15 min",
+    objectives:[
+      "Execute the supervisor onboarding checklist by phase",
+      "Confirm compliance requirements before first client contact",
+      "Set clear expectations in the first supervision meeting",
+      "Conduct an effective 30-day review"
+    ],
+    sections:[
+      {heading:"Before Day 1",
+       content:"Before a new coordinator's first day, confirm:\n\n• Access code is created in staff_access.json\n• They have received login for the Coordinator Portal\n• Microsoft Teams invitation has been accepted\n• You have reviewed their assigned client files\n• First 1:1 meeting is scheduled for Day 2 or 3"},
+      {heading:"Week 1 Priorities",
+       content:"• Confirm all Tier 1 training modules are complete before any client contact — non-negotiable\n• Walk through the contact log together — do a test submission with them\n• Review IPP goals for their assigned clients together\n• Cover team communication norms (Teams, response times, meeting schedule)\n• Set expectations clearly: documentation standards, escalation protocol, your availability\n• Give them your direct number and tell them when and how to use it"},
+      {heading:"The 30-Day Review",
+       content:"At day 30, conduct a formal review conversation:\n\n1. Confirm all 18 training modules are complete with certificates earned\n2. Review their documentation quality over the past four weeks — what improved, what still needs work\n3. Assess their comfort with their assigned caseload\n4. Ask: what has been hardest? What do they feel most confident in?\n5. Set 60-day goals together\n6. Submit 30-day assessment summary to Director\n\nThe 30-day review is not a performance review — it's a coaching conversation. Approach it as support, not evaluation."},
+    ],
+    quiz:[
+      {q:"A new coordinator tells you on their first morning that they completed all Tier 1 training last night. You cannot verify this because the portal is loading slowly. What do you do?",
+       options:["Take their word for it and proceed with scheduling client visits","Wait until you can verify completion before any client contact is scheduled","Ask them to describe the content of one module to verify informally","Schedule the visit anyway since they say they completed it"],
+       answer:1, explanation:"Verification of Tier 1 completion must happen before any client contact — regardless of convenience. Wait until you can confirm through the Training Academy portal. 'They said they did it' is not verification."},
+      {q:"The 30-day review conversation should be approached as:",
+       options:["A formal performance evaluation that could affect employment","A coaching and support conversation focused on development","A quiz on training content","A review of every error the coordinator has made"],
+       answer:1, explanation:"The 30-day review is a development conversation — supportive, goal-setting, and bidirectional. Approaching it as a performance evaluation at 30 days damages trust and is premature."},
+    ]
+  },
+  {
+    id:"C07", icon:"🔄", title:"Warm Handoff Procedures", dur:"15 min",
+    objectives:[
+      "Identify when a warm handoff is required",
+      "Execute the 6-step handoff process correctly",
+      "Manage emergency departures without consumer disruption",
+      "Use the Director Dashboard handoff system"
+    ],
+    sections:[
+      {heading:"When a Handoff Is Required",
+       content:"A warm handoff is required when:\n\n• Coordinator resignation or voluntary departure\n• Coordinator termination or deactivation\n• Leave of absence (extended — more than 2 weeks)\n• Caseload rebalancing across the team\n• Consumer or family request for a different coordinator\n\nNo handoff begins without Director approval. Bring the situation, the recommended receiving coordinator, and your assessment of timeline."},
+      {heading:"The 6-Step Handoff Process",
+       content:"1. Notify the Director first — no handoff begins without approval\n\n2. Director activates the handoff flag in the Staff Management panel — outgoing coordinator's portal displays a handoff banner\n\n3. Prepare the handoff package — for each consumer: relationship history, family communication style, behavioral considerations, active goals in progress, pending tasks, open concerns\n\n4. Warm introduction — outgoing coordinator introduces the receiving coordinator to the family wherever possible. Never a cold handoff.\n\n5. Parallel period — if time allows, both coordinators overlap for at least one service contact per consumer\n\n6. Confirm and close — Director confirms all consumers are reassigned, documentation is current. Access is revoked."},
+      {heading:"Emergency Departures",
+       content:"If a coordinator quits without notice:\n\n1. Notify the Director immediately — same day, same hour if possible\n2. Do not attempt to cover the caseload yourself without Director authorization\n3. Identify which consumers need interim coverage\n4. Pull each consumer's file to assess urgency — who has an upcoming IPP meeting? Whose QPR is due soon? Who has highest behavioral support needs?\n5. Director determines coverage plan\n6. Families are contacted by the Director or supervisor with a brief, professional explanation\n\nConsumer continuity is the priority. Move quickly."},
+    ],
+    quiz:[
+      {q:"A coordinator resigns effective immediately. Before doing anything else, you should:",
+       options:["Start contacting their assigned families to introduce a new coordinator","Reassign their caseload to other coordinators on your team","Notify the Director immediately","Access the coordinator's case files to prepare handoff notes"],
+       answer:2, explanation:"The Director must be notified first — before any action is taken. No handoff, no caseload reassignment, and no family contact happens without Director authorization."},
+      {q:"A 'cold handoff' means:",
+       options:["A handoff that happens in winter","A consumer receives a new coordinator without any introduction from the outgoing coordinator","A handoff that happens quickly due to emergency","A handoff where the supervisor manages the transition directly"],
+       answer:1, explanation:"A cold handoff is when a consumer's coordinator changes without a warm introduction — they simply receive a different person without explanation or continuity. This is never acceptable at Open Grace. Warm introductions are required whenever possible."},
+    ]
+  },
+  {
+    id:"C08", icon:"⏱", title:"Hours Tracking & Authorization Compliance", dur:"15 min",
+    objectives:[
+      "Understand authorized hours, used hours, and alert thresholds",
+      "Monitor hours usage across your entire team",
+      "Know what to do at 80%, 90%, and 100% of authorized hours",
+      "Identify and prevent common hours compliance mistakes"
+    ],
+    sections:[
+      {heading:"How Hours Work",
+       content:"Authorized hours: The maximum weekly hours approved in the consumer's current POS. Coordinators may not exceed this without a new authorization from IRC.\n\nUsed hours: Hours documented in the contact log for the current service period. Updated by the Director in the Staff Management panel.\n\nAlert threshold: Set at 80% by default. When a consumer reaches this, a visual alert appears in the coordinator and supervisor portals.\n\nAt 80%: Review with the coordinator — are hours being documented correctly? Is the service pace on track?\n\nAt 90%: Contact the Director immediately. Discuss whether a POS extension request to IRC is appropriate.\n\nAt 100%: Services must stop until a new POS is issued. Do not allow coordinators to continue delivering services beyond authorization."},
+      {heading:"Common Hours Compliance Mistakes",
+       content:"These are the most common errors that create compliance risk:\n\n• Coordinator provides services without a POS in place — all hours are non-billable\n• Coordinator delivers services beyond the POS end date — non-billable and a compliance violation\n• Coordinator over-documents (inflates time) — creates audit risk and potential fraud exposure\n• Coordinator under-documents (fails to log all service hours) — revenue loss and inaccurate records\n• Hours are not updated in the staff management system — alerts don't fire, oversight breaks down\n\nYour job is to catch these before they accumulate. One or two missed entries is a coaching conversation. A pattern is a corrective action."},
+    ],
+    quiz:[
+      {q:"A consumer is at 95% of their authorized hours with two weeks remaining in the service period. What is your immediate action?",
+       options:["Do nothing — they haven't hit 100% yet","Tell the coordinator to document fewer hours this week","Contact the Director immediately to discuss a POS extension request","Wait until they hit 100% then pause services"],
+       answer:2, explanation:"At 90%+, immediate Director notification is required. The Director needs time to contact IRC and request a POS extension before hours run out. Waiting until 100% leaves no room for the process to work."},
+      {q:"Inflating documented service hours (recording more time than actually spent) creates risk of:",
+       options:["A minor compliance note in the next audit","Audit risk and potential fraud exposure for Open Grace","Nothing significant if the coordinator was genuinely providing support","Reduced QPR quality"],
+       answer:1, explanation:"Fraudulent billing — even unintentional inflation — creates serious legal and compliance risk including loss of vendor status, repayment demands, and potential criminal liability. This is treated as a Level 3 escalation."},
+    ]
+  },
+  {
+    id:"C09", icon:"💬", title:"Communication Standards", dur:"10 min",
+    objectives:[
+      "Apply Open Grace communication norms across all channels",
+      "Know what to report to the Director and when",
+      "Protect consumer confidentiality in all communications",
+      "Document supervisory conversations correctly"
+    ],
+    sections:[
+      {heading:"Communication Channels",
+       content:"Day-to-day team: Microsoft Teams. All work-related communication stays on Teams — not personal text. Response expectation: within 2 business hours during working hours.\n\nUrgent / same-day: Phone or Teams call. Text if a Teams call isn't answered within 15 minutes for anything time-sensitive.\n\nDirector reporting: Weekly summary covering performance concerns, incidents, hours alerts, training gaps, and general team status.\n\nConsumer information: Never discussed in personal text, personal email, or any channel outside Microsoft 365. UCI numbers used in group channels — not full names.\n\nIRC contact: All direct IRC communication on formal matters flows through the Director. If IRC contacts a coordinator or supervisor directly, notify the Director before responding."},
+      {heading:"What to Bring to the Director",
+       content:"Never handle these independently — always notify the Director:\n\n• Any consumer complaint about a coordinator or service quality\n• Any suspected policy violation by a staff member\n• Any situation where you are unsure of the correct action\n• Any coordinator who may need leave or termination\n• Any contact from IRC, DDS, or law enforcement regarding Open Grace\n• Any SIR-level incident\n• Any coordinator requesting accommodation or reporting a personal crisis\n• Any documentation of a corrective conversation"},
+    ],
+    quiz:[
+      {q:"An IRC coordinator calls your personal cell to discuss a concern about a consumer's services. You should:",
+       options:["Handle it — IRC coordinators are partners and you can speak with them","Listen and provide whatever information they need","Listen professionally, take notes, and notify the Director before providing any formal response","Ignore the call — IRC should contact the Director directly"],
+       answer:2, explanation:"IRC coordinators are professional partners. Listen professionally, but do not provide formal responses or make commitments on behalf of Open Grace. Notify the Director before any substantive follow-up."},
+      {q:"After a corrective supervisory conversation with a coordinator, you should:",
+       options:["Keep it verbal — written documentation feels punitive","Document the key points and send a written summary to the Director within 24 hours","Send the coordinator a formal written warning","Note it in your personal records only"],
+       answer:1, explanation:"All corrective supervisory conversations must be documented in writing and shared with the Director within 24 hours. This protects everyone and creates the paper trail needed if further corrective action becomes necessary."},
+    ]
+  },
+  {
+    id:"C10", icon:"⚖️", title:"Supervisor Ethics & Boundaries", dur:"15 min",
+    objectives:[
+      "Apply consistency and fairness across your entire team",
+      "Maintain confidentiality of all staff personnel matters",
+      "Identify and disclose potential dual relationships",
+      "Understand how mandated reporter obligations apply in your role"
+    ],
+    sections:[
+      {heading:"Consistency & Fairness",
+       content:"Supervisors carry power over the people they manage. That power must be exercised with consistency, fairness, and awareness of how it affects people's livelihoods.\n\nConsistency: Apply the same standards to every coordinator on your team. If you hold one person accountable for late documentation but not another, you create inequity and legal exposure.\n\nNo favoritism: Evaluate behavior and outcomes, not personality. The coordinator you find most personally enjoyable may not be the best performer.\n\nTransparency: When you make a decision that affects a coordinator, be able to explain it in terms of policy and performance — not personal preference."},
+      {heading:"Confidentiality & Dual Relationships",
+       content:"Confidentiality: Staff personnel matters — performance issues, corrective conversations, personal disclosures — are strictly confidential. Do not discuss one coordinator's performance with another.\n\nDual relationships: You may not have personal financial, romantic, or close social relationships with coordinators you supervise. If a pre-existing relationship exists, disclose it to the Director immediately.\n\nReporting up: If a coordinator raises a concern about your conduct, they have the right to go directly to the Director. That is not insubordination — it is a protected channel. Never retaliate.\n\nMandated reporting: Your obligations as a mandated reporter apply in your supervisory role. If a coordinator discloses something during supervision that triggers a reporting obligation, you must report."},
+    ],
+    quiz:[
+      {q:"One of your coordinators is also your neighbor and close friend outside of work. What is the correct action?",
+       options:["Continue as normal — personal relationships don't affect professional conduct","Disclose the pre-existing relationship to the Director immediately","Recuse yourself from supervising them without telling anyone why","This is fine as long as you treat them the same as everyone else"],
+       answer:1, explanation:"Pre-existing close personal relationships create a potential dual relationship that must be disclosed to the Director. The Director then determines the appropriate supervision arrangement."},
+      {q:"During a 1:1 meeting, a coordinator discloses that a consumer's family member has been threatening them physically. This triggers your obligation as:",
+       options:["Only a supervisor — document it and tell the coordinator to report to the Director","A mandated reporter — you must report if the situation meets reporting criteria, in addition to notifying the Director","Only the Director's concern — route it up and take no further action","An HR matter — not a mandated reporting situation"],
+       answer:1, explanation:"Mandated reporter obligations apply to you as an individual, not just to coordinators. If a disclosure during supervision meets reporting criteria, you must report — and notify the Director."},
+    ]
+  },
+  {
+    id:"C11", icon:"📋", title:"Quick Reference & Certification", dur:"10 min",
+    objectives:[
+      "Confirm mastery of key timelines and escalation protocols",
+      "Complete the supervisor certification knowledge check",
+      "Access the quick reference tools for ongoing use",
+      "Receive your Open Grace Supervisor certification"
+    ],
+    sections:[
+      {heading:"Key Timelines At-a-Glance",
+       content:"Incident occurs → Notify Director: within 1 hour\nInitial SIR filing (Director): within 24 hours of incident\nFollow-up SIR (Director): within 7 days\n\nContact log submission: same day as service contact\nMissed documentation: address in next 1:1 or same day if pattern\n\nQPR — 30 days out: alert coordinator and begin tracking\nQPR — 14 days out: draft must exist\nQPR — 7 days out: submitted or in final review\n\nConsumer at 80% hours: review with coordinator immediately\nConsumer at 90%+ hours: notify Director immediately\nConsumer at 100% hours: services stop — contact Director\n\nNew hire — Day 1: confirm Tier 1 training complete before client contact\nNew hire — Day 14: confirm Tier 2 training complete\nNew hire — Day 30: confirm all 18 modules complete + 30-day review\n\nCoordinator departure: notify Director same day\nHandoff initiation: within 24 hours of departure"},
+      {heading:"Weekly Supervisor Checklist",
+       content:"Every week, complete the following:\n\n☐ Review all contact log submissions — flag missing or non-compliant entries\n☐ Check hours status for all consumers — flag anyone approaching 80%\n☐ Confirm all QPR deadlines — any within 30 days need active tracking\n☐ Hold individual 1:1 with each coordinator\n☐ Hold brief team meeting\n☐ Send weekly status summary to Director\n☐ Follow up on any open corrective actions or coaching commitments\n☐ Check training progress for any coordinator with incomplete modules"},
+    ],
+    quiz:[
+      {q:"A consumer reaches 80% of their authorized hours. Your first action is:",
+       options:["Notify the Director immediately to request a POS extension","Review the situation with the coordinator — confirm documentation accuracy and service pace","Tell the coordinator to slow down service delivery","Do nothing until they reach 90%"],
+       answer:1, explanation:"At 80%, the first step is to review with the coordinator — confirm documentation is accurate, assess whether the pace is appropriate, and determine if a POS extension will be needed. Director notification happens at 90%."},
+      {q:"Which of the following is NOT your responsibility as a supervisor?",
+       options:["Monitoring training completion across your team","Filing the initial SIR with IRC after a reportable incident","Conducting weekly 1:1 supervision meetings","Initiating warm handoffs when coordinators depart"],
+       answer:1, explanation:"Filing SIRs with IRC is the Director's responsibility. The supervisor's role is to receive the incident report from the coordinator, assess severity, and notify the Director — who then files the SIR with IRC."},
+    ]
+  },
+];
+
+const PLANNED = [
+  {icon:"👥", title:"Staff Caseload Overview", desc:"View coordinator assignments, client load, and active service periods across your team."},
+  {icon:"📊", title:"Documentation Compliance Tracker", desc:"Monitor contact log submissions, flag missing entries, and review quality across your team."},
+  {icon:"📈", title:"Team Performance Dashboard", desc:"Attendance, submissions, client engagement, and goal progress across your coordinators."},
+  {icon:"🔔", title:"Escalation & Incident Review", desc:"Receive flagged incidents from coordinators and manage escalation to the Director."},
+  {icon:"📅", title:"QPR & IPP Deadline Monitor", desc:"See all upcoming QPR deadlines across your team with advance alerts."},
+  {icon:"💬", title:"Team Communication Hub", desc:"Send announcements and messages to your team without Director involvement."},
+];
+
+// ── State
+let progress = {};
+let currentChapter = null;
+let quizState = {};
+
+// ── Lock / Unlock
 function unlock() {
-  const input = document.getElementById('code-input');
-  const err = document.getElementById('lock-error');
-  const val = input.value.trim().toUpperCase();
-
-  if (val === SUPERVISOR_CODE) {
-    document.getElementById('lock-screen').style.display = 'none';
-    document.getElementById('portal-screen').style.display = 'block';
+  const code = document.getElementById('code-input').value.trim().toUpperCase();
+  const errEl = document.getElementById('lock-err');
+  const inputEl = document.getElementById('code-input');
+  if (code === ACCESS_CODE) {
+    loadProgress();
+    document.getElementById('lock').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
     sessionStorage.setItem('og_sup_auth', '1');
-    err.textContent = '';
+    errEl.textContent = '';
+    renderHome();
+    renderTraining();
+    renderPlanned();
   } else {
-    input.classList.add('error');
-    err.textContent = 'Incorrect code. Contact the Director at 951-880-4132.';
-    input.value = '';
-    setTimeout(() => input.classList.remove('error'), 400);
+    inputEl.classList.add('err');
+    errEl.textContent = 'Incorrect code. Contact the Director at 951-880-4132.';
+    setTimeout(() => inputEl.classList.remove('err'), 400);
+    inputEl.value = '';
   }
 }
 
-function lock() {
+function lockApp() {
   sessionStorage.removeItem('og_sup_auth');
-  document.getElementById('portal-screen').style.display = 'none';
-  document.getElementById('lock-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('lock').style.display = 'flex';
   document.getElementById('code-input').value = '';
-  document.getElementById('lock-error').textContent = '';
+  document.getElementById('lock-err').textContent = '';
 }
 
-// Auto-unlock if session still active
-if (sessionStorage.getItem('og_sup_auth') === '1') {
-  document.getElementById('lock-screen').style.display = 'none';
-  document.getElementById('portal-screen').style.display = 'block';
+window.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('og_sup_auth') === '1') {
+    loadProgress();
+    document.getElementById('lock').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    renderHome(); renderTraining(); renderPlanned();
+  }
+});
+
+// ── Progress
+function loadProgress() {
+  const raw = localStorage.getItem(PROGRESS_KEY);
+  progress = raw ? JSON.parse(raw) : { completed: [], quizScores: {}, dates: {} };
+}
+function saveProgress() { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); }
+function isDone(id) { return (progress.completed || []).includes(id); }
+
+// ── Tab switching
+function switchTab(idx) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  document.querySelectorAll('.screen').forEach((s,i) => s.classList.toggle('active', i===idx));
+  window.scrollTo(0,0);
+}
+
+// ── Home
+function renderHome() {
+  const done = (progress.completed||[]).length;
+  document.getElementById('h-training-done').textContent = done + '/11';
+}
+
+// ── Planned modules
+function renderPlanned() {
+  document.getElementById('planned-list').innerHTML = PLANNED.map(p => `
+    <div class="planned-card">
+      <div style="font-size:24px;flex-shrink:0;">${p.icon}</div>
+      <div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:3px;">${p.title}</div>
+        <div style="font-size:12px;color:var(--sub);line-height:1.5;">${p.desc}</div>
+        <span class="plan-badge">Planned</span>
+      </div>
+    </div>`).join('');
+}
+
+// ── Training list
+function renderTraining() {
+  const done = (progress.completed||[]).length;
+  const pct = Math.round((done/TOTAL_CHAPTERS)*100);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-fill').style.background = pct===100?'var(--green)':'var(--navy)';
+  document.getElementById('prog-label').textContent = done + ' / ' + TOTAL_CHAPTERS + ' chapters';
+
+  document.getElementById('chapter-list').innerHTML = CHAPTERS.map((ch,i) => {
+    const done2 = isDone(ch.id);
+    return `<div class="module-card ${done2?'completed':'active-mod'}" onclick="openChapter('${ch.id}')">
+      <div class="mod-icon">${ch.icon}</div>
+      <div style="flex:1">
+        <div class="mod-title">Chapter ${i+1}: ${ch.title}</div>
+        <div class="mod-meta">⏱ ${ch.dur} &bull; ${ch.quiz.length} questions</div>
+      </div>
+      <div>${done2
+        ? '<span class="badge badge-done">✓ Done</span>'
+        : '<span class="badge badge-ready">Start →</span>'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Chapter detail
+function openChapter(id) {
+  currentChapter = id;
+  quizState = { answers: {}, submitted: false };
+  const ch = CHAPTERS.find(c => c.id===id);
+  const chNum = CHAPTERS.findIndex(c=>c.id===id)+1;
+
+  document.querySelectorAll('.screen,.tab-bar').forEach(el=>el.style.display='none');
+  const detail = document.getElementById('mod-detail');
+  detail.style.display='block';
+
+  let html = `<div class="mod-header">
+    <div class="mod-h-icon">${ch.icon}</div>
+    <div class="mod-h-chapter">Chapter ${chNum} of ${TOTAL_CHAPTERS}</div>
+    <div class="mod-h-title">${ch.title}</div>
+    <div class="mod-h-dur">⏱ ${ch.dur} &bull; ${ch.quiz.length} knowledge check questions</div>
+    <div class="obj-box">
+      <div class="obj-label">Learning Objectives</div>
+      ${ch.objectives.map(o=>`<div class="obj-item">${o}</div>`).join('')}
+    </div>
+  </div>`;
+
+  ch.sections.forEach(sec => {
+    html += `<div class="section-card">
+      <div class="section-heading">${sec.heading}</div>
+      <div class="section-body">${esc(sec.content)}</div>
+    </div>`;
+  });
+
+  html += `<div class="quiz-wrap">
+    <div class="quiz-label">📝 Knowledge Check</div>`;
+
+  ch.quiz.forEach((q,qi) => {
+    html += `<div class="quiz-q" id="qq-${qi}">${qi+1}. ${esc(q.q)}</div>
+      <div class="quiz-options" id="qo-${qi}">
+        ${q.options.map((opt,oi)=>`
+          <button class="q-opt" id="qopt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+            <span class="q-letter">${['A','B','C','D'][oi]}</span>${esc(opt)}
+          </button>`).join('')}
+      </div>
+      <div class="q-explanation" id="qexp-${qi}">${esc(q.explanation)}</div>`;
+  });
+
+  html += `<div class="quiz-score" id="quiz-score"></div>
+    <button class="retry-btn" id="retry-btn" onclick="retryChapter()">↩ Retry Quiz</button>
+  </div>
+  <button class="complete-btn" id="complete-btn" onclick="completeChapter('${id}')">
+    ✅ Complete Chapter & Continue
+  </button>`;
+
+  document.getElementById('mod-detail-content').innerHTML = html;
+
+  if (isDone(id)) {
+    document.getElementById('complete-btn').style.display = 'block';
+    document.getElementById('complete-btn').textContent = '🏅 Chapter Complete — Back to Training';
+    document.getElementById('complete-btn').onclick = closeModule;
+  }
+  window.scrollTo(0,0);
+}
+
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function closeModule() {
+  document.getElementById('mod-detail').style.display='none';
+  document.querySelectorAll('.screen').forEach((s,i)=>s.classList.toggle('active',i===1));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===1));
+  document.querySelector('.tab-bar').style.display='flex';
+  renderTraining(); renderHome();
+  window.scrollTo(0,0);
+}
+
+function selectAnswer(qi, oi) {
+  if (quizState.submitted) return;
+  quizState.answers[qi] = oi;
+  const ch = CHAPTERS.find(c=>c.id===currentChapter);
+  document.querySelectorAll(`#qo-${qi} .q-opt`).forEach((el,i)=>{
+    el.style.background = i===oi ? 'rgba(255,255,255,.12)' : '';
+    el.style.borderColor = i===oi ? 'rgba(255,255,255,.4)' : '';
+  });
+  if (Object.keys(quizState.answers).length === ch.quiz.length) submitQuiz();
+}
+
+function submitQuiz() {
+  quizState.submitted = true;
+  const ch = CHAPTERS.find(c=>c.id===currentChapter);
+  let correct = 0;
+  ch.quiz.forEach((q,qi) => {
+    const chosen = quizState.answers[qi];
+    document.querySelectorAll(`#qo-${qi} .q-opt`).forEach((el,oi) => {
+      el.disabled = true;
+      if (oi===q.answer) el.classList.add('correct');
+      else if (oi===chosen && chosen!==q.answer) el.classList.add('wrong');
+    });
+    document.getElementById(`qexp-${qi}`).style.display='block';
+    if (chosen===q.answer) correct++;
+  });
+
+  const pct = Math.round((correct/ch.quiz.length)*100);
+  const passed = pct >= 80;
+  const scoreEl = document.getElementById('quiz-score');
+  scoreEl.style.display = 'block';
+  scoreEl.className = 'quiz-score ' + (passed?'pass':'fail');
+  scoreEl.textContent = passed
+    ? `✅ ${correct}/${ch.quiz.length} correct (${pct}%) — Passed!`
+    : `❌ ${correct}/${ch.quiz.length} correct (${pct}%) — Score 80%+ to complete. Review and retry.`;
+
+  if (!progress.quizScores) progress.quizScores = {};
+  if (!progress.quizScores[currentChapter] || pct > progress.quizScores[currentChapter])
+    progress.quizScores[currentChapter] = pct;
+  saveProgress();
+
+  document.getElementById(passed ? 'complete-btn' : 'retry-btn').style.display = 'block';
+}
+
+function retryChapter() { openChapter(currentChapter); }
+
+function completeChapter(id) {
+  if (!progress.completed) progress.completed = [];
+  if (!progress.completed.includes(id)) {
+    progress.completed.push(id);
+    if (!progress.dates) progress.dates = {};
+    progress.dates[id] = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    saveProgress();
+  }
+
+  const done = progress.completed.length;
+  if (done === TOTAL_CHAPTERS) {
+    toast('🏅 Supervisor Training Complete! Certificate available in Resources.');
+    setTimeout(closeModule, 1500);
+  } else {
+    const nextIdx = CHAPTERS.findIndex(c=>c.id===id) + 1;
+    if (nextIdx < CHAPTERS.length) {
+      toast('✓ Chapter complete — opening next chapter');
+      setTimeout(() => openChapter(CHAPTERS[nextIdx].id), 800);
+    } else {
+      closeModule();
+    }
+  }
+}
+
+function toast(msg, dur=2800) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), dur);
 }
 </script>
-
 </body>
 </html>
