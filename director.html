@@ -262,6 +262,91 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 .hub-body .lrow-sub{font-size:12px;}
 .hub-quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
 .hub-quick .action{margin-bottom:0;font-size:15px;padding:15px 10px;min-height:52px;}
+
+/* ── CONTACT PROFILE CARDS ── */
+.client-group{margin-bottom:10px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.08);}
+.client-group-header{
+  display:flex;align-items:center;gap:12px;padding:16px;
+  background:rgba(255,255,255,.06);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:background .15s;
+}
+.client-group-header:active{background:rgba(255,255,255,.11);}
+.client-group-avatar{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;font-weight:800;
+  background:linear-gradient(135deg,var(--navy2),var(--purple));
+  color:white;border:2px solid rgba(255,255,255,.15);
+}
+.client-group-name{font-size:17px;font-weight:700;color:white;}
+.client-group-uci{font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;}
+.client-group-chevron{margin-left:auto;font-size:14px;color:rgba(255,255,255,.3);transition:transform .2s;flex-shrink:0;}
+.client-group-header.open .client-group-chevron{transform:rotate(180deg);}
+.client-group-body{display:none;background:rgba(0,0,0,.2);padding:10px;}
+.client-group-body.open{display:block;}
+
+.contact-person{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 14px;background:rgba(255,255,255,.05);
+  border-radius:12px;margin-bottom:7px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:background .15s;
+  border:1px solid rgba(255,255,255,.06);
+}
+.contact-person:active{background:rgba(255,255,255,.1);}
+.contact-person-avatar{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.contact-person-name{font-size:15px;font-weight:700;color:white;}
+.contact-person-role{font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;}
+.contact-person-arrow{margin-left:auto;font-size:14px;color:rgba(255,255,255,.2);flex-shrink:0;}
+
+/* Staff row */
+.staff-contact-row{
+  display:flex;align-items:center;gap:12px;padding:14px 16px;
+  background:rgba(255,255,255,.05);border-radius:12px;margin-bottom:7px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  border:1px solid rgba(255,255,255,.06);
+}
+.staff-contact-row:active{background:rgba(255,255,255,.1);}
+.staff-avatar{width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green),#0d7a3e);
+  display:flex;align-items:center;justify-content:center;
+  font-size:19px;flex-shrink:0;border:2px solid rgba(255,255,255,.12);}
+.staff-name{font-size:16px;font-weight:700;color:white;}
+.staff-role{font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;}
+
+/* Profile overlay */
+#profile-overlay .sheet{padding-bottom:calc(24px + var(--safe-bot));}
+.profile-hero{text-align:center;padding:8px 0 20px;}
+.profile-avatar-lg{
+  width:72px;height:72px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;margin:0 auto 12px;
+  border:3px solid rgba(255,255,255,.15);
+}
+.profile-name{font-size:22px;font-weight:800;color:white;margin-bottom:4px;}
+.profile-role{font-size:13px;color:rgba(255,255,255,.45);line-height:1.5;}
+.profile-badge{display:inline-block;padding:4px 12px;border-radius:20px;
+  font-size:11px;font-weight:700;margin-top:8px;}
+.profile-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0 4px;}
+.profile-actions a,.profile-actions button{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:16px 10px;border-radius:13px;font-size:15px;font-weight:700;
+  text-decoration:none;border:none;cursor:pointer;font-family:var(--sans);
+  -webkit-tap-highlight-color:transparent;min-height:54px;
+}
+.profile-actions .p-call{background:var(--green);color:white;}
+.profile-actions .p-text{background:var(--navy2);color:white;}
+.profile-actions .p-email{background:rgba(255,255,255,.08);color:white;}
+.profile-actions .p-send{background:var(--orange);color:white;}
+.profile-detail-row{display:flex;align-items:center;gap:12px;
+  padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.profile-detail-row:last-child{border:none;}
+.profile-detail-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0;}
+.profile-detail-label{font-size:11px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;}
+.profile-detail-val{font-size:14px;color:white;font-weight:600;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -468,43 +553,46 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
 
 <!-- ══ TAB 4: CONTACTS ══ -->
 <div class="screen" id="s4">
-  <div class="sec">Saved Contacts</div>
-  <div id="contacts-list"></div>
-  <button class="action ghost" onclick="openContactSheet()">➕ Add Contact</button>
 
+  <!-- Search -->
+  <div style="position:relative;margin-bottom:14px;">
+    <input id="contact-search" type="search" placeholder="🔍  Search contacts…"
+      oninput="renderContacts()"
+      style="width:100%;padding:14px 16px;background:rgba(255,255,255,.07);
+        border:1.5px solid rgba(255,255,255,.1);border-radius:13px;color:white;
+        font-size:16px;font-family:var(--sans);outline:none;-webkit-appearance:none;">
+  </div>
+
+  <!-- Dynamic sections -->
+  <div id="contacts-clients-section"></div>
+  <div id="contacts-staff-section"></div>
+  <div id="contacts-other-section"></div>
+
+  <button class="action ghost" style="margin-bottom:10px;" onclick="openContactSheet()">➕ Add Contact</button>
+
+  <!-- Emergency -->
   <div class="sec">Emergency & Reporting</div>
-  <div class="contact-card">
-    <div class="contact-name">Adult Protective Services</div>
-    <div class="contact-role">Report abuse or neglect of adults and elders</div>
-    <div class="contact-btns">
-      <a class="cbtn call" href="tel:18007745000">📞 Call</a>
-      <a class="cbtn text" href="sms:18007745000">💬 Text</a>
-    </div>
+  <div class="contact-person" onclick="openProfile({name:'Adult Protective Services',role:'Report abuse or neglect of dependent adults',phone:'18774773646',email:'',type:'other',avatar:'🛡️',avatarBg:'#7B35C1'})">
+    <div class="contact-person-avatar" style="background:rgba(123,53,193,.3);">🛡️</div>
+    <div><div class="contact-person-name">Adult Protective Services</div><div class="contact-person-role">Dependent adult abuse & neglect — 877-477-3646</div></div>
+    <div class="contact-person-arrow">›</div>
   </div>
-  <div class="contact-card">
-    <div class="contact-name">Child Protective Services</div>
-    <div class="contact-role">Report suspected abuse or neglect of minors</div>
-    <div class="contact-btns">
-      <a class="cbtn call" href="tel:18003405700">📞 Call</a>
-      <a class="cbtn text" href="sms:18003405700">💬 Text</a>
-    </div>
+  <div class="contact-person" onclick="openProfile({name:'Child Protective Services',role:'Report suspected abuse or neglect of minors',phone:'18004424918',email:'',type:'other',avatar:'🛡️',avatarBg:'#7B35C1'})">
+    <div class="contact-person-avatar" style="background:rgba(123,53,193,.3);">🛡️</div>
+    <div><div class="contact-person-name">Child Protective Services</div><div class="contact-person-role">Riverside Co. — 800-442-4918 · SB Co. — 877-418-3844</div></div>
+    <div class="contact-person-arrow">›</div>
   </div>
-  <div class="contact-card">
-    <div class="contact-name">Inland Counties Regional Center</div>
-    <div class="contact-role">IRC main line — (909) 890-4800</div>
-    <div class="contact-btns">
-      <a class="cbtn call" href="tel:9098904800">📞 Call</a>
-      <a class="cbtn text" href="sms:9098904800">💬 Text</a>
-    </div>
+  <div class="contact-person" onclick="openProfile({name:'Inland Regional Center',role:'IRC Main Line — Consumer Services',phone:'9098903000',email:'',type:'coord',avatar:'🏛️',avatarBg:'#1E1C5E'})">
+    <div class="contact-person-avatar" style="background:rgba(30,28,94,.5);">🏛️</div>
+    <div><div class="contact-person-name">Inland Regional Center</div><div class="contact-person-role">IRC main line — (909) 890-3000</div></div>
+    <div class="contact-person-arrow">›</div>
   </div>
-  <div class="contact-card">
-    <div class="contact-name">988 Crisis Lifeline</div>
-    <div class="contact-role">Mental health crisis support — 24/7</div>
-    <div class="contact-btns">
-      <a class="cbtn call" href="tel:988">📞 Call</a>
-      <a class="cbtn text" href="sms:988">💬 Text</a>
-    </div>
+  <div class="contact-person" onclick="openProfile({name:'988 Crisis Lifeline',role:'Mental health crisis support — 24/7',phone:'988',email:'',type:'other',avatar:'💙',avatarBg:'#16A34A'})">
+    <div class="contact-person-avatar" style="background:rgba(22,163,74,.25);">💙</div>
+    <div><div class="contact-person-name">988 Crisis Lifeline</div><div class="contact-person-role">Mental health crisis support — 24/7</div></div>
+    <div class="contact-person-arrow">›</div>
   </div>
+
 </div><!-- /s4 -->
 
 <!-- ══ TAB 5: PIPELINE ══ -->
@@ -671,8 +759,15 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
     <div class="field-row">
       <div class="field"><div class="field-label">Phone</div><input class="field-input" id="cc-phone" type="tel" placeholder="(951) 555-0000"></div>
       <div class="field"><div class="field-label">Type</div>
-        <select class="field-input field-select" id="cc-type">
-          <option value="family">🏠 Family</option>
+        <div class="field"><div class="field-label">Linked Client</div>
+        <input class="field-input" id="cc-client" type="text" placeholder="e.g. Burks, Jaybrion"></div>
+      <div class="field"><div class="field-label">UCI Number</div>
+        <input class="field-input" id="cc-uci" type="text" placeholder="e.g. 6953825"></div>
+      <select class="field-input field-select" id="cc-type">
+          <option value="consumer">👤 Consumer</option>
+          <option value="caregiver">🏠 Caregiver / Family</option>
+          <option value="coord">🔖 IRC Coordinator</option>
+          <option value="staff">💼 Staff / Applicant</option>
           <option value="coord">🔖 Coordinator</option>
           <option value="staff">👤 Staff</option>
           <option value="other">💬 Other</option>
@@ -1052,17 +1147,10 @@ function initProspectContacts() {
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
-      const hasAmbre = parsed.some(c => c.name && c.name.toLowerCase().includes('ambre'));
-      if (hasAmbre) return;
-      // Add Ambre to existing contacts
-      parsed.push({
-        name: 'Carter-Earl, Ambre',
-        role: 'Prospect — Case Manager / Navigator | Applied June 7, 2026 2:19 PM via Jotform',
-        phone: '3106060578',
-        email: '',
-        type: 'other'
-      });
-      save('og_contacts_v3', parsed);
+      // Migrate to new schema if not yet migrated (check for 'client' field)
+      const migrated = parsed.some(c => c.client !== undefined);
+      if (migrated) return;
+      save('og_contacts_v3', defaultContacts());
       return;
     } catch(e) {}
   }
@@ -1288,9 +1376,24 @@ function renderPipeline() {
 // ════════════════════════════════════════════
 function defaultContacts() {
   return [
-    { name:'Christina Castaneda', role:'IRC Service Coordinator — Burks, Jaybrion', phone:'9512418102', email:'ccastaneda@inlandrc.org', type:'coord' },
-    { name:'Delisa Trammel', role:'Mother/Caregiver — Burks, Jaybrion', phone:'', email:'', type:'family' },
-    { name:'Jaybrion Burks', role:'Consumer — UCI 6953825', phone:'9097220525', email:'', type:'family' },
+    // ── Burks, Jaybrion — UCI 6953825
+    { name:'Jaybrion Burks',      role:'Consumer', client:'Burks, Jaybrion', uci:'6953825', phone:'9097220525', email:'', type:'consumer', avatar:'👤', avatarBg:'#2D2B7F' },
+    { name:'Delisa Trammel',      role:'Mother / Primary Caregiver', client:'Burks, Jaybrion', uci:'6953825', phone:'', email:'', type:'caregiver', avatar:'🏠', avatarBg:'#F47C20' },
+    { name:'Sarion Burks',        role:'Sister / Advocate', client:'Burks, Jaybrion', uci:'6953825', phone:'', email:'', type:'caregiver', avatar:'🏠', avatarBg:'#F47C20' },
+    { name:'Christina Castaneda', role:'IRC Service Coordinator', client:'Burks, Jaybrion', uci:'6953825', phone:'9512418102', email:'ccastaneda@inlandrc.org', type:'coord', avatar:'🔖', avatarBg:'#1E1C5E' },
+    // ── Pinto, Arianna — UCI 7446993
+    { name:'Arianna Pinto',       role:'Consumer', client:'Pinto, Arianna', uci:'7446993', phone:'', email:'', type:'consumer', avatar:'👤', avatarBg:'#2D2B7F' },
+    { name:'Veronica Falcon',     role:'Mother / Primary Caregiver', client:'Pinto, Arianna', uci:'7446993', phone:'3234906850', email:'', type:'caregiver', avatar:'🏠', avatarBg:'#F47C20' },
+    { name:'Tarah Bass',          role:'IRC Service Coordinator', client:'Pinto, Arianna', uci:'7446993', phone:'9098903420', email:'TBass@inlandrc.org', type:'coord', avatar:'🔖', avatarBg:'#1E1C5E' },
+    // ── Beinbrech, Marykate — UCI 8283031
+    { name:'Marykate Beinbrech',  role:'Consumer', client:'Beinbrech, Marykate', uci:'8283031', phone:'', email:'', type:'consumer', avatar:'👤', avatarBg:'#2D2B7F' },
+    { name:'Christi Beinbrech',   role:'Mother / Primary Caregiver', client:'Beinbrech, Marykate', uci:'8283031', phone:'5626317043', email:'', type:'caregiver', avatar:'🏠', avatarBg:'#F47C20' },
+    { name:'Tarah Bass',          role:'IRC Service Coordinator', client:'Beinbrech, Marykate', uci:'8283031', phone:'9098903420', email:'TBass@inlandrc.org', type:'coord', avatar:'🔖', avatarBg:'#1E1C5E' },
+    // ── Staff / Hiring prospects
+    { name:'Escajeda, Sandra',    role:'Applicant — Family Coordinator', client:'', uci:'', phone:'7143409366', email:'sandraescajeda68@aol.com', type:'staff', avatar:'👤', avatarBg:'#16A34A' },
+    { name:'Allah, Mecca',        role:"Applicant — Case Manager", client:'', uci:'', phone:'3107606833', email:'allah.meccaz@gmail.com', type:'staff', avatar:'👤', avatarBg:'#16A34A' },
+    { name:'Carter-Earl, Ambre',  role:'Applicant — Lead FC / FC / Case Manager', client:'', uci:'', phone:'3106060578', email:'simoneaearl@icloud.com', type:'staff', avatar:'👤', avatarBg:'#16A34A' },
+    { name:'Ramirez-Tellez, Daisy',role:'Applicant — Family Coordinator', client:'', uci:'', phone:'', email:'', type:'staff', avatar:'👤', avatarBg:'#16A34A' },
   ];
 }
 
@@ -1305,15 +1408,23 @@ function openContactSheet(idx=null) {
   const deleteBtn = document.getElementById('cc-delete-btn');
   if (idx !== null && contacts[idx]) {
     const c = contacts[idx];
-    document.getElementById('cc-name').value  = c.name  || '';
-    document.getElementById('cc-role').value  = c.role  || '';
-    document.getElementById('cc-phone').value = c.phone || '';
-    document.getElementById('cc-email').value = c.email || '';
-    document.getElementById('cc-type').value  = c.type  || 'other';
+    document.getElementById('cc-name').value   = c.name   || '';
+    document.getElementById('cc-role').value   = c.role   || '';
+    document.getElementById('cc-phone').value  = c.phone  || '';
+    document.getElementById('cc-email').value  = c.email  || '';
+    document.getElementById('cc-type').value   = c.type   || 'other';
+    const ccClient = document.getElementById('cc-client');
+    if (ccClient) ccClient.value = c.client || '';
+    const ccUci = document.getElementById('cc-uci');
+    if (ccUci) ccUci.value = c.uci || '';
     deleteBtn.style.display = 'block';
   } else {
     ['cc-name','cc-role','cc-phone','cc-email'].forEach(id => document.getElementById(id).value='');
-    document.getElementById('cc-type').value = 'family';
+    document.getElementById('cc-type').value = 'consumer';
+    const ccClient = document.getElementById('cc-client');
+    if (ccClient) ccClient.value = '';
+    const ccUci = document.getElementById('cc-uci');
+    if (ccUci) ccUci.value = '';
     deleteBtn.style.display = 'none';
   }
   openOverlay('contact-overlay');
@@ -1322,11 +1433,17 @@ function openContactSheet(idx=null) {
 function saveContact() {
   const name = document.getElementById('cc-name').value.trim();
   if (!name) { toast('⚠ Name required', '#D97706'); return; }
+  const TYPE_AVATAR = {consumer:'👤',caregiver:'🏠',coord:'🔖',staff:'👤',other:'💬'};
+  const type = document.getElementById('cc-type').value;
   const contact = {
     name, role:  document.getElementById('cc-role').value.trim(),
     phone: document.getElementById('cc-phone').value.trim(),
     email: document.getElementById('cc-email').value.trim(),
-    type:  document.getElementById('cc-type').value,
+    type,
+    client: (document.getElementById('cc-client')?.value||'').trim(),
+    uci:    (document.getElementById('cc-uci')?.value||'').trim(),
+    avatar: TYPE_AVATAR[type]||'💬',
+    avatarBg: '',
   };
   const contacts = load(K.contacts, defaultContacts());
   if (contactEditIdx !== null) contacts[contactEditIdx] = contact;
@@ -1348,40 +1465,152 @@ function deleteContact() {
 }
 
 function renderContacts() {
-  const contacts = load(K.contacts, defaultContacts());
-  const el = document.getElementById('contacts-list');
-  if (!contacts.length) {
-    el.innerHTML = '<div class="empty">No contacts saved. Tap + Add Contact.</div>';
-    return;
-  }
-  // Group
-  const groups = { coord:[], family:[], staff:[], other:[] };
-  contacts.forEach((c,i) => (groups[c.type]||groups.other).push({...c,idx:i}));
+  const all = load(K.contacts, defaultContacts());
+  const query = (document.getElementById('contact-search')?.value||'').toLowerCase().trim();
 
-  let html = '';
-  const ORDER = ['coord','family','staff','other'];
-  ORDER.forEach(type => {
-    if (!groups[type].length) return;
-    groups[type].forEach(c => {
-      const ph = (c.phone||'').replace(/\D/g,'');
-      const fn = (c.name||'').split(' ')[0];
-      html += `<div class="contact-card">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;">
-          <div>
-            <div class="contact-name">${TYPE_ICON[c.type]||'💬'} ${c.name}</div>
-            <div class="contact-role">${c.role||''}</div>
-          </div>
-          <button onclick="openContactSheet(${c.idx})" style="background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.4);width:28px;height:28px;border-radius:8px;font-size:13px;cursor:pointer;flex-shrink:0;">✏️</button>
-        </div>
-        <div class="contact-btns">
-          ${ph ? `<a class="cbtn call" href="tel:${ph}">📞 Call</a><a class="cbtn text" href="sms:${ph}&body=Hi ${fn}, ">💬 Text</a>` : ''}
-          ${c.email ? `<a class="cbtn mail" href="mailto:${c.email}">✉️ Email</a>` : ''}
-          <button class="cbtn send" onclick="sendToContact(${c.idx})">📤 Send</button>
-        </div>
-      </div>`;
-    });
+  const contacts = all.map((c,i)=>({...c,idx:i})).filter(c => {
+    if (!query) return true;
+    return (c.name||'').toLowerCase().includes(query) ||
+           (c.role||'').toLowerCase().includes(query) ||
+           (c.client||'').toLowerCase().includes(query);
   });
-  el.innerHTML = html;
+
+  // ── Client groups
+  const clientMap = {};
+  contacts.forEach(c => {
+    if (!c.client) return;
+    if (!clientMap[c.client]) clientMap[c.client] = {uci:c.uci||'', people:[]};
+    clientMap[c.client].people.push(c);
+  });
+
+  let clientHtml = '';
+  Object.entries(clientMap).forEach(([clientName, {uci, people}]) => {
+    const initials = clientName.split(/[, ]+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const roleOrder = {consumer:0, caregiver:1, coord:2};
+    people.sort((a,b) => (roleOrder[a.type]??9)-(roleOrder[b.type]??9));
+    clientHtml += `
+    <div class="client-group" id="cg-${clientName.replace(/[^a-z]/gi,'_')}">
+      <div class="client-group-header" onclick="toggleClientGroup(this)">
+        <div class="client-group-avatar">${initials}</div>
+        <div>
+          <div class="client-group-name">${clientName}</div>
+          <div class="client-group-uci">${uci ? 'UCI ' + uci + ' · ' : ''}${people.length} contact${people.length!==1?'s':''}</div>
+        </div>
+        <div class="client-group-chevron">▾</div>
+      </div>
+      <div class="client-group-body">
+        ${people.map(c => personRow(c)).join('')}
+      </div>
+    </div>`;
+  });
+
+  const csEl = document.getElementById('contacts-clients-section');
+  if (csEl) {
+    csEl.innerHTML = clientMap && Object.keys(clientMap).length
+      ? `<div class="sec">Active Clients</div>${clientHtml}`
+      : '';
+  }
+
+  // ── Staff
+  const staff = contacts.filter(c => c.type === 'staff');
+  const stEl = document.getElementById('contacts-staff-section');
+  if (stEl) {
+    stEl.innerHTML = staff.length ? `<div class="sec">Staff & Hiring</div>` +
+      staff.map(c => `
+        <div class="staff-contact-row" onclick="openProfile(${JSON.stringify(c).replace(/'/g,'\'')})">
+          <div class="staff-avatar">👤</div>
+          <div style="flex:1;min-width:0;">
+            <div class="staff-name">${c.name}</div>
+            <div class="staff-role">${c.role||''}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button onclick="event.stopPropagation();openContactSheet(${c.idx})" style="background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.4);width:34px;height:34px;border-radius:9px;font-size:14px;cursor:pointer;">✏️</button>
+            <div style="font-size:16px;color:rgba(255,255,255,.2);">›</div>
+          </div>
+        </div>`).join('')
+      : '';
+  }
+
+  // ── Other
+  const other = contacts.filter(c => !c.client && c.type !== 'staff');
+  const otEl = document.getElementById('contacts-other-section');
+  if (otEl) {
+    otEl.innerHTML = other.length ? `<div class="sec">Other</div>` +
+      other.map(c => personRow(c)).join('') : '';
+  }
+}
+
+function personRow(c) {
+  const TYPE_COLOR = {consumer:'rgba(45,43,127,.5)',caregiver:'rgba(244,124,32,.25)',coord:'rgba(30,28,94,.6)',other:'rgba(255,255,255,.08)'};
+  const TYPE_ICON2 = {consumer:'👤',caregiver:'🏠',coord:'🔖',staff:'👤',other:'💬'};
+  return `<div class="contact-person" onclick="openProfile(${JSON.stringify(c).replace(/\/g,'\\').replace(/'/g,"\'")})">
+    <div class="contact-person-avatar" style="background:${TYPE_COLOR[c.type]||'rgba(255,255,255,.08)'};">${c.avatar||TYPE_ICON2[c.type]||'👤'}</div>
+    <div style="flex:1;min-width:0;">
+      <div class="contact-person-name">${c.name}</div>
+      <div class="contact-person-role">${c.role||''}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <button onclick="event.stopPropagation();openContactSheet(${c.idx??'null'})" style="background:rgba(255,255,255,.07);border:none;color:rgba(255,255,255,.3);width:32px;height:32px;border-radius:8px;font-size:13px;cursor:pointer;">✏️</button>
+      <div class="contact-person-arrow">›</div>
+    </div>
+  </div>`;
+}
+
+function toggleClientGroup(header) {
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+}
+
+function openProfile(c) {
+  if (typeof c === 'string') { try { c = JSON.parse(c); } catch(e) { return; } }
+  const ph = (c.phone||'').replace(/\D/g,'');
+  const TYPE_COLOR = {consumer:'linear-gradient(135deg,#2D2B7F,#1a1860)',caregiver:'linear-gradient(135deg,#c25c10,#F47C20)',coord:'linear-gradient(135deg,#1E1C5E,#2D2B7F)',staff:'linear-gradient(135deg,#0d7a3e,#16A34A)',other:'rgba(255,255,255,.1)'};
+  const TYPE_LABEL = {consumer:'Consumer',caregiver:'Caregiver / Support',coord:'IRC Service Coordinator',staff:'Staff / Applicant',other:'Contact'};
+  const BADGE_COLOR = {consumer:'rgba(45,43,127,.4)',caregiver:'rgba(244,124,32,.3)',coord:'rgba(30,28,94,.5)',staff:'rgba(22,163,74,.3)',other:'rgba(255,255,255,.1)'};
+
+  document.getElementById('profile-avatar-bg').style.background = TYPE_COLOR[c.type]||'rgba(255,255,255,.1)';
+  document.getElementById('profile-avatar-emoji').textContent = c.avatar || (c.type==='caregiver'?'🏠':c.type==='coord'?'🔖':'👤');
+  document.getElementById('profile-name').textContent = c.name||'—';
+
+  const roleLines = [c.role||'', c.client ? 'Client: ' + c.client : '', c.uci ? 'UCI ' + c.uci : ''].filter(Boolean);
+  document.getElementById('profile-role').innerHTML = roleLines.join('<br>');
+
+  const badge = document.getElementById('profile-badge');
+  badge.textContent = TYPE_LABEL[c.type]||'Contact';
+  badge.style.background = BADGE_COLOR[c.type]||'rgba(255,255,255,.1)';
+
+  // Action buttons
+  const callBtn = document.getElementById('profile-call');
+  const textBtn = document.getElementById('profile-text');
+  const emailBtn = document.getElementById('profile-email');
+  const sendBtn = document.getElementById('profile-send');
+
+  if (ph) {
+    callBtn.href = 'tel:'+ph; callBtn.style.display='flex';
+    textBtn.href = 'sms:'+ph+'&body=Hi '+(c.name||'').split(' ')[0]+', '; textBtn.style.display='flex';
+  } else { callBtn.style.display='none'; textBtn.style.display='none'; }
+
+  if (c.email) { emailBtn.href='mailto:'+c.email; emailBtn.style.display='flex'; }
+  else emailBtn.style.display='none';
+
+  sendBtn.onclick = () => { closeOverlay('profile-overlay'); if(c.idx!=null) sendToContact(c.idx); };
+
+  // Details
+  const det = document.getElementById('profile-details');
+  const rows = [
+    ph ? ['📞','Phone',(c.phone||'').replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3')] : null,
+    c.email ? ['✉️','Email',c.email] : null,
+    c.client ? ['👥','Linked Client',c.client] : null,
+    c.uci ? ['🔢','UCI',c.uci] : null,
+    c.role ? ['🏷️','Role',c.role] : null,
+  ].filter(Boolean);
+  det.innerHTML = rows.map(([icon,label,val])=>`
+    <div class="profile-detail-row">
+      <div class="profile-detail-icon">${icon}</div>
+      <div><div class="profile-detail-label">${label}</div><div class="profile-detail-val">${val}</div></div>
+    </div>`).join('');
+
+  openOverlay('profile-overlay');
 }
 
 function sendToContact(idx) {
@@ -2517,6 +2746,39 @@ function toggleHub(btn) {
     <div style="display:flex;gap:8px;">
       <button class="sheet-cancel" onclick="closeOverlay('handoff-edit-overlay')">Cancel</button>
       <button class="sheet-save" onclick="saveHandoffEditor()">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════ CONTACT PROFILE OVERLAY ════════ -->
+<div class="overlay" id="profile-overlay">
+  <div class="sheet" style="max-height:88vh;overflow-y:auto;">
+    <div class="sheet-handle"></div>
+
+    <!-- Hero -->
+    <div class="profile-hero">
+      <div class="profile-avatar-lg" id="profile-avatar-bg">
+        <span id="profile-avatar-emoji" style="font-size:32px;">👤</span>
+      </div>
+      <div class="profile-name" id="profile-name">—</div>
+      <div class="profile-role" id="profile-role" style="font-size:13px;color:rgba(255,255,255,.45);line-height:1.5;margin-top:4px;"></div>
+      <div class="profile-badge" id="profile-badge" style="margin-top:10px;font-size:11px;font-weight:700;color:rgba(255,255,255,.7);padding:4px 14px;border-radius:20px;display:inline-block;"></div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="profile-actions">
+      <a id="profile-call" class="p-call" href="#">📞 Call</a>
+      <a id="profile-text" class="p-text" href="#">💬 Text</a>
+      <a id="profile-email" class="p-email" href="#">✉️ Email</a>
+      <button id="profile-send" class="p-send">📤 Send Message</button>
+    </div>
+
+    <!-- Details -->
+    <div id="profile-details" style="margin:16px 0 8px;"></div>
+
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <button class="sheet-cancel" style="flex:1;" onclick="closeOverlay('profile-overlay')">Close</button>
     </div>
   </div>
 </div>
