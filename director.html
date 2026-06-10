@@ -865,8 +865,29 @@ function initPipelineFromEmailData() {
         name: 'Ramirez-Tellez, Daisy',
         phone: '',
         date: '2026-06-05',
-        notes: 'Position: Family Coordinator — Direct Support Specialist | Interview rescheduling to next week | Applied via Indeed | Send application link to confirm',
+        notes: 'Position: Family Coordinator — Direct Support Specialist | Interview rescheduling to next week | Applied via Indeed',
         added: '2026-06-05'
+      },
+      {
+        name: 'Escajeda, Sandra',
+        phone: '(714) 340-9366',
+        date: '2026-06-09',
+        notes: 'Position: Family Coordinator — Direct Support Specialist | Applied via Jotform June 9, 2026 | sandraescajeda68@aol.com | Experience: IHSS, Medi-Cal, SSI, IRC coaching | Interview scheduled June 8',
+        added: '2026-06-09'
+      },
+      {
+        name: 'Allah, Mecca',
+        phone: '(310) 760-6833',
+        date: '2026-06-08',
+        notes: 'Position: Case Manager / Navigator | Applied via Jotform June 8, 2026 | allah.meccaz@gmail.com | Qualifications: Master's in Special Education, pursuing Doctorate | 5 years special education and student services',
+        added: '2026-06-08'
+      },
+      {
+        name: 'Carter-Earl, Ambre',
+        phone: '(310) 606-0578',
+        date: '2026-06-07',
+        notes: 'Position: Applied for 3 roles — Lead Family Coordinator, Family Coordinator, Case Manager / Navigator | Applied via Jotform June 7, 2026 | simoneaearl@icloud.com | Experience: Case Manager and Transition Coordinator — seniors, veterans, individuals with disabilities',
+        added: '2026-06-07'
       }
     ],
     'completed': []
@@ -881,16 +902,15 @@ function initProspectContacts() {
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
+      // Check if all current applicants are present
+      const hasMecca = parsed.some(c => c.name && c.name.toLowerCase().includes('allah'));
+      const hasSandra = parsed.some(c => c.name && c.name.toLowerCase().includes('escajeda'));
       const hasAmbre = parsed.some(c => c.name && c.name.toLowerCase().includes('ambre'));
-      if (hasAmbre) return;
-      // Add Ambre to existing contacts
-      parsed.push({
-        name: 'Carter-Earl, Ambre',
-        role: 'Prospect — Case Manager / Navigator | Applied June 7, 2026 2:19 PM via Jotform',
-        phone: '3106060578',
-        email: '',
-        type: 'other'
-      });
+      if (hasAmbre && hasMecca && hasSandra) return;
+      // Add any missing applicants
+      if (!hasAmbre) parsed.push({ name:'Carter-Earl, Ambre', role:'Applicant — Lead FC / Family Coordinator / Case Manager | Applied June 7 via Jotform', phone:'3106060578', email:'simoneaearl@icloud.com', type:'other' });
+      if (!hasSandra) parsed.push({ name:'Escajeda, Sandra', role:'Applicant — Family Coordinator | Applied June 9 via Jotform | Interview June 8', phone:'7143409366', email:'sandraescajeda68@aol.com', type:'other' });
+      if (!hasMecca) parsed.push({ name:'Allah, Mecca', role:"Applicant — Case Manager / Navigator | Applied June 8 via Jotform | Master's in Special Education", phone:'3107606833', email:'allah.meccaz@gmail.com', type:'other' });
       save('og_contacts_v3', parsed);
       return;
     } catch(e) {}
@@ -900,8 +920,10 @@ function initProspectContacts() {
     { name:'Christina Castaneda', role:'IRC Service Coordinator — Burks, Jaybrion', phone:'9512418102', email:'ccastaneda@inlandrc.org', type:'coord' },
     { name:'Delisa Trammel', role:'Mother/Caregiver — Burks, Jaybrion', phone:'', email:'', type:'family' },
     { name:'Jaybrion Burks', role:'Consumer — UCI 6953825', phone:'9097220525', email:'', type:'family' },
-    { name:'Carter-Earl, Ambre', role:'Prospect — Case Manager / Navigator | Applied June 7, 2026 at 2:19 PM via Jotform', phone:'3106060578', email:'', type:'other' },
-    { name:'Ramirez-Tellez, Daisy', role:'Prospect — Family Coordinator | Interview rescheduling to next week', phone:'', email:'', type:'other' },
+    { name:'Carter-Earl, Ambre', role:'Applicant — Lead FC / Family Coordinator / Case Manager | Applied June 7 via Jotform', phone:'3106060578', email:'simoneaearl@icloud.com', type:'other' },
+    { name:'Ramirez-Tellez, Daisy', role:'Applicant — Family Coordinator | Interview rescheduling to next week | Applied via Indeed', phone:'', email:'', type:'other' },
+    { name:'Escajeda, Sandra', role:'Applicant — Family Coordinator | Applied June 9 via Jotform | Interview June 8', phone:'7143409366', email:'sandraescajeda68@aol.com', type:'other' },
+    { name:'Allah, Mecca', role:'Applicant — Case Manager / Navigator | Applied June 8 via Jotform | Master's in Special Education', phone:'3107606833', email:'allah.meccaz@gmail.com', type:'other' },
   ];
   save('og_contacts_v3', contacts);
 }
