@@ -499,6 +499,41 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
   </div>
 </div><!-- /s6 -->
 
+<!-- ══ TAB 7: TRAINING ══ -->
+<div class="screen" id="s7">
+
+  <div class="sec">Staff Training Overview</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;">
+    <div class="card" style="text-align:center;">
+      <div class="card-label">Staff Enrolled</div>
+      <div class="card-val" id="tr-enrolled">—</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-label">Avg Completion</div>
+      <div class="card-val" id="tr-avg">—</div>
+    </div>
+  </div>
+
+  <div class="sec">Per-Staff Progress</div>
+  <div id="training-staff-list" style="margin-bottom:4px;">
+    <div style="text-align:center;padding:24px;color:rgba(255,255,255,.35);font-size:13px;">Tap Refresh to load training data</div>
+  </div>
+
+  <button class="action navy" style="width:100%;font-size:13px;padding:12px;" onclick="loadTrainingReport()">🔄 Refresh Training Data</button>
+
+  <div class="sec">Module Completion Rates</div>
+  <div id="training-module-rates"></div>
+
+  <div style="margin-top:16px;">
+    <a class="action" href="https://opengrace.org/training.html" target="_blank"
+       style="display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,#2D2B7F,#1a1860);color:#fff;padding:15px;border-radius:13px;font-size:14px;font-weight:700;">
+      🎓 Open Training Academy
+    </a>
+  </div>
+
+</div><!-- /s7 -->
+
 </div><!-- /screens -->
 
 <!-- ════════ TAB BAR ════════ -->
@@ -510,6 +545,7 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
   <div class="tab"        onclick="switchTab(4)"><div class="tab-icon">📞</div><div class="tab-label">Contacts</div></div>
   <div class="tab"        onclick="switchTab(5)"><div class="tab-icon">🔄</div><div class="tab-label">Pipeline</div></div>
   <div class="tab"        onclick="switchTab(6)"><div class="tab-icon">📤</div><div class="tab-label">Send</div></div>
+  <div class="tab"        onclick="switchTab(7)"><div class="tab-icon">🎓</div><div class="tab-label">Training</div></div>
 </div>
 
 <!-- ════════ MODALS ════════ -->
@@ -865,29 +901,8 @@ function initPipelineFromEmailData() {
         name: 'Ramirez-Tellez, Daisy',
         phone: '',
         date: '2026-06-05',
-        notes: 'Position: Family Coordinator — Direct Support Specialist | Interview rescheduling to next week | Applied via Indeed',
+        notes: 'Position: Family Coordinator — Direct Support Specialist | Interview rescheduling to next week | Applied via Indeed | Send application link to confirm',
         added: '2026-06-05'
-      },
-      {
-        name: 'Escajeda, Sandra',
-        phone: '(714) 340-9366',
-        date: '2026-06-09',
-        notes: 'Position: Family Coordinator — Direct Support Specialist | Applied via Jotform June 9, 2026 | sandraescajeda68@aol.com | Experience: IHSS, Medi-Cal, SSI, IRC coaching | Interview scheduled June 8',
-        added: '2026-06-09'
-      },
-      {
-        name: 'Allah, Mecca',
-        phone: '(310) 760-6833',
-        date: '2026-06-08',
-        notes: 'Position: Case Manager / Navigator | Applied via Jotform June 8, 2026 | allah.meccaz@gmail.com | Qualifications: Master's in Special Education, pursuing Doctorate | 5 years special education and student services',
-        added: '2026-06-08'
-      },
-      {
-        name: 'Carter-Earl, Ambre',
-        phone: '(310) 606-0578',
-        date: '2026-06-07',
-        notes: 'Position: Applied for 3 roles — Lead Family Coordinator, Family Coordinator, Case Manager / Navigator | Applied via Jotform June 7, 2026 | simoneaearl@icloud.com | Experience: Case Manager and Transition Coordinator — seniors, veterans, individuals with disabilities',
-        added: '2026-06-07'
       }
     ],
     'completed': []
@@ -902,15 +917,16 @@ function initProspectContacts() {
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
-      // Check if all current applicants are present
-      const hasMecca = parsed.some(c => c.name && c.name.toLowerCase().includes('allah'));
-      const hasSandra = parsed.some(c => c.name && c.name.toLowerCase().includes('escajeda'));
       const hasAmbre = parsed.some(c => c.name && c.name.toLowerCase().includes('ambre'));
-      if (hasAmbre && hasMecca && hasSandra) return;
-      // Add any missing applicants
-      if (!hasAmbre) parsed.push({ name:'Carter-Earl, Ambre', role:'Applicant — Lead FC / Family Coordinator / Case Manager | Applied June 7 via Jotform', phone:'3106060578', email:'simoneaearl@icloud.com', type:'other' });
-      if (!hasSandra) parsed.push({ name:'Escajeda, Sandra', role:'Applicant — Family Coordinator | Applied June 9 via Jotform | Interview June 8', phone:'7143409366', email:'sandraescajeda68@aol.com', type:'other' });
-      if (!hasMecca) parsed.push({ name:'Allah, Mecca', role:"Applicant — Case Manager / Navigator | Applied June 8 via Jotform | Master's in Special Education", phone:'3107606833', email:'allah.meccaz@gmail.com', type:'other' });
+      if (hasAmbre) return;
+      // Add Ambre to existing contacts
+      parsed.push({
+        name: 'Carter-Earl, Ambre',
+        role: 'Prospect — Case Manager / Navigator | Applied June 7, 2026 2:19 PM via Jotform',
+        phone: '3106060578',
+        email: '',
+        type: 'other'
+      });
       save('og_contacts_v3', parsed);
       return;
     } catch(e) {}
@@ -920,10 +936,8 @@ function initProspectContacts() {
     { name:'Christina Castaneda', role:'IRC Service Coordinator — Burks, Jaybrion', phone:'9512418102', email:'ccastaneda@inlandrc.org', type:'coord' },
     { name:'Delisa Trammel', role:'Mother/Caregiver — Burks, Jaybrion', phone:'', email:'', type:'family' },
     { name:'Jaybrion Burks', role:'Consumer — UCI 6953825', phone:'9097220525', email:'', type:'family' },
-    { name:'Carter-Earl, Ambre', role:'Applicant — Lead FC / Family Coordinator / Case Manager | Applied June 7 via Jotform', phone:'3106060578', email:'simoneaearl@icloud.com', type:'other' },
-    { name:'Ramirez-Tellez, Daisy', role:'Applicant — Family Coordinator | Interview rescheduling to next week | Applied via Indeed', phone:'', email:'', type:'other' },
-    { name:'Escajeda, Sandra', role:'Applicant — Family Coordinator | Applied June 9 via Jotform | Interview June 8', phone:'7143409366', email:'sandraescajeda68@aol.com', type:'other' },
-    { name:'Allah, Mecca', role:'Applicant — Case Manager / Navigator | Applied June 8 via Jotform | Master's in Special Education', phone:'3107606833', email:'allah.meccaz@gmail.com', type:'other' },
+    { name:'Carter-Earl, Ambre', role:'Prospect — Case Manager / Navigator | Applied June 7, 2026 at 2:19 PM via Jotform', phone:'3106060578', email:'', type:'other' },
+    { name:'Ramirez-Tellez, Daisy', role:'Prospect — Family Coordinator | Interview rescheduling to next week', phone:'', email:'', type:'other' },
   ];
   save('og_contacts_v3', contacts);
 }
