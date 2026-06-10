@@ -1,19 +1,55 @@
 {
-  "_readme": "Open Grace LLC \u2014 Staff Access Control. Director manages this file. Set active:false to immediately revoke access.",
-  "_hipaa_notice": "This file controls access to PHI. Handle with care.",
-  "last_updated": "2026-06-05",
+  "_readme": "Open Grace LLC \u2014 Staff Access Control & Coordinator Data. Director manages via Director Dashboard.",
+  "_hipaa_notice": "This file controls access to PHI. Handle with care. Do not share publicly.",
+  "_version": "2.0",
+  "last_updated": "2026-06-10",
   "staff": [
     {
       "code": "OG-2026-001",
       "name": "Staff Member Name",
       "position": "Family Coordinator",
       "active": true,
-      "clients": [
-        "Burks, Jaybrion \u2014 UCI 6953825"
-      ],
       "hired": "2026-06-05",
       "terminated": null,
-      "notes": "First hire \u2014 replace with actual staff name when onboarded"
+      "phone": "",
+      "email": "",
+      "notes": "First hire \u2014 replace with actual name when onboarded",
+      "clients": [
+        {
+          "name": "Burks, Jaybrion",
+          "uci": "6953825",
+          "authorizedHours": 30,
+          "usedHours": 0,
+          "alertThreshold": 80,
+          "serviceStart": "2026-04-22",
+          "qprDue": "2026-07-21",
+          "coordinator": "Christina Castaneda",
+          "coordinatorEmail": "ccastaneda@inlandrc.org",
+          "status": "active"
+        }
+      ],
+      "onboarding": {
+        "liveScan": false,
+        "cprFirstAid": false,
+        "handbookSigned": false,
+        "jotformOnboarding": false,
+        "mandatedReporter": false,
+        "hipaaAck": false,
+        "teamsSetup": false,
+        "contactLogTest": false,
+        "firstSupervision": false,
+        "completed": false,
+        "completedDate": null
+      },
+      "handoff": {
+        "inProgress": false,
+        "toStaffCode": null,
+        "toStaffName": null,
+        "initiatedDate": null,
+        "reason": null,
+        "notes": null,
+        "completedDate": null
+      }
     }
   ]
 }
