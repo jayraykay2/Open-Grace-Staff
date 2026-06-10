@@ -1,10 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Open Grace — Staff Onboarding</title>
+<style>
+:root{--navy:#2D2B7F;--orange:#F47C20;--gold:#F5A623;--green:#1D9E75;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+  background:#0F0D2E;color:#fff;min-height:100vh;font-size:16px;}
+.backbar{background:var(--navy);padding:14px 20px;display:flex;align-items:center;
+  position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.backbar a{color:rgba(255,255,255,.85);text-decoration:none;font-size:15px;font-weight:600;}
+.backbar a:hover{color:#fff;}
+.wrap{max-width:540px;margin:0 auto;padding:20px 16px 60px;}
+.academy-banner{background:linear-gradient(135deg,#2D2B7F,#1a1860);border-radius:14px;
+  padding:20px 22px;margin-bottom:20px;display:flex;align-items:center;gap:16px;}
+.academy-icon{font-size:36px;flex-shrink:0;}
+.academy-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;}
+.academy-body{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:12px;}
+.academy-btn{display:inline-block;background:var(--orange);color:#fff;font-size:13px;
+  font-weight:700;padding:10px 20px;border-radius:8px;text-decoration:none;}
+.sec{font-size:10px;font-weight:800;color:var(--orange);letter-spacing:2.5px;
+  text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:8px;}
+.sec::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.1);}
+.step-card{background:#1A1760;border:1px solid rgba(255,255,255,.1);border-radius:13px;
+  padding:16px 18px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--navy);
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  font-weight:800;flex-shrink:0;margin-top:2px;}
+.step-title{font-size:15px;font-weight:700;margin-bottom:4px;}
+.step-body{font-size:13px;color:rgba(255,255,255,.6);line-height:1.6;margin-bottom:8px;}
+.step-link{display:inline-block;background:rgba(244,124,32,.15);color:var(--orange);
+  font-size:13px;font-weight:700;padding:8px 16px;border-radius:8px;
+  text-decoration:none;border:1px solid rgba(244,124,32,.3);}
+.step-link:hover{background:rgba(244,124,32,.25);}
+.note-box{background:rgba(255,255,255,.05);border-left:4px solid var(--orange);
+  border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:20px;
+  font-size:13px;color:rgba(255,255,255,.7);line-height:1.7;}
+.contact-card{background:#1A1760;border:1px solid rgba(255,255,255,.1);border-radius:13px;
+  padding:16px 18px;margin-bottom:10px;}
+.contact-name{font-size:15px;font-weight:700;margin-bottom:4px;}
+.contact-role{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:10px;}
+.contact-links{display:flex;gap:12px;flex-wrap:wrap;}
+.contact-links a{font-size:13px;font-weight:700;color:var(--orange);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<div class="backbar">
+  <a href="staff-portal.html">&#8592; Back to Staff Portal</a>
+</div>
+
+<div class="wrap">
 
   <!-- TRAINING ACADEMY BANNER -->
-  <div style="background:linear-gradient(135deg,#2D2B7F,#1a1860);border-radius:14px;padding:20px 22px;margin-bottom:20px;display:flex;align-items:center;gap:16px;">
-    <div style="font-size:36px;flex-shrink:0;">🎓</div>
-    <div style="flex:1;">
-      <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">Open Grace Staff Training Academy</div>
-      <div style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:12px;">Complete your required training modules before your first day of client contact. Each module includes a knowledge check — score 80% or higher to earn your certificate.</div>
-      <a href="https://opengrace.org/training.html" target="_blank" style="display:inline-block;background:#F47C20;color:#fff;font-size:13px;font-weight:700;padding:10px 20px;border-radius:8px;text-decoration:none;">Start Training Academy →</a>
+  <div class="academy-banner">
+    <div class="academy-icon">🎓</div>
+    <div>
+      <div class="academy-title">Open Grace Staff Training Academy</div>
+      <div class="academy-body">Complete your required training modules before your first day of client contact. Each module includes a knowledge check — score 80% or higher to earn your certificate.</div>
+      <a class="academy-btn" href="https://opengrace.org/training.html" target="_blank">Start Training Academy →</a>
     </div>
   </div>
+
+  <div class="note-box">
+    Complete these steps in order before your first day of client contact. 
+    Contact the Director with any questions: <strong>951-880-4132</strong> or 
+    <strong>joshua.kennedy@opengrace.org</strong>
+  </div>
+
+  <div class="sec">Step 1 — Before You Begin</div>
+
+  <div class="step-card">
+    <div class="step-num" style="background:#D84040;">1</div>
+    <div>
+      <div class="step-title">Complete the Onboarding Form</div>
+      <div class="step-body">Submit your employment documents, acknowledgements, and certifications through Jotform. Required before your first service contact.</div>
+      <a class="step-link" href="https://form.jotform.com/261451114945050" target="_blank">Open Onboarding Form →</a>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num" style="background:#D84040;">2</div>
+    <div>
+      <div class="step-title">Live Scan Fingerprinting</div>
+      <div class="step-body">You must complete Live Scan fingerprinting before working with any consumer. Open Grace will reimburse this cost after 30 days of active employment with your original receipt.</div>
+      <a class="step-link" href="https://opengrace.org/Request_for_Live_Scan_-_Open_Grace.pdf" target="_blank">Download Live Scan Request Form →</a>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num" style="background:#D84040;">3</div>
+    <div>
+      <div class="step-title">CPR / First Aid Certification</div>
+      <div class="step-body">A current CPR/First Aid certification is required before client contact. Open Grace will reimburse this cost after 30 days of active employment with your original receipt.</div>
+    </div>
+  </div>
+
+  <div class="sec">Step 2 — Review & Sign</div>
+
+  <div class="step-card">
+    <div class="step-num" style="background:#BA7517;">4</div>
+    <div>
+      <div class="step-title">Read the Employee Handbook</div>
+      <div class="step-body">Review the full Employee Handbook covering all Open Grace policies, procedures, and expectations. You will sign an acknowledgement in your onboarding form.</div>
+      <a class="step-link" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank">Read Handbook →</a>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num" style="background:#BA7517;">5</div>
+    <div>
+      <div class="step-title">Complete Mandated Reporter Training</div>
+      <div class="step-body">As a Family Coordinator you are a mandated reporter under California law. Complete the state-approved training and submit your certificate in the onboarding form.</div>
+    </div>
+  </div>
+
+  <div class="sec">Step 3 — Systems Access</div>
+
+  <div class="step-card">
+    <div class="step-num" style="background:var(--navy);">6</div>
+    <div>
+      <div class="step-title">Microsoft Teams & 365 Setup</div>
+      <div class="step-body">The Director will send you an invitation to join Open Grace's Microsoft Teams workspace. Accept the invitation and confirm access before your first week.</div>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num" style="background:var(--navy);">7</div>
+    <div>
+      <div class="step-title">Daily Contact Log — Test Submission</div>
+      <div class="step-body">Submit a test entry to the daily contact log using your staff access code. The Director will confirm your submission went through successfully.</div>
+      <a class="step-link" href="https://opengrace.org/contact-log.html" target="_blank">Open Contact Log →</a>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num" style="background:var(--navy);">8</div>
+    <div>
+      <div class="step-title">Coordinator Portal Access</div>
+      <div class="step-body">Your personal coordinator portal shows your assigned clients, training progress, and onboarding checklist. Log in with your staff access code.</div>
+      <a class="step-link" href="https://opengrace.org/coordinator.html" target="_blank">Open Coordinator Portal →</a>
+    </div>
+  </div>
+
+  <div class="sec">Step 4 — Training Academy</div>
+
+  <div class="step-card">
+    <div class="step-num" style="background:var(--green);">9</div>
+    <div>
+      <div class="step-title">Complete Day 1 Training Modules</div>
+      <div class="step-body">Complete all four Day 1 required modules before your first client contact: Title 17 & CFS, HIPAA, Mandated Reporter, and Open Grace Policies. Each has a quiz — score 80%+ to earn your certificate.</div>
+      <a class="step-link" href="https://opengrace.org/training.html" target="_blank">Start Training Academy →</a>
+    </div>
+  </div>
+
+  <div class="sec">Your Director</div>
+
+  <div class="contact-card">
+    <div class="contact-name">Joshua Kennedy</div>
+    <div class="contact-role">Director — Open Grace LLC &bull; IRC Vendor PJ6208</div>
+    <div class="contact-links">
+      <a href="tel:9518804132">📞 951-880-4132</a>
+      <a href="mailto:joshua.kennedy@opengrace.org">✉️ Email</a>
+      <a href="https://teams.microsoft.com" target="_blank">💬 Teams</a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
