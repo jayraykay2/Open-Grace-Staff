@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Open Grace — Staff Training Academy</title>
+<style>
+:root{
+  --navy:#2D2B7F; --orange:#F47C20; --gold:#F5A623;
+  --bg:#0F0D2E; --card:#1A1760; --card2:#221E6E;
+  --border:rgba(255,255,255,0.1); --text:#fff; --sub:rgba(255,255,255,0.55);
+  --green:#1D9E75; --red:#D84040; --amber:#BA7517;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+  --serif:Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{font-family:var(--sans);cursor:pointer}
+
+/* ── LOCK ── */
+#lock{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;background:radial-gradient(ellipse at top,rgba(45,43,127,.3) 0%,transparent 70%)}
+.lock-logo{width:80px;height:80px;border-radius:18px;overflow:hidden;margin-bottom:20px;border:1px solid rgba(255,255,255,.15)}
+.lock-logo img{width:100%;height:100%;object-fit:cover}
+.lock-title{font-size:24px;font-weight:800;margin-bottom:4px;text-align:center}
+.lock-sub{font-size:13px;color:var(--sub);margin-bottom:32px;text-align:center}
+.lock-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;width:100%;max-width:380px}
+.lock-label{font-size:11px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.lock-input{width:100%;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:12px;padding:16px;font-size:17px;color:var(--text);font-family:var(--sans);letter-spacing:3px;text-align:center;outline:none;margin-bottom:12px}
+.lock-input:focus{border-color:var(--orange)}
+.lock-input.err{border-color:var(--red);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.lock-btn{width:100%;padding:16px;background:var(--navy);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700}
+.lock-err{font-size:12px;color:#FC8181;text-align:center;margin-top:10px;min-height:16px}
+.lock-note{font-size:12px;color:var(--sub);text-align:center;margin-top:20px;line-height:1.6}
+
+/* ── APP ── */
+#app{display:none}
+.topbar{background:var(--navy);padding:13px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200;border-bottom:1px solid var(--border)}
+.topbar-logo{width:32px;height:32px;border-radius:7px;overflow:hidden;flex-shrink:0}
+.topbar-logo img{width:100%;height:100%;object-fit:cover}
+.topbar-title{font-size:14px;font-weight:700}
+.topbar-sub{font-size:10px;color:var(--sub)}
+.topbar-lock{margin-left:auto;font-size:18px;opacity:.5;cursor:pointer}
+.wrap{padding:18px 16px 80px;max-width:520px;margin:0 auto}
+
+/* ── VIEWS ── */
+.view{display:none}
+.view.active{display:block}
+
+/* ── DASHBOARD ── */
+.staff-banner{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.staff-avatar{width:46px;height:46px;border-radius:50%;background:var(--navy);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.staff-name{font-size:16px;font-weight:700}
+.staff-role{font-size:12px;color:var(--sub)}
+
+.overall-progress{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px}
+.op-label{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.op-bar{height:8px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin-bottom:8px}
+.op-fill{height:100%;background:linear-gradient(90deg,var(--navy),var(--green));border-radius:99px;transition:width .5s ease}
+.op-stats{display:flex;justify-content:space-between;font-size:12px;color:var(--sub)}
+.op-stats b{color:var(--text)}
+
+.sec{font-size:10px;font-weight:800;color:var(--orange);letter-spacing:2.5px;text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.module-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .15s,background .15s;position:relative;overflow:hidden}
+.module-card:hover{border-color:rgba(255,255,255,.25);background:var(--card2)}
+.module-card.locked{opacity:.5;cursor:not-allowed}
+.module-card.completed{border-color:rgba(29,158,117,.4)}
+.module-card.completed::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--green)}
+.module-card.active-tier::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--orange)}
+.mod-icon{font-size:24px;flex-shrink:0}
+.mod-info{flex:1;min-width:0}
+.mod-title{font-size:14px;font-weight:700;margin-bottom:2px}
+.mod-meta{font-size:11px;color:var(--sub)}
+.mod-status{flex-shrink:0;text-align:right}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 8px;border-radius:20px;text-transform:uppercase}
+.badge-done{background:rgba(29,158,117,.15);color:var(--green)}
+.badge-ready{background:rgba(244,124,32,.15);color:var(--orange)}
+.badge-locked{background:rgba(255,255,255,.07);color:rgba(255,255,255,.3)}
+.badge-req{background:rgba(216,64,64,.15);color:var(--red)}
+.mod-dur{font-size:11px;color:var(--sub);margin-top:3px}
+
+/* ── MODULE VIEW ── */
+.mod-header{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
+.mod-h-icon{font-size:36px;margin-bottom:10px}
+.mod-h-tier{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--orange);margin-bottom:6px}
+.mod-h-title{font-size:20px;font-weight:800;margin-bottom:8px;line-height:1.2}
+.mod-h-meta{font-size:12px;color:var(--sub);margin-bottom:14px}
+.obj-list{background:rgba(255,255,255,.05);border-radius:10px;padding:12px 16px}
+.obj-list-label{font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.obj-item{font-size:13px;color:var(--sub);line-height:1.6;padding:4px 0;padding-left:16px;position:relative}
+.obj-item::before{content:'✓';position:absolute;left:0;color:var(--orange);font-weight:700}
+
+.section-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:16px 18px;margin-bottom:10px}
+.section-heading{font-size:15px;font-weight:700;color:var(--orange);margin-bottom:10px}
+.section-body{font-size:14px;color:rgba(255,255,255,.8);line-height:1.75;white-space:pre-line}
+
+/* ── QUIZ ── */
+.quiz-wrap{background:var(--card);border:1px solid var(--orange);border-radius:14px;padding:18px;margin-bottom:12px}
+.quiz-label{font-size:10px;font-weight:800;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
+.quiz-q{font-size:15px;font-weight:700;line-height:1.5;margin-bottom:14px}
+.quiz-options{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.q-opt{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--text);text-align:left;display:flex;align-items:flex-start;gap:10px;transition:border-color .15s,background .15s}
+.q-opt:hover:not(:disabled){border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)}
+.q-opt.correct{background:rgba(29,158,117,.15);border-color:rgba(29,158,117,.5);color:#fff}
+.q-opt.wrong{background:rgba(216,64,64,.12);border-color:rgba(216,64,64,.4);color:#fff}
+.q-opt:disabled{cursor:not-allowed}
+.q-letter{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.q-explanation{background:rgba(255,255,255,.05);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--sub);line-height:1.6;margin-top:4px;display:none}
+.quiz-score{text-align:center;padding:14px;font-size:14px;font-weight:700;border-radius:10px;margin-top:10px;display:none}
+.quiz-score.pass{background:rgba(29,158,117,.15);color:var(--green)}
+.quiz-score.fail{background:rgba(216,64,64,.12);color:var(--red)}
+
+.complete-btn{width:100%;padding:18px;background:var(--green);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;margin-top:8px;display:none}
+.retry-btn{width:100%;padding:14px;background:rgba(244,124,32,.15);color:var(--orange);border:1px solid rgba(244,124,32,.3);border-radius:12px;font-size:14px;font-weight:700;margin-top:8px;display:none}
+.back-btn{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:rgba(255,255,255,.6);background:none;border:none;padding:0;margin-bottom:16px}
+
+/* ── CERTIFICATE ── */
+#cert-view .wrap{padding:0;max-width:none}
+.cert-container{padding:18px 16px 80px;max-width:520px;margin:0 auto}
+.cert-dl-btn{width:100%;padding:16px;background:var(--navy);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+
+/* ── PROGRESS VIEW ── */
+.prog-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px}
+.prog-name{font-size:14px;font-weight:700;margin-bottom:10px}
+.prog-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--sub);margin-bottom:5px}
+.prog-bar-sm{height:4px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin-bottom:12px}
+.prog-bar-sm-fill{height:100%;background:var(--green);border-radius:99px}
+.prog-mod-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
+.prog-mod-row:last-child{border:none}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:.3s;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ══ LOCK ══ -->
+<div id="lock">
+  <div class="lock-logo"><img src="https://opengrace.org/og_logo.jpg" alt="Open Grace"></div>
+  <div class="lock-title">Staff Training Academy</div>
+  <div class="lock-sub">Open Grace LLC &bull; IRC Vendor PJ6208</div>
+  <div class="lock-card">
+    <div class="lock-label">Enter Your Staff Access Code</div>
+    <input class="lock-input" id="code-input" type="password" inputmode="text"
+      maxlength="12" placeholder="OG-XXXX-XXX" autocomplete="off"
+      onkeydown="if(event.key==='Enter')unlock()" />
+    <button class="lock-btn" onclick="unlock()">Access Academy</button>
+    <div class="lock-err" id="lock-err"></div>
+  </div>
+  <div class="lock-note">Use the access code provided by the Director.<br>Contact Open Grace at 951-880-4132 for access.</div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo"><img src="https://opengrace.org/og_logo.jpg" alt="Open Grace"></div>
+    <div>
+      <div class="topbar-title">Training Academy</div>
+      <div class="topbar-sub" id="topbar-name">Open Grace LLC</div>
+    </div>
+    <div class="topbar-lock" onclick="lockApp()" title="Lock">🔒</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="view active" id="view-dashboard">
+    <div class="wrap">
+      <div class="staff-banner">
+        <div class="staff-avatar">👤</div>
+        <div>
+          <div class="staff-name" id="dash-name">Loading…</div>
+          <div class="staff-role" id="dash-role">Family Coordinator</div>
+        </div>
+      </div>
+      <div class="overall-progress">
+        <div class="op-label">Overall Progress</div>
+        <div class="op-bar"><div class="op-fill" id="op-fill" style="width:0%"></div></div>
+        <div class="op-stats"><span><b id="op-done">0</b> of <b id="op-total">18</b> modules completed</span><span id="op-pct">0%</span></div>
+      </div>
+      <div id="module-list"></div>
+    </div>
+  </div>
+
+  <!-- MODULE -->
+  <div class="view" id="view-module">
+    <div class="wrap">
+      <button class="back-btn" onclick="showDashboard()">&#8592; Back to Academy</button>
+      <div id="module-content"></div>
+    </div>
+  </div>
+
+  <!-- CERTIFICATE -->
+  <div class="view" id="view-cert">
+    <div class="cert-container">
+      <button class="back-btn" onclick="showDashboard()">&#8592; Back to Academy</button>
+      <div id="cert-content"></div>
+      <button class="cert-dl-btn" onclick="downloadCert()">⬇ Download Certificate (PDF)</button>
+    </div>
+  </div>
+
+  <!-- PROGRESS REPORT -->
+  <div class="view" id="view-progress">
+    <div class="wrap">
+      <button class="back-btn" onclick="showDashboard()">&#8592; Back to Academy</button>
+      <div class="sec">My Progress Report</div>
+      <div id="progress-content"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════ DATA ════════
+const STAFF_URL = 'https://raw.githubusercontent.com/jayraykay2/Open-Grace-Staff/main/staff_access.json';
+const PROGRESS_KEY = 'og_training_v1';
+
+const MODULES = [{"id": "M01", "tier": 1, "tier_label": "Day 1 \u2014 Required Before Client Contact", "title": "Title 17 & CFS Service Requirements", "icon": "\ud83d\udccb", "duration": "25 min", "objectives": ["Understand the legal framework governing CFS services under Title 17", "Define Person-Centered Planning and how it guides service delivery", "Identify consumer rights and Open Grace's responsibility to uphold them", "Know documentation requirements for service compliance"], "sections": [{"heading": "What is Title 17?", "content": "Title 17 of the California Code of Regulations governs community services for people with developmental disabilities. As a Family Coordinator at Open Grace LLC, everything you do \u2014 how you support consumers, document services, and interact with families \u2014 is governed by these regulations.\n\nTitle 17 establishes the rights of consumers, the standards vendors must meet, and the oversight role of Regional Centers like IRC. Non-compliance isn't just a policy issue \u2014 it can result in loss of vendor status and harm to the families you serve."}, {"heading": "Person-Centered Planning", "content": "Person-Centered Planning (PCP) means the consumer's goals, preferences, and choices drive everything. Your role is to support what the consumer and family want \u2014 not to impose your own ideas of what's best.\n\nIn practice this means: always ask before assuming, present options rather than directives, and document services in terms of consumer goals as stated in the IPP. The Individual Program Plan (IPP) is the governing document \u2014 every service you provide should connect back to it."}, {"heading": "Consumer Rights", "content": "Every consumer served by Open Grace has the right to:\n\u2022 Dignity and respect in all interactions\n\u2022 Privacy and confidentiality of their personal information\n\u2022 Make their own choices, including choices you may disagree with\n\u2022 Know what services they're receiving and why\n\u2022 File a grievance if they're unhappy with services\n\u2022 Refuse services at any time\n\nViolating consumer rights \u2014 even unintentionally \u2014 is a serious compliance issue. When in doubt, ask the Director."}, {"heading": "Vendor Responsibilities", "content": "Open Grace LLC (Vendor PJ6208) is responsible to IRC for delivering authorized services within the scope of each consumer's IPP. As a Family Coordinator, you are an extension of that responsibility.\n\nYou may only provide services that are:\n\u2022 Authorized in the current IPP\n\u2022 Within your role as a Family Coordinator\n\u2022 Documented on the same day they occur\n\u2022 Consistent with the consumer's approved hours\n\nServices delivered outside authorization, or undocumented, cannot be claimed and may result in compliance action."}, {"heading": "Service Documentation Requirements", "content": "Every service contact must be documented in the daily contact log the same day it occurs. Your documentation must include:\n\u2022 Date, time, and duration of the service contact\n\u2022 Location (home, community, phone, etc.)\n\u2022 Consumer name and UCI number\n\u2022 What you did \u2014 specific activities, not vague descriptions\n\u2022 Consumer response and progress toward IPP goals\n\u2022 Any concerns or incidents\n\nWeak documentation like 'visited consumer, had a good session' is not compliant. Strong documentation describes what specifically happened and connects it to a goal."}], "quiz": [{"q": "Which document governs the specific services you may deliver to a consumer?", "options": ["The employee handbook", "The Individual Program Plan (IPP)", "Title 17 regulations", "The Open Grace program design"], "answer": 1, "explanation": "The IPP is the governing document for each consumer's authorized services. Title 17 sets the overall framework, but the IPP specifies what services a consumer is authorized to receive."}, {"q": "A consumer tells you they don't want services today and asks you to leave. What should you do?", "options": ["Stay and try to encourage them \u2014 they need the support", "Leave and document the contact as a refusal", "Call the director immediately before doing anything", "Skip documenting \u2014 no service was provided"], "answer": 1, "explanation": "Consumers have the right to refuse services at any time. You must respect that choice, leave, and document the contact including the refusal. Always document every contact \u2014 including refusals."}, {"q": "When must service contacts be documented?", "options": ["Within 48 hours", "At the end of the week", "The same day the service occurs", "Before the QPR is due"], "answer": 2, "explanation": "Same-day documentation is required. Documenting after the fact creates compliance risk and inaccurate records."}, {"q": "Person-Centered Planning means:", "options": ["The director decides what services are best for the consumer", "The family's preferences override the consumer's", "The consumer's goals and choices drive service delivery", "Services are planned around the coordinator's schedule"], "answer": 2, "explanation": "Person-Centered Planning places the consumer at the center \u2014 their goals, preferences, and choices guide all service planning and delivery."}]}, {"id": "M02", "tier": 1, "tier_label": "Day 1 \u2014 Required Before Client Contact", "title": "HIPAA & Confidentiality", "icon": "\ud83d\udd12", "duration": "20 min", "objectives": ["Understand what constitutes Protected Health Information (PHI)", "Know your obligations for handling consumer information securely", "Apply HIPAA principles to electronic records and communication", "Understand SharePoint and Teams security practices"], "sections": [{"heading": "What is HIPAA and Why It Matters", "content": "HIPAA (Health Insurance Portability and Accountability Act) protects consumers' private health information. At Open Grace, all consumer information \u2014 names, UCI numbers, diagnoses, service records, family details \u2014 is Protected Health Information (PHI).\n\nA HIPAA violation can result in federal fines, loss of vendor status, and most importantly, real harm to the families you serve. This isn't a formality \u2014 it's a core professional obligation."}, {"heading": "PHI Handling Rules", "content": "You may only access consumer information that you need to do your job. Never share consumer information with:\n\u2022 Family members who are not the authorized representative\n\u2022 Other consumers or their families\n\u2022 Friends, personal social networks, or outside parties\n\u2022 Anyone not directly involved in the consumer's services\n\nNever discuss consumers in public places where you can be overheard. Never take photos of consumers without written consent. Never share consumer information via personal email or text."}, {"heading": "Electronic Records Security", "content": "All consumer records at Open Grace are stored in Microsoft 365 \u2014 SharePoint and OneDrive. Your responsibilities:\n\u2022 Never download consumer files to personal devices\n\u2022 Never email PHI from a personal email account\n\u2022 Lock your screen when stepping away from any device\n\u2022 Never share your Microsoft 365 login credentials\n\u2022 Use Teams for internal communication about consumers \u2014 not personal texts\n\nIf you receive consumer information on a personal device by accident, notify the Director immediately."}, {"heading": "SharePoint & Teams Security Practices", "content": "Open Grace uses SharePoint for document storage and Teams for communication. Security practices:\n\u2022 Only access folders and files relevant to your assigned consumers\n\u2022 Do not share SharePoint links externally without Director approval\n\u2022 Teams messages about consumers should use initials or UCI numbers, not full names, in group channels\n\u2022 Report any suspicious access or unexpected file changes to the Director immediately\n\u2022 When leaving a session on a shared device, sign out of Microsoft 365 completely"}], "quiz": [{"q": "A consumer's parent (not the authorized representative) calls and asks for an update on their adult child's services. What do you do?", "options": ["Give them a general update \u2014 they're family", "Verify they are the authorized representative before sharing anything", "Refer them to the consumer directly", "Provide the update and document the call"], "answer": 1, "explanation": "Only the authorized representative may receive PHI. Being a family member does not grant access. Always verify authorization before sharing any consumer information."}, {"q": "You need to send consumer documentation to the Director. What is the correct method?", "options": ["Text a photo of the document", "Email from your personal Gmail", "Upload to SharePoint or send via Microsoft Teams", "Print and deliver in person only"], "answer": 2, "explanation": "Consumer documentation must stay within Open Grace's secure Microsoft 365 environment. Personal email and text are not HIPAA-compliant channels."}, {"q": "PHI includes which of the following?", "options": ["A consumer's favorite restaurant", "A consumer's UCI number and diagnosis", "The name of a consumer's school district", "General information about developmental disabilities"], "answer": 1, "explanation": "UCI numbers, diagnoses, service records, and other identifying health information are all PHI and must be protected under HIPAA."}]}, {"id": "M03", "tier": 1, "tier_label": "Day 1 \u2014 Required Before Client Contact", "title": "Mandated Reporter Training", "icon": "\ud83d\udee1\ufe0f", "duration": "20 min", "objectives": ["Understand your legal obligation as a mandated reporter in California", "Recognize indicators of abuse and neglect in dependent adults", "Know how and when to make a report", "Understand child abuse reporting obligations where applicable"], "sections": [{"heading": "You Are a Mandated Reporter", "content": "As a Family Coordinator at Open Grace LLC, you are a mandated reporter under California law. This means you are legally required to report known or suspected abuse, neglect, or exploitation of dependent adults and children \u2014 you cannot choose not to report.\n\nFailure to report is a misdemeanor. The law protects you from retaliation for making a good-faith report. You do not need proof \u2014 reasonable suspicion is enough."}, {"heading": "Dependent Adult Abuse & Neglect", "content": "A dependent adult is any person 18\u201364 who has physical or mental limitations that restrict their ability to protect themselves. Many of the consumers you serve qualify.\n\nReportable conditions include:\n\u2022 Physical abuse \u2014 hitting, restraining, improper use of medications\n\u2022 Neglect \u2014 failure to provide food, shelter, medical care, or supervision\n\u2022 Financial abuse \u2014 theft, fraud, or misuse of a person's funds\n\u2022 Emotional/psychological abuse \u2014 threats, intimidation, humiliation\n\u2022 Isolation \u2014 preventing a person from contact with others\n\u2022 Self-neglect \u2014 when a person is unable to care for themselves\n\nReport to: Adult Protective Services (APS) \u2014 1-877-477-3646"}, {"heading": "Child Abuse Reporting", "content": "If you observe or have reasonable suspicion of child abuse or neglect in a household where you're providing services, you are required to report.\n\nChild abuse includes physical abuse, sexual abuse, emotional abuse, and neglect. You are not required to investigate \u2014 only to report.\n\nReport to: Child Protective Services (CPS) \u2014 contact your county's CPS hotline\n\u2022 Riverside County: 1-800-442-4918\n\u2022 San Bernardino County: 1-877-418-3844\n\nAlways notify the Director immediately after making any report."}, {"heading": "How to Make a Report", "content": "When you observe or suspect abuse or neglect:\n1. Do not confront the suspected abuser\n2. Ensure immediate safety \u2014 call 911 if someone is in danger\n3. Make a verbal report by phone to APS or CPS within 24 hours\n4. Follow up with a written report within 36 hours (SOC 341 form for APS)\n5. Notify the Director immediately \u2014 the same day\n6. Document the report in your contact log\n\nYou may not tell the suspected abuser that a report has been made. Confidentiality of the reporter is protected by law."}], "quiz": [{"q": "As a mandated reporter, when are you required to make a report?", "options": ["Only when you have proof of abuse", "When you have reasonable suspicion of abuse or neglect", "Only if the consumer asks you to report", "Only for physical abuse \u2014 not neglect"], "answer": 1, "explanation": "Reasonable suspicion is the threshold \u2014 you do not need proof. The law requires you to report and let the investigating agency determine the facts."}, {"q": "After making a verbal report to APS, what must you do next?", "options": ["Wait to see if APS follows up before doing anything else", "File a written report within 36 hours and notify the Director the same day", "Discuss the situation with the consumer's family", "Document it in the QPR at the end of the quarter"], "answer": 1, "explanation": "A verbal report must be followed by a written report (SOC 341) within 36 hours, and the Director must be notified the same day you make any report."}, {"q": "Financial abuse of a dependent adult includes:", "options": ["Helping a consumer manage their budget", "Misusing a consumer's funds or stealing from them", "Assisting with Medi-Cal paperwork", "Connecting a consumer to SSI benefits"], "answer": 1, "explanation": "Financial abuse includes theft, fraud, and unauthorized use of a vulnerable person's funds or property. This is reportable to APS."}]}, {"id": "M04", "tier": 1, "tier_label": "Day 1 \u2014 Required Before Client Contact", "title": "Open Grace Policies & Professional Standards", "icon": "\ud83c\udfe2", "duration": "15 min", "objectives": ["Understand Open Grace LLC's core operating policies", "Know expectations for professional conduct in the field", "Understand transportation, scheduling, and communication policies", "Know how to escalate concerns to the Director"], "sections": [{"heading": "Who We Are", "content": "Open Grace LLC (IRC Vendor PJ6208) is a Coordinated Family Support (CFS) provider serving families in Riverside and San Bernardino Counties. Our mission is to support families in building independence, accessing resources, and navigating systems so that consumers can live their best lives in the community.\n\nWe are a small, values-driven organization. Every action you take in the field reflects on Open Grace and on the families who depend on us. Our reputation is built one interaction at a time."}, {"heading": "Professional Conduct Standards", "content": "As a Family Coordinator you are expected to:\n\u2022 Arrive on time to all scheduled service contacts\n\u2022 Dress professionally and appropriately for the setting\n\u2022 Use respectful, person-first language at all times\n\u2022 Maintain professional boundaries \u2014 you are a service provider, not a personal friend\n\u2022 Never accept gifts from consumers or families (any offer must be reported to the Director)\n\u2022 Never engage in dual relationships (babysitting, personal errands, financial transactions)\n\u2022 Never post about consumers, clients, or work situations on personal social media\n\u2022 Report any concerns about consumer safety or service quality to the Director immediately"}, {"heading": "Transportation Policy", "content": "If your role involves transporting consumers:\n\u2022 Your personal vehicle must be insured and maintained\n\u2022 You must have a valid California driver's license\n\u2022 Consumers must be seat-belted at all times\n\u2022 Never transport a consumer alone without Director approval for that route/consumer\n\u2022 Never use a personal vehicle for consumer transport without the appropriate authorization on file\n\u2022 Document all transportation in your contact log including origin, destination, and purpose"}, {"heading": "Communication & Escalation", "content": "Day-to-day communication happens through Microsoft Teams. For urgent matters, call or text the Director directly at 951-880-4132.\n\nEscalate to the Director immediately for:\n\u2022 Any incident involving injury, aggression, or property damage\n\u2022 Any suspected abuse or neglect\n\u2022 Any consumer or family complaint about services\n\u2022 Any situation where you are unsure how to proceed\n\u2022 Any contact from IRC, DDS, or law enforcement regarding a consumer\n\nWhen in doubt \u2014 contact the Director. There is no situation where it is better to handle something alone than to communicate."}], "quiz": [{"q": "A family gives you a $25 gift card to thank you for your help. What should you do?", "options": ["Accept it \u2014 small gifts are fine", "Decline politely and report the offer to the Director", "Accept it but don't document it", "Return it only if it's over $50"], "answer": 1, "explanation": "Open Grace policy prohibits accepting gifts from consumers or families. Any offer must be declined and reported to the Director to maintain professional boundaries and avoid dual relationships."}, {"q": "A consumer's family member becomes verbally aggressive toward you during a home visit. What is your first step?", "options": ["Argue your case and de-escalate verbally", "Safely remove yourself from the situation and contact the Director", "Document it in the QPR at the end of the quarter", "Continue the visit as planned \u2014 don't make it worse"], "answer": 1, "explanation": "Your safety comes first. Remove yourself from any unsafe situation and contact the Director the same day. This is also a reportable incident."}, {"q": "Which of the following is an example of a dual relationship?", "options": ["Helping a consumer practice community navigation skills at a store", "Babysitting a consumer's sibling for pay outside of work hours", "Documenting a service contact the same day it occurred", "Attending a consumer's IPP meeting with the Director"], "answer": 1, "explanation": "Dual relationships occur when you have a personal or financial relationship with a consumer or their family outside of your professional role. Babysitting for pay is a clear dual relationship and is prohibited."}]}, {"id": "M05", "tier": 2, "tier_label": "Week 1\u20132", "title": "Incident Reporting & Special Incident Reports", "icon": "\u26a0\ufe0f", "duration": "20 min", "objectives": ["Identify what constitutes a reportable incident under DDS/IRC standards", "Know the Special Incident Report (SIR) process and timelines", "Understand internal escalation procedures", "Document incidents accurately and completely"], "sections": [{"heading": "What is a Reportable Incident?", "content": "A Special Incident Report (SIR) must be filed for any serious incident involving a consumer. Reportable incidents include:\n\u2022 Injuries requiring medical attention\n\u2022 Alleged or suspected abuse, neglect, or exploitation\n\u2022 Behavioral incidents resulting in property damage or harm\n\u2022 Elopement or missing person situations\n\u2022 Law enforcement contact involving a consumer\n\u2022 Unexpected hospitalizations or medical emergencies\n\u2022 Death of a consumer\n\u2022 Any incident that poses a risk to consumer health, safety, or rights\n\nWhen in doubt \u2014 report it. An unnecessary SIR is far less serious than a missed one."}, {"heading": "SIR Timelines", "content": "DDS and IRC require strict documentation timelines for SIRs:\n\u2022 Verbal notification to the Director: immediately (same day)\n\u2022 Initial SIR submitted to IRC: within 24 hours of the incident\n\u2022 Follow-up SIR with full details: within 7 days\n\nThe Director is responsible for submitting the SIR to IRC, but you are responsible for:\n1. Notifying the Director immediately\n2. Documenting your observations in writing the same day\n3. Providing accurate, factual information \u2014 not interpretations"}, {"heading": "How to Document an Incident", "content": "When writing your incident documentation:\n\u2022 Stick to observable facts \u2014 what you saw, heard, and did\n\u2022 Do not speculate about causes or assign blame\n\u2022 Include the exact time you became aware of the incident\n\u2022 Note any witnesses by name\n\u2022 Describe any immediate actions you took (called 911, contacted Director, etc.)\n\u2022 Do not discuss the incident with anyone other than the Director and IRC\n\nExample: 'At approximately 2:15pm, consumer began striking the table repeatedly. I used verbal de-escalation. Consumer calmed within 5 minutes. No injuries. Notified Director at 2:20pm.'"}, {"heading": "Internal Escalation", "content": "Open Grace's escalation chain for incidents:\n1. Ensure immediate safety (call 911 if needed)\n2. Contact Director immediately by phone: 951-880-4132\n3. Submit written documentation to Director by end of business same day\n4. Director submits SIR to IRC within 24 hours\n5. Follow-up documentation within 7 days\n\nDo not wait until the end of the week, do not document only in your contact log, and do not discuss the incident with the consumer's family before speaking with the Director."}], "quiz": [{"q": "A consumer falls during a community outing and scrapes their knee \u2014 no medical attention needed. Do you file an SIR?", "options": ["No \u2014 it was minor and didn't require medical attention", "Yes \u2014 and notify the Director immediately", "Only if the consumer asks you to", "Only if it happens again"], "answer": 1, "explanation": "Any injury, even minor, should be reported to the Director who determines whether an SIR is required. It is always better to report and have the Director decide than to make that call yourself."}, {"q": "How quickly must the Director be notified after a reportable incident?", "options": ["Within 48 hours", "At the next team meeting", "Immediately \u2014 the same day", "Within 7 days"], "answer": 2, "explanation": "Immediate same-day notification to the Director is required. The Director then has 24 hours to file the initial SIR with IRC."}, {"q": "When writing incident documentation, you should:", "options": ["Include your opinion about what caused the incident", "Only write observable facts \u2014 what you saw, heard, and did", "Wait until the SIR is filed before documenting", "Discuss with the consumer's family first to get their perspective"], "answer": 1, "explanation": "Incident documentation must be factual and observational. Opinions and interpretations can compromise the SIR process and create liability."}]}, {"id": "M06", "tier": 2, "tier_label": "Week 1\u20132", "title": "Cultural Competency & Disability Awareness", "icon": "\ud83c\udf0d", "duration": "25 min", "objectives": ["Recognize the diversity of families and consumers served by Open Grace", "Apply disability-affirming, person-first and identity-first language appropriately", "Understand neurodiversity and developmental disability across the spectrum", "Practice family-centered, culturally responsive service delivery"], "sections": [{"heading": "Who We Serve", "content": "Open Grace serves families across Riverside and San Bernardino Counties \u2014 one of the most culturally, linguistically, and socioeconomically diverse regions in California. The consumers and families you work with may speak languages other than English, hold different cultural values around disability and family roles, and have had very different experiences with systems and services.\n\nCultural competency is not about knowing everything about every culture \u2014 it's about approaching every family with curiosity, respect, and humility, and adapting how you work to meet them where they are."}, {"heading": "Developmental Disabilities \u2014 What You Need to Know", "content": "A developmental disability is a condition that originates before age 18, is likely to continue indefinitely, and results in substantial limitations in major life activities. IRC-eligible conditions include intellectual disability, autism spectrum disorder, cerebral palsy, epilepsy, and other closely related conditions.\n\nImportant: Disability is part of a person's identity \u2014 not a tragedy or something to be fixed. Your role is to support the person's goals and quality of life, not to 'overcome' their disability. Ask consumers and families how they prefer to talk about their disability \u2014 preferences vary widely and should be respected."}, {"heading": "Neurodiversity & Autism", "content": "Neurodiversity is the idea that neurological differences \u2014 including autism, ADHD, and learning differences \u2014 are natural variations in human cognition, not deficits. Many consumers and families you work with embrace neurodiversity as part of their identity.\n\nPractical applications:\n\u2022 Sensory sensitivities are real \u2014 be aware of environments you bring consumers into\n\u2022 Communication styles vary \u2014 some consumers may be direct, use AAC devices, or communicate non-verbally\n\u2022 Routines and predictability matter \u2014 give advance notice of changes\n\u2022 Stimming (repetitive movement or behavior) is often a coping mechanism \u2014 do not try to stop it unless it is harmful"}, {"heading": "Person-First & Identity-First Language", "content": "Language matters. The two main frameworks:\n\n\u2022 Person-first language: 'person with autism,' 'consumer with an intellectual disability' \u2014 centers the person before the disability\n\u2022 Identity-first language: 'autistic person,' 'Deaf person' \u2014 embraced by many disability communities who see disability as part of identity\n\nOpen Grace default: use person-first language in formal documentation. In conversation, follow the consumer's and family's lead \u2014 ask how they prefer to be referred to and use that language.\n\nAlways avoid: 'suffers from,' 'afflicted with,' 'wheelchair-bound,' 'high/low-functioning,' 'special needs.'"}, {"heading": "Family-Centered Practices", "content": "In CFS, the family is the unit of support \u2014 not just the consumer. Family-centered practice means:\n\u2022 Recognizing that caregivers also have needs, stress, and capacity limits\n\u2022 Involving family members in goal-setting (with the consumer's consent)\n\u2022 Being aware of cultural values around family structure, decision-making, and help-seeking\n\u2022 Not making assumptions about family dynamics based on appearance or background\n\u2022 Supporting the family's strengths, not just their deficits\n\nIf a family is hesitant or resistant to services, approach with curiosity \u2014 ask what their concerns are before problem-solving."}], "quiz": [{"q": "A consumer's family prefers to use identity-first language ('autistic person'). In your conversations with them, you should:", "options": ["Correct them and use person-first language", "Use identity-first language as they prefer", "Avoid using any disability-related language", "Use person-first in all situations regardless of preference"], "answer": 1, "explanation": "In conversation, follow the consumer's and family's lead on language preference. Person-first language is the default for formal documentation, but individual preferences should be honored in direct communication."}, {"q": "A consumer you work with stims by rocking during conversations. You should:", "options": ["Gently ask them to stop so they can focus", "Ignore it and continue your interaction normally", "Document it as a behavioral concern in the contact log", "Report it to the Director as a potential SIR"], "answer": 1, "explanation": "Stimming is a natural self-regulation behavior for many autistic and neurodivergent individuals. It should not be interrupted unless it is causing harm. Trying to stop stimming can increase anxiety and discomfort."}, {"q": "Which phrase should you avoid when discussing a consumer's disability?", "options": ["Person with a developmental disability", "Individual with an intellectual disability", "Suffers from autism", "Autistic person"], "answer": 2, "explanation": "'Suffers from' implies that disability is inherently tragic or painful, which is not how many people with disabilities understand their own experience. Avoid this and similar framing."}]}, {"id": "M07", "tier": 2, "tier_label": "Week 1\u20132", "title": "Boundaries & Professional Ethics", "icon": "\u2696\ufe0f", "duration": "20 min", "objectives": ["Identify and maintain professional boundaries in direct support work", "Understand dual relationship risks and how to avoid them", "Apply social media and digital communication policies", "Know Open Grace's gift acceptance and transportation policies"], "sections": [{"heading": "Why Boundaries Matter in Direct Support", "content": "Professional boundaries protect both you and the consumers you serve. When boundaries blur, the quality of care suffers, liability increases, and the trust that makes CFS work breaks down.\n\nDirect support work can feel intensely personal \u2014 you are in people's homes, involved in their daily lives, and often become someone they trust deeply. That trust is a professional responsibility, not a personal relationship. Maintaining clarity about your role protects everyone."}, {"heading": "Dual Relationships", "content": "A dual relationship occurs when you have a personal, social, or financial relationship with a consumer or their family in addition to your professional role. Examples:\n\u2022 Babysitting or providing childcare for the family\n\u2022 Running personal errands or doing household tasks beyond your role\n\u2022 Lending or borrowing money\n\u2022 Developing a romantic or close personal friendship\n\u2022 Providing services to someone you already know socially\n\nDual relationships create conflicts of interest, compromise objectivity, and can harm consumers. If you identify a potential dual relationship, disclose it to the Director immediately."}, {"heading": "Social Media Policy", "content": "Open Grace's social media policy is strict:\n\u2022 Never post about consumers, their families, or service situations \u2014 even without using names\n\u2022 Never photograph or video consumers without written consent on file\n\u2022 Never accept friend requests or follow requests from consumers or their families on personal accounts\n\u2022 Never share work-related content on personal social media without Director approval\n\u2022 Be aware that vague posts about 'a difficult day at work' can still violate confidentiality\n\nIf a consumer or family member contacts you via personal social media, notify the Director and redirect them to professional channels."}, {"heading": "Gift Acceptance & Transportation Ethics", "content": "Gift acceptance: You may not accept gifts of any value from consumers or families. This includes food, gift cards, money, or favors. Politely decline and report any offer to the Director. The intent behind the offer is not the issue \u2014 the policy applies regardless.\n\nTransportation: Transporting consumers in your personal vehicle requires prior Director approval for that specific consumer and route. Your vehicle must be insured, maintained, and appropriate for the consumer's needs. Never transport a consumer to a personal location, and never be alone in a vehicle with a consumer without proper authorization documented."}], "quiz": [{"q": "You have been working with a consumer's family for several months. The consumer's mother asks if you can watch her other children for a few hours \u2014 she will pay you. You should:", "options": ["Agree \u2014 it's outside work hours so it's fine", "Decline and report the request to the Director", "Agree as long as you don't charge more than minimum wage", "Agree but don't document it"], "answer": 1, "explanation": "This is a classic dual relationship \u2014 providing paid childcare to a family you serve professionally. Decline politely and report to the Director. The fact that it's outside work hours does not make it acceptable."}, {"q": "A consumer's sibling sends you a friend request on Instagram. What should you do?", "options": ["Accept \u2014 they're not the consumer, just a sibling", "Ignore it and don't tell anyone", "Decline and notify the Director", "Accept but don't interact with their posts"], "answer": 2, "explanation": "Personal social media connections with consumer family members blur professional boundaries. Decline the request and notify the Director so it can be addressed if needed."}]}, {"id": "M08", "tier": 2, "tier_label": "Week 1\u20132", "title": "Documentation Excellence", "icon": "\ud83d\udcdd", "duration": "25 min", "objectives": ["Write compliant, audit-ready contact log entries", "Connect documentation to IPP goals effectively", "Understand what strong vs. weak documentation looks like", "Know Open Grace's documentation system and submission process"], "sections": [{"heading": "Why Documentation is Your Most Important Skill", "content": "In CFS, if it isn't documented, it didn't happen. Documentation is how IRC and DDS verify that services were delivered, how Open Grace demonstrates compliance, and how your work is protected if questions ever arise.\n\nStrong documentation also tells the story of a consumer's progress over time \u2014 it supports QPR writing, informs IPP updates, and demonstrates the value of the services you're providing."}, {"heading": "What Every Contact Log Entry Must Include", "content": "Every service contact must include:\n\u2022 Date and day of the week\n\u2022 Start time and end time (total hours)\n\u2022 Consumer name and UCI number\n\u2022 Service location (home address, community location, phone)\n\u2022 CFS service component(s) addressed\n\u2022 Specific activities and what was accomplished\n\u2022 Consumer response and engagement level\n\u2022 Progress toward IPP goals (reference the goal by name)\n\u2022 Any concerns, changes in status, or follow-up needed\n\u2022 Your signature and the date you submitted"}, {"heading": "Strong vs. Weak Documentation", "content": "WEAK: 'Visited consumer. Talked about goals. Had a good session.'\n\nSTRONG: 'Conducted home visit with consumer (UCI 6953825) from 10:00am\u201312:00pm. Reviewed Elevate app together \u2014 consumer successfully submitted a reimbursement request for $45 in transportation costs (IPP Goal 2: Benefits Access). Consumer expressed frustration with the process; provided step-by-step coaching. Consumer completed submission independently by end of session. Follow-up: verify reimbursement received at next contact.'\n\nThe strong entry is specific, connects to a goal, describes what was done and how, and includes follow-up. It could stand alone in an audit without explanation."}, {"heading": "Open Grace Documentation System", "content": "Open Grace uses a digital daily contact log accessible at opengrace.org/contact-log.html. Your access code is issued by the Director.\n\nSubmission requirements:\n\u2022 Submit your contact log the same day services are provided\n\u2022 Do not batch submit for multiple days at once\n\u2022 If you cannot access the portal, notify the Director and submit via Teams the same day\n\u2022 Once submitted, notify the Director if you need to correct an entry\n\nYour contact logs feed directly into quarterly report preparation and are subject to audit by IRC at any time."}], "quiz": [{"q": "Which of the following is a compliant contact log entry?", "options": ["Met with consumer. Worked on goals. 2 hours.", "Home visit 10am-12pm, UCI 6953825. Practiced grocery shopping at Stater Bros \u2014 consumer selected items, used self-checkout independently for first time (IPP Goal 3: Community Independence). Consumer was engaged and proud of achievement.", "Consumer was having a hard day. Tried to help. Will try again next week.", "Provided CFS services per IPP. Consumer doing well."], "answer": 1, "explanation": "Option B includes the time, UCI, location, specific activity, IPP goal reference, and consumer response. This is the level of detail required for compliance."}, {"q": "When must contact logs be submitted?", "options": ["By end of the week", "The same day services are provided", "Before the QPR deadline", "Within 48 hours"], "answer": 1, "explanation": "Same-day submission is required. Late documentation creates compliance risk and inaccurate records."}]}, {"id": "M09", "tier": 2, "tier_label": "Week 1\u20132", "title": "Emergency & Safety Procedures", "icon": "\ud83d\udea8", "duration": "15 min", "objectives": ["Know how to respond to a medical emergency in the field", "Apply community safety principles when out with consumers", "Know Open Grace's emergency contact protocol", "Understand your role during a consumer crisis"], "sections": [{"heading": "Medical Emergencies", "content": "If a consumer has a medical emergency during a service contact:\n1. Call 911 immediately \u2014 do not wait\n2. Stay with the consumer until help arrives\n3. Contact the Director immediately: 951-880-4132\n4. Do not leave the consumer alone under any circumstances\n5. Document everything \u2014 time, what happened, your actions, who you called\n\nKnow the consumer's medical history before your first visit \u2014 review their file for known conditions, allergies, seizure history, and emergency contacts. This information is in SharePoint."}, {"heading": "Community Safety", "content": "When in the community with a consumer:\n\u2022 Know the consumer's elopement risk before entering any public space\n\u2022 Position yourself between the consumer and any exit risk\n\u2022 Identify restrooms, exits, and quiet spaces when entering a new venue\n\u2022 Have the consumer's emergency contact information on your phone before leaving\n\u2022 Never leave a consumer unattended in a public space\n\u2022 If a consumer becomes dysregulated in public \u2014 prioritize their dignity. Move to a quieter space before attempting de-escalation."}, {"heading": "Crisis Response", "content": "A behavioral crisis is different from a medical emergency \u2014 but both require immediate action.\n\nFor behavioral crises:\n1. Stay calm \u2014 your regulated state helps regulate theirs\n2. Lower your voice, reduce demands, create space\n3. Do not physically restrain \u2014 unless someone is in immediate danger (call 911 instead)\n4. Remove triggers if possible\n5. Give the consumer time \u2014 do not rush de-escalation\n6. Contact Director after the situation is stabilized\n7. Document the incident in detail the same day\n\nIf you feel unsafe at any point \u2014 remove yourself. Your safety comes first."}, {"heading": "Emergency Contacts", "content": "Always have these numbers accessible during field work:\n\u2022 Emergency: 911\n\u2022 Open Grace Director: 951-880-4132\n\u2022 IRC Consumer Services: (909) 890-3000\n\u2022 APS (Adult Protective Services): 1-877-477-3646\n\u2022 Riverside County CPS: 1-800-442-4918\n\u2022 San Bernardino County CPS: 1-877-418-3844\n\u2022 National Suicide & Crisis Lifeline: 988\n\nAlways know your consumer's emergency contacts and have them saved before your first field visit."}], "quiz": [{"q": "A consumer has a seizure during a home visit. What is your first action?", "options": ["Call the Director first", "Call 911 immediately", "Wait to see if the seizure stops on its own before calling anyone", "Document the incident and report it at the end of the day"], "answer": 1, "explanation": "A seizure is a medical emergency. Call 911 first, then contact the Director. Do not leave the consumer and do not attempt to restrain them during a seizure."}, {"q": "A consumer becomes dysregulated at a grocery store and starts yelling. Your first priority is:", "options": ["Physically guiding them to the exit immediately", "Telling them to calm down firmly", "Moving to a quieter space while staying calm and reducing demands", "Calling the Director right away"], "answer": 2, "explanation": "De-escalation begins with protecting the consumer's dignity and reducing stimulation. Move to a quieter space, lower demands, stay calm yourself. Physical redirection without consent is not appropriate."}]}, {"id": "M10", "tier": 3, "tier_label": "30-Day Family Coordinator Academy", "title": "IRC & Regional Center Systems", "icon": "\ud83c\udfdb\ufe0f", "duration": "25 min", "objectives": ["Understand how the Regional Center system works in California", "Know IRC's role and your relationship to it as a vendor staff member", "Navigate key IRC processes: IPP, CDER, service authorization", "Communicate professionally with IRC coordinators"], "sections": [{"heading": "The California Regional Center System", "content": "California operates 21 Regional Centers serving over 350,000 individuals with developmental disabilities. Inland Regional Center (IRC) serves Riverside and San Bernardino Counties \u2014 two of the largest counties in the nation by area.\n\nRegional Centers are nonprofit organizations funded by the California Department of Developmental Services (DDS). They assess eligibility, develop IPPs, authorize services, and monitor vendors. Open Grace is one of many vendors IRC contracts with to deliver services.\n\nYour relationship to IRC as a Family Coordinator: you are not an IRC employee. You are employed by Open Grace, which is vendored through IRC. IRC coordinators are your professional partners \u2014 treat every interaction as a professional relationship that reflects on Open Grace."}, {"heading": "The IPP & CDER", "content": "The Individual Program Plan (IPP) is the master document for each consumer. It contains their goals, authorized services, hours, and the people responsible for delivering them. You can only provide services authorized in the IPP.\n\nThe Consumer Development and Evaluation Report (CDER) is an assessment document IRC uses to determine consumer needs and service eligibility. It informs the IPP.\n\nAs a Family Coordinator, you should:\n\u2022 Review the current IPP before your first service contact\n\u2022 Know the consumer's authorized hours and service components\n\u2022 Never promise services that aren't in the IPP\n\u2022 Report any significant consumer changes to the Director so the IPP can be updated"}, {"heading": "Service Authorization & POS", "content": "Before Open Grace can bill for services, IRC must issue a Purchase of Services (POS) authorization. The POS specifies the service type, authorized hours, rate, and period.\n\nImportant: You may not begin services until the POS is active. If you provide services before authorization, they cannot be billed and Open Grace absorbs the cost. Always confirm with the Director that a POS is in place before starting with any new consumer.\n\nPOS authorizations have start and end dates. Services beyond the authorized end date are also non-billable unless renewed."}, {"heading": "Communicating with IRC Coordinators", "content": "IRC service coordinators are your professional contacts for each consumer. Communication tips:\n\u2022 Always identify yourself as a Family Coordinator from Open Grace (Vendor PJ6208)\n\u2022 Keep all communication professional, factual, and solution-focused\n\u2022 Route all formal communication through the Director \u2014 do not make commitments to IRC on behalf of Open Grace\n\u2022 If a coordinator contacts you directly about a service concern, listen, take notes, and tell them the Director will follow up\n\u2022 Build positive relationships \u2014 coordinators are long-term partners, not adversaries"}], "quiz": [{"q": "What must be in place before you can begin services with a new consumer?", "options": ["A signed employment agreement", "An active Purchase of Services (POS) authorization from IRC", "A completed pre-screening assessment", "The consumer's agreement in writing"], "answer": 1, "explanation": "An active POS from IRC is required before any billable services begin. Starting services without authorization creates financial liability for Open Grace."}, {"q": "An IRC coordinator calls you directly with a concern about a consumer's services. You should:", "options": ["Commit to addressing the issue immediately", "Take notes and let them know the Director will follow up", "Refer them to the family directly", "Ignore it \u2014 all IRC communication goes through the Director only"], "answer": 1, "explanation": "Listen professionally, take notes, and let the coordinator know the Director will follow up. Do not make commitments on behalf of Open Grace."}]}, {"id": "M11", "tier": 3, "tier_label": "30-Day Family Coordinator Academy", "title": "Elevate Reimbursement Support", "icon": "\ud83d\udcb3", "duration": "25 min", "objectives": ["Understand what the Elevate platform is and how it works", "Coach families through the Elevate reimbursement process", "Identify eligible expenses and common errors", "Document Elevate support contacts in the contact log"], "sections": [{"heading": "What is Elevate?", "content": "Elevate is a self-directed supports platform that allows consumers and families to manage and access certain DDS-funded benefits and reimbursements. Through Elevate, families can submit requests for reimbursement for eligible expenses tied to the consumer's goals and IPP.\n\nFor many of the families Open Grace serves, Elevate represents real money \u2014 transportation costs, supplies, community participation expenses, and other approved items. Many families don't know it exists or haven't been supported to use it. This is where you can make a direct, concrete difference."}, {"heading": "How Elevate Works", "content": "The basic Elevate process:\n1. Consumer or authorized representative creates/logs into their Elevate account\n2. They submit a reimbursement request with receipts and a description of the expense\n3. The request is reviewed against the consumer's approved spending plan\n4. Approved requests are paid by check or direct deposit\n\nAs a Family Coordinator, you may assist families with navigating the platform, understanding what's eligible, organizing receipts, and submitting requests. You are supporting \u2014 not submitting on their behalf. The consumer or authorized representative must submit their own requests."}, {"heading": "Eligible Expenses & Common Errors", "content": "Eligible expenses typically include items approved in the consumer's spending plan \u2014 this varies by consumer. Common categories include transportation, adaptive equipment, community participation, respite-related costs, and other IPP-goal-related expenses.\n\nCommon errors to watch for:\n\u2022 Submitting receipts for ineligible items\n\u2022 Missing or unclear receipts\n\u2022 Submitting outside the reimbursement window\n\u2022 Incorrect expense descriptions that don't connect to the IPP\n\u2022 Account access issues (forgotten passwords, outdated contact info)\n\nIf a family's request is denied, help them understand why and whether it can be resubmitted correctly. Escalate complex denials to the Director."}, {"heading": "Documenting Elevate Support", "content": "Every Elevate support session must be documented in your contact log like any other service contact. Include:\n\u2022 What specifically you assisted with (e.g., 'Reviewed Elevate account together, submitted reimbursement request for $45 transportation receipt')\n\u2022 The outcome (submitted successfully, denied, pending, etc.)\n\u2022 Any follow-up needed\n\u2022 Reference to the IPP goal this supports (typically benefits access or resource navigation)\n\nElevate support is a high-value, documentable service \u2014 make sure it's captured clearly."}], "quiz": [{"q": "When helping a family with an Elevate reimbursement request, you should:", "options": ["Submit the request yourself to save them time", "Coach and support them to submit the request themselves", "Skip documenting it \u2014 it's administrative, not a service", "Contact IRC to request an Elevate exception"], "answer": 1, "explanation": "The consumer or authorized representative must submit their own Elevate requests. Your role is to support and coach \u2014 not submit on their behalf."}, {"q": "A family's Elevate reimbursement request was denied. What do you do?", "options": ["Tell them there's nothing you can do", "Help them understand the reason and resubmit if eligible, escalating complex denials to the Director", "Submit a complaint to IRC on their behalf", "Document it as a closed case"], "answer": 1, "explanation": "Help the family understand the denial reason and resubmit if the expense is eligible and the error is correctable. Escalate complex or unclear denials to the Director."}]}, {"id": "M12", "tier": 3, "tier_label": "30-Day Family Coordinator Academy", "title": "SSI, IHSS & Medi-Cal Navigation", "icon": "\ud83c\udfe5", "duration": "30 min", "objectives": ["Understand SSI, IHSS, and Medi-Cal eligibility basics", "Know how to support families in applying for and maintaining benefits", "Identify common benefits gaps and how to address them", "Know the limits of your role in benefits navigation"], "sections": [{"heading": "Supplemental Security Income (SSI)", "content": "SSI is a federal income program for individuals with disabilities who have limited income and resources. Many of the consumers you serve receive SSI as their primary income.\n\nKey facts:\n\u2022 Monthly benefit amounts vary by living situation and other income\n\u2022 Reporting requirements: changes in income, living situation, and resources must be reported to SSA\n\u2022 SSI is often linked to Medi-Cal eligibility in California\n\u2022 Turning 18 triggers a redetermination \u2014 many families miss this and lose benefits\n\nYour role: help families understand their SSI status, remind them of reporting obligations, and assist with connecting to Social Security resources. You are not a benefits counselor \u2014 complex issues should be referred to a Benefits Planning specialist or DRC."}, {"heading": "In-Home Supportive Services (IHSS)", "content": "IHSS is a California Medicaid program that pays for in-home care for eligible individuals with disabilities. IHSS hours are assessed by county social workers and cover personal care, domestic services, and protective supervision.\n\nMany consumers receiving CFS also receive IHSS \u2014 these programs overlap but serve different purposes. IHSS pays a caregiver (often a family member) for in-home support; CFS provides community-based coordination and coaching.\n\nYour role: help families understand their IHSS assessment, support them in documenting the consumer's actual needs, and assist with appeals if hours are reduced. Refer complex IHSS issues to the Director or a benefits advocate."}, {"heading": "Medi-Cal", "content": "Medi-Cal is California's Medicaid program providing health coverage to low-income individuals, including most consumers receiving regional center services.\n\nKey things families often miss:\n\u2022 Annual redetermination \u2014 Medi-Cal must be renewed; missed renewals result in coverage gaps\n\u2022 IHSS can affect Medi-Cal eligibility \u2014 changes must be reported\n\u2022 Consumers may be eligible for both regular Medi-Cal and specialty mental health services\n\u2022 Dental and vision coverage is included \u2014 many families don't know this\n\nYour role: remind families of renewal deadlines, help them locate their Medi-Cal information, and connect them with County Social Services if they need to apply or renew."}, {"heading": "Knowing Your Limits", "content": "Benefits navigation is complex and consequential \u2014 an error can result in overpayment demands, benefit termination, or legal issues. Your role is to support and connect, not to provide benefits counseling.\n\nAlways:\n\u2022 Refer complex or unclear situations to the Director\n\u2022 Connect families to qualified resources: Disability Rights California (DRC), Benefits Planning specialists, county social services\n\u2022 Document all benefits navigation support in your contact log\n\u2022 Never advise a family on how to report (or not report) income or resources to SSA or the county\n\nGood resources: Disability Rights California (disabilityrightsca.org), IRC benefits team, county DPSS offices"}], "quiz": [{"q": "A consumer turns 18 next month. Why is this significant for their SSI benefits?", "options": ["They will automatically receive an increase", "Turning 18 triggers a redetermination that could result in losing benefits if not managed", "Nothing changes \u2014 SSI continues automatically", "They must switch to SSDI at 18"], "answer": 1, "explanation": "Age-18 redetermination is a critical transition. SSA re-evaluates eligibility under adult criteria, and many families lose benefits because they're not prepared. This is a high-value area for family coordination support."}, {"q": "A family asks you whether they need to report a family member's new part-time job to SSA because of the consumer's SSI. You should:", "options": ["Tell them yes, all income must be reported", "Tell them they probably don't need to worry about it", "Refer them to a Benefits Planning specialist or DRC and document the referral", "Look it up online and give them your best guess"], "answer": 2, "explanation": "Benefits rules are complex and consequences of incorrect reporting are serious. Your role is to connect the family to qualified resources, not to provide benefits advice."}]}, {"id": "M13", "tier": 3, "tier_label": "30-Day Family Coordinator Academy", "title": "Person-Centered Thinking", "icon": "\ud83c\udfaf", "duration": "25 min", "objectives": ["Apply person-centered thinking tools in daily practice", "Distinguish between what matters TO vs. FOR a person", "Use the 4+1 Questions to guide planning conversations", "Recognize and challenge power dynamics in service relationships"], "sections": [{"heading": "What Person-Centered Thinking Actually Means", "content": "Person-centered thinking is not a philosophy you talk about \u2014 it's a set of practical tools and habits. At its core, it means consistently asking: 'Whose life is this?' and making sure the answer drives every decision.\n\nIn a system like IRC/DDS, where professionals have significant power over people's lives, it's easy for service delivery to become about what's convenient, compliant, or efficient rather than what the consumer actually wants. Person-centered practice is the antidote."}, {"heading": "What Matters TO vs. FOR", "content": "The most important distinction in person-centered thinking:\n\nWhat matters TO someone: their preferences, relationships, places, activities, and experiences that bring joy and meaning. Things the person would choose for themselves.\n\nWhat matters FOR someone: health and safety considerations, compliance requirements, things that support their wellbeing.\n\nBoth matter \u2014 but the mistake most service providers make is treating FOR as more important than TO. Example: a consumer wants to go to a loud music event (TO). Their coordinator worries about sensory overload (FOR). The person-centered approach finds a way to support the consumer's choice while managing the FOR concern \u2014 not overriding the choice."}, {"heading": "4+1 Questions", "content": "The 4+1 Questions are a person-centered planning tool for understanding what's working, what's not, and what to do next:\n\n1. What is working? (for the person, for others, for service delivery)\n2. What is not working? (for the person, for others)\n3. What are we learning about the person?\n4. What actions need to happen, and by whom?\n+1. What would a good life look like?\n\nUse these questions in planning conversations with consumers and families. They shift the conversation from 'what services are you getting' to 'what kind of life do you want.'"}, {"heading": "Power Dynamics in Service Relationships", "content": "As a Family Coordinator, you hold real power over consumers' lives \u2014 you have access to resources, professional knowledge, and influence with the systems that control their services. This power imbalance can harm people if you're not aware of it.\n\nPractice:\n\u2022 Ask \u2014 don't tell. Present options rather than recommendations.\n\u2022 Listen more than you speak in consumer conversations\n\u2022 Be honest about what you don't know\n\u2022 Support consumers to self-advocate rather than advocating for them\n\u2022 Never make decisions 'for their own good' without their input\n\u2022 Recognize when language like 'they need to' really means 'I think they should'"}], "quiz": [{"q": "A consumer loves going to crowded Saturday markets even though their coordinator thinks it's too stimulating. This is a 'what matters TO' situation. The person-centered approach is:", "options": ["Override the preference because safety comes first", "Support the consumer's choice while problem-solving any real safety concerns together", "Agree with the coordinator's concern and find a quieter alternative", "Document the disagreement and let IRC decide"], "answer": 1, "explanation": "Person-centered practice supports the consumer's choice as the starting point. What matters TO the person drives the plan. Safety concerns (FOR) are addressed in partnership, not used to override preferences."}, {"q": "During a planning conversation, you spend most of the time talking and explaining what services are available. This approach:", "options": ["Is efficient and helps families understand their options", "May reflect a power imbalance \u2014 consumer voice should lead the conversation", "Is the correct approach for new families", "Demonstrates professional competence"], "answer": 1, "explanation": "Person-centered conversations are led by the consumer's voice. If you're doing most of the talking, you're likely driving the agenda rather than following theirs."}]}, {"id": "M14", "tier": 3, "tier_label": "30-Day Family Coordinator Academy", "title": "Family Engagement & Motivational Interviewing", "icon": "\ud83e\udd1d", "duration": "30 min", "objectives": ["Apply motivational interviewing principles to family engagement", "Use open questions, affirmations, reflections, and summaries (OARS)", "Navigate ambivalence and resistance without confrontation", "Build trust and rapport with families who are disengaged or overwhelmed"], "sections": [{"heading": "Why Motivational Interviewing?", "content": "Motivational Interviewing (MI) is an evidence-based communication approach designed for situations where someone needs to make a change but is ambivalent or resistant. In CFS work, you will regularly encounter:\n\u2022 Families who are burned out and skeptical of 'another service provider'\n\u2022 Consumers who are disengaged from their own goals\n\u2022 Caregivers who are overwhelmed and hard to schedule\n\u2022 Families navigating trauma, financial stress, or systems distrust\n\nMI gives you tools to meet people where they are and build the kind of trust that makes real change possible."}, {"heading": "The Spirit of MI: PACE", "content": "MI is built on four core elements:\n\n\u2022 Partnership: you are a partner, not an expert imposing solutions\n\u2022 Acceptance: unconditional positive regard for the person as they are\n\u2022 Compassion: genuine care for the person's wellbeing, not your agenda\n\u2022 Evocation: drawing out the person's own motivation \u2014 it exists, your job is to find it\n\nMI fails when it becomes a technique you use 'on' people. It works when it reflects genuinely how you see your role."}, {"heading": "OARS \u2014 The Core Skills", "content": "Open Questions: Questions that can't be answered with yes/no. 'What's been going well since we last met?' vs. 'Did you try that resource I mentioned?'\n\nAffirmations: Genuine recognition of the person's strengths and efforts. 'You've navigated a lot of really difficult systems \u2014 that takes resilience.'\n\nReflective Listening: Reflecting back what you heard, including the feeling underneath it. 'It sounds like you're exhausted \u2014 like no matter what you do, the system just creates more hurdles.'\n\nSummaries: Collecting and connecting what's been shared. 'So it sounds like what matters most right now is getting those IHSS hours back \u2014 and everything else can wait until that's resolved. Is that right?'"}, {"heading": "Working with Resistance & Ambivalence", "content": "Resistance is not a problem to overcome \u2014 it's information. When a family is resistant, it usually means:\n\u2022 They've been hurt or disappointed by services before\n\u2022 They don't see the benefit yet\n\u2022 The timing isn't right for them\n\u2022 There's something more urgent going on\n\nMI response to resistance:\n\u2022 Roll with it \u2014 don't argue or push\n\u2022 Reflect the resistance: 'It sounds like you've had a lot of promises that didn't come through.'\n\u2022 Ask permission before offering information: 'Would it be okay if I shared something that might be helpful?'\n\u2022 Follow their lead on timing and pace\n\nThe worst thing you can do is argue, persuade, or 'fix' a family's resistance. That approach always backfires."}], "quiz": [{"q": "A family says 'We've had three coordinators in two years and nothing ever changes. I don't know why we're doing this.' The MI-consistent response is:", "options": ["Explain why Open Grace is different from other providers", "Tell them you understand and will try to do better", "Reflect: 'It sounds like you've put a lot of trust into this process and been let down \u2014 and you're wondering if it's worth trying again.'", "Assure them that their coordinator will be consistent this time"], "answer": 2, "explanation": "A reflective response validates the family's experience without arguing or defending. This is the foundation of MI \u2014 meeting the person where they are before moving anywhere else."}, {"q": "Which of the following is an open question?", "options": ["Did you call that number I gave you?", "Are you feeling better about things?", "What's been the most challenging part of this week for your family?", "Did your son take his medication today?"], "answer": 2, "explanation": "Open questions invite exploration and can't be answered with yes/no. 'What's been the most challenging part...' opens space for the family to share what matters to them."}]}, {"id": "M15", "tier": 3, "tier_label": "30-Day Family Coordinator Academy", "title": "Crisis De-escalation", "icon": "\ud83e\uddd8", "duration": "25 min", "objectives": ["Recognize escalation warning signs before a crisis occurs", "Apply de-escalation techniques in the field", "Know your role and limits during a behavioral crisis", "Complete post-crisis documentation and follow-up"], "sections": [{"heading": "Understanding the Escalation Cycle", "content": "Most crises don't happen suddenly \u2014 they escalate through recognizable stages:\n\n1. Baseline: Consumer is calm, engaged\n2. Trigger: Something shifts \u2014 sensory input, demand, transition, frustration\n3. Agitation: Increased movement, vocal changes, reduced engagement\n4. Acceleration: Clear distress, raised voice, refusal, self-stimulation increases\n5. Peak: Crisis behavior \u2014 aggression, elopement, meltdown\n6. De-escalation: Behavior decreasing, consumer receptive to support\n7. Recovery: Return to baseline \u2014 often involves fatigue or embarrassment\n\nYour most powerful intervention point is stages 2 and 3 \u2014 catching triggers early before the crisis develops."}, {"heading": "De-escalation Techniques", "content": "At agitation/early acceleration:\n\u2022 Reduce all demands immediately\n\u2022 Lower your voice and slow your speech\n\u2022 Create physical and emotional space\n\u2022 Remove or reduce environmental triggers if possible\n\u2022 Use simple, calm language \u2014 short sentences\n\u2022 Offer choices rather than directives\n\u2022 Avoid eye contact demands if it increases distress\n\u2022 Name what you see without judgment: 'I can see this is really hard right now.'\n\nAt peak:\n\u2022 Do not try to reason or problem-solve\n\u2022 Ensure safety of everyone present\n\u2022 Stay calm yourself \u2014 regulated people regulate others\n\u2022 Give time and space\n\u2022 If unsafe, remove yourself and call 911"}, {"heading": "Your Role and Its Limits", "content": "You are not trained in physical intervention \u2014 do not physically restrain a consumer under any circumstances unless someone is in immediate physical danger and you have no alternative, and 911 has been called.\n\nYour role during a crisis is to:\n\u2022 Maintain your own regulated state\n\u2022 Use verbal and environmental de-escalation\n\u2022 Ensure safety\n\u2022 Call for help when needed (Director, 911)\n\u2022 Document afterward\n\nYou are not responsible for 'fixing' a crisis \u2014 you are responsible for responding professionally, safely, and with dignity toward the consumer."}, {"heading": "Post-Crisis Documentation", "content": "After any crisis or significant behavioral incident:\n\u2022 Document within the same day\n\u2022 Include: antecedents (what happened before), the behavior, your response, the outcome, and time to de-escalation\n\u2022 Note any injuries, property damage, or safety concerns\n\u2022 Report to Director immediately following the incident\n\u2022 If SIR-level: follow incident reporting protocol\n\nAlso check in with yourself. Crisis work is emotionally demanding. If you are shaken after an incident, contact the Director \u2014 debrief is part of professional support."}], "quiz": [{"q": "A consumer is in the acceleration phase \u2014 voice is raised and they're refusing all tasks. The best response is:", "options": ["Firmly remind them of the rules and consequences", "Reduce demands, lower your voice, and give space", "Call the Director immediately", "Proceed with the planned session \u2014 backing down reinforces the behavior"], "answer": 1, "explanation": "During acceleration, the priority is de-escalation \u2014 not compliance. Reducing demands and creating space gives the consumer the room to regulate. Pushing forward or applying consequences at this stage typically accelerates to peak."}, {"q": "After a behavioral crisis during a home visit, you should document:", "options": ["Only if property was damaged or someone was injured", "The antecedents, behavior, your response, outcome, and time to de-escalation \u2014 same day", "A brief note that an 'incident occurred' and let the Director handle the rest", "Nothing until the Director tells you to"], "answer": 1, "explanation": "Detailed same-day documentation is required after any crisis. Antecedents, behavior, response, and outcome must all be captured. This documentation supports SIR filing, pattern analysis, and consumer support planning."}]}, {"id": "M16", "tier": 3, "tier_label": "30-Day Family Coordinator Academy", "title": "Disability Rights & Self-Determination", "icon": "\u270a", "duration": "20 min", "objectives": ["Understand the core legal framework for disability rights", "Apply self-determination principles in service delivery", "Know how to support consumers in exercising their rights", "Recognize systemic barriers and advocacy opportunities"], "sections": [{"heading": "The Legal Foundation", "content": "The disability rights movement produced some of the most important civil rights legislation in American history:\n\n\u2022 Americans with Disabilities Act (ADA, 1990): prohibits discrimination in employment, public accommodations, and services\n\u2022 Olmstead v. L.C. (1999): Supreme Court ruling requiring states to provide services in the most integrated setting appropriate \u2014 the foundation for community-based services like CFS\n\u2022 Lanterman Act (California): guarantees regional center services as a right, not a privilege, for eligible individuals\n\u2022 IDEA: protects the right to free appropriate public education for students with disabilities\n\nUnderstanding these isn't academic \u2014 when you help a consumer access the community, navigate systems, or advocate for services, you are operationalizing these rights."}, {"heading": "Self-Determination", "content": "Self-determination means people with disabilities have the same right as anyone else to direct their own lives \u2014 to make choices, take risks, and learn from experience.\n\nIn practice:\n\u2022 A consumer has the right to make choices you disagree with\n\u2022 A consumer has the right to take reasonable risks \u2014 risk is part of life\n\u2022 Your role is to provide information and support, not to make decisions for people\n\u2022 Supported decision-making is the preferred model \u2014 supporting someone to make their own choices, not substituting your judgment for theirs\n\nSelf-determination is not just a value \u2014 for IRC-eligible consumers, it is a right under the Lanterman Act."}, {"heading": "Supporting Consumers to Exercise Their Rights", "content": "Practical ways to support rights in everyday work:\n\u2022 Know and share information about grievance processes \u2014 consumers have the right to complain about services without retaliation\n\u2022 Support consumers to speak for themselves at IPP meetings \u2014 don't speak for them unless asked\n\u2022 Respect the right to refuse services \u2014 document refusals without judgment\n\u2022 Connect consumers to self-advocacy organizations: People First, ASAN, Self-Advocates Becoming Empowered\n\u2022 Challenge any team dynamics where the consumer's voice is drowned out by professionals or caregivers\n\u2022 If a consumer's rights appear to be violated, report to the Director immediately"}, {"heading": "Systemic Barriers & Advocacy", "content": "Many families face systemic barriers that go beyond individual service delivery:\n\u2022 Language access barriers in IRC processes\n\u2022 Racial and economic disparities in service access and quality\n\u2022 Lack of culturally competent providers\n\u2022 Housing instability affecting service delivery\n\u2022 Immigration status concerns affecting benefits access\n\nAs a Family Coordinator, you can't fix systemic problems \u2014 but you can document patterns, connect families to advocacy resources, and bring systemic issues to the Director's attention. Open Grace's commitment to families means engaging with these realities, not working around them."}], "quiz": [{"q": "A consumer wants to try living independently. Their caregiver says it's too risky and they won't support it. The person-centered, rights-based response is:", "options": ["Agree with the caregiver \u2014 they know the consumer best", "Support the consumer to explore what independence means to them and connect to appropriate resources", "Stay out of it \u2014 this is a family matter", "Document the disagreement and move on"], "answer": 1, "explanation": "Self-determination is a right. The consumer's desire to explore independence should be centered and supported. The caregiver's concerns are valid input, but they don't override the consumer's rights."}, {"q": "The Olmstead decision is significant because it:", "options": ["Created the Americans with Disabilities Act", "Required states to provide services in the most integrated setting appropriate \u2014 the legal basis for community-based services like CFS", "Established SSI for individuals with disabilities", "Created the regional center system in California"], "answer": 1, "explanation": "Olmstead v. L.C. (1999) held that unjustified institutionalization is discrimination under the ADA. It is the legal foundation for community-based services and the work you do every day."}]}, {"id": "M17", "tier": 3, "tier_label": "30-Day Family Coordinator Academy", "title": "Community Integration", "icon": "\ud83c\udf06", "duration": "20 min", "objectives": ["Understand the value and goals of community integration in CFS", "Identify and access community resources effectively", "Support consumers in building natural supports and community connections", "Document community integration activities compliantly"], "sections": [{"heading": "Why Community Integration?", "content": "Community integration is one of the core purposes of CFS. The goal is not just to take consumers to places \u2014 it's to help them build real connections, develop skills, and participate in community life as full citizens.\n\nResearch consistently shows that community connection improves quality of life, reduces isolation, and supports mental and physical health for people with disabilities. Every community outing you do should have a purpose tied to the consumer's IPP goals \u2014 not just activity for its own sake."}, {"heading": "Types of Community Integration Activities", "content": "Community integration covers a wide range:\n\u2022 Recreational: parks, gyms, sports leagues, arts programs\n\u2022 Educational: libraries, classes, workshops\n\u2022 Vocational: job sites, volunteer opportunities, skill-building settings\n\u2022 Social: community groups, faith communities, clubs\n\u2022 Civic: voting, community events, advocacy\n\u2022 Commercial: grocery stores, banks, restaurants \u2014 building independent living skills\n\nAlways match the activity to the consumer's goals and interests. Never choose activities based on convenience \u2014 follow the consumer's lead."}, {"heading": "Building Natural Supports", "content": "Natural supports are people in a consumer's life who provide help as part of an ongoing relationship \u2014 not because they're paid to. Friends, neighbors, faith community members, coworkers.\n\nYour role is to help build natural supports, not replace them. Signs you may be doing too much:\n\u2022 The consumer calls you for things they could handle independently\n\u2022 The consumer's social circle hasn't grown since services began\n\u2022 Community participation only happens when you're present\n\nGoal: the consumer should be building skills and connections that continue when you're not there."}, {"heading": "Documenting Community Integration", "content": "Community integration contacts must be documented with the same detail as any service contact:\n\u2022 Specific location and activity\n\u2022 Consumer participation level and response\n\u2022 Skills practiced or demonstrated\n\u2022 Any challenges or adaptations made\n\u2022 Progress toward IPP goal\n\nExample: 'Accompanied consumer to Riverside Main Library. Consumer independently obtained a library card and checked out two books on cooking (IPP Goal 1: Community Independence). Consumer initiated conversation with librarian \u2014 first unsupported social initiation observed. Next contact: follow up on library visit and cooking goal.'"}], "quiz": [{"q": "The primary goal of community integration activities in CFS is:", "options": ["To keep consumers busy and active", "To help consumers build skills, connections, and participation as full community members", "To fulfill service hours in the IPP", "To provide respite for caregivers"], "answer": 1, "explanation": "Community integration is about real participation and belonging \u2014 not activity for its own sake. Every outing should connect to the consumer's goals and support genuine community membership."}, {"q": "You notice that a consumer only accesses the community when you are present and hasn't developed any independent connections in 6 months. This suggests:", "options": ["Services are working well \u2014 the consumer is engaged", "You may be doing too much \u2014 the goal is building natural supports and independence", "The consumer needs more hours, not less", "This is expected \u2014 community connections take a long time"], "answer": 1, "explanation": "If community participation only happens with you present, the goal of independence isn't being met. Focus on building skills and connections that persist beyond your presence."}]}, {"id": "M18", "tier": 3, "tier_label": "30-Day Family Coordinator Academy", "title": "Professional Communication", "icon": "\ud83d\udcac", "duration": "20 min", "objectives": ["Communicate professionally in writing and verbally with families, IRC, and the Director", "Write clear, factual, professional emails and messages", "Navigate difficult conversations with families", "Represent Open Grace positively in all professional interactions"], "sections": [{"heading": "Professional Communication Standards", "content": "As a Family Coordinator, everything you say and write represents Open Grace LLC. Professional communication means:\n\u2022 Clear and concise \u2014 say what you mean, mean what you say\n\u2022 Respectful in all circumstances \u2014 even when you're frustrated\n\u2022 Factual \u2014 stick to what you know and have observed\n\u2022 Timely \u2014 respond within 24 hours to messages from families, Director, and IRC\n\u2022 Appropriate channel \u2014 professional matters through professional channels (Teams/email), not personal texting\n\nYour communication with families sets the tone for the entire service relationship."}, {"heading": "Writing Effective Emails & Messages", "content": "Professional email basics:\n\u2022 Subject line: clear and specific ('Follow-up: Medi-Cal renewal for [consumer initials]')\n\u2022 Open with context: who you are and why you're writing\n\u2022 State your purpose clearly in the first sentence\n\u2022 Keep it brief \u2014 one topic per email\n\u2022 Close with a clear next step or ask\n\u2022 Sign with your name, title, and Open Grace contact info\n\nAvoid:\n\u2022 All caps, multiple exclamation points\n\u2022 Vague subjects like 'Question' or 'Help'\n\u2022 Emotional language in professional correspondence\n\u2022 Consumer full names in email subject lines (use initials or UCI)"}, {"heading": "Difficult Conversations with Families", "content": "You will sometimes need to deliver difficult information:\n\u2022 A service request is denied\n\u2022 A consumer's behavior during a session needs to be addressed\n\u2022 A family isn't following through on their commitments\n\u2022 You have a mandatory report concern\n\nApproach:\n1. Choose the right time and setting \u2014 never in front of others\n2. Lead with care and respect\n3. Be direct \u2014 say what you need to say without burying it\n4. Listen to the response without being defensive\n5. Focus on solutions, not blame\n6. Document the conversation in your contact log\n\nDifficult conversations handled well build trust. Avoided conversations become crises."}, {"heading": "Representing Open Grace", "content": "Every time you introduce yourself as a Family Coordinator from Open Grace, you are representing the organization and Joshua Kennedy as Director.\n\nIn the field:\n\u2022 Introduce yourself by name and role: 'Hi, I'm [Name], a Family Coordinator with Open Grace LLC \u2014 I work with [consumer's initials]'\n\u2022 Be professional in dress and demeanor at all times\n\u2022 Do not make promises on behalf of Open Grace you can't keep\n\u2022 If you don't know the answer \u2014 say so, and find out: 'I'll check with the Director and get back to you by [date]'\n\u2022 If you disagree with a decision, raise it internally \u2014 not in front of families or IRC\n\nYour integrity in the field is Open Grace's reputation."}], "quiz": [{"q": "A family sends you a frustrated text at 9pm about a service issue. You should:", "options": ["Respond immediately to show you care", "Wait until morning and respond professionally via Teams during business hours", "Ignore it \u2014 they should use proper channels", "Call the Director immediately"], "answer": 1, "explanation": "Respond during business hours through a professional channel. Responding to emotional late-night messages can escalate situations. A professional, calm response the next morning is more effective."}, {"q": "A family asks you directly whether their consumer will receive a POS extension. You are not sure. You should:", "options": ["Say yes to reassure them", "Say no to manage expectations", "Tell them you don't know and will check with the Director and follow up by a specific date", "Refer them to IRC directly"], "answer": 2, "explanation": "Never guess or make promises you can't keep. 'I don't know, but I'll find out by [date]' is a professional and trustworthy response. Following through on that commitment builds confidence in you and Open Grace."}]}];
+
+const TIER_COLORS = {"1":"#D84040","2":"#BA7517","3":"#2D2B7F"};
+const TIER_LABELS = {"1":"Day 1 — Required","2":"Week 1–2","3":"30-Day Academy"};
+
+// ════════ STATE ════════
+let currentStaff = null;
+let progress = {};  // {code: {completed:[], quizScores:{}}}
+let currentModuleId = null;
+let quizState = {};
+let certModuleId = null;
+
+// ════════ LOCK / UNLOCK ════════
+function unlock() {
+  const code = document.getElementById('code-input').value.trim().toUpperCase();
+  const errEl = document.getElementById('lock-err');
+  const inputEl = document.getElementById('code-input');
+  if (!code) { errEl.textContent = 'Please enter your access code.'; return; }
+
+  fetch(STAFF_URL + '?t=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      const staff = (data.staff || []).find(s => s.code === code && s.active);
+      if (staff) {
+        currentStaff = staff;
+        loadProgress();
+        document.getElementById('lock').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        document.getElementById('topbar-name').textContent = staff.name;
+        document.getElementById('dash-name').textContent = staff.name;
+        document.getElementById('dash-role').textContent = staff.position || 'Family Coordinator';
+        sessionStorage.setItem('og_staff_code', code);
+        renderDashboard();
+        errEl.textContent = '';
+      } else {
+        inputEl.classList.add('err');
+        errEl.textContent = 'Invalid or inactive code. Contact the Director.';
+        setTimeout(() => inputEl.classList.remove('err'), 400);
+        inputEl.value = '';
+      }
+    })
+    .catch(() => {
+      // Offline fallback — check sessionStorage cache
+      const cached = sessionStorage.getItem('og_staff_cache');
+      if (cached) {
+        try {
+          const data = JSON.parse(cached);
+          const staff = (data.staff || []).find(s => s.code === code && s.active);
+          if (staff) {
+            currentStaff = staff;
+            loadProgress();
+            document.getElementById('lock').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('topbar-name').textContent = staff.name;
+            document.getElementById('dash-name').textContent = staff.name;
+            renderDashboard();
+          }
+        } catch(e) {}
+      }
+      errEl.textContent = 'Connection error. Check your internet and try again.';
+    });
+}
+
+function lockApp() {
+  sessionStorage.removeItem('og_staff_code');
+  currentStaff = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('lock').style.display = 'flex';
+  document.getElementById('code-input').value = '';
+  document.getElementById('lock-err').textContent = '';
+}
+
+// Auto-login
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = sessionStorage.getItem('og_staff_code');
+  if (saved) {
+    document.getElementById('code-input').value = saved;
+    unlock();
+  }
+});
+
+// ════════ PROGRESS ════════
+function loadProgress() {
+  const raw = localStorage.getItem(PROGRESS_KEY);
+  progress = raw ? JSON.parse(raw) : {};
+  if (!progress[currentStaff.code]) progress[currentStaff.code] = {completed:[], quizScores:{}, dates:{}};
+}
+function saveProgress() { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); }
+function getP() { return progress[currentStaff.code] || {completed:[], quizScores:{}, dates:{}}; }
+function isCompleted(id) { return getP().completed.includes(id); }
+
+function isUnlocked(mod) {
+  if (mod.tier === 1) return true;
+  if (mod.tier === 2) {
+    // Unlock after all tier-1 completed
+    const t1 = MODULES.filter(m => m.tier===1).map(m=>m.id);
+    return t1.every(id => isCompleted(id));
+  }
+  if (mod.tier === 3) {
+    // Unlock after all tier-1 and tier-2 completed
+    const t12 = MODULES.filter(m => m.tier<=2).map(m=>m.id);
+    return t12.every(id => isCompleted(id));
+  }
+  return false;
+}
+
+// ════════ DASHBOARD ════════
+function renderDashboard() {
+  const p = getP();
+  const done = p.completed.length;
+  const total = MODULES.length;
+  const pct = Math.round((done/total)*100);
+  document.getElementById('op-fill').style.width = pct+'%';
+  document.getElementById('op-done').textContent = done;
+  document.getElementById('op-total').textContent = total;
+  document.getElementById('op-pct').textContent = pct+'%';
+
+  const list = document.getElementById('module-list');
+  let html = '';
+  const tiers = [1,2,3];
+  tiers.forEach(tier => {
+    const mods = MODULES.filter(m => m.tier===tier);
+    const tierDone = mods.filter(m => isCompleted(m.id)).length;
+    html += `<div class="sec" style="color:${TIER_COLORS[tier]}">${TIER_LABELS[tier]} (${tierDone}/${mods.length})</div>`;
+    mods.forEach(mod => {
+      const completed = isCompleted(mod.id);
+      const unlocked = isUnlocked(mod);
+      let cls = 'module-card';
+      if (completed) cls += ' completed';
+      else if (unlocked) cls += ' active-tier';
+      else cls += ' locked';
+      const onclick = unlocked ? `openModule('${mod.id}')` : `toast('Complete ${TIER_LABELS[tier-1]||'prior'} modules first')`;
+      let badge = completed
+        ? `<span class="badge badge-done">✓ Done</span>`
+        : unlocked
+          ? `<span class="badge badge-ready">Start →</span>`
+          : `<span class="badge badge-locked">🔒 Locked</span>`;
+      html += `<div class="${cls}" onclick="${onclick}">
+        <div class="mod-icon">${mod.icon}</div>
+        <div class="mod-info">
+          <div class="mod-title">${mod.title}</div>
+          <div class="mod-meta">${mod.duration}</div>
+        </div>
+        <div class="mod-status">${badge}</div>
+      </div>`;
+    });
+  });
+
+  // Progress report link
+  html += `<div class="sec">Reports</div>
+  <div class="module-card" onclick="showProgress()">
+    <div class="mod-icon">📊</div>
+    <div class="mod-info"><div class="mod-title">My Progress Report</div><div class="mod-meta">View completion dates and quiz scores</div></div>
+    <div class="mod-status"><span style="font-size:18px;color:var(--sub)">→</span></div>
+  </div>`;
+
+  list.innerHTML = html;
+}
+
+// ════════ MODULE VIEW ════════
+function openModule(id) {
+  currentModuleId = id;
+  const mod = MODULES.find(m => m.id===id);
+  showView('view-module');
+  quizState = { answers:{}, submitted:false, score:0 };
+
+  let html = `<div class="mod-header">
+    <div class="mod-h-icon">${mod.icon}</div>
+    <div class="mod-h-tier">${TIER_LABELS[mod.tier]}</div>
+    <div class="mod-h-title">${mod.title}</div>
+    <div class="mod-h-meta">⏱ ${mod.duration} &nbsp;&bull;&nbsp; ${mod.quiz.length} knowledge check questions</div>
+    <div class="obj-list">
+      <div class="obj-list-label">Learning Objectives</div>
+      ${mod.objectives.map(o=>`<div class="obj-item">${o}</div>`).join('')}
+    </div>
+  </div>`;
+
+  mod.sections.forEach(sec => {
+    html += `<div class="section-card">
+      <div class="section-heading">${sec.heading}</div>
+      <div class="section-body">${escHtml(sec.content)}</div>
+    </div>`;
+  });
+
+  // Quiz
+  html += `<div class="quiz-wrap">
+    <div class="quiz-label">📝 Knowledge Check</div>`;
+  mod.quiz.forEach((q,qi) => {
+    const letters = ['A','B','C','D'];
+    html += `<div class="quiz-q" id="qq-${qi}">${qi+1}. ${escHtml(q.q)}</div>
+    <div class="quiz-options" id="qo-${qi}">
+    ${q.options.map((opt,oi)=>`
+      <button class="q-opt" id="qopt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+        <span class="q-letter">${letters[oi]}</span>${escHtml(opt)}
+      </button>`).join('')}
+    </div>
+    <div class="q-explanation" id="qexp-${qi}">${escHtml(q.explanation)}</div>`;
+  });
+
+  html += `<div class="quiz-score" id="quiz-score"></div>
+    <button class="retry-btn" id="retry-btn" onclick="retryQuiz()">↩ Retry Quiz</button>
+  </div>
+  <button class="complete-btn" id="complete-btn" onclick="completeModule('${id}')">
+    ✅ Mark Complete & Download Certificate
+  </button>`;
+
+  document.getElementById('module-content').innerHTML = html;
+  if (isCompleted(id)) {
+    document.getElementById('complete-btn').style.display='block';
+    document.getElementById('complete-btn').textContent='🏅 View Certificate';
+    document.getElementById('complete-btn').onclick = () => showCertificate(id);
+  }
+  window.scrollTo(0,0);
+}
+
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function selectAnswer(qi, oi) {
+  if (quizState.submitted) return;
+  quizState.answers[qi] = oi;
+  const mod = MODULES.find(m => m.id===currentModuleId);
+  // Highlight selection
+  const opts = document.querySelectorAll(`#qo-${qi} .q-opt`);
+  opts.forEach((el,i) => el.classList.toggle('selected', i===oi));
+
+  // Check if all answered
+  if (Object.keys(quizState.answers).length === mod.quiz.length) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  quizState.submitted = true;
+  const mod = MODULES.find(m => m.id===currentModuleId);
+  let correct = 0;
+  mod.quiz.forEach((q,qi) => {
+    const chosen = quizState.answers[qi];
+    const opts = document.querySelectorAll(`#qo-${qi} .q-opt`);
+    opts.forEach((el,oi) => {
+      el.disabled = true;
+      if (oi === q.answer) el.classList.add('correct');
+      else if (oi === chosen && chosen !== q.answer) el.classList.add('wrong');
+    });
+    document.getElementById(`qexp-${qi}`).style.display = 'block';
+    if (chosen === q.answer) correct++;
+  });
+
+  quizState.score = correct;
+  const total = mod.quiz.length;
+  const pct = Math.round((correct/total)*100);
+  const passed = pct >= 80;
+  const scoreEl = document.getElementById('quiz-score');
+  scoreEl.style.display = 'block';
+  scoreEl.className = 'quiz-score ' + (passed?'pass':'fail');
+  scoreEl.textContent = passed
+    ? `✅ ${correct}/${total} correct (${pct}%) — Passed! You may complete this module.`
+    : `❌ ${correct}/${total} correct (${pct}%) — Score 80% or higher to complete. Please review and retry.`;
+
+  if (passed) {
+    document.getElementById('complete-btn').style.display = 'block';
+    document.getElementById('retry-btn').style.display = 'none';
+  } else {
+    document.getElementById('retry-btn').style.display = 'block';
+  }
+
+  // Save score
+  const p = getP();
+  if (!p.quizScores) p.quizScores = {};
+  const prev = p.quizScores[currentModuleId];
+  if (!prev || pct > prev) p.quizScores[currentModuleId] = pct;
+  saveProgress();
+}
+
+function retryQuiz() {
+  openModule(currentModuleId);
+  // Scroll to quiz
+  setTimeout(() => {
+    const qw = document.querySelector('.quiz-wrap');
+    if (qw) qw.scrollIntoView({behavior:'smooth'});
+  }, 100);
+}
+
+function completeModule(id) {
+  const p = getP();
+  if (!p.completed.includes(id)) {
+    p.completed.push(id);
+    if (!p.dates) p.dates = {};
+    p.dates[id] = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+    saveProgress();
+    sendCompletionNotification(id);
+  }
+  showCertificate(id);
+}
+
+// ════════ CERTIFICATE ════════
+function showCertificate(id) {
+  certModuleId = id;
+  const mod = MODULES.find(m => m.id===id);
+  const p = getP();
+  const dateStr = (p.dates && p.dates[id]) || new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const score = p.quizScores && p.quizScores[id] ? p.quizScores[id] + '%' : '—';
+
+  const html = `<div id="cert-print" style="background:#fff;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.1);">
+    <!-- Certificate header -->
+    <div style="background:linear-gradient(135deg,#2D2B7F,#1a1860);padding:28px 24px;text-align:center;border-bottom:4px solid #F47C20;">
+      <img src="https://opengrace.org/og_logo.jpg" style="height:56px;width:auto;border-radius:8px;margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;" alt="Open Grace">
+      <div style="font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:8px;">Certificate of Completion</div>
+      <div style="font-family:Georgia,serif;font-size:26px;font-weight:700;color:#fff;line-height:1.2;">Open Grace LLC</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;">Staff Training Academy &bull; IRC Vendor PJ6208</div>
+    </div>
+    <!-- Certificate body -->
+    <div style="padding:28px 24px;background:#fff;text-align:center;">
+      <div style="font-size:13px;color:#888;margin-bottom:8px;">This certifies that</div>
+      <div style="font-family:Georgia,serif;font-size:28px;font-weight:700;color:#2D2B7F;border-bottom:2px solid #F47C20;padding-bottom:8px;margin:0 20px 16px;">${currentStaff.name}</div>
+      <div style="font-size:13px;color:#888;margin-bottom:6px;">has successfully completed</div>
+      <div style="font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:4px;">${mod.icon} ${mod.title}</div>
+      <div style="font-size:12px;color:#aaa;margin-bottom:20px;">${TIER_LABELS[mod.tier]} &bull; ${mod.duration}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
+        <div style="background:#F8F4FF;border-radius:10px;padding:12px;">
+          <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Completed</div>
+          <div style="font-size:13px;font-weight:700;color:#2D2B7F;">${dateStr}</div>
+        </div>
+        <div style="background:#F8F4FF;border-radius:10px;padding:12px;">
+          <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Quiz Score</div>
+          <div style="font-size:13px;font-weight:700;color:#1D9E75;">${score}</div>
+        </div>
+        <div style="background:#F8F4FF;border-radius:10px;padding:12px;">
+          <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Module</div>
+          <div style="font-size:13px;font-weight:700;color:#2D2B7F;">${id}</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid #eee;padding-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:left;">
+        <div>
+          <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Director</div>
+          <div style="font-family:Georgia,serif;font-size:20px;color:#2D2B7F;border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:4px;">Joshua Kennedy</div>
+          <div style="font-size:11px;color:#aaa;">Joshua Kennedy, Director</div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Staff Member</div>
+          <div style="font-family:Georgia,serif;font-size:20px;color:#2D2B7F;border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:4px;">${currentStaff.name}</div>
+          <div style="font-size:11px;color:#aaa;">${currentStaff.position || 'Family Coordinator'}</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;font-size:10px;color:#ccc;text-align:center;">
+        Open Grace LLC &bull; IRC Vendor PJ6208 &bull; 951-880-4132 &bull; joshua.kennedy@opengrace.org
+      </div>
+    </div>
+  </div>`;
+
+  showView('view-cert');
+  document.getElementById('cert-content').innerHTML = html;
+  window.scrollTo(0,0);
+}
+
+function downloadCert() {
+  const el = document.getElementById('cert-print');
+  if (!el) return;
+  const w = window.open('','_blank');
+  const mod = MODULES.find(m => m.id===certModuleId);
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Certificate — ${mod.title}</title>
+  <style>body{margin:0;padding:20px;background:#f4f4f4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif}
+  @media print{body{padding:0;background:#fff}@page{margin:10mm}}</style></head><body>
+  ${el.outerHTML}
+  <script>window.onload=function(){window.print()}<\/script></body></html>`);
+  w.document.close();
+}
+
+// ════════ PROGRESS VIEW ════════
+function showProgress() {
+  showView('view-progress');
+  const p = getP();
+  const mod_count = MODULES.length;
+  const done = p.completed.length;
+  let html = `<div class="prog-card">
+    <div class="prog-name">${currentStaff.name} — ${currentStaff.position||'Family Coordinator'}</div>
+    <div class="prog-row"><span>Overall Progress</span><span><b>${done}</b> / ${mod_count} modules</span></div>
+    <div class="prog-bar-sm"><div class="prog-bar-sm-fill" style="width:${Math.round(done/mod_count*100)}%"></div></div>
+    <div class="prog-row"><span>Hire date</span><span>${currentStaff.hired||'—'}</span></div>
+  </div>`;
+
+  [1,2,3].forEach(tier => {
+    const mods = MODULES.filter(m=>m.tier===tier);
+    html += `<div class="sec" style="color:${TIER_COLORS[tier]}">${TIER_LABELS[tier]}</div>
+    <div class="prog-card">`;
+    mods.forEach(mod => {
+      const comp = p.completed.includes(mod.id);
+      const score = p.quizScores && p.quizScores[mod.id];
+      const date = p.dates && p.dates[mod.id];
+      html += `<div class="prog-mod-row">
+        <span style="font-size:16px">${mod.icon}</span>
+        <span style="flex:1;color:${comp?'var(--text)':'var(--sub)'};">${mod.title}</span>
+        ${comp
+          ? `<span style="color:var(--green);font-weight:700;">✓ ${date||''}</span>`
+          : `<span style="color:var(--sub);">—</span>`}
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  document.getElementById('progress-content').innerHTML = html;
+  window.scrollTo(0,0);
+}
+
+// ════════ NOTIFICATION ════════
+async function sendCompletionNotification(id) {
+  const mod = MODULES.find(m=>m.id===id);
+  const p = getP();
+  const done = p.completed.length;
+  try {
+    await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:200,
+        mcp_servers:[{type:'url',url:'https://microsoft365.mcp.claude.com/mcp',name:'m365'}],
+        messages:[{role:'user',content:`Send an email to joshua.kennedy@opengrace.org with subject "Training Completion: ${currentStaff.name} completed ${mod.title}" and body: "${currentStaff.name} (${currentStaff.position||'Family Coordinator'}) has completed the training module: ${mod.title} (${id}). Quiz score: ${p.quizScores[id]||'—'}%. Completed: ${p.dates[id]||new Date().toLocaleDateString()}. Overall progress: ${done} of 18 modules. - Open Grace Training Academy"`}]
+      })
+    });
+  } catch(e) { /* silent — notification is best-effort */ }
+}
+
+// ════════ UI HELPERS ════════
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showDashboard() {
+  renderDashboard();
+  showView('view-dashboard');
+  window.scrollTo(0,0);
+}
+function toast(msg, dur=2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), dur);
+}
+</script>
+</body>
+</html>
