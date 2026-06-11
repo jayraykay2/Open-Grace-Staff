@@ -1412,7 +1412,7 @@ let contactEditIdx = null;
 
 function openContactSheet(idx=null) {
   contactEditIdx = idx;
-  const contacts = load(K.contacts, defaultContacts());
+  const contacts = (window._CR && window._CR.length) ? window._CR : load(K.contacts, defaultContacts());
   document.getElementById('contact-sheet-title').textContent = idx !== null ? 'Edit Contact' : 'Add Contact';
   const deleteBtn = document.getElementById('cc-delete-btn');
   if (idx !== null && contacts[idx]) {
@@ -1475,152 +1475,66 @@ function deleteContact() {
 
 function renderContacts() {
   const all = load(K.contacts, defaultContacts());
-  const query = (document.getElementById('contact-search')?.value||'').toLowerCase().trim();
+  window._CR = all; // contact registry for safe index lookups
+  const q = (document.getElementById('contact-search')?.value||'').toLowerCase().trim();
+  const list = all.map((c,i)=>Object.assign({},c,{_i:i})).filter(c=>
+    !q||(c.name||'').toLowerCase().includes(q)||(c.role||'').toLowerCase().includes(q)||(c.client||'').toLowerCase().includes(q));
 
-  const contacts = all.map((c,i)=>({...c,idx:i})).filter(c => {
-    if (!query) return true;
-    return (c.name||'').toLowerCase().includes(query) ||
-           (c.role||'').toLowerCase().includes(query) ||
-           (c.client||'').toLowerCase().includes(query);
+  // Client groups
+  const cm = {};
+  list.forEach(c=>{if(!c.client)return;if(!cm[c.client])cm[c.client]={uci:c.uci||'',p:[]};cm[c.client].p.push(c);});
+  const ro={consumer:0,caregiver:1,coord:2};
+  let ch='';
+  Object.entries(cm).forEach(([n,{uci,p}])=>{
+    p.sort((a,b)=>(ro[a.type]??9)-(ro[b.type]??9));
+    const ini=n.split(/[, ]+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    ch+='<div class="client-group"><div class="client-group-header" onclick="toggleClientGroup(this)">'
+      +'<div class="client-group-avatar">'+ini+'</div><div>'
+      +'<div class="client-group-name">'+n+'</div>'
+      +'<div class="client-group-uci">'+(uci?'UCI '+uci+' · ':'')+p.length+' contact'+(p.length!==1?'s':'')+'</div>'
+      +'</div><div class="client-group-chevron">▾</div></div>'
+      +'<div class="client-group-body">'+p.map(c=>cPersonRow(c._i)).join('')+'</div></div>';
   });
+  const csEl=document.getElementById('contacts-clients-section');
+  if(csEl) csEl.innerHTML=Object.keys(cm).length?'<div class="sec">Active Clients</div>'+ch:'';
 
-  // ── Client groups
-  const clientMap = {};
-  contacts.forEach(c => {
-    if (!c.client) return;
-    if (!clientMap[c.client]) clientMap[c.client] = {uci:c.uci||'', people:[]};
-    clientMap[c.client].people.push(c);
-  });
+  // Staff
+  const staff=list.filter(c=>c.type==='staff');
+  const stEl=document.getElementById('contacts-staff-section');
+  if(stEl) stEl.innerHTML=staff.length?'<div class="sec">Staff &amp; Hiring</div>'+staff.map(c=>
+    '<div class="staff-contact-row" onclick="cOpenIdx('+c._i+')">'
+    +'<div class="staff-avatar">&#128100;</div>'
+    +'<div style="flex:1;min-width:0;"><div class="staff-name">'+c.name+'</div>'
+    +'<div class="staff-role">'+(c.role||'')+'</div></div>'
+    +'<div style="display:flex;align-items:center;gap:6px;">'
+    +'<button onclick="event.stopPropagation();openContactSheet('+c._i+')" style="background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.4);width:34px;height:34px;border-radius:9px;font-size:14px;cursor:pointer;">&#9998;</button>'
+    +'<div style="font-size:16px;color:rgba(255,255,255,.2);">&rsaquo;</div></div></div>'
+  ).join(''):'';
 
-  let clientHtml = '';
-  Object.entries(clientMap).forEach(([clientName, {uci, people}]) => {
-    const initials = clientName.split(/[, ]+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    const roleOrder = {consumer:0, caregiver:1, coord:2};
-    people.sort((a,b) => (roleOrder[a.type]??9)-(roleOrder[b.type]??9));
-    clientHtml += `
-    <div class="client-group" id="cg-${clientName.replace(/[^a-z]/gi,'_')}">
-      <div class="client-group-header" onclick="toggleClientGroup(this)">
-        <div class="client-group-avatar">${initials}</div>
-        <div>
-          <div class="client-group-name">${clientName}</div>
-          <div class="client-group-uci">${uci ? 'UCI ' + uci + ' · ' : ''}${people.length} contact${people.length!==1?'s':''}</div>
-        </div>
-        <div class="client-group-chevron">▾</div>
-      </div>
-      <div class="client-group-body">
-        ${people.map(c => personRow(c)).join('')}
-      </div>
-    </div>`;
-  });
-
-  const csEl = document.getElementById('contacts-clients-section');
-  if (csEl) {
-    csEl.innerHTML = clientMap && Object.keys(clientMap).length
-      ? `<div class="sec">Active Clients</div>${clientHtml}`
-      : '';
-  }
-
-  // ── Staff
-  const staff = contacts.filter(c => c.type === 'staff');
-  const stEl = document.getElementById('contacts-staff-section');
-  if (stEl) {
-    stEl.innerHTML = staff.length ? `<div class="sec">Staff & Hiring</div>` +
-      staff.map(c => `
-        <div class="staff-contact-row" onclick="openProfile(${JSON.stringify(c).replace(/'/g,'\'')})">
-          <div class="staff-avatar">👤</div>
-          <div style="flex:1;min-width:0;">
-            <div class="staff-name">${c.name}</div>
-            <div class="staff-role">${c.role||''}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <button onclick="event.stopPropagation();openContactSheet(${c.idx})" style="background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.4);width:34px;height:34px;border-radius:9px;font-size:14px;cursor:pointer;">✏️</button>
-            <div style="font-size:16px;color:rgba(255,255,255,.2);">›</div>
-          </div>
-        </div>`).join('')
-      : '';
-  }
-
-  // ── Other
-  const other = contacts.filter(c => !c.client && c.type !== 'staff');
-  const otEl = document.getElementById('contacts-other-section');
-  if (otEl) {
-    otEl.innerHTML = other.length ? `<div class="sec">Other</div>` +
-      other.map(c => personRow(c)).join('') : '';
-  }
+  // Other
+  const other=list.filter(c=>!c.client&&c.type!=='staff');
+  const otEl=document.getElementById('contacts-other-section');
+  if(otEl) otEl.innerHTML=other.length?'<div class="sec">Other</div>'+other.map(c=>cPersonRow(c._i)).join(''):'';
 }
 
-function personRow(c) {
-  const TYPE_COLOR = {consumer:'rgba(45,43,127,.5)',caregiver:'rgba(244,124,32,.25)',coord:'rgba(30,28,94,.6)',other:'rgba(255,255,255,.08)'};
-  const TYPE_ICON2 = {consumer:'👤',caregiver:'🏠',coord:'🔖',staff:'👤',other:'💬'};
-  return `<div class="contact-person" onclick="openProfile(${JSON.stringify(c).replace(/\/g,'\\').replace(/'/g,"\'")})">
-    <div class="contact-person-avatar" style="background:${TYPE_COLOR[c.type]||'rgba(255,255,255,.08)'};">${c.avatar||TYPE_ICON2[c.type]||'👤'}</div>
-    <div style="flex:1;min-width:0;">
-      <div class="contact-person-name">${c.name}</div>
-      <div class="contact-person-role">${c.role||''}</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:6px;">
-      <button onclick="event.stopPropagation();openContactSheet(${c.idx??'null'})" style="background:rgba(255,255,255,.07);border:none;color:rgba(255,255,255,.3);width:32px;height:32px;border-radius:8px;font-size:13px;cursor:pointer;">✏️</button>
-      <div class="contact-person-arrow">›</div>
-    </div>
-  </div>`;
+function cPersonRow(idx) {
+  const c=window._CR[idx]||{};
+  const TC={consumer:'rgba(45,43,127,.5)',caregiver:'rgba(244,124,32,.25)',coord:'rgba(30,28,94,.6)',other:'rgba(255,255,255,.08)'};
+  const TI={consumer:'&#128100;',caregiver:'&#127968;',coord:'&#128278;',staff:'&#128100;',other:'&#128172;'};
+  return '<div class="contact-person" onclick="cOpenIdx('+idx+')">'
+    +'<div class="contact-person-avatar" style="background:'+(TC[c.type]||'rgba(255,255,255,.08)')+';">'+(c.avatar||TI[c.type]||'&#128100;')+'</div>'
+    +'<div style="flex:1;min-width:0;"><div class="contact-person-name">'+(c.name||'')+'</div>'
+    +'<div class="contact-person-role">'+(c.role||'')+'</div></div>'
+    +'<div style="display:flex;align-items:center;gap:6px;">'
+    +'<button onclick="event.stopPropagation();openContactSheet('+idx+')" style="background:rgba(255,255,255,.07);border:none;color:rgba(255,255,255,.3);width:32px;height:32px;border-radius:8px;font-size:13px;cursor:pointer;">&#9998;</button>'
+    +'<div class="contact-person-arrow">&rsaquo;</div></div></div>';
 }
 
-function toggleClientGroup(header) {
-  header.classList.toggle('open');
-  header.nextElementSibling.classList.toggle('open');
+function cOpenIdx(idx) {
+  const c=window._CR[idx];
+  if(c) openProfile(c,idx);
 }
 
-function openProfile(c) {
-  if (typeof c === 'string') { try { c = JSON.parse(c); } catch(e) { return; } }
-  const ph = (c.phone||'').replace(/\D/g,'');
-  const TYPE_COLOR = {consumer:'linear-gradient(135deg,#2D2B7F,#1a1860)',caregiver:'linear-gradient(135deg,#c25c10,#F47C20)',coord:'linear-gradient(135deg,#1E1C5E,#2D2B7F)',staff:'linear-gradient(135deg,#0d7a3e,#16A34A)',other:'rgba(255,255,255,.1)'};
-  const TYPE_LABEL = {consumer:'Consumer',caregiver:'Caregiver / Support',coord:'IRC Service Coordinator',staff:'Staff / Applicant',other:'Contact'};
-  const BADGE_COLOR = {consumer:'rgba(45,43,127,.4)',caregiver:'rgba(244,124,32,.3)',coord:'rgba(30,28,94,.5)',staff:'rgba(22,163,74,.3)',other:'rgba(255,255,255,.1)'};
-
-  document.getElementById('profile-avatar-bg').style.background = TYPE_COLOR[c.type]||'rgba(255,255,255,.1)';
-  document.getElementById('profile-avatar-emoji').textContent = c.avatar || (c.type==='caregiver'?'🏠':c.type==='coord'?'🔖':'👤');
-  document.getElementById('profile-name').textContent = c.name||'—';
-
-  const roleLines = [c.role||'', c.client ? 'Client: ' + c.client : '', c.uci ? 'UCI ' + c.uci : ''].filter(Boolean);
-  document.getElementById('profile-role').innerHTML = roleLines.join('<br>');
-
-  const badge = document.getElementById('profile-badge');
-  badge.textContent = TYPE_LABEL[c.type]||'Contact';
-  badge.style.background = BADGE_COLOR[c.type]||'rgba(255,255,255,.1)';
-
-  // Action buttons
-  const callBtn = document.getElementById('profile-call');
-  const textBtn = document.getElementById('profile-text');
-  const emailBtn = document.getElementById('profile-email');
-  const sendBtn = document.getElementById('profile-send');
-
-  if (ph) {
-    callBtn.href = 'tel:'+ph; callBtn.style.display='flex';
-    textBtn.href = 'sms:'+ph+'&body=Hi '+(c.name||'').split(' ')[0]+', '; textBtn.style.display='flex';
-  } else { callBtn.style.display='none'; textBtn.style.display='none'; }
-
-  if (c.email) { emailBtn.href='mailto:'+c.email; emailBtn.style.display='flex'; }
-  else emailBtn.style.display='none';
-
-  sendBtn.onclick = () => { closeOverlay('profile-overlay'); if(c.idx!=null) sendToContact(c.idx); };
-
-  // Details
-  const det = document.getElementById('profile-details');
-  const rows = [
-    ph ? ['📞','Phone',(c.phone||'').replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3')] : null,
-    c.email ? ['✉️','Email',c.email] : null,
-    c.client ? ['👥','Linked Client',c.client] : null,
-    c.uci ? ['🔢','UCI',c.uci] : null,
-    c.role ? ['🏷️','Role',c.role] : null,
-  ].filter(Boolean);
-  det.innerHTML = rows.map(([icon,label,val])=>`
-    <div class="profile-detail-row">
-      <div class="profile-detail-icon">${icon}</div>
-      <div><div class="profile-detail-label">${label}</div><div class="profile-detail-val">${val}</div></div>
-    </div>`).join('');
-
-  openOverlay('profile-overlay');
-}
 
 function sendToContact(idx) {
   const contacts = load(K.contacts, defaultContacts());
