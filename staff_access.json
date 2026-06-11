@@ -1,9 +1,43 @@
 {
-  "_readme": "Open Grace LLC \u2014 Staff Access Control & Coordinator Data. Director manages via Director Dashboard.",
+  "_readme": "Open Grace LLC — Staff Access Control & Coordinator Data. Director manages via Director Dashboard.",
   "_hipaa_notice": "This file controls access to PHI. Handle with care. Do not share publicly.",
   "_version": "2.0",
-  "last_updated": "2026-06-10",
+  "last_updated": "2026-06-11",
   "staff": [
+    {
+      "code": "OG-DIR-2026",
+      "name": "Joshua Kennedy",
+      "position": "Director",
+      "active": true,
+      "hired": "2026-01-01",
+      "terminated": null,
+      "phone": "951-880-4132",
+      "email": "joshua.kennedy@opengrace.org",
+      "notes": "Director — full system access",
+      "clients": [],
+      "onboarding": {
+        "liveScan": true,
+        "cprFirstAid": true,
+        "handbookSigned": true,
+        "jotformOnboarding": true,
+        "mandatedReporter": true,
+        "hipaaAck": true,
+        "teamsSetup": true,
+        "contactLogTest": true,
+        "firstSupervision": true,
+        "completed": true,
+        "completedDate": "2026-01-01"
+      },
+      "handoff": {
+        "inProgress": false,
+        "toStaffCode": null,
+        "toStaffName": null,
+        "initiatedDate": null,
+        "reason": null,
+        "notes": null,
+        "completedDate": null
+      }
+    },
     {
       "code": "OG-2026-001",
       "name": "Staff Member Name",
@@ -13,7 +47,7 @@
       "terminated": null,
       "phone": "",
       "email": "",
-      "notes": "First hire \u2014 replace with actual name when onboarded",
+      "notes": "First hire — replace with actual name when onboarded",
       "clients": [
         {
           "name": "Burks, Jaybrion",
