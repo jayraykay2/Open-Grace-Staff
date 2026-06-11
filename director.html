@@ -1496,7 +1496,14 @@ function renderContacts() {
       +'<div class="client-group-body">'+p.map(c=>cPersonRow(c._i)).join('')+'</div></div>';
   });
   const csEl=document.getElementById('contacts-clients-section');
-  if(csEl) csEl.innerHTML=Object.keys(cm).length?'<div class="sec">Active Clients</div>'+ch:'';
+  if(csEl) {
+    csEl.innerHTML=Object.keys(cm).length?'<div class="sec">Active Clients</div>'+ch:'';
+    // Auto-open the first client group
+    var firstHeader = csEl.querySelector('.client-group-header');
+    var firstBody   = csEl.querySelector('.client-group-body');
+    if (firstHeader) firstHeader.classList.add('open');
+    if (firstBody)   firstBody.classList.add('open');
+  }
 
   // Staff
   const staff=list.filter(c=>c.type==='staff');
@@ -2518,6 +2525,12 @@ function forceSyncPipeline() {
 function toggleHub(btn) {
   btn.classList.toggle('open');
   const body = btn.nextElementSibling;
+  if (body) body.classList.toggle('open');
+}
+
+function toggleClientGroup(header) {
+  header.classList.toggle('open');
+  var body = header.nextElementSibling;
   if (body) body.classList.toggle('open');
 }
 
