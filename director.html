@@ -1362,6 +1362,17 @@ function renderPipeSection(type, items) {
         </div>
         <span style="opacity:.4;font-size:14px;">\u2192</span>
       </button>` : '';
+    // Extract position from notes for offer letter pre-fill
+    const posMatch = (item.notes||'').match(/Position:\s*([^|\n]+)/i);
+    const candidatePos = posMatch
+      ? posMatch[1].trim().split('|')[0].trim()
+        .replace('Direct Support Specialist','').replace('—','').trim()
+      : 'Family Coordinator';
+    const safeName = (item.name||'').replace(/'/g,"\\'");
+    const safePos  = candidatePos.replace(/'/g,"\\'");
+    const safePhone = phone;
+    const safeEmail = ((item.notes||'').match(/([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/)||[''])[0];
+
     return `<div class="pipe-card">
       <div class="pipe-header">
         <div class="pipe-name">${item.name}${uci?` <span style="font-size:11px;opacity:.5;font-weight:400;">UCI ${uci}</span>`:''}</div>
@@ -1372,6 +1383,19 @@ function renderPipeSection(type, items) {
         ${phone ? ' &nbsp;\u00B7&nbsp; \uD83D\uDCDE ' + item.phone : ''}
       </div>
       ${coordBtn}
+      ${type === 'onboarding' ? `
+      <button onclick="openOfferFromCandidate('${safeName}','${safePos}','${safePhone}','${safeEmail}')"
+        style="width:100%;margin:8px 0 4px;padding:11px 14px;
+          background:linear-gradient(135deg,rgba(45,43,127,.5),rgba(26,24,96,.5));
+          border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;
+          font-family:var(--sans);cursor:pointer;display:flex;align-items:center;gap:10px;text-align:left;">
+        <span style="font-size:18px;flex-shrink:0;">📄</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:700;">Generate Offer Letter</div>
+          <div style="font-size:11px;opacity:.55;">Pre-filled with name &amp; position</div>
+        </div>
+        <span style="opacity:.4;font-size:14px;">→</span>
+      </button>` : ''}
       <div class="pipe-actions">
         ${phone ? `<a class="pipe-btn sms" href="${smsHref}">\uD83D\uDCAC Text</a>` : ''}
         <button class="pipe-btn mark" onclick="markComplete('${type}',${i})">\u2705 Done</button>
@@ -2580,15 +2604,44 @@ const WAGE_RUBRIC = {
 
 let offerData = {};
 
-function openOfferGenerator() {
-  // Set today's date defaults
+// Store candidate contact info for sending
+let _offerCandidate = { phone: '', email: '' };
+
+function openOfferFromCandidate(name, pos, phone, email) {
+  _offerCandidate = { phone, email };
+  openOfferGenerator(name, pos);
+}
+
+function openOfferGenerator(prefillName, prefillPos) {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('ol-offer-date').value = today;
-  // Default deadline 7 days out
   const deadline = new Date();
   deadline.setDate(deadline.getDate() + 7);
   document.getElementById('ol-deadline').value = deadline.toISOString().split('T')[0];
   document.getElementById('ol-output').style.display = 'none';
+
+  // Pre-fill candidate info if provided
+  if (prefillName) {
+    document.getElementById('ol-name').value = prefillName;
+  }
+  if (prefillPos) {
+    const sel = document.getElementById('ol-position');
+    // Match position to closest option
+    const opts = Array.from(sel.options).map(o => o.value);
+    const match = opts.find(o => o.toLowerCase().includes(prefillPos.toLowerCase().split(' ')[0]))
+                  || opts[0];
+    sel.value = match;
+  }
+
+  // Reset override + bilingual
+  document.getElementById('ol-override-check').checked = false;
+  document.getElementById('ol-override-field').style.display = 'none';
+  document.getElementById('ol-bilingual').checked = false;
+  const bll = document.getElementById('ol-bilingual-lang-field');
+  if (bll) bll.style.display = 'none';
+  const effB = document.getElementById('ol-effective-block');
+  if (effB) effB.style.display = 'none';
+
   calcRate();
   openOverlay('offer-overlay');
 }
@@ -2698,7 +2751,22 @@ function generateOfferLetter() {
   };
 
   document.getElementById('ol-output').style.display = 'block';
-  toast('✓ Offer letter ready — tap Download');
+
+  // Summary line
+  const summaryEl = document.getElementById('ol-summary-line');
+  if (summaryEl) {
+    summaryEl.textContent = d.name + ' · ' + d.pos + ' · $' + d.totalRate + '/hr'
+      + (d.bilingual ? ' (incl. bilingual diff.)' : '')
+      + ' · Start ' + d.startDate;
+  }
+
+  // Show send buttons if candidate contact info available
+  const smsRow = document.getElementById('ol-send-sms-row');
+  const emailRow = document.getElementById('ol-send-email-row');
+  if (smsRow) smsRow.style.display = _offerCandidate.phone ? 'block' : 'none';
+  if (emailRow) emailRow.style.display = _offerCandidate.email ? 'block' : 'none';
+
+  toast('✓ Offer letter ready');
 }
 
 function downloadOfferLetter() {
@@ -2789,6 +2857,86 @@ Open Grace LLC • Confidential Employment Document • IRC Vendor PJ6208
   a.click();
   URL.revokeObjectURL(url);
   toast('✓ Downloaded — open in Word and apply formatting');
+}
+
+
+function sendOfferSMS() {
+  if (!_offerCandidate.phone) return;
+  const d = offerData;
+  const msg = encodeURIComponent(
+    'Hi ' + d.name.split(' ')[0] + ', Open Grace LLC is pleased to extend you a conditional offer of employment'
+    + ' for the position of ' + d.pos + ' at $' + d.totalRate + '/hr'
+    + (d.bilingual ? ' (includes bilingual differential)' : '') + '.'
+    + ' Your proposed start date is ' + d.startDate + '.'
+    + ' Please review and accept by ' + d.deadline + '.'
+    + ' Contact Director Joshua Kennedy at 951-880-4132 with any questions.'
+    + ' — Open Grace LLC, IRC Vendor PJ6208'
+  );
+  window.open('sms:' + _offerCandidate.phone + '&body=' + msg);
+}
+
+function sendOfferEmail() {
+  if (!_offerCandidate.email) return;
+  const d = offerData;
+  const subject = encodeURIComponent('Open Grace LLC — Offer of Employment: ' + d.pos);
+  const body = encodeURIComponent(
+    'Dear ' + d.name + ',\n\n'
+    + 'Open Grace LLC is pleased to extend this conditional offer of employment for the position of ' + d.pos + '.\n\n'
+    + 'OFFER SUMMARY\n'
+    + '─────────────────────────────────\n'
+    + 'Position:       ' + d.pos + '\n'
+    + 'Start Date:     ' + d.startDate + '\n'
+    + 'Hourly Rate:    $' + d.baseRate + '/hr'
+    + (d.bilingual ? '\nBilingual Diff: +$' + d.bilingualDiff + '/hr (' + d.bilingualLang + ')' : '')
+    + '\nEffective Rate: $' + d.totalRate + '/hr'
+    + '\nWage Rubric:    ' + d.rubricNote + '\n'
+    + '─────────────────────────────────\n\n'
+    + 'This offer is conditional upon: Live Scan clearance, CPR/First Aid certification, '
+    + 'signed Employee Handbook, completed Jotform onboarding, and Day 1 training completion.\n\n'
+    + 'Please sign and return your acceptance by ' + d.deadline + '.\n\n'
+    + 'A full offer letter document will follow. If you have questions, please contact me directly.\n\n'
+    + 'Warmly,\n'
+    + 'Joshua Kennedy\n'
+    + 'Director, Open Grace LLC\n'
+    + '951-880-4132 | joshua.kennedy@opengrace.org\n'
+    + 'IRC Vendor PJ6208'
+  );
+  window.open('mailto:' + _offerCandidate.email + '?subject=' + subject + '&body=' + body);
+}
+
+function copyOfferText() {
+  const d = offerData;
+  if (!d.name) { toast('⚠ Generate the letter first'); return; }
+  const text =
+    'OPEN GRACE LLC — OFFER OF EMPLOYMENT\n'
+    + 'IRC Vendor PJ6208 | 951-880-4132\n'
+    + '─────────────────────────────────\n\n'
+    + 'Date: ' + d.offerDate + '\n'
+    + 'Candidate: ' + d.name + '\n\n'
+    + 'RE: Offer of Employment — ' + d.pos + '\n\n'
+    + 'Dear ' + d.name + ',\n\n'
+    + 'Open Grace LLC is pleased to extend this conditional offer of employment for the position of '
+    + d.pos + ' within our Coordinated Family Support (CFS) program.\n\n'
+    + 'OFFER SUMMARY\n'
+    + 'Position Title:       ' + d.pos + '\n'
+    + 'Department:           Coordinated Family Support (CFS)\n'
+    + 'Reports To:           Joshua Kennedy, Director\n'
+    + 'Employment Status:    Non-exempt (hourly) — at-will\n'
+    + 'Proposed Start Date:  ' + d.startDate + '\n'
+    + 'Hourly Base Rate:     $' + d.baseRate + '/hr\n'
+    + (d.bilingual ? 'Bilingual Differential: +$' + d.bilingualDiff + '/hr (' + d.bilingualLang + ')\n' : '')
+    + 'Effective Hourly Rate: $' + d.totalRate + '/hr\n'
+    + 'Wage Rubric:          ' + d.rubricNote + '\n\n'
+    + 'This offer is conditional upon satisfactory completion of all pre-employment requirements '
+    + '(Live Scan, CPR/First Aid, Handbook, Jotform onboarding, CORI agreement, Day 1 training).\n\n'
+    + 'Please accept by: ' + d.deadline + '\n\n'
+    + 'Sincerely,\nJoshua Kennedy\nDirector, Open Grace LLC\n951-880-4132';
+
+  navigator.clipboard.writeText(text).then(() => {
+    toast('✓ Offer letter copied to clipboard');
+  }).catch(() => {
+    toast('⚠ Copy failed — try Download instead');
+  });
 }
 
 </script>
@@ -3106,16 +3254,43 @@ Open Grace LLC • Confidential Employment Document • IRC Vendor PJ6208
     <div id="ol-output" style="display:none;margin-top:16px;">
       <div style="background:rgba(29,158,117,.15);border:1px solid rgba(29,158,117,.3);
         border-radius:12px;padding:14px;margin-bottom:10px;">
-        <div style="font-size:12px;font-weight:700;color:#1D9E75;margin-bottom:8px;">
-          ✅ Offer Letter Ready
-        </div>
-        <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:12px;">
-          Download the generated offer letter. Open in Word to review, print, or send.
-        </div>
+        <div style="font-size:13px;font-weight:700;color:#1D9E75;margin-bottom:4px;">✅ Offer Letter Ready</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:14px;"
+          id="ol-summary-line">—</div>
+
+        <!-- Download -->
         <button onclick="downloadOfferLetter()"
           style="width:100%;padding:14px;background:var(--navy);color:#fff;border:none;
-            border-radius:10px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;">
-          ⬇ Download Offer Letter (.docx)
+            border-radius:10px;font-size:14px;font-weight:700;font-family:var(--sans);
+            cursor:pointer;margin-bottom:8px;">
+          ⬇ Download Offer Letter (.txt)
+        </button>
+
+        <!-- Send via SMS -->
+        <div id="ol-send-sms-row" style="display:none;margin-bottom:6px;">
+          <button onclick="sendOfferSMS()"
+            style="width:100%;padding:14px;background:rgba(45,43,127,.4);color:#fff;border:1px solid rgba(255,255,255,.15);
+              border-radius:10px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;">
+            💬 Send Link via Text
+          </button>
+        </div>
+
+        <!-- Send via Email -->
+        <div id="ol-send-email-row" style="display:none;margin-bottom:6px;">
+          <button onclick="sendOfferEmail()"
+            style="width:100%;padding:14px;background:rgba(244,124,32,.15);color:#F47C20;
+              border:1px solid rgba(244,124,32,.3);border-radius:10px;font-size:14px;
+              font-weight:700;font-family:var(--sans);cursor:pointer;">
+            ✉️ Send via Email
+          </button>
+        </div>
+
+        <!-- Copy text -->
+        <button onclick="copyOfferText()"
+          style="width:100%;padding:12px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);
+            border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;
+            font-weight:700;font-family:var(--sans);cursor:pointer;">
+          📋 Copy Offer Text
         </button>
       </div>
     </div>
