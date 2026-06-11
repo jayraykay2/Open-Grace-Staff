@@ -472,6 +472,10 @@ body{font-family:var(--sans);display:flex;flex-direction:column;}
     <button class="action ghost" onclick="openAccessSheet()">🔑 Staff Access</button>
     <button class="action ghost" onclick="openPositionsManager()">💼 Open Positions</button>
   </div>
+  <button class="action" style="background:linear-gradient(135deg,#2D2B7F,#1a1860);color:#fff;margin-bottom:4px;"
+    onclick="openOfferGenerator()">
+    📄 Generate Offer Letter
+  </button>
 
   <!-- FORMS -->
   <div class="hub-section">
@@ -2558,6 +2562,235 @@ function resetContacts() {
   }
 }
 
+
+// ════════════════════════════════════════════
+// OFFER LETTER GENERATOR
+// ════════════════════════════════════════════
+
+const WAGE_RUBRIC = {
+  // Base rates by position
+  base: {
+    'Family Coordinator': 17.50,
+    'Lead Family Coordinator': 19.50,
+    'Case Manager / Navigator': 20.00,
+    'Supervisor': 22.00,
+  },
+  bilingual: 1.50,
+};
+
+let offerData = {};
+
+function openOfferGenerator() {
+  // Set today's date defaults
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('ol-offer-date').value = today;
+  // Default deadline 7 days out
+  const deadline = new Date();
+  deadline.setDate(deadline.getDate() + 7);
+  document.getElementById('ol-deadline').value = deadline.toISOString().split('T')[0];
+  document.getElementById('ol-output').style.display = 'none';
+  calcRate();
+  openOverlay('offer-overlay');
+}
+
+function calcRate() {
+  const pos    = document.getElementById('ol-position').value;
+  const edu    = parseFloat(document.getElementById('ol-edu').value) || 0;
+  const exp    = parseFloat(document.getElementById('ol-exp').value) || 0;
+  const cert   = parseFloat(document.getElementById('ol-cert').value) || 0;
+  const base   = WAGE_RUBRIC.base[pos] || 17.50;
+  const calculated = Math.round((base + edu + exp + cert) * 4) / 4; // round to nearest $0.25
+
+  const override = document.getElementById('ol-override-check').checked;
+  const bilingual = document.getElementById('ol-bilingual').checked;
+
+  document.getElementById('ol-rate-display').textContent =
+    override ? '(override)' : '$' + calculated.toFixed(2) + '/hr';
+
+  document.getElementById('ol-rate-breakdown').innerHTML =
+    'Base: $' + base.toFixed(2) + '<br>' +
+    'Education: +$' + edu.toFixed(2) + '<br>' +
+    'Experience: +$' + exp.toFixed(2) + '<br>' +
+    'Certs: +$' + cert.toFixed(2);
+
+  // Bilingual language field
+  const bilingualLangField = document.getElementById('ol-bilingual-lang-field');
+  if (bilingualLangField) bilingualLangField.style.display = bilingual ? 'block' : 'none';
+
+  updateRateDisplay();
+}
+
+function toggleOverride() {
+  const on = document.getElementById('ol-override-check').checked;
+  document.getElementById('ol-override-field').style.display = on ? 'block' : 'none';
+  updateRateDisplay();
+}
+
+function updateRateDisplay() {
+  const pos    = document.getElementById('ol-position').value;
+  const edu    = parseFloat(document.getElementById('ol-edu').value) || 0;
+  const exp    = parseFloat(document.getElementById('ol-exp').value) || 0;
+  const cert   = parseFloat(document.getElementById('ol-cert').value) || 0;
+  const base   = WAGE_RUBRIC.base[pos] || 17.50;
+  const calculated = Math.round((base + edu + exp + cert) * 4) / 4;
+
+  const override  = document.getElementById('ol-override-check').checked;
+  const overrideRate = parseFloat(document.getElementById('ol-override-rate').value) || 0;
+  const bilingual = document.getElementById('ol-bilingual').checked;
+
+  const effectiveBase = override && overrideRate > 0 ? overrideRate : calculated;
+  const effectiveTotal = bilingual ? effectiveBase + WAGE_RUBRIC.bilingual : effectiveBase;
+
+  document.getElementById('ol-rate-display').textContent =
+    override && overrideRate > 0
+      ? '$' + overrideRate.toFixed(2) + '/hr (override)'
+      : '$' + calculated.toFixed(2) + '/hr';
+
+  const effBlock = document.getElementById('ol-effective-block');
+  if (bilingual) {
+    effBlock.style.display = 'block';
+    document.getElementById('ol-effective-rate').textContent = '$' + effectiveTotal.toFixed(2) + '/hr';
+  } else {
+    effBlock.style.display = 'none';
+  }
+}
+
+function generateOfferLetter() {
+  const name = (document.getElementById('ol-name').value || '').trim();
+  if (!name) { toast('⚠ Enter candidate name'); return; }
+
+  const pos    = document.getElementById('ol-position').value;
+  const edu    = parseFloat(document.getElementById('ol-edu').value) || 0;
+  const exp    = parseFloat(document.getElementById('ol-exp').value) || 0;
+  const cert   = parseFloat(document.getElementById('ol-cert').value) || 0;
+  const base   = WAGE_RUBRIC.base[pos] || 17.50;
+  const calculated = Math.round((base + edu + exp + cert) * 4) / 4;
+
+  const override     = document.getElementById('ol-override-check').checked;
+  const overrideRate = parseFloat(document.getElementById('ol-override-rate').value) || 0;
+  const bilingual    = document.getElementById('ol-bilingual').checked;
+  const bilingualLang = document.getElementById('ol-bilingual-lang')?.value || 'Spanish';
+
+  const effectiveBase  = override && overrideRate > 0 ? overrideRate : calculated;
+  const effectiveTotal = bilingual ? effectiveBase + WAGE_RUBRIC.bilingual : effectiveBase;
+
+  const startRaw    = document.getElementById('ol-start').value;
+  const offerRaw    = document.getElementById('ol-offer-date').value;
+  const deadlineRaw = document.getElementById('ol-deadline').value;
+
+  function fmtDate(d) {
+    if (!d) return '[Date]';
+    const dt = new Date(d + 'T12:00:00');
+    return dt.toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+  }
+
+  offerData = {
+    name, pos, bilingual, bilingualLang,
+    baseRate: effectiveBase.toFixed(2),
+    totalRate: effectiveTotal.toFixed(2),
+    bilingualDiff: WAGE_RUBRIC.bilingual.toFixed(2),
+    startDate: fmtDate(startRaw),
+    offerDate: fmtDate(offerRaw),
+    deadline:  fmtDate(deadlineRaw),
+    rubricNote: override
+      ? 'Rate set by Director override'
+      : 'Base $' + base.toFixed(2) + ' + Education $' + edu.toFixed(2) + ' + Experience $' + exp.toFixed(2) + ' + Certs $' + cert.toFixed(2),
+  };
+
+  document.getElementById('ol-output').style.display = 'block';
+  toast('✓ Offer letter ready — tap Download');
+}
+
+function downloadOfferLetter() {
+  if (!offerData.name) { toast('⚠ Generate the letter first'); return; }
+  // Build a pre-filled text version for the download notification
+  // The actual .docx is served from GitHub — director opens template and fills in
+  // For now: generate filled HTML for printing / copying to Word
+  const d = offerData;
+  const today = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+  const content = `
+OPEN GRACE LLC — OFFER OF EMPLOYMENT
+IRC Vendor PJ6208 | 951-880-4132 | joshua.kennedy@opengrace.org
+
+Date: ${d.offerDate}
+
+${d.name}
+
+RE: Offer of Employment — ${d.pos}
+
+Dear ${d.name},
+
+Open Grace LLC is pleased to extend this conditional offer of employment for the position of ${d.pos} within our Coordinated Family Support (CFS) program. We are confident that your skills, experience, and values are well-aligned with Open Grace's mission to support families across Riverside and San Bernardino Counties.
+
+OFFER SUMMARY
+─────────────────────────────────────────────────
+Position Title:          ${d.pos}
+Department:              Coordinated Family Support (CFS)
+Reports To:              Joshua Kennedy, Director
+Employment Status:       Non-exempt (hourly) — at-will employment
+Proposed Start Date:     ${d.startDate}
+Hourly Base Rate:        $${d.baseRate} per hour
+${d.bilingual ? 'Bilingual Differential:  +$' + d.bilingualDiff + '/hr (' + d.bilingualLang + ')' : ''}
+${d.bilingual ? 'Effective Hourly Rate:   $' + d.totalRate + ' per hour' : ''}
+Wage Rubric Note:        ${d.rubricNote}
+─────────────────────────────────────────────────
+
+COMPENSATION & PAY
+Your hourly rate has been determined using Open Grace's Wage Rubric, which considers your years of relevant experience, educational background, and applicable certifications.
+${d.bilingual ? '
+You have been approved for a Bilingual Pay Differential of $' + d.bilingualDiff + ' per hour for verified ' + d.bilingualLang + ' bilingual proficiency. This differential is contingent upon verification by the Director and continued use in service delivery.' : ''}
+
+PRE-EMPLOYMENT CONDITIONS
+This offer is conditional upon completion of:
+• Live Scan fingerprinting and DOJ/FBI background clearance
+• Current CPR and First Aid certification
+• Signed Employee Handbook Acknowledgement
+• Completed Staff Onboarding Form (Jotform)
+• Completion of all 4 Day 1 training modules before first client contact
+• Signed CORI Confidentiality Agreement
+• Valid California driver's license and proof of auto insurance (if role involves transportation)
+
+Open Grace LLC will reimburse Live Scan and CPR/First Aid costs upon 30 days of active employment. Submit original receipts within 60 days.
+
+AT-WILL EMPLOYMENT
+Your employment with Open Grace LLC is at-will. Either party may terminate the relationship at any time, with or without cause or notice.
+
+CONFIDENTIALITY & CORI COMPLIANCE
+You will be required to sign Open Grace's CORI Confidentiality Agreement. Unauthorized disclosure of CORI is a violation of California law.
+
+ACCEPTANCE
+To accept this offer, please sign and return this letter no later than ${d.deadline}.
+Contact Director Joshua Kennedy: 951-880-4132 | joshua.kennedy@opengrace.org
+
+Sincerely,
+
+_____________________________    ___________
+Joshua Kennedy, Director          Date
+Open Grace LLC — IRC Vendor PJ6208
+
+
+═══ CANDIDATE ACCEPTANCE ═══
+
+I, ${d.name}, have read and agree to the terms of this offer of employment with Open Grace LLC.
+
+_____________________________    ___________
+Candidate Signature               Date
+
+─────────────────────────────────────────────────
+Open Grace LLC • Confidential Employment Document • IRC Vendor PJ6208
+`;
+
+  const blob = new Blob([content], {type:'text/plain'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'OpenGrace_OfferLetter_' + d.name.replace(/\s+/g,'_') + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('✓ Downloaded — open in Word and apply formatting');
+}
+
 </script>
 
 
@@ -2740,6 +2973,153 @@ function resetContacts() {
     <div style="display:flex;gap:8px;margin-top:14px;">
       <button class="sheet-cancel" style="flex:1;" onclick="closeOverlay('profile-overlay')">Close</button>
     </div>
+  </div>
+</div>
+
+
+<!-- ════════ OFFER LETTER GENERATOR ════════ -->
+<div class="overlay" id="offer-overlay">
+  <div class="sheet" style="max-height:90vh;overflow-y:auto;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">📄 Offer Letter Generator</div>
+
+    <!-- CANDIDATE INFO -->
+    <div class="field-label" style="margin-top:4px;">Candidate Full Name</div>
+    <input class="field-input" id="ol-name" type="text" placeholder="First Last">
+
+    <div class="field-label">Position</div>
+    <select class="field-input field-select" id="ol-position" onchange="calcRate()">
+      <option value="Family Coordinator">Family Coordinator — Direct Support Specialist</option>
+      <option value="Lead Family Coordinator">Lead Family Coordinator</option>
+      <option value="Case Manager / Navigator">Case Manager / Navigator</option>
+      <option value="Supervisor">Supervisor</option>
+    </select>
+
+    <div class="field-label">Proposed Start Date</div>
+    <input class="field-input" id="ol-start" type="date">
+
+    <div class="field-label">Offer Date</div>
+    <input class="field-input" id="ol-offer-date" type="date">
+
+    <div class="field-label">Acceptance Deadline</div>
+    <input class="field-input" id="ol-deadline" type="date">
+
+    <!-- WAGE RUBRIC -->
+    <div style="background:rgba(45,43,127,.25);border:1px solid rgba(255,255,255,.1);
+      border-radius:12px;padding:14px;margin:14px 0 8px;">
+      <div style="font-size:12px;font-weight:800;color:var(--orange);letter-spacing:1px;
+        text-transform:uppercase;margin-bottom:12px;">⚖️ Wage Rubric</div>
+
+      <div class="field-label">Education Level</div>
+      <select class="field-input field-select" id="ol-edu" onchange="calcRate()">
+        <option value="0">High School Diploma / GED</option>
+        <option value="0.5">Some College (no degree)</option>
+        <option value="1.00">Associate's Degree</option>
+        <option value="1.50">Bachelor's Degree</option>
+        <option value="2.00">Master's Degree or higher</option>
+      </select>
+
+      <div class="field-label">Years of Relevant Experience</div>
+      <select class="field-input field-select" id="ol-exp" onchange="calcRate()">
+        <option value="0">Less than 1 year</option>
+        <option value="0.50">1 – 2 years</option>
+        <option value="1.00">2 – 3 years</option>
+        <option value="1.50">3 – 5 years</option>
+        <option value="2.00">5 – 7 years</option>
+        <option value="2.50">7 – 10 years</option>
+        <option value="3.00">10+ years</option>
+      </select>
+
+      <div class="field-label">Certifications / Special Qualifications</div>
+      <select class="field-input field-select" id="ol-cert" onchange="calcRate()">
+        <option value="0">None beyond requirements</option>
+        <option value="0.25">One relevant certification</option>
+        <option value="0.50">Multiple certifications</option>
+        <option value="0.75">Advanced credential (BCBA, LCSW, etc.)</option>
+      </select>
+
+      <!-- RATE DISPLAY -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
+        <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:12px;text-align:center;">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;
+            letter-spacing:1px;margin-bottom:4px;">Calculated Base Rate</div>
+          <div style="font-size:22px;font-weight:800;color:#fff;" id="ol-rate-display">$—/hr</div>
+        </div>
+        <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:12px;text-align:center;">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;
+            letter-spacing:1px;margin-bottom:4px;">Rubric Breakdown</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.55);line-height:1.7;" id="ol-rate-breakdown">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OVERRIDE -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <input type="checkbox" id="ol-override-check" onchange="toggleOverride()"
+        style="width:20px;height:20px;accent-color:var(--orange);">
+      <label for="ol-override-check" style="font-size:13px;color:rgba(255,255,255,.7);">
+        Override calculated rate (Director discretion)
+      </label>
+    </div>
+    <div id="ol-override-field" style="display:none;margin-bottom:10px;">
+      <div class="field-label">Override Hourly Rate ($)</div>
+      <input class="field-input" id="ol-override-rate" type="number"
+        step="0.25" min="16" max="45" placeholder="e.g. 21.50" oninput="updateRateDisplay()">
+    </div>
+
+    <!-- BILINGUAL -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <input type="checkbox" id="ol-bilingual"
+        style="width:20px;height:20px;accent-color:var(--green);" onchange="calcRate()">
+      <label for="ol-bilingual" style="font-size:13px;color:rgba(255,255,255,.7);">
+        Bilingual Pay Differential (+$1.50/hr — verified proficiency required)
+      </label>
+    </div>
+    <div id="ol-bilingual-lang-field" style="display:none;">
+      <div class="field-label">Bilingual Language</div>
+      <select class="field-input field-select" id="ol-bilingual-lang">
+        <option>Spanish</option>
+        <option>Tagalog</option>
+        <option>Vietnamese</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <!-- EFFECTIVE RATE -->
+    <div style="background:rgba(29,158,117,.15);border:1px solid rgba(29,158,117,.3);
+      border-radius:12px;padding:14px;margin:14px 0;text-align:center;display:none;"
+      id="ol-effective-block">
+      <div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;
+        letter-spacing:1px;margin-bottom:4px;">Effective Hourly Rate (with differential)</div>
+      <div style="font-size:26px;font-weight:800;color:#1D9E75;" id="ol-effective-rate">$—/hr</div>
+    </div>
+
+    <!-- GENERATE BUTTON -->
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <button class="sheet-cancel" onclick="closeOverlay('offer-overlay')">Cancel</button>
+      <button class="sheet-save" onclick="generateOfferLetter()">
+        📄 Generate Letter
+      </button>
+    </div>
+
+    <!-- GENERATED OUTPUT -->
+    <div id="ol-output" style="display:none;margin-top:16px;">
+      <div style="background:rgba(29,158,117,.15);border:1px solid rgba(29,158,117,.3);
+        border-radius:12px;padding:14px;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:700;color:#1D9E75;margin-bottom:8px;">
+          ✅ Offer Letter Ready
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:12px;">
+          Download the generated offer letter. Open in Word to review, print, or send.
+        </div>
+        <button onclick="downloadOfferLetter()"
+          style="width:100%;padding:14px;background:var(--navy);color:#fff;border:none;
+            border-radius:10px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;">
+          ⬇ Download Offer Letter (.docx)
+        </button>
+      </div>
+    </div>
+
   </div>
 </div>
 
