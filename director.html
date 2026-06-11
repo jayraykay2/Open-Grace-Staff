@@ -1128,13 +1128,6 @@ function initPipelineFromEmailData() {
     'referral-assign': [],
     'onboarding': [
       {
-        name: 'Ramirez-Tellez, Daisy',
-        phone: '',
-        date: '2026-06-05',
-        notes: 'Position: Family Coordinator — Direct Support Specialist | Interview rescheduling to next week | Applied via Indeed',
-        added: '2026-06-05'
-      },
-      {
         name: 'Escajeda, Sandra',
         phone: '(714) 340-9366',
         date: '2026-06-09',
@@ -1177,7 +1170,6 @@ function initProspectContacts() {
     { name:'Delisa Trammel', role:'Mother/Caregiver — Burks, Jaybrion', phone:'', email:'', type:'family' },
     { name:'Jaybrion Burks', role:'Consumer — UCI 6953825', phone:'9097220525', email:'', type:'family' },
     { name:'Carter-Earl, Ambre', role:'Prospect — Case Manager / Navigator | Applied June 7, 2026 at 2:19 PM via Jotform', phone:'3106060578', email:'', type:'other' },
-    { name:'Ramirez-Tellez, Daisy', role:'Prospect — Family Coordinator | Interview rescheduling to next week', phone:'', email:'', type:'other' },
   ];
   save('og_contacts_v3', contacts);
 }
@@ -1434,7 +1426,6 @@ function defaultContacts() {
     { name:'Escajeda, Sandra',    role:'Applicant — Family Coordinator', client:'', uci:'', phone:'7143409366', email:'sandraescajeda68@aol.com', type:'staff', avatar:'👤', avatarBg:'#16A34A' },
     { name:'Allah, Mecca',        role:"Applicant — Case Manager", client:'', uci:'', phone:'3107606833', email:'allah.meccaz@gmail.com', type:'staff', avatar:'👤', avatarBg:'#16A34A' },
     { name:'Carter-Earl, Ambre',  role:'Applicant — Lead FC / FC / Case Manager', client:'', uci:'', phone:'3106060578', email:'simoneaearl@icloud.com', type:'staff', avatar:'👤', avatarBg:'#16A34A' },
-    { name:'Ramirez-Tellez, Daisy',role:'Applicant — Family Coordinator', client:'', uci:'', phone:'', email:'', type:'staff', avatar:'👤', avatarBg:'#16A34A' },
   ];
 }
 
@@ -2523,14 +2514,12 @@ function forceSyncPipeline() {
     ],
     'referral-assign': [],
     'onboarding': [
-      { name:'Ramirez-Tellez, Daisy', phone:'', date:'2026-06-05',
-        notes:'Position: Family Coordinator | Interview rescheduling to next week | Applied via Indeed', added:'2026-06-05' },
       { name:'Escajeda, Sandra', phone:'(714) 340-9366', date:'2026-06-09',
         notes:'Position: Family Coordinator | Applied via Jotform June 9 | sandraescajeda68@aol.com | Experience: IHSS, Medi-Cal, SSI, IRC coaching | Interview June 8', added:'2026-06-09' },
       { name:'Allah, Mecca', phone:'(310) 760-6833', date:'2026-06-08',
         notes:"Position: Case Manager / Navigator | Applied via Jotform June 8 | allah.meccaz@gmail.com | Master's in Special Education | 5 years special education", added:'2026-06-08' },
       { name:'Carter-Earl, Ambre', phone:'(310) 606-0578', date:'2026-06-07',
-        notes:'Position: Applied for 3 roles — Lead FC, Family Coordinator, Case Manager | Applied via Jotform June 7 | simoneaearl@icloud.com | Case Manager and Transition Coordinator experience', added:'2026-06-07' }
+        notes:'Position: Family Coordinator | Anticipated start: after July 1, 2026 | simoneaearl@icloud.com | (310) 606-0578 | Verbal offer extended | Onboarding required before client contact (Live Scan + CPR) | Hours vary by authorized referral | No benefits offered | Case Manager and Transition Coordinator experience', added:'2026-06-07' }
     ],
     'completed': []
   };
@@ -2737,6 +2726,11 @@ function generateOfferLetter() {
     return dt.toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
   }
 
+  // Calculate onboarding deadline (21 days after acceptance deadline)
+  const deadlineDt = deadlineRaw ? new Date(deadlineRaw + 'T12:00:00') : new Date();
+  const onboardDeadlineDt = new Date(deadlineDt);
+  onboardDeadlineDt.setDate(onboardDeadlineDt.getDate() + 21);
+
   offerData = {
     name, pos, bilingual, bilingualLang,
     baseRate: effectiveBase.toFixed(2),
@@ -2745,6 +2739,7 @@ function generateOfferLetter() {
     startDate: fmtDate(startRaw),
     offerDate: fmtDate(offerRaw),
     deadline:  fmtDate(deadlineRaw),
+    onboardDeadline: fmtDate(onboardDeadlineDt.toISOString().split('T')[0]),
     rubricNote: override
       ? 'Rate set by Director override'
       : 'Base $' + base.toFixed(2) + ' + Education $' + edu.toFixed(2) + ' + Experience $' + exp.toFixed(2) + ' + Certs $' + cert.toFixed(2),
@@ -2777,78 +2772,97 @@ function downloadOfferLetter() {
   const d = offerData;
   const today = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
 
-  const content = `
-OPEN GRACE LLC — OFFER OF EMPLOYMENT
-IRC Vendor PJ6208 | 951-880-4132 | joshua.kennedy@opengrace.org
-
-Date: ${d.offerDate}
-
-${d.name}
-
-RE: Offer of Employment — ${d.pos}
-
-Dear ${d.name},
-
-Open Grace LLC is pleased to extend this conditional offer of employment for the position of ${d.pos} within our Coordinated Family Support (CFS) program. We are confident that your skills, experience, and values are well-aligned with Open Grace's mission to support families across Riverside and San Bernardino Counties.
-
-OFFER SUMMARY
-─────────────────────────────────────────────────
-Position Title:          ${d.pos}
-Department:              Coordinated Family Support (CFS)
-Reports To:              Joshua Kennedy, Director
-Employment Status:       Non-exempt (hourly) — at-will employment
-Proposed Start Date:     ${d.startDate}
-Hourly Base Rate:        $${d.baseRate} per hour
-${d.bilingual ? 'Bilingual Differential:  +$' + d.bilingualDiff + '/hr (' + d.bilingualLang + ')' : ''}
-${d.bilingual ? 'Effective Hourly Rate:   $' + d.totalRate + ' per hour' : ''}
-Wage Rubric Note:        ${d.rubricNote}
-─────────────────────────────────────────────────
-
-COMPENSATION & PAY
-Your hourly rate has been determined using Open Grace's Wage Rubric, which considers your years of relevant experience, educational background, and applicable certifications.
-${d.bilingual ? '
-You have been approved for a Bilingual Pay Differential of $' + d.bilingualDiff + ' per hour for verified ' + d.bilingualLang + ' bilingual proficiency. This differential is contingent upon verification by the Director and continued use in service delivery.' : ''}
-
-PRE-EMPLOYMENT CONDITIONS
-This offer is conditional upon completion of:
-• Live Scan fingerprinting and DOJ/FBI background clearance
-• Current CPR and First Aid certification
-• Signed Employee Handbook Acknowledgement
-• Completed Staff Onboarding Form (Jotform)
-• Completion of all 4 Day 1 training modules before first client contact
-• Signed CORI Confidentiality Agreement
-• Valid California driver's license and proof of auto insurance (if role involves transportation)
-
-Open Grace LLC will reimburse Live Scan and CPR/First Aid costs upon 30 days of active employment. Submit original receipts within 60 days.
-
-AT-WILL EMPLOYMENT
-Your employment with Open Grace LLC is at-will. Either party may terminate the relationship at any time, with or without cause or notice.
-
-CONFIDENTIALITY & CORI COMPLIANCE
-You will be required to sign Open Grace's CORI Confidentiality Agreement. Unauthorized disclosure of CORI is a violation of California law.
-
-ACCEPTANCE
-To accept this offer, please sign and return this letter no later than ${d.deadline}.
-Contact Director Joshua Kennedy: 951-880-4132 | joshua.kennedy@opengrace.org
-
-Sincerely,
-
-_____________________________    ___________
-Joshua Kennedy, Director          Date
-Open Grace LLC — IRC Vendor PJ6208
-
-
-═══ CANDIDATE ACCEPTANCE ═══
-
-I, ${d.name}, have read and agree to the terms of this offer of employment with Open Grace LLC.
-
-_____________________________    ___________
-Candidate Signature               Date
-
-─────────────────────────────────────────────────
-Open Grace LLC • Confidential Employment Document • IRC Vendor PJ6208
-`;
-
+  const d = offerData;
+  const lines = [
+    'OPEN GRACE LLC',
+    'Coordinated Family Support Services  |  IRC Vendor PJ6208',
+    '951-880-4132  |  joshua.kennedy@opengrace.org  |  opengrace.org',
+    '',
+    'Date: ' + d.offerDate,
+    '',
+    'RE: Conditional Offer of Employment \u2014 ' + d.pos,
+    '',
+    'Dear ' + d.name + ',',
+    '',
+    'Open Grace LLC is pleased to extend this conditional offer of employment for the position of ' + d.pos + ' within our Coordinated Family Support (CFS) program. We are confident that your background and values align well with our mission to support families across Riverside and San Bernardino Counties.',
+    '',
+    'OFFER SUMMARY',
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',
+    'Position Title:         ' + d.pos,
+    'Department:             Coordinated Family Support (CFS)',
+    'Reports To:             Joshua Kennedy, Director',
+    'Employment Status:      Non-exempt (hourly) \u2014 at-will',
+    'FLSA Classification:    Non-Exempt',
+    'Anticipated Start Date: ' + d.startDate + ' (contingent on onboarding clearance)',
+    'Hourly Base Rate:       $' + d.baseRate + '/hr',
+    ...(d.bilingual ? ['Bilingual Differential:  +$' + d.bilingualDiff + '/hr (' + d.bilingualLang + ')', 'Effective Rate:          $' + d.totalRate + '/hr'] : []),
+    'Wage Rubric:            ' + d.rubricNote,
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',
+    '',
+    'HOURS & SCHEDULE',
+    'This is a part-time, hourly position. Hours are not guaranteed and will vary based on the authorized service hours approved by Inland Regional Center (IRC) for each assigned family. Your schedule will be determined by the service needs of your assigned caseload and may fluctuate from week to week. Open Grace LLC does not guarantee a minimum number of hours per pay period.',
+    '',
+    'COMPENSATION',
+    'Your hourly rate was determined using Open Grace\'s Wage Rubric, reflecting your education, relevant experience, and certifications.' + (d.bilingual ? ' A Bilingual Pay Differential of $' + d.bilingualDiff + '/hr has been approved for verified ' + d.bilingualLang + ' proficiency, contingent upon Director verification and continued use in service delivery.' : ''),
+    '',
+    'BENEFITS',
+    'Open Grace LLC does not offer medical, dental, vision, retirement, paid time off, or other employee benefits at this time. As a non-exempt hourly employee, you are entitled to all rights required under California law, including meal and rest period protections, overtime compensation for hours worked over 8 in a day or 40 in a workweek, and workers\u2019 compensation coverage.',
+    '',
+    'PRE-EMPLOYMENT CONDITIONS & ONBOARDING TIMELINE',
+    'This offer is conditional upon satisfactory completion of all pre-employment requirements. You may not provide services to any Open Grace client until all clearances below are confirmed by the Director.',
+    '',
+    '  Offer acceptance deadline:        ' + d.deadline + '  (within 5 business days)',
+    '  All onboarding must be complete by: ' + d.onboardDeadline + '  (within 21 days of acceptance)',
+    '',
+    'Required before client contact:',
+    '  [ ] Live Scan fingerprinting \u2014 DOJ/FBI background clearance',
+    '      Results typically returned in 3\u201310 business days; allow up to 30 days.',
+    '  [ ] Current CPR and First Aid certification',
+    '      Classes available weekly; same-day certificate issued upon completion.',
+    '  [ ] Signed Employee Handbook Acknowledgement',
+    '  [ ] Completed Staff Onboarding Form (Jotform)',
+    '  [ ] Signed CORI Confidentiality Agreement',
+    '  [ ] Completion of all 4 Day 1 training modules (Open Grace Training Academy)',
+    '  [ ] Valid California driver\'s license and current auto insurance on file',
+    '',
+    'Open Grace LLC will reimburse your Live Scan and CPR/First Aid costs after 30 days of active employment. Submit original receipts to the Director within 60 days of your hire date.',
+    '',
+    'AT-WILL EMPLOYMENT',
+    'Your employment is at-will. Either party may end the employment relationship at any time, with or without cause or notice. Nothing in this letter or any other communication creates a contract of employment for a specified term.',
+    '',
+    'CONFIDENTIALITY & CORI COMPLIANCE',
+    'This role requires access to Criminal Offender Record Information (CORI) through the California DOJ. You must sign Open Grace\'s CORI Confidentiality Agreement before your start date. Unauthorized disclosure is a violation of California law and grounds for immediate termination. You are also required to comply with HIPAA, Title 17, and all Open Grace confidentiality policies described in the Employee Handbook.',
+    '',
+    'ACCEPTANCE',
+    'To accept this offer, sign and return this letter no later than ' + d.deadline + '.',
+    'Questions? Contact Joshua Kennedy: 951-880-4132 | joshua.kennedy@opengrace.org',
+    '',
+    'Sincerely,',
+    '',
+    '',
+    '_________________________________     ___________',
+    'Joshua Kennedy, Director               Date',
+    'Open Grace LLC  |  IRC Vendor PJ6208',
+    '951-880-4132  |  joshua.kennedy@opengrace.org',
+    '',
+    '',
+    '\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550',
+    'CANDIDATE ACCEPTANCE',
+    '\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550',
+    '',
+    'I, ' + d.name + ', have read and agree to the terms of this conditional offer of employment with Open Grace LLC. I understand this offer is contingent on all pre-employment clearances, and that I may not serve any client until the Director confirms all requirements are met.',
+    '',
+    '',
+    '_________________________________     ___________',
+    'Candidate Signature                    Date',
+    '',
+    '_________________________________',
+    'Printed Name',
+    '',
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',
+    'Open Grace LLC  \u2022  Confidential Employment Document  \u2022  IRC Vendor PJ6208',
+  ];
+  const content = lines.join('\n');
   const blob = new Blob([content], {type:'text/plain'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -2906,399 +2920,40 @@ function sendOfferEmail() {
 
 function copyOfferText() {
   const d = offerData;
-  if (!d.name) { toast('⚠ Generate the letter first'); return; }
-  const text =
-    'OPEN GRACE LLC — OFFER OF EMPLOYMENT\n'
-    + 'IRC Vendor PJ6208 | 951-880-4132\n'
-    + '─────────────────────────────────\n\n'
-    + 'Date: ' + d.offerDate + '\n'
-    + 'Candidate: ' + d.name + '\n\n'
-    + 'RE: Offer of Employment — ' + d.pos + '\n\n'
-    + 'Dear ' + d.name + ',\n\n'
-    + 'Open Grace LLC is pleased to extend this conditional offer of employment for the position of '
-    + d.pos + ' within our Coordinated Family Support (CFS) program.\n\n'
-    + 'OFFER SUMMARY\n'
-    + 'Position Title:       ' + d.pos + '\n'
-    + 'Department:           Coordinated Family Support (CFS)\n'
-    + 'Reports To:           Joshua Kennedy, Director\n'
-    + 'Employment Status:    Non-exempt (hourly) — at-will\n'
-    + 'Proposed Start Date:  ' + d.startDate + '\n'
-    + 'Hourly Base Rate:     $' + d.baseRate + '/hr\n'
-    + (d.bilingual ? 'Bilingual Differential: +$' + d.bilingualDiff + '/hr (' + d.bilingualLang + ')\n' : '')
-    + 'Effective Hourly Rate: $' + d.totalRate + '/hr\n'
-    + 'Wage Rubric:          ' + d.rubricNote + '\n\n'
-    + 'This offer is conditional upon satisfactory completion of all pre-employment requirements '
-    + '(Live Scan, CPR/First Aid, Handbook, Jotform onboarding, CORI agreement, Day 1 training).\n\n'
-    + 'Please accept by: ' + d.deadline + '\n\n'
-    + 'Sincerely,\nJoshua Kennedy\nDirector, Open Grace LLC\n951-880-4132';
-
+  if (!d.name) { toast('\u26a0 Generate the letter first'); return; }
+  // Use the same content as the download
+  const lines = [
+    'OPEN GRACE LLC  |  Conditional Offer of Employment',
+    'Date: ' + d.offerDate + '  |  RE: ' + d.pos,
+    '',
+    'Dear ' + d.name + ',',
+    '',
+    'Open Grace LLC is pleased to extend this conditional offer for the position of ' + d.pos + '.',
+    '',
+    'POSITION:         ' + d.pos,
+    'START DATE:       ' + d.startDate + ' (contingent on onboarding clearance)',
+    'BASE RATE:        $' + d.baseRate + '/hr',
+    ...(d.bilingual ? ['BILINGUAL DIFF:   +$' + d.bilingualDiff + '/hr (' + d.bilingualLang + ')', 'EFFECTIVE RATE:   $' + d.totalRate + '/hr'] : []),
+    'RUBRIC:           ' + d.rubricNote,
+    '',
+    'HOURS: Vary based on IRC-authorized service hours per assigned family. Not guaranteed.',
+    'BENEFITS: None offered at this time.',
+    '',
+    'ONBOARDING DEADLINES:',
+    '  Accept by:             ' + d.deadline,
+    '  Onboarding complete by: ' + d.onboardDeadline + ' (Live Scan, CPR, Handbook, Jotform, CORI)',
+    '',
+    'ACCEPTANCE: Sign and return by ' + d.deadline + '.',
+    'Questions: Joshua Kennedy  951-880-4132  joshua.kennedy@opengrace.org',
+    '',
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',
+    'Open Grace LLC  \u2022  IRC Vendor PJ6208  \u2022  Confidential',
+  ];
+  const text = lines.join('\n');
   navigator.clipboard.writeText(text).then(() => {
-    toast('✓ Offer letter copied to clipboard');
+    toast('\u2713 Offer letter copied to clipboard');
   }).catch(() => {
-    toast('⚠ Copy failed — try Download instead');
+    toast('\u26a0 Copy failed \u2014 try Download instead');
   });
 }
-
-</script>
-
-
-<!-- ════════ STAFF EDIT OVERLAY ════════ -->
-<div class="overlay" id="staff-edit-overlay">
-  <div class="sheet" style="max-height:88vh;overflow-y:auto;">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title" id="se-title">Staff Member</div>
-    <div class="field"><div class="field-label">Full Name</div>
-      <input class="field-input" id="se-name" type="text" placeholder="Last, First"></div>
-    <div class="field"><div class="field-label">Access Code</div>
-      <input class="field-input" id="se-code" type="text" placeholder="OG-2026-001" style="text-transform:uppercase;letter-spacing:1px;"></div>
-    <div class="field"><div class="field-label">Position</div>
-      <select class="field-input" id="se-position">
-        <option>Family Coordinator</option>
-        <option>Lead Family Coordinator</option>
-        <option>Case Manager / Navigator</option>
-        <option>Supervisor</option>
-      </select></div>
-    <div class="field-row">
-      <div class="field"><div class="field-label">Phone</div>
-        <input class="field-input" id="se-phone" type="tel"></div>
-      <div class="field"><div class="field-label">Email</div>
-        <input class="field-input" id="se-email" type="email"></div>
-    </div>
-    <div class="field"><div class="field-label">Hire Date</div>
-      <input class="field-input" id="se-hired" type="date"></div>
-    <div class="field" style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-      <input type="checkbox" id="se-active" style="width:20px;height:20px;accent-color:#1D9E75;">
-      <label for="se-active" style="font-size:13px;color:rgba(255,255,255,.7);">Account Active</label>
-    </div>
-    <div class="field"><div class="field-label">Notes</div>
-      <textarea class="field-input field-textarea" id="se-notes" rows="2"></textarea></div>
-    <div id="se-deactivate-row" style="display:none;margin-bottom:10px;">
-      <button onclick="deactivateStaff()" style="width:100%;padding:12px;background:rgba(216,64,64,.15);
-        color:#FC8181;border:1px solid rgba(216,64,64,.3);border-radius:10px;font-size:13px;
-        font-weight:700;font-family:var(--sans);cursor:pointer;">
-        🚫 Deactivate & Revoke Access
-      </button>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button class="sheet-cancel" onclick="closeOverlay('staff-edit-overlay')">Cancel</button>
-      <button class="sheet-save" onclick="saveStaffEditor()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- ════════ ONBOARDING EDIT OVERLAY ════════ -->
-<div class="overlay" id="onboard-edit-overlay">
-  <div class="sheet" style="max-height:85vh;overflow-y:auto;">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Onboarding Checklist</div>
-    <div class="sheet-sub" id="ob-staff-name"></div>
-    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
-      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
-        <input type="checkbox" id="ob-liveScan" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
-        <span style="font-size:13px;color:rgba(255,255,255,.8);">Live Scan fingerprinting</span>
-      </label>
-      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
-        <input type="checkbox" id="ob-cprFirstAid" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
-        <span style="font-size:13px;color:rgba(255,255,255,.8);">CPR / First Aid certification</span>
-      </label>
-      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
-        <input type="checkbox" id="ob-handbookSigned" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
-        <span style="font-size:13px;color:rgba(255,255,255,.8);">Employee Handbook signed</span>
-      </label>
-      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
-        <input type="checkbox" id="ob-jotformOnboarding" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
-        <span style="font-size:13px;color:rgba(255,255,255,.8);">Jotform onboarding form submitted</span>
-      </label>
-      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
-        <input type="checkbox" id="ob-mandatedReporter" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
-        <span style="font-size:13px;color:rgba(255,255,255,.8);">Mandated Reporter training completed</span>
-      </label>
-      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
-        <input type="checkbox" id="ob-hipaaAck" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
-        <span style="font-size:13px;color:rgba(255,255,255,.8);">HIPAA acknowledgement signed</span>
-      </label>
-      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
-        <input type="checkbox" id="ob-teamsSetup" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
-        <span style="font-size:13px;color:rgba(255,255,255,.8);">Microsoft Teams / 365 access confirmed</span>
-      </label>
-      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
-        <input type="checkbox" id="ob-contactLogTest" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
-        <span style="font-size:13px;color:rgba(255,255,255,.8);">Test contact log submission verified</span>
-      </label>
-      <label style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:12px;cursor:pointer;">
-        <input type="checkbox" id="ob-firstSupervision" style="width:20px;height:20px;accent-color:#1D9E75;flex-shrink:0;">
-        <span style="font-size:13px;color:rgba(255,255,255,.8);">First supervision meeting with Director</span>
-      </label>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button class="sheet-cancel" onclick="closeOverlay('onboard-edit-overlay')">Cancel</button>
-      <button class="sheet-save" onclick="saveOnboardingEditor()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- ════════ HOURS EDIT OVERLAY ════════ -->
-<div class="overlay" id="hours-edit-overlay">
-  <div class="sheet" style="max-height:85vh;overflow-y:auto;">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Client Hours</div>
-    <div class="sheet-sub" id="hours-staff-name"></div>
-    <div id="hours-clients-list" style="margin-bottom:14px;"></div>
-    <div style="display:flex;gap:8px;">
-      <button class="sheet-cancel" onclick="closeOverlay('hours-edit-overlay')">Cancel</button>
-      <button class="sheet-save" onclick="saveHoursEditor()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- ════════ HANDOFF EDIT OVERLAY ════════ -->
-<div class="overlay" id="handoff-edit-overlay">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Warm Handoff</div>
-    <div class="sheet-sub" id="hf-staff-name"></div>
-    <div style="background:rgba(244,124,32,.08);border:1px solid rgba(244,124,32,.2);
-      border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;
-      color:rgba(255,255,255,.6);line-height:1.65;">
-      A warm handoff keeps clients supported during coordinator transitions.
-      The outgoing coordinator stays active until you mark it complete.
-    </div>
-    <div class="field" style="display:flex;align-items:center;gap:12px;">
-      <input type="checkbox" id="hf-active" style="width:20px;height:20px;accent-color:#F47C20;">
-      <label for="hf-active" style="font-size:13px;color:rgba(255,255,255,.7);">Handoff in progress</label>
-    </div>
-    <div class="field"><div class="field-label">Transitioning To</div>
-      <select class="field-input" id="hf-to-staff"></select></div>
-    <div class="field"><div class="field-label">Reason</div>
-      <select class="field-input" id="hf-reason">
-        <option value="">— Select reason —</option>
-        <option>Resignation</option>
-        <option>Termination</option>
-        <option>Leave of absence</option>
-        <option>Caseload rebalancing</option>
-        <option>Consumer request</option>
-        <option>Other</option>
-      </select></div>
-    <div class="field"><div class="field-label">Handoff Date</div>
-      <input class="field-input" type="date" id="hf-initiated"></div>
-    <div class="field"><div class="field-label">Notes for Receiving Coordinator</div>
-      <textarea class="field-input field-textarea" id="hf-notes" rows="3"
-        placeholder="Key info, family relationship notes, pending items..."></textarea></div>
-    <div style="display:flex;gap:8px;">
-      <button class="sheet-cancel" onclick="closeOverlay('handoff-edit-overlay')">Cancel</button>
-      <button class="sheet-save" onclick="saveHandoffEditor()">Save</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ════════ CONTACT PROFILE OVERLAY ════════ -->
-<div class="overlay" id="profile-overlay">
-  <div class="sheet" style="max-height:88vh;overflow-y:auto;">
-    <div class="sheet-handle"></div>
-
-    <!-- Hero -->
-    <div class="profile-hero">
-      <div class="profile-avatar-lg" id="profile-avatar-bg">
-        <span id="profile-avatar-emoji" style="font-size:32px;">👤</span>
-      </div>
-      <div class="profile-name" id="profile-name">—</div>
-      <div class="profile-role" id="profile-role" style="font-size:13px;color:rgba(255,255,255,.45);line-height:1.5;margin-top:4px;"></div>
-      <div class="profile-badge" id="profile-badge" style="margin-top:10px;font-size:11px;font-weight:700;color:rgba(255,255,255,.7);padding:4px 14px;border-radius:20px;display:inline-block;"></div>
-    </div>
-
-    <!-- Action buttons -->
-    <div class="profile-actions">
-      <a id="profile-call" class="p-call" href="#">📞 Call</a>
-      <a id="profile-text" class="p-text" href="#">💬 Text</a>
-      <a id="profile-email" class="p-email" href="#">✉️ Email</a>
-      <button id="profile-send" class="p-send">📤 Send Message</button>
-    </div>
-
-    <!-- Details -->
-    <div id="profile-details" style="margin:16px 0 8px;"></div>
-
-    <div style="display:flex;gap:8px;margin-top:14px;">
-      <button class="sheet-cancel" style="flex:1;" onclick="closeOverlay('profile-overlay')">Close</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ════════ OFFER LETTER GENERATOR ════════ -->
-<div class="overlay" id="offer-overlay">
-  <div class="sheet" style="max-height:90vh;overflow-y:auto;">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">📄 Offer Letter Generator</div>
-
-    <!-- CANDIDATE INFO -->
-    <div class="field-label" style="margin-top:4px;">Candidate Full Name</div>
-    <input class="field-input" id="ol-name" type="text" placeholder="First Last">
-
-    <div class="field-label">Position</div>
-    <select class="field-input field-select" id="ol-position" onchange="calcRate()">
-      <option value="Family Coordinator">Family Coordinator — Direct Support Specialist</option>
-      <option value="Lead Family Coordinator">Lead Family Coordinator</option>
-      <option value="Case Manager / Navigator">Case Manager / Navigator</option>
-      <option value="Supervisor">Supervisor</option>
-    </select>
-
-    <div class="field-label">Proposed Start Date</div>
-    <input class="field-input" id="ol-start" type="date">
-
-    <div class="field-label">Offer Date</div>
-    <input class="field-input" id="ol-offer-date" type="date">
-
-    <div class="field-label">Acceptance Deadline</div>
-    <input class="field-input" id="ol-deadline" type="date">
-
-    <!-- WAGE RUBRIC -->
-    <div style="background:rgba(45,43,127,.25);border:1px solid rgba(255,255,255,.1);
-      border-radius:12px;padding:14px;margin:14px 0 8px;">
-      <div style="font-size:12px;font-weight:800;color:var(--orange);letter-spacing:1px;
-        text-transform:uppercase;margin-bottom:12px;">⚖️ Wage Rubric</div>
-
-      <div class="field-label">Education Level</div>
-      <select class="field-input field-select" id="ol-edu" onchange="calcRate()">
-        <option value="0">High School Diploma / GED</option>
-        <option value="0.5">Some College (no degree)</option>
-        <option value="1.00">Associate's Degree</option>
-        <option value="1.50">Bachelor's Degree</option>
-        <option value="2.00">Master's Degree or higher</option>
-      </select>
-
-      <div class="field-label">Years of Relevant Experience</div>
-      <select class="field-input field-select" id="ol-exp" onchange="calcRate()">
-        <option value="0">Less than 1 year</option>
-        <option value="0.50">1 – 2 years</option>
-        <option value="1.00">2 – 3 years</option>
-        <option value="1.50">3 – 5 years</option>
-        <option value="2.00">5 – 7 years</option>
-        <option value="2.50">7 – 10 years</option>
-        <option value="3.00">10+ years</option>
-      </select>
-
-      <div class="field-label">Certifications / Special Qualifications</div>
-      <select class="field-input field-select" id="ol-cert" onchange="calcRate()">
-        <option value="0">None beyond requirements</option>
-        <option value="0.25">One relevant certification</option>
-        <option value="0.50">Multiple certifications</option>
-        <option value="0.75">Advanced credential (BCBA, LCSW, etc.)</option>
-      </select>
-
-      <!-- RATE DISPLAY -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
-        <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:12px;text-align:center;">
-          <div style="font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;
-            letter-spacing:1px;margin-bottom:4px;">Calculated Base Rate</div>
-          <div style="font-size:22px;font-weight:800;color:#fff;" id="ol-rate-display">$—/hr</div>
-        </div>
-        <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:12px;text-align:center;">
-          <div style="font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;
-            letter-spacing:1px;margin-bottom:4px;">Rubric Breakdown</div>
-          <div style="font-size:11px;color:rgba(255,255,255,.55);line-height:1.7;" id="ol-rate-breakdown">—</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- OVERRIDE -->
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-      <input type="checkbox" id="ol-override-check" onchange="toggleOverride()"
-        style="width:20px;height:20px;accent-color:var(--orange);">
-      <label for="ol-override-check" style="font-size:13px;color:rgba(255,255,255,.7);">
-        Override calculated rate (Director discretion)
-      </label>
-    </div>
-    <div id="ol-override-field" style="display:none;margin-bottom:10px;">
-      <div class="field-label">Override Hourly Rate ($)</div>
-      <input class="field-input" id="ol-override-rate" type="number"
-        step="0.25" min="16" max="45" placeholder="e.g. 21.50" oninput="updateRateDisplay()">
-    </div>
-
-    <!-- BILINGUAL -->
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-      <input type="checkbox" id="ol-bilingual"
-        style="width:20px;height:20px;accent-color:var(--green);" onchange="calcRate()">
-      <label for="ol-bilingual" style="font-size:13px;color:rgba(255,255,255,.7);">
-        Bilingual Pay Differential (+$1.50/hr — verified proficiency required)
-      </label>
-    </div>
-    <div id="ol-bilingual-lang-field" style="display:none;">
-      <div class="field-label">Bilingual Language</div>
-      <select class="field-input field-select" id="ol-bilingual-lang">
-        <option>Spanish</option>
-        <option>Tagalog</option>
-        <option>Vietnamese</option>
-        <option>Other</option>
-      </select>
-    </div>
-
-    <!-- EFFECTIVE RATE -->
-    <div style="background:rgba(29,158,117,.15);border:1px solid rgba(29,158,117,.3);
-      border-radius:12px;padding:14px;margin:14px 0;text-align:center;display:none;"
-      id="ol-effective-block">
-      <div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;
-        letter-spacing:1px;margin-bottom:4px;">Effective Hourly Rate (with differential)</div>
-      <div style="font-size:26px;font-weight:800;color:#1D9E75;" id="ol-effective-rate">$—/hr</div>
-    </div>
-
-    <!-- GENERATE BUTTON -->
-    <div style="display:flex;gap:8px;margin-top:6px;">
-      <button class="sheet-cancel" onclick="closeOverlay('offer-overlay')">Cancel</button>
-      <button class="sheet-save" onclick="generateOfferLetter()">
-        📄 Generate Letter
-      </button>
-    </div>
-
-    <!-- GENERATED OUTPUT -->
-    <div id="ol-output" style="display:none;margin-top:16px;">
-      <div style="background:rgba(29,158,117,.15);border:1px solid rgba(29,158,117,.3);
-        border-radius:12px;padding:14px;margin-bottom:10px;">
-        <div style="font-size:13px;font-weight:700;color:#1D9E75;margin-bottom:4px;">✅ Offer Letter Ready</div>
-        <div style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:14px;"
-          id="ol-summary-line">—</div>
-
-        <!-- Download -->
-        <button onclick="downloadOfferLetter()"
-          style="width:100%;padding:14px;background:var(--navy);color:#fff;border:none;
-            border-radius:10px;font-size:14px;font-weight:700;font-family:var(--sans);
-            cursor:pointer;margin-bottom:8px;">
-          ⬇ Download Offer Letter (.txt)
-        </button>
-
-        <!-- Send via SMS -->
-        <div id="ol-send-sms-row" style="display:none;margin-bottom:6px;">
-          <button onclick="sendOfferSMS()"
-            style="width:100%;padding:14px;background:rgba(45,43,127,.4);color:#fff;border:1px solid rgba(255,255,255,.15);
-              border-radius:10px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;">
-            💬 Send Link via Text
-          </button>
-        </div>
-
-        <!-- Send via Email -->
-        <div id="ol-send-email-row" style="display:none;margin-bottom:6px;">
-          <button onclick="sendOfferEmail()"
-            style="width:100%;padding:14px;background:rgba(244,124,32,.15);color:#F47C20;
-              border:1px solid rgba(244,124,32,.3);border-radius:10px;font-size:14px;
-              font-weight:700;font-family:var(--sans);cursor:pointer;">
-            ✉️ Send via Email
-          </button>
-        </div>
-
-        <!-- Copy text -->
-        <button onclick="copyOfferText()"
-          style="width:100%;padding:12px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);
-            border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;
-            font-weight:700;font-family:var(--sans);cursor:pointer;">
-          📋 Copy Offer Text
-        </button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-</body>
-</html>
-
 
