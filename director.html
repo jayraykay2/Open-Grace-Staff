@@ -1101,6 +1101,7 @@ function initPipelineFromEmailData() {
   }
 
   // First time or empty — seed with known referrals and candidates from email
+  var _initDel = JSON.parse(localStorage.getItem('og_pipeline_deleted')||'[]');
   const seedData = {
     'referral-pending': [
       {
@@ -1152,6 +1153,11 @@ function initPipelineFromEmailData() {
     'completed': []
   };
 
+  Object.keys(seedData).forEach(function(section) {
+    seedData[section] = (seedData[section]||[]).filter(function(item) {
+      return !_initDel.some(function(n){ return n.toLowerCase().trim()===(item.name||'').toLowerCase().trim(); });
+    });
+  });
   save('og_pipeline_v2', seedData);
 }
 
@@ -1269,6 +1275,13 @@ function deletePipeItem() {
   const type = document.getElementById('pi-type').value;
   const idx  = parseInt(document.getElementById('pi-idx').value);
   const pipe = load(K.pipeline, defaultPipeline());
+  const item = (pipe[type]||[])[idx];
+  if (item && item.name) {
+    const deleted = JSON.parse(localStorage.getItem('og_pipeline_deleted')||'[]');
+    if (!deleted.find(function(n){return n.toLowerCase()===item.name.toLowerCase();}))
+      deleted.push(item.name);
+    localStorage.setItem('og_pipeline_deleted', JSON.stringify(deleted));
+  }
   if (pipe[type]) pipe[type].splice(idx, 1);
   save(K.pipeline, pipe);
   closeOverlay('pipe-overlay');
@@ -1375,19 +1388,25 @@ function renderPipeSection(type, items) {
         ${phone ? ' &nbsp;\u00B7&nbsp; \uD83D\uDCDE ' + item.phone : ''}
       </div>
       ${coordBtn}
-      ${type === 'onboarding' ? `
-      <button onclick="openOfferFromCandidate('${safeName}','${safePos}','${safePhone}','${safeEmail}')"
-        style="width:100%;margin:8px 0 4px;padding:11px 14px;
-          background:linear-gradient(135deg,rgba(45,43,127,.5),rgba(26,24,96,.5));
-          border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;
-          font-family:var(--sans);cursor:pointer;display:flex;align-items:center;gap:10px;text-align:left;">
-        <span style="font-size:18px;flex-shrink:0;">📄</span>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:12px;font-weight:700;">Generate Offer Letter</div>
-          <div style="font-size:11px;opacity:.55;">Pre-filled with name &amp; position</div>
-        </div>
-        <span style="opacity:.4;font-size:14px;">→</span>
-      </button>` : ''}
+            ${type === 'onboarding' ?
+        '<button class="pipe-offer-btn"'
+        +' data-name="'+encodeURIComponent(item.name||'')+'"'
+        +' data-pos="'+encodeURIComponent(candidatePos)+'"'
+        +' data-phone="'+(phone||'')+'"'
+        +' data-email="'+((item.notes||'').match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/)||[''])[0]+'"'
+        +' style="width:100%;margin:8px 0 4px;padding:12px 14px;'
+        +'background:linear-gradient(135deg,rgba(45,43,127,.5),rgba(26,24,96,.5));'
+        +'border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;'
+        +'font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;'
+        +'cursor:pointer;display:flex;align-items:center;gap:10px;text-align:left;">'
+        +'<span style="font-size:18px;flex-shrink:0;">📄</span>'
+        +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:13px;font-weight:700;">Generate Offer Letter</div>'
+        +'<div style="font-size:11px;opacity:.55;">Pre-filled with name &amp; position</div>'
+        +'</div>'
+        +'<span style="opacity:.4;font-size:14px;">→</span>'
+        +'</button>'
+      : ''}
       <div class="pipe-actions">
         ${phone ? `<a class="pipe-btn sms" href="${smsHref}">\uD83D\uDCAC Text</a>` : ''}
         <button class="pipe-btn mark" onclick="markComplete('${type}',${i})">\u2705 Done</button>
@@ -1839,6 +1858,18 @@ initPipelineFromEmailData();
 initProspectContacts();
 renderHome();
 renderSend();
+
+// Delegated click for pipe-offer-btn
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('.pipe-offer-btn');
+  if (!btn) return;
+  var name  = decodeURIComponent(btn.dataset.name  || '');
+  var pos   = decodeURIComponent(btn.dataset.pos   || 'Family Coordinator');
+  var phone = btn.dataset.phone || '';
+  var email = btn.dataset.email || '';
+  openOfferFromCandidate(name, pos, phone, email);
+});
+
 </script>
 
 <!-- POSITIONS MANAGER MODAL -->
@@ -2528,9 +2559,11 @@ function forceSyncPipeline() {
   ['referral-pending','referral-assign','onboarding','completed'].forEach(section => {
     if (!current[section]) current[section] = [];
     (seed[section] || []).forEach(seedItem => {
-      const exists = current[section].some(e =>
-        (e.name||'').toLowerCase().trim() === (seedItem.name||'').toLowerCase().trim()
-      );
+      var _del2 = JSON.parse(localStorage.getItem('og_pipeline_deleted')||'[]');
+      var wasDeleted = _del2.some(function(n){ return n.toLowerCase().trim()===(seedItem.name||'').toLowerCase().trim(); });
+      var exists = wasDeleted || current[section].some(function(e){
+        return (e.name||'').toLowerCase().trim()===(seedItem.name||'').toLowerCase().trim();
+      });
       if (!exists) { current[section].push(seedItem); added++; }
     });
   });
