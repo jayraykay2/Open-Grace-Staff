@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Grace — Director</title>
+<style>
+/* ═══════════════════════════════════════════════════
+   OPEN GRACE DIRECTOR DASHBOARD v4.0
+   Tabs: Home · Clients · HR · Pipeline · Comms · IT/Tech · Settings
+   ═══════════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0A0F1A;
+  --s1:        #111827;
+  --s2:        #1A2233;
+  --s3:        #222D42;
+  --b1:        rgba(255,255,255,.07);
+  --b2:        rgba(255,255,255,.12);
+  --b3:        rgba(255,255,255,.18);
+  --t1:        #F0F4FF;
+  --t2:        #8B95A8;
+  --t3:        #4A5568;
+  --blue:      #3B82F6;
+  --blue-bg:   rgba(59,130,246,.12);
+  --blue-b:    rgba(59,130,246,.25);
+  --green:     #10B981;
+  --green-bg:  rgba(16,185,129,.12);
+  --green-b:   rgba(16,185,129,.25);
+  --amber:     #F59E0B;
+  --amber-bg:  rgba(245,158,11,.12);
+  --amber-b:   rgba(245,158,11,.25);
+  --red:       #EF4444;
+  --red-bg:    rgba(239,68,68,.12);
+  --red-b:     rgba(239,68,68,.25);
+  --purple:    #8B5CF6;
+  --purple-bg: rgba(139,92,246,.12);
+  --purple-b:  rgba(139,92,246,.25);
+  --r:         10px;
+  --r-sm:      6px;
+  --nav-h:     72px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--t1);
+  font-size: 16px;
+  min-height: 100vh;
+  padding-bottom: calc(var(--nav-h) + 1rem);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ──────────────────────────────────────── */
+.app-header {
+  background: var(--s1);
+  border-bottom: 1px solid var(--b1);
+  padding: .875rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.app-header img { width: 36px; border-radius: 8px; flex-shrink: 0; }
+.header-text h1 { font-size: 16px; font-weight: 600; }
+.header-text p  { font-size: 13px; color: var(--t2); margin-top: 1px; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: .5rem; }
+.status-pill {
+  display: flex; align-items: center; gap: 4px;
+  background: var(--green-bg); border: 1px solid var(--green-b);
+  border-radius: 20px; padding: 3px 10px;
+  font-size: 11px; font-weight: 500; color: var(--green);
+}
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── Bottom Nav ──────────────────────────────────── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: var(--s1);
+  border-top: 1px solid var(--b1);
+  display: flex;
+  z-index: 200;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--t3);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: .5rem .25rem;
+  transition: color .15s;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+.nav-btn .nav-icon { font-size: 24px; transition: transform .15s; }
+.nav-btn.active { color: var(--blue); }
+.nav-btn.active .nav-icon { transform: scale(1.1); }
+.nav-btn:hover:not(.active) { color: var(--t2); }
+
+/* ── Tab Panels ──────────────────────────────────── */
+.tab-panel { display: none; padding: 1rem; animation: fadeIn .2s ease; }
+.tab-panel.active { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── Section Heading ─────────────────────────────── */
+.section-head {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--t3);
+  padding: .875rem 0 .5rem;
+  border-bottom: 1px solid var(--b1);
+  margin-bottom: .75rem;
+}
+
+/* ── Stat Cards ──────────────────────────────────── */
+.stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .5rem; margin-bottom: .875rem; }
+.stat-grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: .5rem; margin-bottom: .875rem; }
+.stat-card {
+  background: var(--s2);
+  border: 1px solid var(--b1);
+  border-radius: var(--r);
+  padding: .75rem .875rem;
+}
+.stat-label { font-size: 12px; color: var(--t2); margin-bottom: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
+.stat-val   { font-size: 26px; font-weight: 700; line-height: 1; }
+.stat-sub   { font-size: 12px; color: var(--t3); margin-top: 3px; }
+
+/* ── Cards ───────────────────────────────────────── */
+.card {
+  background: var(--s1);
+  border: 1px solid var(--b1);
+  border-radius: var(--r);
+  padding: .875rem 1rem;
+  margin-bottom: .75rem;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t2);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-bottom: .75rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.card-title-icon { font-size: 14px; }
+
+/* ── Link Rows ───────────────────────────────────── */
+.link-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .625rem .75rem;
+  background: var(--s2);
+  border: 1px solid var(--b1);
+  border-radius: var(--r-sm);
+  text-decoration: none;
+  color: var(--t1);
+  margin-bottom: .5rem;
+  transition: border-color .15s, background .15s;
+}
+.link-row:hover { border-color: var(--b2); background: var(--s3); }
+.link-icon { font-size: 18px; width: 28px; text-align: center; flex-shrink: 0; }
+.link-text { flex: 1; min-width: 0; }
+.link-text strong { display: block; font-size: 15px; font-weight: 500; }
+.link-text small  { font-size: 12px; color: var(--t2); display: block; margin-top: 1px; }
+.link-arrow { color: var(--t3); font-size: 16px; flex-shrink: 0; }
+
+/* ── Quick Action Buttons ────────────────────────── */
+.qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .75rem; }
+.qa-btn {
+  display: flex; align-items: center; gap: .5rem;
+  background: var(--s2); border: 1px solid var(--b2);
+  border-radius: var(--r); padding: .75rem 1rem;
+  color: var(--t1); font-size: 14px; font-weight: 500;
+  text-decoration: none; cursor: pointer;
+  transition: all .15s;
+}
+.qa-btn:hover { background: var(--s3); border-color: var(--b3); }
+.qa-btn.primary { background: var(--blue-bg); border-color: var(--blue-b); color: #93C5FD; }
+.qa-btn.success { background: var(--green-bg); border-color: var(--green-b); color: #6EE7B7; }
+.qa-btn.warn    { background: var(--amber-bg); border-color: var(--amber-b); color: #FCD34D; }
+.qa-btn.danger  { background: var(--red-bg); border-color: var(--red-b); color: #FCA5A5; }
+.qa-btn.purple  { background: var(--purple-bg); border-color: var(--purple-b); color: #C4B5FD; }
+
+/* ── Badges ──────────────────────────────────────── */
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 600;
+  padding: 3px 9px; border-radius: 20px;
+}
+.badge-green  { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-b); }
+.badge-amber  { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-b); }
+.badge-red    { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-b); }
+.badge-blue   { background: var(--blue-bg);   color: var(--blue);   border: 1px solid var(--blue-b); }
+.badge-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-b); }
+.badge-gray   { background: var(--s2); color: var(--t2); border: 1px solid var(--b2); }
+
+/* ── Emergency Contacts ──────────────────────────── */
+.emergency-item {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .75rem 0;
+  border-bottom: 1px solid var(--b1);
+  text-decoration: none; color: var(--t1);
+}
+.emergency-item:last-child { border-bottom: none; }
+.emergency-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.ei-red    { background: var(--red-bg);    border: 1px solid var(--red-b); }
+.ei-blue   { background: var(--blue-bg);   border: 1px solid var(--blue-b); }
+.ei-green  { background: var(--green-bg);  border: 1px solid var(--green-b); }
+.ei-purple { background: var(--purple-bg); border: 1px solid var(--purple-b); }
+.emergency-text strong { display: block; font-size: 15px; font-weight: 500; }
+.emergency-text span   { font-size: 13px; color: var(--t2); }
+
+/* ── System Status ───────────────────────────────── */
+.sys-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .75rem; }
+.sys-item {
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: var(--r); padding: .75rem .875rem;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.sys-label { font-size: 11px; color: var(--t3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.sys-value { font-size: 15px; font-weight: 600; }
+.sys-sub   { font-size: 12px; color: var(--t2); }
+.sys-ok    { color: var(--green); }
+.sys-warn  { color: var(--amber); }
+.sys-err   { color: var(--red); }
+
+/* ── Pipeline Sections ───────────────────────────── */
+.pipeline-section { margin-bottom: 1rem; }
+.pipeline-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: .5rem;
+}
+.pipeline-title { font-size: 13px; font-weight: 600; color: var(--t2); text-transform: uppercase; letter-spacing: .05em; }
+.pipeline-add {
+  font-size: 11px; color: var(--blue);
+  background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; gap: 3px;
+}
+.pipeline-item {
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: var(--r-sm); padding: .75rem .875rem;
+  margin-bottom: .5rem;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem;
+}
+.pipeline-item-name { font-size: 15px; font-weight: 500; }
+.pipeline-item-meta { font-size: 13px; color: var(--t2); margin-top: 2px; }
+.pipeline-actions { display: flex; gap: .25rem; flex-shrink: 0; margin-top: 1px; }
+.pip-btn {
+  font-size: 12px; padding: 4px 10px;
+  background: var(--s3); border: 1px solid var(--b2);
+  border-radius: 4px; color: var(--t2); cursor: pointer;
+}
+.pip-btn:hover { color: var(--t1); }
+.pipeline-empty { font-size: 12px; color: var(--t3); padding: .5rem .25rem; }
+
+/* ── Send / Comms ────────────────────────────────── */
+.recipient-tabs { display: flex; gap: .375rem; margin-bottom: .875rem; flex-wrap: wrap; }
+.rec-tab {
+  flex: 1; min-width: 70px;
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: var(--r-sm); padding: .625rem .25rem;
+  font-size: 13px; font-weight: 500; color: var(--t2);
+  cursor: pointer; text-align: center;
+  transition: all .15s;
+}
+.rec-tab.active { background: var(--blue-bg); border-color: var(--blue-b); color: #93C5FD; }
+.send-name-input, .send-msg-input, .send-phone-input {
+  width: 100%;
+  background: var(--s2); border: 1px solid var(--b2);
+  border-radius: var(--r-sm); color: var(--t1);
+  font-size: 15px; padding: .75rem .875rem;
+  margin-bottom: .5rem; font-family: inherit;
+}
+.send-msg-input { resize: none; height: 80px; }
+.send-actions { display: flex; gap: .5rem; }
+.send-btn {
+  flex: 1; padding: .625rem;
+  border-radius: var(--r-sm); font-size: 13px; font-weight: 500;
+  cursor: pointer; border: 1px solid; text-align: center;
+}
+.send-sms   { background: var(--green-bg);  border-color: var(--green-b);  color: #6EE7B7; }
+.send-email { background: var(--blue-bg);   border-color: var(--blue-b);   color: #93C5FD; }
+.send-copy  { background: var(--s2);        border-color: var(--b2);       color: var(--t2); }
+
+/* ── Forms & Inputs (overlays) ───────────────────── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.8);
+  z-index: 300;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 0;
+  animation: overlayIn .2s ease;
+}
+@keyframes overlayIn { from{opacity:0} to{opacity:1} }
+.overlay-sheet {
+  background: var(--s1);
+  border-radius: 16px 16px 0 0;
+  border-top: 1px solid var(--b2);
+  padding: 1rem 1rem 2rem;
+  width: 100%; max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: sheetIn .25s ease;
+}
+@keyframes sheetIn { from{transform:translateY(30px)} to{transform:translateY(0)} }
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--b2); border-radius: 2px;
+  margin: 0 auto .875rem;
+}
+.sheet-title { font-size: 18px; font-weight: 600; margin-bottom: 1rem; }
+.field-group { margin-bottom: .75rem; }
+.field-label { font-size: 14px; color: var(--t2); margin-bottom: .375rem; display: block; }
+.field-input {
+  width: 100%; background: var(--s2);
+  border: 1px solid var(--b2); border-radius: var(--r-sm);
+  color: var(--t1); font-size: 15px; padding: .75rem .875rem;
+  font-family: inherit;
+}
+.field-input:focus { outline: none; border-color: var(--blue-b); }
+.sheet-actions { display: flex; gap: .5rem; margin-top: 1rem; }
+.sheet-btn {
+  flex: 1; padding: .875rem; border-radius: var(--r-sm);
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  border: none; transition: opacity .15s;
+}
+.sheet-btn:hover { opacity: .85; }
+.sheet-cancel { background: var(--s2); color: var(--t2); }
+.sheet-save   { background: var(--blue); color: #fff; }
+.sheet-danger { background: var(--red); color: #fff; }
+
+/* ── Training bars ───────────────────────────────── */
+.prog-wrap { margin: .375rem 0; }
+.prog-bg { height: 5px; background: var(--b1); border-radius: 3px; overflow: hidden; }
+.prog-fill { height: 5px; border-radius: 3px; transition: width .4s ease; }
+.prog-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--t3); margin-top: 3px; }
+
+/* ── Staff roster cards ──────────────────────────── */
+.staff-card {
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: var(--r); padding: .75rem .875rem;
+  margin-bottom: .625rem;
+}
+.staff-card.inactive { opacity: .55; }
+.staff-top { display: flex; align-items: flex-start; gap: .625rem; margin-bottom: .5rem; }
+.staff-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--blue-bg); border: 1px solid var(--blue-b);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #93C5FD; flex-shrink: 0;
+}
+.staff-info { flex: 1; min-width: 0; }
+.staff-name { font-size: 15px; font-weight: 600; }
+.staff-role { font-size: 13px; color: var(--t2); margin-top: 1px; }
+.staff-code { font-size: 12px; color: var(--t3); font-family: monospace; margin-top: 2px; }
+.staff-actions { display: flex; gap: .375rem; flex-wrap: wrap; margin-top: .625rem; }
+.staff-act-btn {
+  font-size: 13px; padding: 6px 12px;
+  background: var(--s3); border: 1px solid var(--b2);
+  border-radius: 4px; color: var(--t2); cursor: pointer;
+  transition: all .15s;
+}
+.staff-act-btn:hover { color: var(--t1); border-color: var(--b3); }
+.staff-act-btn.danger { color: var(--red); border-color: var(--red-b); background: var(--red-bg); }
+.staff-act-btn.primary { color: #93C5FD; border-color: var(--blue-b); background: var(--blue-bg); }
+
+/* ── Client cards ────────────────────────────────── */
+.client-card {
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: var(--r); padding: .75rem .875rem;
+  margin-bottom: .625rem; cursor: pointer;
+  transition: border-color .15s;
+}
+.client-card:hover { border-color: var(--b2); }
+.client-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.client-meta { font-size: 13px; color: var(--t2); margin-bottom: .625rem; }
+.qpr-badge {
+  display: inline-block; font-size: 10px; font-weight: 600;
+  padding: 2px 7px; border-radius: 20px; margin-top: 4px;
+}
+.qpr-ok     { background: var(--green-bg); color: var(--green); }
+.qpr-soon   { background: var(--amber-bg); color: var(--amber); }
+.qpr-urgent { background: var(--red-bg);   color: var(--red); }
+
+/* ── IT Tech items ───────────────────────────────── */
+.security-item {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .75rem 0; border-bottom: 1px solid var(--b1);
+  font-size: 15px;
+}
+.security-item:last-child { border-bottom: none; }
+.security-label { flex: 1; color: var(--t2); }
+.security-label strong { color: var(--t1); display: block; margin-bottom: 1px; }
+
+/* ── Billing cutoff table ────────────────────────── */
+.billing-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.billing-table th { color: var(--t3); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: .05em; padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--b1); }
+.billing-table td { padding: 8px 8px; border-bottom: 1px solid var(--b1); color: var(--t1); font-size: 14px; }
+.billing-table tr:last-child td { border-bottom: none; }
+.billing-table .cutoff-date { color: var(--amber); font-weight: 500; }
+
+/* ── Toast ───────────────────────────────────────── */
+.toast-container { position: fixed; bottom: calc(var(--nav-h) + .75rem); left: 50%; transform: translateX(-50%); z-index: 400; pointer-events: none; }
+.toast {
+  background: var(--s1); border: 1px solid var(--b2);
+  border-radius: 8px; padding: .625rem 1.25rem;
+  font-size: 14px; color: var(--t1);
+  animation: toastIn .2s ease;
+  white-space: nowrap;
+}
+@keyframes toastIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── Offer letter wage display ───────────────────── */
+.wage-display {
+  background: var(--s2); border: 1px solid var(--b2);
+  border-radius: var(--r); padding: .75rem 1rem; margin: .75rem 0;
+  text-align: center;
+}
+.wage-amount { font-size: 28px; font-weight: 700; color: var(--green); }
+.wage-label  { font-size: 11px; color: var(--t2); margin-top: 2px; }
+.wage-breakdown { font-size: 11px; color: var(--t3); margin-top: .375rem; }
+
+/* ── Dev panel code block ────────────────────────── */
+.code-block {
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: var(--r-sm); padding: .875rem;
+  font-family: "SF Mono", "Fira Code", monospace; font-size: 13px;
+  color: #7EE787; white-space: pre-wrap; word-break: break-all;
+  max-height: 200px; overflow-y: auto; margin: .5rem 0;
+}
+
+/* ── Toggle switch ───────────────────────────────── */
+.toggle-wrap { display: flex; align-items: center; gap: .5rem; cursor: pointer; }
+.toggle-track {
+  width: 34px; height: 18px; border-radius: 9px;
+  background: var(--b2); transition: background .2s;
+  position: relative; flex-shrink: 0;
+}
+.toggle-track.on { background: var(--green); }
+.toggle-thumb {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #fff; position: absolute; top: 2px; left: 2px;
+  transition: transform .2s;
+}
+.toggle-track.on .toggle-thumb { transform: translateX(16px); }
+
+/* ── Scrollable inner containers ─────────────────── */
+.scroll-list { max-height: 320px; overflow-y: auto; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     HEADER
+     ═══════════════════════════════════ -->
+<header class="app-header">
+  <img src="https://opengrace.org/og_logo.jpg" alt="Open Grace">
+  <div class="header-text">
+    <h1>Open Grace LLC <span style="color:var(--t3)">·</span> Director</h1>
+    <p id="greeting-sub">Good <span id="time-of-day">morning</span>, Joshua</p>
+  </div>
+  <div class="header-right">
+    <div class="status-pill"><div class="status-dot"></div>Active</div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════
+     TAB: HOME
+     ═══════════════════════════════════ -->
+<div class="tab-panel active" id="tab-home">
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Active Clients</div>
+      <div class="stat-val" id="home-active-clients">—</div>
+      <div class="stat-sub">consumers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending</div>
+      <div class="stat-val" id="home-pending">—</div>
+      <div class="stat-sub">referrals</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">In Progress</div>
+      <div class="stat-val" id="home-inprogress">—</div>
+      <div class="stat-sub">onboarding</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">⚡</span>Quick actions</div>
+    <div class="qa-grid">
+      <a class="qa-btn primary" href="https://form.jotform.com/261451201542040" target="_blank">📋 New Referral</a>
+      <a class="qa-btn" href="https://opengrace.org/contact-log.html" target="_blank">📝 Contact Log</a>
+      <a class="qa-btn warn" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank">🚨 Incident Report</a>
+      <button class="qa-btn" onclick="switchTab('pipeline')">🔄 View Pipeline</button>
+    </div>
+    <button class="qa-btn success" id="self-deploy-btn" style="width:100%;justify-content:center;gap:.5rem" onclick="selfDeploy()">
+      🚀 Push Dashboard Update to GitHub
+    </button>
+    <div id="self-deploy-status" style="display:none;margin-top:.5rem;font-size:12px;padding:.5rem .75rem;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--b1)"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🛡️</span>Emergency &amp; Reporting</div>
+    <a class="emergency-item" href="tel:18774773646">
+      <div class="emergency-icon ei-red">🛡️</div>
+      <div class="emergency-text">
+        <strong>Adult Protective Services</strong>
+        <span>Dependent adult abuse &amp; neglect · 877-477-3646</span>
+      </div>
+    </a>
+    <a class="emergency-item" href="tel:18004424918">
+      <div class="emergency-icon ei-red">🛡️</div>
+      <div class="emergency-text">
+        <strong>Child Protective Services</strong>
+        <span>Riverside 800-442-4918 · SB 877-418-3844</span>
+      </div>
+    </a>
+    <a class="emergency-item" href="tel:9098903000">
+      <div class="emergency-icon ei-blue">🏛️</div>
+      <div class="emergency-text">
+        <strong>Inland Regional Center</strong>
+        <span>IRC main line · (909) 890-3000</span>
+      </div>
+    </a>
+    <a class="emergency-item" href="tel:988">
+      <div class="emergency-icon ei-purple">💙</div>
+      <div class="emergency-text">
+        <strong>988 Crisis Lifeline</strong>
+        <span>Mental health crisis support · 24/7</span>
+      </div>
+    </a>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════
+     TAB: CLIENTS
+     ═══════════════════════════════════ -->
+<div class="tab-panel" id="tab-clients">
+
+  <div class="section-head">Client roster</div>
+  <div id="client-roster-list">
+    <div style="text-align:center;padding:1.5rem;color:var(--t3);font-size:13px">Tap + Add Client to begin</div>
+  </div>
+  <button class="qa-btn primary" style="width:100%;justify-content:center;margin-bottom:.875rem" onclick="openSheet('add-client-sheet')">+ Add Client</button>
+
+  <div class="section-head">Client forms &amp; documents</div>
+  <a class="link-row" href="https://form.jotform.com/261451201542040" target="_blank">
+    <span class="link-icon">📋</span>
+    <div class="link-text"><strong>Client Referral Intake</strong><small>New family referrals from IRC</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://form.jotform.com/261451993406057" target="_blank">
+    <span class="link-icon">✅</span>
+    <div class="link-text"><strong>CFS Service Acknowledgment</strong><small>Required before services begin</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://form.jotform.com/261562041031038" target="_blank">
+    <span class="link-icon">📊</span>
+    <div class="link-text"><strong>Contact Log Submissions</strong><small>Director access only</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/contact-log.html" target="_blank">
+    <span class="link-icon">📝</span>
+    <div class="link-text"><strong>Daily Contact Log</strong><small>Staff submit after every visit</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf" target="_blank">
+    <span class="link-icon">🏠</span>
+    <div class="link-text"><strong>Client Welcome Packet</strong><small>PDF · give to families at first meeting</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/OpenGrace_Flyer_English.html" target="_blank">
+    <span class="link-icon">📄</span>
+    <div class="link-text"><strong>Program Flyer — English</strong><small>Print or share digitally</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/OpenGrace_Flyer_Spanish.html" target="_blank">
+    <span class="link-icon">📄</span>
+    <div class="link-text"><strong>Program Flyer — Español</strong><small>Print or share digitally</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/family-prescreening.html" target="_blank">
+    <span class="link-icon">📋</span>
+    <div class="link-text"><strong>Family Pre-Screening</strong><small>opengrace.org/family-prescreening.html</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/client-portal.html" target="_blank">
+    <span class="link-icon">🏘</span>
+    <div class="link-text"><strong>Family Portal</strong><small>opengrace.org/client-portal.html</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+
+  <div class="section-head">Contacts</div>
+  <div id="contacts-list-home">
+    <div style="text-align:center;padding:1rem;color:var(--t3);font-size:13px">Tap + Add Contact to save key contacts</div>
+  </div>
+  <button class="qa-btn" style="width:100%;justify-content:center;margin-bottom:.875rem" onclick="openSheet('add-contact-sheet')">+ Add Contact</button>
+
+</div>
+
+<!-- ═══════════════════════════════════
+     TAB: HR
+     ═══════════════════════════════════ -->
+<div class="tab-panel" id="tab-hr">
+
+  <div class="section-head">Staff overview</div>
+  <div class="stat-grid-2">
+    <div class="stat-card">
+      <div class="stat-label">Active Staff</div>
+      <div class="stat-val" id="hr-active-staff">—</div>
+      <div class="stat-sub">coordinators</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Hours Alerts</div>
+      <div class="stat-val" id="hr-hours-alerts" style="color:var(--amber)">—</div>
+      <div class="stat-sub">clients near limit</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">👥</span>Staff roster</div>
+    <div id="hr-staff-roster" class="scroll-list">
+      <div style="color:var(--t3);font-size:13px;padding:.5rem 0">Tap Refresh to load</div>
+    </div>
+    <div style="display:flex;gap:.5rem;margin-top:.75rem">
+      <button class="qa-btn" style="flex:1;justify-content:center" onclick="loadHRStaff()">🔄 Refresh</button>
+      <button class="qa-btn primary" style="flex:1;justify-content:center" onclick="openSheet('new-staff-sheet')">+ Add Staff Member</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🎓</span>Training overview</div>
+    <div class="stat-grid-2" style="margin-bottom:.625rem">
+      <div class="stat-card"><div class="stat-label">Enrolled</div><div class="stat-val" id="hr-enrolled">—</div></div>
+      <div class="stat-card"><div class="stat-label">Avg Completion</div><div class="stat-val" id="hr-avg-comp">—</div></div>
+    </div>
+    <div id="hr-training-list" style="color:var(--t3);font-size:13px;padding:.25rem 0">Tap Refresh to load training data</div>
+    <div style="display:flex;gap:.5rem;margin-top:.75rem">
+      <button class="qa-btn" style="flex:1;justify-content:center" onclick="loadHRTraining()">🔄 Refresh Training</button>
+      <a class="qa-btn primary" style="flex:1;justify-content:center;text-decoration:none" href="https://opengrace.org/training.html" target="_blank">🎓 Open Academy</a>
+    </div>
+  </div>
+
+  <div class="section-head">Hiring pipeline</div>
+  <div class="pipeline-section">
+    <div class="pipeline-header">
+      <span class="pipeline-title">New Hires — Onboarding</span>
+      <button class="pipeline-add" onclick="addPipelineItem('onboarding')">+ Add New Hire</button>
+    </div>
+    <div id="pipeline-onboarding" class="pipeline-empty">No active onboarding</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">📄</span>Generate offer letter</div>
+    <div class="field-group">
+      <label class="field-label">Candidate name</label>
+      <input class="field-input" id="ol-name" placeholder="Sandra Escajeda">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Position</label>
+      <select class="field-input" id="ol-position" onchange="calcWage()">
+        <option value="Family Coordinator">Family Coordinator</option>
+        <option value="Lead Family Coordinator">Lead Family Coordinator</option>
+        <option value="Case Manager / Navigator">Case Manager / Navigator</option>
+        <option value="Supervisor">Supervisor</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.5rem">
+      <div>
+        <label class="field-label">Education +$</label>
+        <input class="field-input" id="ol-edu" type="number" value="0" step="0.25" min="0" oninput="calcWage()">
+      </div>
+      <div>
+        <label class="field-label">Experience +$</label>
+        <input class="field-input" id="ol-exp" type="number" value="0" step="0.25" min="0" oninput="calcWage()">
+      </div>
+      <div>
+        <label class="field-label">Certs +$</label>
+        <input class="field-input" id="ol-cert" type="number" value="0" step="0.25" min="0" oninput="calcWage()">
+      </div>
+    </div>
+    <label style="display:flex;align-items:center;gap:.5rem;font-size:12px;color:var(--t2);margin-bottom:.625rem;cursor:pointer">
+      <input type="checkbox" id="ol-bilingual" onchange="calcWage()"> Bilingual differential (+$1.50/hr)
+    </label>
+    <div class="wage-display">
+      <div class="wage-amount" id="ol-rate-display">$17.50/hr</div>
+      <div class="wage-label">Calculated rate</div>
+      <div class="wage-breakdown" id="ol-breakdown">Base $17.50</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Start date</label>
+      <input class="field-input" id="ol-start" type="date">
+    </div>
+    <button class="qa-btn primary" style="width:100%;justify-content:center" onclick="generateOfferLetter()">📄 Generate Offer Letter</button>
+    <div id="ol-output" style="display:none;margin-top:.75rem">
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="qa-btn success" style="flex:1;justify-content:center" onclick="downloadOffer()">⬇ Download</button>
+        <button class="qa-btn" style="flex:1;justify-content:center" onclick="copyOffer()">📋 Copy</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head">HR resources &amp; billing</div>
+  <a class="link-row" href="https://form.jotform.com/261555850958066" target="_blank">
+    <span class="link-icon">💼</span>
+    <div class="link-text"><strong>Employment Application</strong><small>Wired to careers page</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://form.jotform.com/261451114945050" target="_blank">
+    <span class="link-icon">👤</span>
+    <div class="link-text"><strong>Staff Onboarding Form</strong><small>Send after offer accepted</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/Open_Grace_Interview_Scorecard.html" target="_blank">
+    <span class="link-icon">📊</span>
+    <div class="link-text"><strong>Interview Scorecard</strong><small>Score candidates — auto-save</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank">
+    <span class="link-icon">📘</span>
+    <div class="link-text"><strong>Employee Handbook</strong><small>Staff policies &amp; procedures</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/careers.html" target="_blank">
+    <span class="link-icon">💼</span>
+    <div class="link-text"><strong>Careers Page</strong><small>opengrace.org/careers.html</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://www.inlandrc.org" target="_blank">
+    <span class="link-icon">💳</span>
+    <div class="link-text"><strong>IRC E-Billing Portal</strong><small>inlandrc.org → Providers → Online Billing</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+
+  <div class="card" style="margin-top:.25rem">
+    <div class="card-title"><span class="card-title-icon">📅</span>IRC Billing cut-off dates FY 2025–26</div>
+    <table class="billing-table">
+      <thead><tr><th>Month</th><th>Cut-Off</th></tr></thead>
+      <tbody>
+        <tr><td>June</td><td class="cutoff-date">Jul 6</td></tr>
+        <tr><td>July</td><td class="cutoff-date">Aug 4</td></tr>
+        <tr><td>August</td><td class="cutoff-date">Sep 4</td></tr>
+        <tr><td>September</td><td class="cutoff-date">Oct 3</td></tr>
+        <tr><td>October</td><td class="cutoff-date">Nov 4</td></tr>
+        <tr><td>November</td><td class="cutoff-date">Dec 4</td></tr>
+        <tr><td>December</td><td class="cutoff-date">Jan 5</td></tr>
+        <tr><td colspan="2" style="color:var(--t3);font-size:11px;padding-top:.5rem">Cut-off time: 4:30 PM</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════
+     TAB: PIPELINE
+     ═══════════════════════════════════ -->
+<div class="tab-panel" id="tab-pipeline">
+
+  <div class="card" style="background:var(--purple-bg);border-color:var(--purple-b)">
+    <div style="display:flex;align-items:center;gap:.75rem">
+      <span style="font-size:20px">📬</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:#C4B5FD">Inbox Referral Scan</div>
+        <div style="font-size:11px;color:rgba(196,181,253,.7)">Tell Claude to scan for new referrals</div>
+      </div>
+      <button class="qa-btn purple" onclick="toast('Claude referral scan — feature coming soon')">Scan</button>
+    </div>
+  </div>
+
+  <div class="pipeline-section">
+    <div class="pipeline-header">
+      <span class="pipeline-title">Referrals — Pending Assessment</span>
+      <button class="pipeline-add" onclick="addPipelineItem('referral-pending')">+ Add</button>
+    </div>
+    <div id="pipeline-referral-pending" class="pipeline-empty">No pending referrals</div>
+  </div>
+
+  <div class="pipeline-section">
+    <div class="pipeline-header">
+      <span class="pipeline-title">Referrals — Awaiting Staff Assignment</span>
+      <button class="pipeline-add" onclick="addPipelineItem('referral-assign')">+ Add</button>
+    </div>
+    <div id="pipeline-referral-assign" class="pipeline-empty">No referrals awaiting assignment</div>
+  </div>
+
+  <div class="pipeline-section">
+    <div class="pipeline-header">
+      <span class="pipeline-title">Completed This Month</span>
+      <span></span>
+    </div>
+    <div id="pipeline-completed" class="pipeline-empty">None completed yet this month</div>
+  </div>
+
+  <div style="display:flex;gap:.5rem;margin-top:.25rem">
+    <button class="qa-btn" style="flex:1;justify-content:center" onclick="forceSyncPipeline()">🔄 Sync Pipeline Data</button>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════
+     TAB: COMMS
+     ═══════════════════════════════════ -->
+<div class="tab-panel" id="tab-comms">
+
+  <div class="section-head">Send message</div>
+  <div class="recipient-tabs">
+    <div class="rec-tab active" onclick="setRecipient('family',this)">🏠 Family</div>
+    <div class="rec-tab" onclick="setRecipient('coord',this)">🔖 Coord</div>
+    <div class="rec-tab" onclick="setRecipient('prospect',this)">💼 Prospect</div>
+    <div class="rec-tab" onclick="setRecipient('staff',this)">👤 Staff</div>
+  </div>
+  <input class="send-name-input" id="send-name" placeholder="Recipient name (optional — personalizes message)">
+  <input class="send-phone-input" id="send-phone" placeholder="Phone number (for SMS)">
+  <textarea class="send-msg-input" id="send-msg" placeholder="Custom message..."></textarea>
+  <div class="send-actions">
+    <button class="send-btn send-sms" onclick="doSend('sms')">📱 Text</button>
+    <button class="send-btn send-email" onclick="doSend('email')">✉️ Email</button>
+    <button class="send-btn send-copy" onclick="doSend('copy')">📋 Copy</button>
+  </div>
+
+  <div class="section-head" style="margin-top:1rem">IRC resources</div>
+  <a class="link-row" href="https://opengrace.org/coordinators.html" target="_blank">
+    <span class="link-icon">🔖</span>
+    <div class="link-text"><strong>IRC Coordinator Info Page</strong><small>opengrace.org/coordinators.html</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="tel:9098903000">
+    <span class="link-icon">🏛️</span>
+    <div class="link-text"><strong>IRC Main Line</strong><small>(909) 890-3000</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+
+  <div class="section-head">All forms &amp; submissions</div>
+  <a class="link-row" href="https://www.jotform.com/myforms/" target="_blank">
+    <span class="link-icon">📈</span>
+    <div class="link-text"><strong>All Forms &amp; Submissions</strong><small>Jotform full dashboard</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank">
+    <span class="link-icon">🚨</span>
+    <div class="link-text"><strong>Incident Report Form</strong><small>File same day — notifies Director</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+
+</div>
+
+<!-- ═══════════════════════════════════
+     TAB: IT / TECH
+     ═══════════════════════════════════ -->
+<div class="tab-panel" id="tab-it">
+
+  <div class="section-head">System status</div>
+  <div class="sys-grid">
+    <div class="sys-item">
+      <div class="sys-label">Jotform Forms</div>
+      <div class="sys-value sys-ok">✅ Active</div>
+      <div class="sys-sub">6 active forms</div>
+    </div>
+    <div class="sys-item">
+      <div class="sys-label">GitHub Deploy</div>
+      <div class="sys-value sys-ok">✅ Live</div>
+      <div class="sys-sub">Auto-push active</div>
+    </div>
+    <div class="sys-item">
+      <div class="sys-label">IRC Vendor</div>
+      <div class="sys-value sys-ok">● PJ6208</div>
+      <div class="sys-sub">Vendorized active</div>
+    </div>
+    <div class="sys-item">
+      <div class="sys-label">Website</div>
+      <div class="sys-value sys-ok">✅ Live</div>
+      <div class="sys-sub">opengrace.org · 12 pages</div>
+    </div>
+  </div>
+
+  <div class="section-head">Security status</div>
+  <div class="card">
+    <div class="security-item">
+      <span style="font-size:16px">🔑</span>
+      <div class="security-label"><strong>GitHub PAT</strong>Stored in localStorage (pre-Worker)</div>
+      <span class="badge badge-amber">Upgrade pending</span>
+    </div>
+    <div class="security-item">
+      <span style="font-size:16px">☁️</span>
+      <div class="security-label"><strong>Cloudflare Access</strong>Portal authentication</div>
+      <span class="badge badge-amber">Setup needed</span>
+    </div>
+    <div class="security-item">
+      <span style="font-size:16px">🛡️</span>
+      <div class="security-label"><strong>Cloudflare Worker</strong>API proxy + audit log</div>
+      <span class="badge badge-amber">Deploy pending</span>
+    </div>
+    <div class="security-item">
+      <span style="font-size:16px">🗄️</span>
+      <div class="security-label"><strong>Firestore</strong>HIPAA-eligible data store</div>
+      <span class="badge badge-amber">Setup needed</span>
+    </div>
+    <div class="security-item" style="border-bottom:none">
+      <span style="font-size:16px">📋</span>
+      <div class="security-label"><strong>Jotform HIPAA Plan</strong>BAA + encrypted forms</div>
+      <span class="badge badge-amber">Upgrade needed</span>
+    </div>
+  </div>
+
+  <div class="section-head">Staff access management</div>
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🔑</span>Staff access codes</div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:.75rem">Toggle to revoke instantly. Changes save to GitHub live.</p>
+    <div id="it-access-codes" style="color:var(--t3);font-size:13px">Tap Load to view</div>
+    <button class="qa-btn" style="width:100%;justify-content:center;margin-top:.75rem" onclick="loadAccessCodes()">🔄 Load / Refresh</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">💼</span>Open positions — careers page</div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:.75rem">Toggle positions on to show on careers page. Live in ~60 seconds.</p>
+    <div id="it-positions" style="color:var(--t3);font-size:13px">Tap Load to view</div>
+    <button class="qa-btn" style="width:100%;justify-content:center;margin-top:.75rem" onclick="loadPositions()">🔄 Load / Refresh</button>
+    <button class="qa-btn primary" style="width:100%;justify-content:center;margin-top:.5rem" onclick="savePositions()">💾 Save to GitHub</button>
+  </div>
+
+  <div class="section-head">Portals &amp; websites</div>
+  <a class="link-row" href="https://opengrace.org/staff-portal.html" target="_blank">
+    <span class="link-icon">👥</span>
+    <div class="link-text"><strong>Staff Portal</strong><small>opengrace.org/staff-portal.html</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/coordinator.html" target="_blank">
+    <span class="link-icon">👤</span>
+    <div class="link-text"><strong>Coordinator Portal</strong><small>opengrace.org/coordinator.html</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/supervisor-portal.html" target="_blank">
+    <span class="link-icon">🏢</span>
+    <div class="link-text"><strong>Supervisor Portal</strong><small>opengrace.org/supervisor-portal.html</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/training.html" target="_blank">
+    <span class="link-icon">🎓</span>
+    <div class="link-text"><strong>Staff Training Academy</strong><small>opengrace.org/training.html</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org" target="_blank">
+    <span class="link-icon">🏠</span>
+    <div class="link-text"><strong>Public Website — English</strong><small>opengrace.org</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://opengrace.org/es.html" target="_blank">
+    <span class="link-icon">🌎</span>
+    <div class="link-text"><strong>Public Website — Español</strong><small>opengrace.org/es.html</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+  <a class="link-row" href="https://github.com/jayraykay2/Open-Grace-Staff" target="_blank">
+    <span class="link-icon">🔧</span>
+    <div class="link-text"><strong>GitHub Repository</strong><small>jayraykay2/Open-Grace-Staff</small></div>
+    <span class="link-arrow">›</span>
+  </a>
+
+  <div class="section-head">Director dev panel</div>
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🚀</span>Deploy update</div>
+    <div class="field-group">
+      <label class="field-label">File to update</label>
+      <select class="field-input" id="dp-file">
+        <option value="director.html">director.html</option>
+        <option value="coordinator.html">coordinator.html</option>
+        <option value="staff-portal.html">staff-portal.html</option>
+        <option value="training.html">training.html</option>
+        <option value="careers.html">careers.html</option>
+        <option value="staff_access.json">staff_access.json</option>
+        <option value="positions.json">positions.json</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Deploy message (describe the change)</label>
+      <input class="field-input" id="dp-message" placeholder="Update coordinator portal — add training tab">
+    </div>
+    <div class="field-group">
+      <label class="field-label">File content (paste full updated file here)</label>
+      <textarea class="field-input" id="dp-content" style="height:100px;font-family:monospace;font-size:11px" placeholder="Paste updated file content here..."></textarea>
+    </div>
+    <button class="qa-btn primary" style="width:100%;justify-content:center" onclick="deployUpdate()">🚀 Deploy Live</button>
+    <div id="dp-status" style="margin-top:.625rem;font-size:12px;color:var(--t2);display:none"></div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════
+     TAB: SETTINGS
+     ═══════════════════════════════════ -->
+<div class="tab-panel" id="tab-settings">
+
+  <div class="section-head">Dashboard preferences</div>
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">👤</span>Director name</div>
+    <div style="display:flex;gap:.5rem">
+      <input class="field-input" id="set-name" value="Joshua" placeholder="Your first name" style="flex:1">
+      <button class="qa-btn primary" onclick="saveSetting('directorName', document.getElementById('set-name').value); toast('Name saved')">Save</button>
+    </div>
+    <p style="font-size:11px;color:var(--t3);margin-top:.5rem">Used in the greeting on the Home tab</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🔒</span>Supervisor portal code</div>
+    <div style="display:flex;gap:.5rem;align-items:center">
+      <code style="flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r-sm);padding:.5rem .75rem;font-size:13px;color:var(--amber)">OG2026</code>
+      <button class="qa-btn" onclick="copyText('OG2026')">📋 Copy</button>
+    </div>
+    <p style="font-size:11px;color:var(--t3);margin-top:.5rem">Share with supervisors only. Update in supervisor-portal.html to change.</p>
+  </div>
+
+  <div class="section-head">Data management</div>
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🔄</span>Pipeline data</div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:.75rem">Sync pulls latest referral and hiring data. Reset clears local pipeline and reloads from defaults.</p>
+    <div style="display:flex;gap:.5rem">
+      <button class="qa-btn" style="flex:1;justify-content:center" onclick="forceSyncPipeline()">🔄 Sync Pipeline</button>
+      <button class="qa-btn danger" style="flex:1;justify-content:center" onclick="resetPipeline()">⚠ Reset Pipeline</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">📞</span>Contacts data</div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:.75rem">Reset contacts to default data. Any manually added contacts will be removed.</p>
+    <button class="qa-btn danger" style="width:100%;justify-content:center" onclick="resetContacts()">⚠ Reset Contacts</button>
+  </div>
+
+  <div class="section-head">About</div>
+  <div class="card">
+    <div style="font-size:12px;color:var(--t2);line-height:1.8">
+      <div>Open Grace LLC · IRC Vendor PJ6208</div>
+      <div>Director Dashboard v4.0</div>
+      <div>Riverside &amp; San Bernardino Counties</div>
+      <div style="margin-top:.5rem">
+        <a href="tel:9518804132" style="color:var(--blue);text-decoration:none">951-880-4132</a>
+        &nbsp;·&nbsp;
+        <a href="mailto:joshua.kennedy@opengrace.org" style="color:var(--blue);text-decoration:none">joshua.kennedy@opengrace.org</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════
+     BOTTOM NAVIGATION
+     ═══════════════════════════════════ -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-home" onclick="switchTab('home')">
+    <span class="nav-icon">🏠</span>Home
+  </button>
+  <button class="nav-btn" id="nav-clients" onclick="switchTab('clients')">
+    <span class="nav-icon">👥</span>Clients
+  </button>
+  <button class="nav-btn" id="nav-hr" onclick="switchTab('hr')">
+    <span class="nav-icon">👔</span>HR
+  </button>
+  <button class="nav-btn" id="nav-pipeline" onclick="switchTab('pipeline')">
+    <span class="nav-icon">🔄</span>Pipeline
+  </button>
+  <button class="nav-btn" id="nav-comms" onclick="switchTab('comms')">
+    <span class="nav-icon">📤</span>Comms
+  </button>
+  <button class="nav-btn" id="nav-it" onclick="switchTab('it')">
+    <span class="nav-icon">💻</span>IT/Tech
+  </button>
+  <button class="nav-btn" id="nav-settings" onclick="switchTab('settings')">
+    <span class="nav-icon">⚙️</span>Settings
+  </button>
+</nav>
+
+<!-- ═══════════════════════════════════
+     OVERLAYS / SHEETS
+     ═══════════════════════════════════ -->
+<div class="overlay" id="add-client-sheet" style="display:none" onclick="if(event.target===this)closeSheet('add-client-sheet')">
+  <div class="overlay-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add Client</div>
+    <div class="field-group"><label class="field-label">Client name</label><input class="field-input" id="cl-name" placeholder="Burks, Jaybrion"></div>
+    <div class="field-group"><label class="field-label">UCI number</label><input class="field-input" id="cl-uci" placeholder="6953825"></div>
+    <div class="field-group"><label class="field-label">Service start date</label><input class="field-input" id="cl-start" type="date"></div>
+    <div class="field-group"><label class="field-label">Authorized hours/week</label><input class="field-input" id="cl-hours" type="number" placeholder="30"></div>
+    <div class="field-group"><label class="field-label">Assigned coordinator</label><input class="field-input" id="cl-coord" placeholder="Staff name"></div>
+    <div class="sheet-actions">
+      <button class="sheet-btn sheet-cancel" onclick="closeSheet('add-client-sheet')">Cancel</button>
+      <button class="sheet-btn sheet-save" onclick="saveClient()">Save Client</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="add-contact-sheet" style="display:none" onclick="if(event.target===this)closeSheet('add-contact-sheet')">
+  <div class="overlay-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add Contact</div>
+    <div class="field-group"><label class="field-label">Full name *</label><input class="field-input" id="ct-name" placeholder="Christina Castaneda"></div>
+    <div class="field-group"><label class="field-label">Role / Relationship</label><input class="field-input" id="ct-role" placeholder="IRC Coordinator"></div>
+    <div class="field-group"><label class="field-label">Phone</label><input class="field-input" id="ct-phone" type="tel" placeholder="(909) 890-3420"></div>
+    <div class="field-group"><label class="field-label">Email</label><input class="field-input" id="ct-email" type="email" placeholder="ccastaneda@inlandrc.org"></div>
+    <div class="sheet-actions">
+      <button class="sheet-btn sheet-cancel" onclick="closeSheet('add-contact-sheet')">Cancel</button>
+      <button class="sheet-btn sheet-save" onclick="saveContact()">Save Contact</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="new-staff-sheet" style="display:none" onclick="if(event.target===this)closeSheet('new-staff-sheet')">
+  <div class="overlay-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add Staff Member</div>
+    <div class="field-group"><label class="field-label">Full name</label><input class="field-input" id="ns-name" placeholder="Sandra Escajeda"></div>
+    <div class="field-group"><label class="field-label">Staff code</label><input class="field-input" id="ns-code" placeholder="OG-2026-002"></div>
+    <div class="field-group"><label class="field-label">Position</label><input class="field-input" id="ns-pos" value="Family Coordinator"></div>
+    <div class="field-group"><label class="field-label">Hire date</label><input class="field-input" id="ns-hired" type="date"></div>
+    <div class="field-group"><label class="field-label">Assigned clients (one per line)</label><textarea class="field-input" id="ns-clients" style="height:60px" placeholder="Burks, Jaybrion"></textarea></div>
+    <div class="sheet-actions">
+      <button class="sheet-btn sheet-cancel" onclick="closeSheet('new-staff-sheet')">Cancel</button>
+      <button class="sheet-btn sheet-save" onclick="saveNewStaff()">Add Staff Member</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ═══════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════ -->
+<script>
+'use strict';
+
+// ── Config ────────────────────────────────────────────────────────────────────
+const GH_RAW  = 'https://raw.githubusercontent.com/jayraykay2/Open-Grace-Staff/main';
+const GH_API  = 'https://api.github.com/repos/jayraykay2/Open-Grace-Staff/contents';
+const WORKER  = ''; // Set to your Worker URL when deployed
+
+const WAGE_BASE = {
+  'Family Coordinator': 17.50,
+  'Lead Family Coordinator': 19.50,
+  'Case Manager / Navigator': 20.00,
+  'Supervisor': 22.00,
+};
+
+// ── Storage helpers ───────────────────────────────────────────────────────────
+const K = {
+  pipeline:  'og_pipeline_v2',
+  contacts:  'og_contacts',
+  clients:   'og_clients_v1',
+  settings:  'og_settings_v1',
+};
+
+function load(key, fallback = null) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch { return fallback; }
+}
+
+function save(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); return true; }
+  catch { return false; }
+}
+
+function saveSetting(key, val) {
+  const s = load(K.settings, {});
+  s[key] = val;
+  save(K.settings, s);
+}
+
+function getSetting(key, fallback = '') {
+  return (load(K.settings, {}))[key] ?? fallback;
+}
+
+// ── GitHub token ──────────────────────────────────────────────────────────────
+function getGHToken() {
+  let t = localStorage.getItem('og_gh_token');
+  if (!t) {
+    t = prompt('Enter your GitHub API token (stored locally):');
+    if (t) localStorage.setItem('og_gh_token', t);
+  }
+  return t || '';
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function toast(msg, duration = 2800) {
+  const c = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  c.innerHTML = '';
+  c.appendChild(el);
+  setTimeout(() => el.remove(), duration);
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard'));
+}
+
+// ── Tab navigation ────────────────────────────────────────────────────────────
+const TABS = ['home','clients','hr','pipeline','comms','it','settings'];
+
+function switchTab(name) {
+  TABS.forEach(t => {
+    document.getElementById('tab-' + t)?.classList.remove('active');
+    document.getElementById('nav-' + t)?.classList.remove('active');
+  });
+  document.getElementById('tab-' + name)?.classList.add('active');
+  document.getElementById('nav-' + name)?.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── Sheet overlays ────────────────────────────────────────────────────────────
+function openSheet(id) { document.getElementById(id).style.display = 'flex'; }
+function closeSheet(id) { document.getElementById(id).style.display = 'none'; }
+
+// ── Greeting ──────────────────────────────────────────────────────────────────
+function setGreeting() {
+  const h = new Date().getHours();
+  const t = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
+  const el = document.getElementById('time-of-day');
+  if (el) el.textContent = t;
+  const name = getSetting('directorName', 'Joshua');
+  const sub = document.getElementById('greeting-sub');
+  if (sub) sub.innerHTML = `Good ${t}, <em>${name}</em>`;
+}
+
+// ── Pipeline ──────────────────────────────────────────────────────────────────
+function getPipeline() {
+  return load(K.pipeline, {
+    'referral-pending': [], 'referral-assign': [],
+    'onboarding': [], 'completed': []
+  });
+}
+
+function renderPipeline() {
+  const p = getPipeline();
+  renderPipelineSection('pipeline-referral-pending', p['referral-pending'] || [], 'No pending referrals');
+  renderPipelineSection('pipeline-referral-assign',  p['referral-assign']  || [], 'No referrals awaiting assignment');
+  renderPipelineSection('pipeline-onboarding',       p['onboarding']       || [], 'No active onboarding');
+  renderPipelineSection('pipeline-completed',        p['completed']        || [], 'None completed yet this month');
+  updateHomeStats(p);
+}
+
+function renderPipelineSection(elId, items, emptyMsg) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (!items.length) { el.className = 'pipeline-empty'; el.textContent = emptyMsg; return; }
+  el.className = '';
+  el.innerHTML = items.map((item, i) => `
+    <div class="pipeline-item">
+      <div style="flex:1;min-width:0">
+        <div class="pipeline-item-name">${item.name || '—'}</div>
+        <div class="pipeline-item-meta">${item.phone || ''} ${item.date ? '· ' + item.date : ''}</div>
+        ${item.notes ? `<div style="font-size:11px;color:var(--t3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px">${item.notes}</div>` : ''}
+      </div>
+      <div class="pipeline-actions">
+        <button class="pip-btn" onclick="removePipelineItem('${elId.replace('pipeline-','')}',${i})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function addPipelineItem(section) {
+  const name  = prompt('Name:'); if (!name) return;
+  const phone = prompt('Phone (optional):') || '';
+  const notes = prompt('Notes (optional):') || '';
+  const p = getPipeline();
+  if (!p[section]) p[section] = [];
+  p[section].push({ name, phone, notes, date: new Date().toISOString().split('T')[0], added: new Date().toISOString().split('T')[0] });
+  save(K.pipeline, p);
+  renderPipeline();
+  toast('✓ Added: ' + name);
+}
+
+function removePipelineItem(section, idx) {
+  const p = getPipeline();
+  if (!p[section]) return;
+  const removed = p[section].splice(idx, 1)[0];
+  // Track deletions so sync doesn't re-add
+  const deleted = load('og_pipeline_deleted', []);
+  deleted.push((removed.name || '').toLowerCase().trim());
+  save('og_pipeline_deleted', deleted);
+  save(K.pipeline, p);
+  renderPipeline();
+  toast('Removed: ' + (removed.name || 'item'));
+}
+
+function updateHomeStats(p) {
+  const clients  = load(K.clients, []);
+  const active   = clients.filter(c => c.active !== false).length;
+  const pending  = (p['referral-pending'] || []).length;
+  const progress = (p['referral-assign'] || []).length + (p['onboarding'] || []).length;
+  document.getElementById('home-active-clients').textContent = active || '—';
+  document.getElementById('home-pending').textContent  = pending  || '—';
+  document.getElementById('home-inprogress').textContent = progress || '—';
+}
+
+function forceSyncPipeline() {
+  const seed = {
+    'referral-pending': [
+      { name:'Burks, Jaybrion', phone:'(909) 722-0525', date:'2026-04-22',
+        notes:'UCI 6953825 | Coordinator: Christina Castaneda | Service start 04/22/2026 | QPR due 07/21/2026', added:'2026-04-22' },
+      { name:'Pinto, Arianna', phone:'(323) 490-6850', date:'2026-05-29',
+        notes:'UCI 7446993 | Mother: Veronica Falcon | Coordinator: Tarah Bass', added:'2026-05-29' },
+      { name:'Beinbrech, Marykate', phone:'(562) 631-7043', date:'2026-05-18',
+        notes:'UCI 8283031 | Mother: Christi Beinbrech | Coordinator: Tarah Bass', added:'2026-05-18' },
+    ],
+    'referral-assign': [],
+    'onboarding': [
+      { name:'Escajeda, Sandra', phone:'(714) 340-9366', date:'2026-06-09', notes:'Position: Family Coordinator | Applied June 9', added:'2026-06-09' },
+      { name:'Allah, Mecca', phone:'(310) 760-6833', date:'2026-06-08', notes:"Position: Case Manager | Master's in Special Education", added:'2026-06-08' },
+      { name:'Carter-Earl, Ambre', phone:'(310) 606-0578', date:'2026-06-07', notes:'Position: Family Coordinator | Verbal offer extended', added:'2026-06-07' },
+    ],
+    'completed': []
+  };
+  const current = getPipeline();
+  const deleted  = load('og_pipeline_deleted', []);
+  let added = 0;
+  Object.entries(seed).forEach(([section, items]) => {
+    if (!current[section]) current[section] = [];
+    items.forEach(item => {
+      const name = (item.name || '').toLowerCase().trim();
+      if (deleted.some(d => d === name)) return;
+      if (current[section].some(e => (e.name||'').toLowerCase().trim() === name)) return;
+      current[section].push(item);
+      added++;
+    });
+  });
+  save(K.pipeline, current);
+  renderPipeline();
+  toast(added > 0 ? `✓ Synced — ${added} entr${added===1?'y':'ies'} added` : '✓ Pipeline up to date');
+}
+
+function resetPipeline() {
+  if (!confirm('Reset pipeline? All manually added entries will be removed.')) return;
+  save(K.pipeline, { 'referral-pending':[],'referral-assign':[],'onboarding':[],'completed':[] });
+  save('og_pipeline_deleted', []);
+  renderPipeline();
+  toast('Pipeline reset');
+}
+
+// ── Clients ───────────────────────────────────────────────────────────────────
+function renderClientRoster() {
+  const clients = load(K.clients, []);
+  const el = document.getElementById('client-roster-list');
+  if (!el) return;
+  if (!clients.length) {
+    el.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--t3);font-size:13px">Tap + Add Client to begin</div>';
+    return;
+  }
+  const today = new Date();
+  el.innerHTML = clients.map((c, i) => {
+    const pct = c.authorizedHours ? Math.round((c.usedHours||0)/c.authorizedHours*100) : 0;
+    const barC = pct>=90?'var(--red)':pct>=80?'var(--amber)':'var(--green)';
+    let qprBadge = '';
+    if (c.qprDue) {
+      const days = Math.ceil((new Date(c.qprDue) - today)/86400000);
+      qprBadge = days < 0
+        ? `<span class="qpr-badge qpr-urgent">QPR overdue ${Math.abs(days)}d</span>`
+        : days <= 14
+          ? `<span class="qpr-badge qpr-soon">QPR in ${days}d</span>`
+          : `<span class="qpr-badge qpr-ok">QPR ${c.qprDue}</span>`;
+    }
+    return `<div class="client-card">
+      <div class="client-name">${c.name}</div>
+      <div class="client-meta">UCI ${c.uci} · Started ${c.serviceStart||'—'} · ${c.coordinator||'Unassigned'}</div>
+      <div class="prog-wrap">
+        <div class="prog-bg"><div class="prog-fill" style="width:${Math.min(pct,100)}%;background:${barC}"></div></div>
+        <div class="prog-label"><span>${c.usedHours||0}/${c.authorizedHours||'?'} hrs</span><span>${pct}%</span></div>
+      </div>
+      ${qprBadge}
+    </div>`;
+  }).join('');
+}
+
+function saveClient() {
+  const name  = document.getElementById('cl-name').value.trim();
+  if (!name) { toast('Client name required'); return; }
+  const start = document.getElementById('cl-start').value;
+  const qprDue = start ? new Date(new Date(start).setDate(new Date(start).getDate()+90)).toISOString().split('T')[0] : '';
+  const clients = load(K.clients, []);
+  clients.push({
+    name,
+    uci:             document.getElementById('cl-uci').value.trim(),
+    serviceStart:    start,
+    qprDue,
+    authorizedHours: parseFloat(document.getElementById('cl-hours').value) || 0,
+    usedHours:       0,
+    coordinator:     document.getElementById('cl-coord').value.trim(),
+    active:          true,
+  });
+  save(K.clients, clients);
+  closeSheet('add-client-sheet');
+  renderClientRoster();
+  toast(`✓ ${name} added`);
+}
+
+// ── Contacts ──────────────────────────────────────────────────────────────────
+function renderContacts() {
+  const contacts = load(K.contacts, []);
+  const el = document.getElementById('contacts-list-home');
+  if (!el) return;
+  if (!contacts.length) {
+    el.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--t3);font-size:13px">Tap + Add Contact to save key contacts</div>';
+    return;
+  }
+  el.innerHTML = contacts.map((c, i) => `
+    <div class="link-row" style="margin-bottom:.5rem">
+      <span class="link-icon">👤</span>
+      <div class="link-text">
+        <strong>${c.name}</strong>
+        <small>${c.role||''}</small>
+      </div>
+      <div style="display:flex;gap:.375rem">
+        ${c.phone ? `<a href="tel:${c.phone.replace(/\D/g,'')}" style="color:var(--green);text-decoration:none;font-size:12px">📞</a>` : ''}
+        ${c.email ? `<a href="mailto:${c.email}" style="color:var(--blue);text-decoration:none;font-size:12px">✉️</a>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function saveContact() {
+  const name = document.getElementById('ct-name').value.trim();
+  if (!name) { toast('Name required'); return; }
+  const contacts = load(K.contacts, []);
+  contacts.push({
+    name,
+    role:  document.getElementById('ct-role').value.trim(),
+    phone: document.getElementById('ct-phone').value.trim(),
+    email: document.getElementById('ct-email').value.trim(),
+  });
+  save(K.contacts, contacts);
+  closeSheet('add-contact-sheet');
+  renderContacts();
+  toast(`✓ ${name} saved`);
+}
+
+function resetContacts() {
+  if (!confirm('Reset contacts? Manually added contacts will be removed.')) return;
+  save(K.contacts, []);
+  renderContacts();
+  toast('Contacts reset');
+}
+
+// ── HR — Staff roster ─────────────────────────────────────────────────────────
+async function loadHRStaff() {
+  const el = document.getElementById('hr-staff-roster');
+  el.innerHTML = '<div style="color:var(--t2);font-size:13px;padding:.5rem 0">Loading...</div>';
+  try {
+    const r = await fetch(GH_RAW + '/staff_access.json?t=' + Date.now());
+    const d = await r.json();
+    const staff  = d.staff || [];
+    const active = staff.filter(s => s.active);
+    let alerts = 0;
+    active.forEach(s => (s.clients||[]).forEach(c => {
+      if (c.usedHours && c.authorizedHours && (c.usedHours/c.authorizedHours)*100 >= (c.alertThreshold||80)) alerts++;
+    }));
+    document.getElementById('hr-active-staff').textContent = active.length || '—';
+    document.getElementById('hr-hours-alerts').textContent = alerts || '—';
+
+    if (!staff.length) { el.innerHTML = '<div style="color:var(--t3);font-size:13px">No staff on record.</div>'; return; }
+
+    el.innerHTML = staff.map((s, i) => {
+      const initials = (s.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      const clients  = s.clients || [];
+      const ob       = s.onboarding || {};
+      const obKeys   = ['liveScan','cprFirstAid','handbookSigned','jotformOnboarding','mandatedReporter','hipaaAck','teamsSetup','contactLogTest','firstSupervision'];
+      const obDone   = obKeys.filter(k => ob[k]).length;
+      return `<div class="staff-card ${s.active?'':'inactive'}">
+        <div class="staff-top">
+          <div class="staff-avatar">${initials}</div>
+          <div class="staff-info">
+            <div class="staff-name">${s.name||'Unnamed'}</div>
+            <div class="staff-role">${s.position||'Family Coordinator'}</div>
+            <div class="staff-code">${s.code} · Hired ${s.hired||'—'}</div>
+          </div>
+          <span class="badge ${s.active?'badge-green':'badge-red'}">${s.active?'Active':'Inactive'}</span>
+        </div>
+        <div style="font-size:11px;color:var(--t2);margin-bottom:.375rem">
+          Onboarding: ${obDone}/9 · Clients: ${clients.length}
+          ${s.phone ? ` · <a href="tel:${s.phone.replace(/\D/g,'')}" style="color:var(--blue);text-decoration:none">${s.phone}</a>` : ''}
+        </div>
+        <div class="staff-actions">
+          <button class="staff-act-btn" onclick="toast('Edit staff — coming in next update')">✏️ Edit</button>
+          <button class="staff-act-btn primary" onclick="window.open('https://opengrace.org/training.html','_blank')">🎓 Training</button>
+          <button class="staff-act-btn danger" onclick="toast('Revoke — use IT/Tech tab')">🔒 Revoke</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = `<div style="color:var(--red);font-size:13px">Failed to load: ${e.message}</div>`;
+  }
+}
+
+// ── HR — Training ─────────────────────────────────────────────────────────────
+async function loadHRTraining() {
+  const el = document.getElementById('hr-training-list');
+  el.innerHTML = '<div style="color:var(--t2);font-size:13px">Loading...</div>';
+  try {
+    const [staffR, trR] = await Promise.all([
+      fetch(GH_RAW + '/staff_access.json?t=' + Date.now()).then(r => r.json()),
+      fetch(GH_RAW + '/training_progress.json?t=' + Date.now()).then(r => r.json()).catch(() => ({staff:{}})),
+    ]);
+    const active  = (staffR.staff||[]).filter(s => s.active && s.code !== 'OG-DIR-2026');
+    const tpStaff = trR.staff || {};
+    const enrolled = active.length;
+    const avgs = active.map(s => ((tpStaff[s.code]?.completed||[]).length / 18) * 100);
+    const avg  = enrolled ? Math.round(avgs.reduce((a,b)=>a+b,0)/enrolled) : 0;
+    document.getElementById('hr-enrolled').textContent  = enrolled || '—';
+    document.getElementById('hr-avg-comp').textContent  = avg + '%';
+
+    if (!active.length) { el.innerHTML = '<div style="color:var(--t3);font-size:13px">No active staff found.</div>'; return; }
+
+    el.innerHTML = active.map(s => {
+      const tp   = tpStaff[s.code] || {};
+      const done = (tp.completed||[]).length;
+      const pct  = Math.round((done/18)*100);
+      const barC = pct>=80?'var(--green)':pct>=40?'var(--amber)':'var(--blue)';
+      const day1 = ['M01','M02','M03','M04'].every(m => (tp.completed||[]).includes(m));
+      return `<div style="margin-bottom:.625rem">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <span style="font-size:12px;font-weight:500">${s.name}</span>
+          <span class="badge ${day1?'badge-green':'badge-red'}" style="font-size:9px">${day1?'Day 1 Done':'Day 1 Incomplete'}</span>
+        </div>
+        <div class="prog-wrap">
+          <div class="prog-bg"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div>
+          <div class="prog-label"><span>${done}/18 modules</span><span>${pct}%</span></div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = `<div style="color:var(--red);font-size:13px">Failed: ${e.message}</div>`;
+  }
+}
+
+// ── New staff ─────────────────────────────────────────────────────────────────
+function saveNewStaff() {
+  const name = document.getElementById('ns-name').value.trim();
+  const code = document.getElementById('ns-code').value.trim().toUpperCase();
+  if (!name || !code) { toast('Name and code required'); return; }
+  // Add to onboarding pipeline
+  const p = getPipeline();
+  if (!p.onboarding) p.onboarding = [];
+  p.onboarding.push({ name, phone: '', notes: `Code: ${code} · Position: ${document.getElementById('ns-pos').value}`, date: document.getElementById('ns-hired').value, added: new Date().toISOString().split('T')[0] });
+  save(K.pipeline, p);
+  closeSheet('new-staff-sheet');
+  renderPipeline();
+  toast(`✓ ${name} added to onboarding pipeline`);
+}
+
+// ── Offer letter ──────────────────────────────────────────────────────────────
+let offerData = {};
+
+function calcWage() {
+  const pos  = document.getElementById('ol-position').value;
+  const edu  = parseFloat(document.getElementById('ol-edu').value) || 0;
+  const exp  = parseFloat(document.getElementById('ol-exp').value) || 0;
+  const cert = parseFloat(document.getElementById('ol-cert').value) || 0;
+  const bil  = document.getElementById('ol-bilingual').checked;
+  const base = WAGE_BASE[pos] || 17.50;
+  const calc = Math.round((base + edu + exp + cert) * 4) / 4;
+  const total = bil ? calc + 1.50 : calc;
+  document.getElementById('ol-rate-display').textContent = '$' + total.toFixed(2) + '/hr';
+  document.getElementById('ol-breakdown').textContent =
+    `Base $${base.toFixed(2)} + Edu $${edu.toFixed(2)} + Exp $${exp.toFixed(2)} + Certs $${cert.toFixed(2)}${bil ? ' + Bilingual $1.50' : ''}`;
+}
+
+function generateOfferLetter() {
+  const name = document.getElementById('ol-name').value.trim();
+  if (!name) { toast('Enter candidate name'); return; }
+  const pos  = document.getElementById('ol-position').value;
+  const edu  = parseFloat(document.getElementById('ol-edu').value) || 0;
+  const exp  = parseFloat(document.getElementById('ol-exp').value) || 0;
+  const cert = parseFloat(document.getElementById('ol-cert').value) || 0;
+  const bil  = document.getElementById('ol-bilingual').checked;
+  const base = WAGE_BASE[pos] || 17.50;
+  const calc = Math.round((base + edu + exp + cert) * 4) / 4;
+  const total = bil ? calc + 1.50 : calc;
+  const start = document.getElementById('ol-start').value;
+  const fmtDate = d => d ? new Date(d+'T12:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '[Date]';
+  const today = new Date();
+  const deadline = new Date(today); deadline.setDate(deadline.getDate()+7);
+  const onboardDeadline = new Date(deadline); onboardDeadline.setDate(onboardDeadline.getDate()+21);
+  offerData = { name, pos, total: total.toFixed(2), base: calc.toFixed(2), bil, bilDiff:'1.50', rubric:`Base $${base.toFixed(2)} + Edu $${edu.toFixed(2)} + Exp $${exp.toFixed(2)} + Certs $${cert.toFixed(2)}`, startDate: fmtDate(start), offerDate: fmtDate(today.toISOString().split('T')[0]), deadline: fmtDate(deadline.toISOString().split('T')[0]), onboardDeadline: fmtDate(onboardDeadline.toISOString().split('T')[0]) };
+  document.getElementById('ol-output').style.display = 'block';
+  toast('✓ Offer letter ready — tap Download or Copy');
+}
+
+function buildOfferText() {
+  const d = offerData;
+  return [
+    'OPEN GRACE LLC — CONDITIONAL OFFER OF EMPLOYMENT',
+    `Date: ${d.offerDate} | Position: ${d.pos}`,
+    '',
+    `Dear ${d.name},`,
+    '',
+    `Open Grace LLC is pleased to extend this conditional offer for the position of ${d.pos}.`,
+    '',
+    'OFFER SUMMARY',
+    '─────────────────────────────────',
+    `Position: ${d.pos}`,
+    `Start Date: ${d.startDate} (contingent on onboarding clearance)`,
+    `Hourly Rate: $${d.base}/hr`,
+    ...(d.bil ? [`Bilingual Differential: +$${d.bilDiff}/hr`, `Effective Rate: $${d.total}/hr`] : []),
+    `Wage Rubric: ${d.rubric}`,
+    '─────────────────────────────────',
+    '',
+    'HOURS: Vary based on IRC-authorized service hours. Not guaranteed.',
+    'BENEFITS: None offered at this time.',
+    '',
+    `Accept by: ${d.deadline}`,
+    `Onboarding complete by: ${d.onboardDeadline}`,
+    '',
+    'Required before client contact: Live Scan, CPR/First Aid, Handbook, Jotform Onboarding, CORI, Day 1 Training',
+    '',
+    'Sincerely,',
+    'Joshua Kennedy, Director',
+    'Open Grace LLC | IRC Vendor PJ6208',
+    '951-880-4132 | joshua.kennedy@opengrace.org',
+  ].join('\n');
+}
+
+function downloadOffer() {
+  if (!offerData.name) { toast('Generate the letter first'); return; }
+  const blob = new Blob([buildOfferText()], {type:'text/plain'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `OpenGrace_OfferLetter_${offerData.name.replace(/\s+/g,'_')}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Downloaded');
+}
+
+function copyOffer() {
+  if (!offerData.name) { toast('Generate the letter first'); return; }
+  navigator.clipboard.writeText(buildOfferText()).then(() => toast('Copied to clipboard'));
+}
+
+// ── Comms / Send ──────────────────────────────────────────────────────────────
+let currentRecipient = 'family';
+function setRecipient(type, el) {
+  currentRecipient = type;
+  document.querySelectorAll('.rec-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function doSend(method) {
+  const name = document.getElementById('send-name').value.trim();
+  const phone = document.getElementById('send-phone').value.trim().replace(/\D/g,'');
+  const msg  = document.getElementById('send-msg').value.trim();
+  if (!msg && method !== 'copy') { toast('Enter a message first'); return; }
+  const greeting = name ? `Hi ${name.split(' ')[0]}, ` : '';
+  const full = greeting + msg;
+  if (method === 'sms') {
+    if (!phone) { toast('Enter a phone number for SMS'); return; }
+    window.open(`sms:${phone}&body=${encodeURIComponent(full)}`);
+  } else if (method === 'email') {
+    window.open(`mailto:?subject=Open Grace LLC&body=${encodeURIComponent(full)}`);
+  } else {
+    navigator.clipboard.writeText(full).then(() => toast('Message copied'));
+  }
+}
+
+// ── IT / Tech ─────────────────────────────────────────────────────────────────
+let posData = null, posSha = null;
+
+async function loadPositions() {
+  const el = document.getElementById('it-positions');
+  el.innerHTML = '<div style="color:var(--t2);font-size:13px">Loading...</div>';
+  try {
+    const r = await fetch(GH_RAW + '/positions.json?t=' + Date.now(), {cache:'no-store'});
+    posData = await r.json();
+    renderPositions();
+  } catch(e) {
+    el.innerHTML = `<div style="color:var(--red);font-size:12px">Error: ${e.message}</div>`;
+  }
+}
+
+function renderPositions() {
+  if (!posData) return;
+  const el = document.getElementById('it-positions');
+  el.innerHTML = (posData.positions||[]).map((p, i) => `
+    <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);padding:.625rem .75rem;margin-bottom:.375rem;display:flex;align-items:center;gap:.625rem">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500">${p.title}</div>
+        <div style="font-size:11px;color:var(--t2)">${p.pay||''} · ${p.type||''}</div>
+      </div>
+      <div class="toggle-wrap" onclick="togglePosition(${i})">
+        <div class="toggle-track ${p.active?'on':''}"><div class="toggle-thumb"></div></div>
+        <span style="font-size:11px;color:var(--t2)">${p.active?'Active':'Hidden'}</span>
+      </div>
+    </div>`).join('');
+}
+
+function togglePosition(i) {
+  if (!posData) return;
+  posData.positions[i].active = !posData.positions[i].active;
+  posData.last_updated = new Date().toISOString().split('T')[0];
+  renderPositions();
+}
+
+async function savePositions() {
+  if (!posData) { toast('Load positions first'); return; }
+  const token = getGHToken();
+  if (!token) return;
+  try {
+    const r0  = await fetch(`${GH_API}/positions.json`, {headers:{Authorization:'token '+token,Accept:'application/vnd.github.v3+json','User-Agent':'OG-Director'}});
+    const d0  = await r0.json();
+    const enc = btoa(unescape(encodeURIComponent(JSON.stringify(posData,null,2))));
+    const r   = await fetch(`${GH_API}/positions.json`, {
+      method:'PUT',
+      headers:{Authorization:'token '+token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json','User-Agent':'OG-Director'},
+      body: JSON.stringify({message:'Update positions '+posData.last_updated,content:enc,sha:d0.sha,branch:'main'}),
+    });
+    const res = await r.json();
+    if (res.content) { toast('✓ Positions saved — careers page updates in ~60s'); }
+    else { toast('Save failed'); }
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function loadAccessCodes() {
+  const el = document.getElementById('it-access-codes');
+  el.innerHTML = '<div style="color:var(--t2);font-size:13px">Loading...</div>';
+  try {
+    const r = await fetch(GH_RAW + '/staff_access.json?t=' + Date.now());
+    const d = await r.json();
+    el.innerHTML = (d.staff||[]).map((s, i) => `
+      <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);padding:.625rem .75rem;margin-bottom:.375rem;display:flex;align-items:center;gap:.625rem">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500">${s.name}</div>
+          <div style="font-size:11px;color:var(--t3);font-family:monospace">${s.code}</div>
+        </div>
+        <span class="badge ${s.active?'badge-green':'badge-red'}">${s.active?'Active':'Revoked'}</span>
+      </div>`).join('') || '<div style="color:var(--t3);font-size:13px">No staff on record.</div>';
+  } catch(e) {
+    el.innerHTML = `<div style="color:var(--red);font-size:12px">Error: ${e.message}</div>`;
+  }
+}
+
+async function deployUpdate() {
+  const file    = document.getElementById('dp-file').value;
+  const message = document.getElementById('dp-message').value.trim();
+  const content = document.getElementById('dp-content').value;
+  const statusEl = document.getElementById('dp-status');
+  if (!message) { toast('Deploy message required'); return; }
+  if (!content) { toast('File content required'); return; }
+  statusEl.style.display = 'block';
+  statusEl.textContent = 'Deploying...';
+  const token = getGHToken();
+  if (!token) { statusEl.textContent = 'No token — cannot deploy'; return; }
+  try {
+    const r0  = await fetch(`${GH_API}/${file}`, {headers:{Authorization:'token '+token,Accept:'application/vnd.github.v3+json','User-Agent':'OG-Director'}});
+    const d0  = await r0.json();
+    const enc = btoa(unescape(encodeURIComponent(content)));
+    const r   = await fetch(`${GH_API}/${file}`, {
+      method:'PUT',
+      headers:{Authorization:'token '+token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json','User-Agent':'OG-Director'},
+      body: JSON.stringify({message:`[Director Deploy] ${message}`,content:enc,sha:d0.sha,branch:'main'}),
+    });
+    const res = await r.json();
+    if (res.content) {
+      statusEl.style.color = 'var(--green)';
+      statusEl.textContent = `✓ Deployed ${file} — live in ~60 seconds`;
+      toast('✓ Deployed successfully');
+    } else {
+      statusEl.style.color = 'var(--red)';
+      statusEl.textContent = 'Deploy failed: ' + (res.message||'Unknown error');
+    }
+  } catch(e) {
+    statusEl.style.color = 'var(--red)';
+    statusEl.textContent = 'Error: ' + e.message;
+  }
+}
+
+
+// ── Self-deploy ───────────────────────────────────────────────────────────────
+// Reads this page's own source from GitHub, replaces it with the current
+// live page source, and pushes it back. One tap on Home = deployed in ~60s.
+
+async function selfDeploy() {
+  const btn      = document.getElementById('self-deploy-btn');
+  const statusEl = document.getElementById('self-deploy-status');
+
+  if (!confirm(
+    'Push this dashboard to GitHub?\n\n' +
+    'File: director.html\n' +
+    'Repo: jayraykay2/Open-Grace-Staff\n\n' +
+    'Live at opengrace.org/director.html within ~60 seconds.'
+  )) return;
+
+  btn.textContent = '⏳ Deploying...';
+  btn.disabled    = true;
+  statusEl.style.display = 'block';
+  statusEl.style.color   = 'var(--t2)';
+  statusEl.textContent   = 'Reading page source...';
+
+  try {
+    // Fetch own source
+    const selfResp = await fetch(window.location.href.split('?')[0] + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!selfResp.ok) throw new Error('Could not read page source: ' + selfResp.status);
+    const selfHtml = await selfResp.text();
+
+    statusEl.textContent = 'Pushing via Worker...';
+
+    const ts = new Date().toISOString().replace('T', ' ').slice(0, 16);
+
+    // Push through Cloudflare Worker — no token in browser
+    const pushResp = await fetch(WORKER + '/api/deploy', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-OG-Deploy-Secret': 'OGDeploy2026SecureKey!XkZ9mPqR',
+        'X-OG-User': 'director'
+      },
+      body: JSON.stringify({ path: 'director.html', content: selfHtml, message: '[Director Auto-Deploy] Dashboard update ' + ts }),
+    });
+    const result = await pushResp.json();
+    if (!pushResp.ok) throw new Error(result.message || 'Push failed: ' + pushResp.status);
+
+    const commitSha = (result.commit?.sha || '').slice(0, 7);
+    statusEl.style.color = 'var(--green)';
+    statusEl.textContent = '\u2713 Deployed — commit ' + commitSha + ' · Live in ~60 seconds';
+    btn.textContent = '\u2713 Deployed';
+    btn.style.cssText += ';background:var(--green-bg);border-color:var(--green-b);color:#6EE7B7';
+    btn.disabled = false;
+    toast('\u2713 Dashboard deployed to GitHub');
+    setTimeout(() => {
+      btn.textContent = '\ud83d\ude80 Push Dashboard Update to GitHub';
+      btn.style.background = btn.style.borderColor = btn.style.color = '';
+    }, 8000);
+
+  } catch(e) {
+    statusEl.style.color = 'var(--red)';
+    statusEl.textContent = '\u2717 Deploy failed: ' + e.message;
+    btn.textContent = '\ud83d\ude80 Push Dashboard Update to GitHub';
+    btn.disabled    = false;
+    toast('Deploy failed — check status message');
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  setGreeting();
+  renderPipeline();
+  renderClientRoster();
+  renderContacts();
+  calcWage();
+  const name = getSetting('directorName', 'Joshua');
+  document.getElementById('set-name').value = name;
+});
+</script>
+</body>
+</html>
