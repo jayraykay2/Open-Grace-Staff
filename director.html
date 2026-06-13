@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Open Grace — Director</title>
 <style>
 /* ═══════════════════════════════════════════════════
@@ -42,14 +42,14 @@
   --purple-b:  rgba(139,92,246,.25);
   --r:         10px;
   --r-sm:      6px;
-  --nav-h:     72px;
+  --nav-h:     64px;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   background: var(--bg);
   color: var(--t1);
-  font-size: 16px;
+  font-size: 14px;
   min-height: 100vh;
   padding-bottom: calc(var(--nav-h) + 1rem);
   -webkit-font-smoothing: antialiased;
@@ -68,8 +68,8 @@ body {
   z-index: 100;
 }
 .app-header img { width: 36px; border-radius: 8px; flex-shrink: 0; }
-.header-text h1 { font-size: 16px; font-weight: 600; }
-.header-text p  { font-size: 13px; color: var(--t2); margin-top: 1px; }
+.header-text h1 { font-size: 14px; font-weight: 600; }
+.header-text p  { font-size: 11px; color: var(--t2); margin-top: 1px; }
 .header-right { margin-left: auto; display: flex; align-items: center; gap: .5rem; }
 .status-pill {
   display: flex; align-items: center; gap: 4px;
@@ -98,18 +98,18 @@ body {
   align-items: center;
   justify-content: center;
   gap: 3px;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 500;
   color: var(--t3);
   cursor: pointer;
   background: none;
   border: none;
-  padding: .5rem .25rem;
+  padding: .375rem .125rem;
   transition: color .15s;
   letter-spacing: .02em;
   text-transform: uppercase;
 }
-.nav-btn .nav-icon { font-size: 24px; transition: transform .15s; }
+.nav-btn .nav-icon { font-size: 20px; transition: transform .15s; }
 .nav-btn.active { color: var(--blue); }
 .nav-btn.active .nav-icon { transform: scale(1.1); }
 .nav-btn:hover:not(.active) { color: var(--t2); }
@@ -121,7 +121,7 @@ body {
 
 /* ── Section Heading ─────────────────────────────── */
 .section-head {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
@@ -140,9 +140,9 @@ body {
   border-radius: var(--r);
   padding: .75rem .875rem;
 }
-.stat-label { font-size: 12px; color: var(--t2); margin-bottom: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
-.stat-val   { font-size: 26px; font-weight: 700; line-height: 1; }
-.stat-sub   { font-size: 12px; color: var(--t3); margin-top: 3px; }
+.stat-label { font-size: 10px; color: var(--t2); margin-bottom: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
+.stat-val   { font-size: 22px; font-weight: 700; line-height: 1; }
+.stat-sub   { font-size: 10px; color: var(--t3); margin-top: 3px; }
 
 /* ── Cards ───────────────────────────────────────── */
 .card {
@@ -153,7 +153,7 @@ body {
   margin-bottom: .75rem;
 }
 .card-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--t2);
   letter-spacing: .05em;
@@ -182,8 +182,8 @@ body {
 .link-row:hover { border-color: var(--b2); background: var(--s3); }
 .link-icon { font-size: 18px; width: 28px; text-align: center; flex-shrink: 0; }
 .link-text { flex: 1; min-width: 0; }
-.link-text strong { display: block; font-size: 15px; font-weight: 500; }
-.link-text small  { font-size: 12px; color: var(--t2); display: block; margin-top: 1px; }
+.link-text strong { display: block; font-size: 13px; font-weight: 500; }
+.link-text small  { font-size: 11px; color: var(--t2); display: block; margin-top: 1px; }
 .link-arrow { color: var(--t3); font-size: 16px; flex-shrink: 0; }
 
 /* ── Quick Action Buttons ────────────────────────── */
@@ -191,8 +191,8 @@ body {
 .qa-btn {
   display: flex; align-items: center; gap: .5rem;
   background: var(--s2); border: 1px solid var(--b2);
-  border-radius: var(--r); padding: .75rem 1rem;
-  color: var(--t1); font-size: 14px; font-weight: 500;
+  border-radius: var(--r); padding: .625rem .875rem;
+  color: var(--t1); font-size: 12px; font-weight: 500;
   text-decoration: none; cursor: pointer;
   transition: all .15s;
 }
@@ -206,8 +206,8 @@ body {
 /* ── Badges ──────────────────────────────────────── */
 .badge {
   display: inline-flex; align-items: center;
-  font-size: 11px; font-weight: 600;
-  padding: 3px 9px; border-radius: 20px;
+  font-size: 10px; font-weight: 600;
+  padding: 2px 7px; border-radius: 20px;
 }
 .badge-green  { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-b); }
 .badge-amber  { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-b); }
@@ -233,8 +233,8 @@ body {
 .ei-blue   { background: var(--blue-bg);   border: 1px solid var(--blue-b); }
 .ei-green  { background: var(--green-bg);  border: 1px solid var(--green-b); }
 .ei-purple { background: var(--purple-bg); border: 1px solid var(--purple-b); }
-.emergency-text strong { display: block; font-size: 15px; font-weight: 500; }
-.emergency-text span   { font-size: 13px; color: var(--t2); }
+.emergency-text strong { display: block; font-size: 13px; font-weight: 500; }
+.emergency-text span   { font-size: 11px; color: var(--t2); }
 
 /* ── System Status ───────────────────────────────── */
 .sys-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .75rem; }
@@ -243,9 +243,9 @@ body {
   border-radius: var(--r); padding: .75rem .875rem;
   display: flex; flex-direction: column; gap: 4px;
 }
-.sys-label { font-size: 11px; color: var(--t3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
-.sys-value { font-size: 15px; font-weight: 600; }
-.sys-sub   { font-size: 12px; color: var(--t2); }
+.sys-label { font-size: 10px; color: var(--t3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.sys-value { font-size: 13px; font-weight: 600; }
+.sys-sub   { font-size: 10px; color: var(--t2); }
 .sys-ok    { color: var(--green); }
 .sys-warn  { color: var(--amber); }
 .sys-err   { color: var(--red); }
@@ -256,7 +256,7 @@ body {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: .5rem;
 }
-.pipeline-title { font-size: 13px; font-weight: 600; color: var(--t2); text-transform: uppercase; letter-spacing: .05em; }
+.pipeline-title { font-size: 12px; font-weight: 600; color: var(--t2); text-transform: uppercase; letter-spacing: .05em; }
 .pipeline-add {
   font-size: 11px; color: var(--blue);
   background: none; border: none; cursor: pointer;
@@ -264,15 +264,15 @@ body {
 }
 .pipeline-item {
   background: var(--s2); border: 1px solid var(--b1);
-  border-radius: var(--r-sm); padding: .75rem .875rem;
-  margin-bottom: .5rem;
+  border-radius: var(--r-sm); padding: .625rem .75rem;
+  margin-bottom: .375rem;
   display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem;
 }
-.pipeline-item-name { font-size: 15px; font-weight: 500; }
-.pipeline-item-meta { font-size: 13px; color: var(--t2); margin-top: 2px; }
+.pipeline-item-name { font-size: 13px; font-weight: 500; }
+.pipeline-item-meta { font-size: 11px; color: var(--t2); margin-top: 2px; }
 .pipeline-actions { display: flex; gap: .25rem; flex-shrink: 0; margin-top: 1px; }
 .pip-btn {
-  font-size: 12px; padding: 4px 10px;
+  font-size: 11px; padding: 2px 8px;
   background: var(--s3); border: 1px solid var(--b2);
   border-radius: 4px; color: var(--t2); cursor: pointer;
 }
@@ -284,8 +284,8 @@ body {
 .rec-tab {
   flex: 1; min-width: 70px;
   background: var(--s2); border: 1px solid var(--b1);
-  border-radius: var(--r-sm); padding: .625rem .25rem;
-  font-size: 13px; font-weight: 500; color: var(--t2);
+  border-radius: var(--r-sm); padding: .5rem .25rem;
+  font-size: 11px; font-weight: 500; color: var(--t2);
   cursor: pointer; text-align: center;
   transition: all .15s;
 }
@@ -294,7 +294,7 @@ body {
   width: 100%;
   background: var(--s2); border: 1px solid var(--b2);
   border-radius: var(--r-sm); color: var(--t1);
-  font-size: 15px; padding: .75rem .875rem;
+  font-size: 13px; padding: .625rem .75rem;
   margin-bottom: .5rem; font-family: inherit;
 }
 .send-msg-input { resize: none; height: 80px; }
@@ -334,20 +334,20 @@ body {
   background: var(--b2); border-radius: 2px;
   margin: 0 auto .875rem;
 }
-.sheet-title { font-size: 18px; font-weight: 600; margin-bottom: 1rem; }
+.sheet-title { font-size: 15px; font-weight: 600; margin-bottom: 1rem; }
 .field-group { margin-bottom: .75rem; }
-.field-label { font-size: 14px; color: var(--t2); margin-bottom: .375rem; display: block; }
+.field-label { font-size: 12px; color: var(--t2); margin-bottom: .25rem; display: block; }
 .field-input {
   width: 100%; background: var(--s2);
   border: 1px solid var(--b2); border-radius: var(--r-sm);
-  color: var(--t1); font-size: 15px; padding: .75rem .875rem;
+  color: var(--t1); font-size: 13px; padding: .625rem .75rem;
   font-family: inherit;
 }
 .field-input:focus { outline: none; border-color: var(--blue-b); }
 .sheet-actions { display: flex; gap: .5rem; margin-top: 1rem; }
 .sheet-btn {
-  flex: 1; padding: .875rem; border-radius: var(--r-sm);
-  font-size: 15px; font-weight: 600; cursor: pointer;
+  flex: 1; padding: .75rem; border-radius: var(--r-sm);
+  font-size: 13px; font-weight: 600; cursor: pointer;
   border: none; transition: opacity .15s;
 }
 .sheet-btn:hover { opacity: .85; }
@@ -359,7 +359,7 @@ body {
 .prog-wrap { margin: .375rem 0; }
 .prog-bg { height: 5px; background: var(--b1); border-radius: 3px; overflow: hidden; }
 .prog-fill { height: 5px; border-radius: 3px; transition: width .4s ease; }
-.prog-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--t3); margin-top: 3px; }
+.prog-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--t3); margin-top: 3px; }
 
 /* ── Staff roster cards ──────────────────────────── */
 .staff-card {
@@ -376,12 +376,12 @@ body {
   font-size: 12px; font-weight: 700; color: #93C5FD; flex-shrink: 0;
 }
 .staff-info { flex: 1; min-width: 0; }
-.staff-name { font-size: 15px; font-weight: 600; }
-.staff-role { font-size: 13px; color: var(--t2); margin-top: 1px; }
-.staff-code { font-size: 12px; color: var(--t3); font-family: monospace; margin-top: 2px; }
+.staff-name { font-size: 13px; font-weight: 600; }
+.staff-role { font-size: 11px; color: var(--t2); margin-top: 1px; }
+.staff-code { font-size: 10px; color: var(--t3); font-family: monospace; margin-top: 2px; }
 .staff-actions { display: flex; gap: .375rem; flex-wrap: wrap; margin-top: .625rem; }
 .staff-act-btn {
-  font-size: 13px; padding: 6px 12px;
+  font-size: 11px; padding: 3px 10px;
   background: var(--s3); border: 1px solid var(--b2);
   border-radius: 4px; color: var(--t2); cursor: pointer;
   transition: all .15s;
@@ -398,8 +398,8 @@ body {
   transition: border-color .15s;
 }
 .client-card:hover { border-color: var(--b2); }
-.client-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-.client-meta { font-size: 13px; color: var(--t2); margin-bottom: .625rem; }
+.client-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.client-meta { font-size: 11px; color: var(--t2); margin-bottom: .5rem; }
 .qpr-badge {
   display: inline-block; font-size: 10px; font-weight: 600;
   padding: 2px 7px; border-radius: 20px; margin-top: 4px;
@@ -411,8 +411,8 @@ body {
 /* ── IT Tech items ───────────────────────────────── */
 .security-item {
   display: flex; align-items: center; gap: .75rem;
-  padding: .75rem 0; border-bottom: 1px solid var(--b1);
-  font-size: 15px;
+  padding: .625rem 0; border-bottom: 1px solid var(--b1);
+  font-size: 13px;
 }
 .security-item:last-child { border-bottom: none; }
 .security-label { flex: 1; color: var(--t2); }
@@ -420,8 +420,8 @@ body {
 
 /* ── Billing cutoff table ────────────────────────── */
 .billing-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.billing-table th { color: var(--t3); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: .05em; padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--b1); }
-.billing-table td { padding: 8px 8px; border-bottom: 1px solid var(--b1); color: var(--t1); font-size: 14px; }
+.billing-table th { color: var(--t3); font-weight: 600; text-transform: uppercase; font-size: 10px; letter-spacing: .05em; padding: 4px 6px; text-align: left; border-bottom: 1px solid var(--b1); }
+.billing-table td { padding: 6px 6px; border-bottom: 1px solid var(--b1); color: var(--t1); }
 .billing-table tr:last-child td { border-bottom: none; }
 .billing-table .cutoff-date { color: var(--amber); font-weight: 500; }
 
@@ -429,8 +429,8 @@ body {
 .toast-container { position: fixed; bottom: calc(var(--nav-h) + .75rem); left: 50%; transform: translateX(-50%); z-index: 400; pointer-events: none; }
 .toast {
   background: var(--s1); border: 1px solid var(--b2);
-  border-radius: 8px; padding: .625rem 1.25rem;
-  font-size: 14px; color: var(--t1);
+  border-radius: 8px; padding: .5rem 1rem;
+  font-size: 12px; color: var(--t1);
   animation: toastIn .2s ease;
   white-space: nowrap;
 }
@@ -449,8 +449,8 @@ body {
 /* ── Dev panel code block ────────────────────────── */
 .code-block {
   background: var(--s2); border: 1px solid var(--b1);
-  border-radius: var(--r-sm); padding: .875rem;
-  font-family: "SF Mono", "Fira Code", monospace; font-size: 13px;
+  border-radius: var(--r-sm); padding: .75rem;
+  font-family: "SF Mono", "Fira Code", monospace; font-size: 11px;
   color: #7EE787; white-space: pre-wrap; word-break: break-all;
   max-height: 200px; overflow-y: auto; margin: .5rem 0;
 }
@@ -521,7 +521,10 @@ body {
       <a class="qa-btn warn" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank">🚨 Incident Report</a>
       <button class="qa-btn" onclick="switchTab('pipeline')">🔄 View Pipeline</button>
     </div>
-    
+    <button class="qa-btn success" id="self-deploy-btn" style="width:100%;justify-content:center;gap:.5rem" onclick="selfDeploy()">
+      🚀 Push Dashboard Update to GitHub
+    </button>
+    <div id="self-deploy-status" style="display:none;margin-top:.5rem;font-size:12px;padding:.5rem .75rem;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--b1)"></div>
   </div>
 
   <div class="card">
@@ -1154,7 +1157,7 @@ body {
 // ── Config ────────────────────────────────────────────────────────────────────
 const GH_RAW  = 'https://raw.githubusercontent.com/jayraykay2/Open-Grace-Staff/main';
 const GH_API  = 'https://api.github.com/repos/jayraykay2/Open-Grace-Staff/contents';
-const WORKER  = 'https://morning-voice-aeb2og-security-worker.jayraykay2.workers.dev';
+const WORKER  = 'https://og-security-worker.jayraykay2.workers.dev';
 
 const WAGE_BASE = {
   'Family Coordinator': 17.50,
@@ -1807,31 +1810,45 @@ async function selfDeploy() {
     'Live at opengrace.org/director.html within ~60 seconds.'
   )) return;
 
+  const token = getGHToken();
+  if (!token) {
+    statusEl.style.display = 'block';
+    statusEl.style.color   = 'var(--red)';
+    statusEl.textContent   = 'No GitHub token. Enter your token when prompted and try again.';
+    return;
+  }
+
   btn.textContent = '⏳ Deploying...';
   btn.disabled    = true;
   statusEl.style.display = 'block';
   statusEl.style.color   = 'var(--t2)';
-  statusEl.textContent   = 'Reading page source...';
+  statusEl.textContent   = 'Getting current file SHA...';
 
   try {
-    // Fetch own source
+    // Step 1: get current SHA
+    const metaResp = await fetch(GH_API + '/director.html', {
+      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'User-Agent': 'OG-Director' }
+    });
+    if (!metaResp.ok) { const e = await metaResp.json(); throw new Error(e.message || 'SHA fetch failed'); }
+    const { sha } = await metaResp.json();
+
+    statusEl.textContent = 'Reading page source...';
+
+    // Step 2: fetch own source (what GitHub Pages is currently serving)
     const selfResp = await fetch(window.location.href.split('?')[0] + '?t=' + Date.now(), { cache: 'no-store' });
     if (!selfResp.ok) throw new Error('Could not read page source: ' + selfResp.status);
     const selfHtml = await selfResp.text();
 
-    statusEl.textContent = 'Pushing via Worker...';
+    statusEl.textContent = 'Pushing to GitHub...';
 
-    const ts = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    // Step 3: base64 encode and commit
+    const encoded = btoa(unescape(encodeURIComponent(selfHtml)));
+    const ts      = new Date().toISOString().replace('T', ' ').slice(0, 16);
 
-    // Push through Cloudflare Worker — no token in browser
-    const pushResp = await fetch(WORKER + '/api/deploy', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-OG-Deploy-Secret': 'OGDeploy2026SecureKey!XkZ9mPqR',
-        'X-OG-User': 'director'
-      },
-      body: JSON.stringify({ path: 'director.html', content: selfHtml, message: '[Director Auto-Deploy] Dashboard update ' + ts }),
+    const pushResp = await fetch(GH_API + '/director.html', {
+      method: 'PUT',
+      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json', 'User-Agent': 'OG-Director' },
+      body: JSON.stringify({ message: '[Director Auto-Deploy] Dashboard update ' + ts, content: encoded, sha, branch: 'main' }),
     });
     const result = await pushResp.json();
     if (!pushResp.ok) throw new Error(result.message || 'Push failed: ' + pushResp.status);
