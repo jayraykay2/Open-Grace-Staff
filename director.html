@@ -8,84 +8,94 @@
 <title>Open Grace — Director</title>
 <style>
 /* ═══════════════════════════════════════════════════
-   OPEN GRACE DIRECTOR DASHBOARD v4.0
+   OPEN GRACE DIRECTOR DASHBOARD v5.0
    Tabs: Home · Clients · HR · Pipeline · Comms · IT/Tech · Settings
    ═══════════════════════════════════════════════════ */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:        #0A0F1A;
-  --s1:        #111827;
-  --s2:        #1A2233;
-  --s3:        #222D42;
-  --b1:        rgba(255,255,255,.07);
-  --b2:        rgba(255,255,255,.12);
+  --bg:        #080D18;
+  --s1:        #0F1623;
+  --s2:        #16202E;
+  --s3:        #1E2D40;
+  --b1:        rgba(255,255,255,.06);
+  --b2:        rgba(255,255,255,.11);
   --b3:        rgba(255,255,255,.18);
-  --t1:        #F0F4FF;
-  --t2:        #8B95A8;
+  --t1:        #EDF2FF;
+  --t2:        #8B96AA;
   --t3:        #4A5568;
-  --blue:      #3B82F6;
-  --blue-bg:   rgba(59,130,246,.12);
-  --blue-b:    rgba(59,130,246,.25);
+  --blue:      #4F8EF7;
+  --blue-bg:   rgba(79,142,247,.12);
+  --blue-b:    rgba(79,142,247,.22);
   --green:     #10B981;
   --green-bg:  rgba(16,185,129,.12);
-  --green-b:   rgba(16,185,129,.25);
+  --green-b:   rgba(16,185,129,.22);
   --amber:     #F59E0B;
   --amber-bg:  rgba(245,158,11,.12);
-  --amber-b:   rgba(245,158,11,.25);
+  --amber-b:   rgba(245,158,11,.22);
   --red:       #EF4444;
   --red-bg:    rgba(239,68,68,.12);
-  --red-b:     rgba(239,68,68,.25);
+  --red-b:     rgba(239,68,68,.22);
   --purple:    #8B5CF6;
   --purple-bg: rgba(139,92,246,.12);
-  --purple-b:  rgba(139,92,246,.25);
-  --r:         10px;
-  --r-sm:      6px;
-  --nav-h:     64px;
+  --purple-b:  rgba(139,92,246,.22);
+  --r:         12px;
+  --r-sm:      8px;
+  --r-xs:      6px;
+  --nav-h:     68px;
+  --header-h:  56px;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
   background: var(--bg);
   color: var(--t1);
-  font-size: 14px;
+  font-size: 15px;
   min-height: 100vh;
-  padding-bottom: calc(var(--nav-h) + 1rem);
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 1rem);
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
 }
 
 /* ── Header ──────────────────────────────────────── */
 .app-header {
-  background: var(--s1);
+  background: rgba(15,22,35,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--b1);
-  padding: .875rem 1rem;
+  padding: .75rem 1rem;
   display: flex;
   align-items: center;
   gap: .75rem;
   position: sticky;
   top: 0;
   z-index: 100;
+  height: var(--header-h);
 }
-.app-header img { width: 36px; border-radius: 8px; flex-shrink: 0; }
-.header-text h1 { font-size: 14px; font-weight: 600; }
-.header-text p  { font-size: 11px; color: var(--t2); margin-top: 1px; }
+.app-header img { width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; object-fit: cover; }
+.header-text h1 { font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+.header-text p  { font-size: 12px; color: var(--t2); margin-top: 1px; }
 .header-right { margin-left: auto; display: flex; align-items: center; gap: .5rem; }
 .status-pill {
-  display: flex; align-items: center; gap: 4px;
+  display: flex; align-items: center; gap: 5px;
   background: var(--green-bg); border: 1px solid var(--green-b);
-  border-radius: 20px; padding: 3px 10px;
-  font-size: 11px; font-weight: 500; color: var(--green);
+  border-radius: 20px; padding: 4px 10px;
+  font-size: 11px; font-weight: 600; color: var(--green);
+  letter-spacing: .02em;
 }
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
 /* ── Bottom Nav ──────────────────────────────────── */
 .bottom-nav {
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  height: var(--nav-h);
-  background: var(--s1);
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  background: rgba(15,22,35,0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--b1);
   display: flex;
   z-index: 200;
@@ -97,80 +107,82 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   font-size: 9px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--t3);
   cursor: pointer;
   background: none;
   border: none;
-  padding: .375rem .125rem;
-  transition: color .15s;
-  letter-spacing: .02em;
+  padding: .5rem .125rem .375rem;
+  transition: color .18s;
+  letter-spacing: .04em;
   text-transform: uppercase;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
 }
-.nav-btn .nav-icon { font-size: 20px; transition: transform .15s; }
+.nav-btn .nav-icon { font-size: 22px; transition: transform .2s; line-height: 1; }
 .nav-btn.active { color: var(--blue); }
-.nav-btn.active .nav-icon { transform: scale(1.1); }
-.nav-btn:hover:not(.active) { color: var(--t2); }
+.nav-btn.active .nav-icon { transform: scale(1.12); }
+.nav-btn:active { opacity: .7; }
 
 /* ── Tab Panels ──────────────────────────────────── */
-.tab-panel { display: none; padding: 1rem; animation: fadeIn .2s ease; }
+.tab-panel { display: none; padding: 1rem 1rem 1.5rem; animation: fadeIn .22s ease; }
 .tab-panel.active { display: block; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
 /* ── Section Heading ─────────────────────────────── */
 .section-head {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: .1em;
+  letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--t3);
-  padding: .875rem 0 .5rem;
+  padding: 1rem 0 .5rem;
   border-bottom: 1px solid var(--b1);
-  margin-bottom: .75rem;
+  margin-bottom: .875rem;
 }
 
 /* ── Stat Cards ──────────────────────────────────── */
-.stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .5rem; margin-bottom: .875rem; }
-.stat-grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: .5rem; margin-bottom: .875rem; }
+.stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .625rem; margin-bottom: 1rem; }
+.stat-grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: .625rem; margin-bottom: 1rem; }
 .stat-card {
   background: var(--s2);
   border: 1px solid var(--b1);
   border-radius: var(--r);
-  padding: .75rem .875rem;
+  padding: .875rem 1rem;
 }
-.stat-label { font-size: 10px; color: var(--t2); margin-bottom: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
-.stat-val   { font-size: 22px; font-weight: 700; line-height: 1; }
-.stat-sub   { font-size: 10px; color: var(--t3); margin-top: 3px; }
+.stat-label { font-size: 10px; color: var(--t2); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.stat-val   { font-size: 24px; font-weight: 700; line-height: 1; letter-spacing: -.02em; }
+.stat-sub   { font-size: 11px; color: var(--t3); margin-top: 4px; }
 
 /* ── Cards ───────────────────────────────────────── */
 .card {
   background: var(--s1);
   border: 1px solid var(--b1);
   border-radius: var(--r);
-  padding: .875rem 1rem;
-  margin-bottom: .75rem;
+  padding: 1rem;
+  margin-bottom: .875rem;
 }
 .card-title {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--t2);
-  letter-spacing: .05em;
+  letter-spacing: .07em;
   text-transform: uppercase;
-  margin-bottom: .75rem;
+  margin-bottom: .875rem;
   display: flex;
   align-items: center;
   gap: .5rem;
 }
-.card-title-icon { font-size: 14px; }
+.card-title-icon { font-size: 15px; }
 
 /* ── Link Rows ───────────────────────────────────── */
 .link-row {
   display: flex;
   align-items: center;
-  gap: .75rem;
-  padding: .625rem .75rem;
+  gap: .875rem;
+  padding: .75rem .875rem;
   background: var(--s2);
   border: 1px solid var(--b1);
   border-radius: var(--r-sm);
@@ -178,25 +190,28 @@ body {
   color: var(--t1);
   margin-bottom: .5rem;
   transition: border-color .15s, background .15s;
+  min-height: 52px;
 }
-.link-row:hover { border-color: var(--b2); background: var(--s3); }
-.link-icon { font-size: 18px; width: 28px; text-align: center; flex-shrink: 0; }
+.link-row:active { background: var(--s3); border-color: var(--b2); }
+.link-icon { font-size: 20px; width: 30px; text-align: center; flex-shrink: 0; }
 .link-text { flex: 1; min-width: 0; }
-.link-text strong { display: block; font-size: 13px; font-weight: 500; }
-.link-text small  { font-size: 11px; color: var(--t2); display: block; margin-top: 1px; }
-.link-arrow { color: var(--t3); font-size: 16px; flex-shrink: 0; }
+.link-text strong { display: block; font-size: 14px; font-weight: 500; }
+.link-text small  { font-size: 12px; color: var(--t2); display: block; margin-top: 2px; }
+.link-arrow { color: var(--t3); font-size: 18px; flex-shrink: 0; }
 
 /* ── Quick Action Buttons ────────────────────────── */
-.qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .75rem; }
+.qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .625rem; margin-bottom: .875rem; }
 .qa-btn {
   display: flex; align-items: center; gap: .5rem;
   background: var(--s2); border: 1px solid var(--b2);
-  border-radius: var(--r); padding: .625rem .875rem;
-  color: var(--t1); font-size: 12px; font-weight: 500;
+  border-radius: var(--r); padding: .75rem 1rem;
+  color: var(--t1); font-size: 13px; font-weight: 500;
   text-decoration: none; cursor: pointer;
   transition: all .15s;
+  min-height: 46px;
+  -webkit-tap-highlight-color: transparent;
 }
-.qa-btn:hover { background: var(--s3); border-color: var(--b3); }
+.qa-btn:active { opacity: .75; transform: scale(.98); }
 .qa-btn.primary { background: var(--blue-bg); border-color: var(--blue-b); color: #93C5FD; }
 .qa-btn.success { background: var(--green-bg); border-color: var(--green-b); color: #6EE7B7; }
 .qa-btn.warn    { background: var(--amber-bg); border-color: var(--amber-b); color: #FCD34D; }
@@ -237,7 +252,7 @@ body {
 .emergency-text span   { font-size: 11px; color: var(--t2); }
 
 /* ── System Status ───────────────────────────────── */
-.sys-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .75rem; }
+.sys-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .625rem; margin-bottom: .875rem; }
 .sys-item {
   background: var(--s2); border: 1px solid var(--b1);
   border-radius: var(--r); padding: .75rem .875rem;
@@ -340,15 +355,16 @@ body {
 .field-input {
   width: 100%; background: var(--s2);
   border: 1px solid var(--b2); border-radius: var(--r-sm);
-  color: var(--t1); font-size: 13px; padding: .625rem .75rem;
+  color: var(--t1); font-size: 16px; padding: .75rem .875rem;
   font-family: inherit;
 }
-.field-input:focus { outline: none; border-color: var(--blue-b); }
+.field-input:focus { outline: none; border-color: var(--blue-b); background: var(--s3); }
 .sheet-actions { display: flex; gap: .5rem; margin-top: 1rem; }
 .sheet-btn {
-  flex: 1; padding: .75rem; border-radius: var(--r-sm);
-  font-size: 13px; font-weight: 600; cursor: pointer;
+  flex: 1; padding: .875rem; border-radius: var(--r-sm);
+  font-size: 15px; font-weight: 600; cursor: pointer;
   border: none; transition: opacity .15s;
+  -webkit-tap-highlight-color: transparent;
 }
 .sheet-btn:hover { opacity: .85; }
 .sheet-cancel { background: var(--s2); color: var(--t2); }
@@ -891,6 +907,16 @@ body {
       <div class="sys-sub">Auto-push active</div>
     </div>
     <div class="sys-item">
+      <div class="sys-label">CF Worker</div>
+      <div class="sys-value sys-ok">✅ Live</div>
+      <div class="sys-sub">v3 · all routes</div>
+    </div>
+    <div class="sys-item">
+      <div class="sys-label">CF Access</div>
+      <div class="sys-value sys-ok">✅ Active</div>
+      <div class="sys-sub">Email OTP gating</div>
+    </div>
+    <div class="sys-item">
       <div class="sys-label">IRC Vendor</div>
       <div class="sys-value sys-ok">● PJ6208</div>
       <div class="sys-sub">Vendorized active</div>
@@ -898,7 +924,7 @@ body {
     <div class="sys-item">
       <div class="sys-label">Website</div>
       <div class="sys-value sys-ok">✅ Live</div>
-      <div class="sys-sub">opengrace.org · 12 pages</div>
+      <div class="sys-sub">opengrace.org</div>
     </div>
   </div>
 
@@ -906,28 +932,28 @@ body {
   <div class="card">
     <div class="security-item">
       <span style="font-size:16px">🔑</span>
-      <div class="security-label"><strong>GitHub PAT</strong>Stored in localStorage (pre-Worker)</div>
-      <span class="badge badge-amber">Upgrade pending</span>
+      <div class="security-label"><strong>GitHub PAT</strong>Secured in Cloudflare Worker</div>
+      <span class="badge badge-green">✅ Active</span>
     </div>
     <div class="security-item">
       <span style="font-size:16px">☁️</span>
-      <div class="security-label"><strong>Cloudflare Access</strong>Portal authentication</div>
-      <span class="badge badge-amber">Setup needed</span>
+      <div class="security-label"><strong>Cloudflare Access</strong>Email OTP on all portals</div>
+      <span class="badge badge-green">✅ Active</span>
     </div>
     <div class="security-item">
       <span style="font-size:16px">🛡️</span>
-      <div class="security-label"><strong>Cloudflare Worker</strong>API proxy + audit log</div>
-      <span class="badge badge-amber">Deploy pending</span>
+      <div class="security-label"><strong>Cloudflare Worker</strong>API proxy + JWT verification</div>
+      <span class="badge badge-green">✅ Active</span>
     </div>
     <div class="security-item">
       <span style="font-size:16px">🗄️</span>
       <div class="security-label"><strong>Firestore</strong>HIPAA-eligible data store</div>
-      <span class="badge badge-amber">Setup needed</span>
+      <span class="badge badge-amber">Optional</span>
     </div>
     <div class="security-item" style="border-bottom:none">
       <span style="font-size:16px">📋</span>
       <div class="security-label"><strong>Jotform HIPAA Plan</strong>BAA + encrypted forms</div>
-      <span class="badge badge-amber">Upgrade needed</span>
+      <span class="badge badge-amber">Upgrade when ready</span>
     </div>
   </div>
 
@@ -986,7 +1012,7 @@ body {
 
   <div class="section-head">Director dev panel</div>
   <div class="card">
-    <div class="card-title"><span class="card-title-icon">🚀</span>Deploy update</div>
+    <div class="card-title"><span class="card-title-icon">🚀</span>Deploy update via Worker</div>
     <div class="field-group">
       <label class="field-label">File to update</label>
       <select class="field-input" id="dp-file">
@@ -1000,12 +1026,12 @@ body {
       </select>
     </div>
     <div class="field-group">
-      <label class="field-label">Deploy message (describe the change)</label>
+      <label class="field-label">Deploy message</label>
       <input class="field-input" id="dp-message" placeholder="Update coordinator portal — add training tab">
     </div>
     <div class="field-group">
-      <label class="field-label">File content (paste full updated file here)</label>
-      <textarea class="field-input" id="dp-content" style="height:100px;font-family:monospace;font-size:11px" placeholder="Paste updated file content here..."></textarea>
+      <label class="field-label">File content (paste full updated file)</label>
+      <textarea class="field-input" id="dp-content" style="height:90px;font-family:monospace;font-size:11px" placeholder="Paste updated file content here..."></textarea>
     </div>
     <button class="qa-btn primary" style="width:100%;justify-content:center" onclick="deployUpdate()">🚀 Deploy Live</button>
     <div id="dp-status" style="margin-top:.625rem;font-size:12px;color:var(--t2);display:none"></div>
@@ -1057,7 +1083,7 @@ body {
   <div class="card">
     <div style="font-size:12px;color:var(--t2);line-height:1.8">
       <div>Open Grace LLC · IRC Vendor PJ6208</div>
-      <div>Director Dashboard v4.0</div>
+      <div>Director Dashboard v5.0 · Secured by Cloudflare</div>
       <div>Riverside &amp; San Bernardino Counties</div>
       <div style="margin-top:.5rem">
         <a href="tel:9518804132" style="color:var(--blue);text-decoration:none">951-880-4132</a>
@@ -1192,16 +1218,6 @@ function saveSetting(key, val) {
 
 function getSetting(key, fallback = '') {
   return (load(K.settings, {}))[key] ?? fallback;
-}
-
-// ── GitHub token ──────────────────────────────────────────────────────────────
-function getGHToken() {
-  let t = localStorage.getItem('og_gh_token');
-  if (!t) {
-    t = prompt('Enter your GitHub API token (stored locally):');
-    if (t) localStorage.setItem('og_gh_token', t);
-  }
-  return t || '';
 }
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
@@ -1723,20 +1739,22 @@ function togglePosition(i) {
 
 async function savePositions() {
   if (!posData) { toast('Load positions first'); return; }
-  const token = getGHToken();
-  if (!token) return;
+  const secret = getSetting('deploySecret', '');
+  if (!secret) {
+    const s = prompt('Enter your Deploy Secret:');
+    if (!s) return;
+    saveSetting('deploySecret', s);
+  }
   try {
-    const r0  = await fetch(`${GH_API}/positions.json`, {headers:{Authorization:'token '+token,Accept:'application/vnd.github.v3+json','User-Agent':'OG-Director'}});
-    const d0  = await r0.json();
-    const enc = btoa(unescape(encodeURIComponent(JSON.stringify(posData,null,2))));
-    const r   = await fetch(`${GH_API}/positions.json`, {
-      method:'PUT',
-      headers:{Authorization:'token '+token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json','User-Agent':'OG-Director'},
-      body: JSON.stringify({message:'Update positions '+posData.last_updated,content:enc,sha:d0.sha,branch:'main'}),
+    const r = await fetch(`${WORKER}/api/deploy`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', 'X-OG-Deploy-Secret': getSetting('deploySecret',''), 'X-OG-User': 'joshua.kennedy@opengrace.org' },
+      body: JSON.stringify({ path: 'positions.json', content: JSON.stringify(posData, null, 2), message: 'Update positions ' + posData.last_updated }),
     });
     const res = await r.json();
-    if (res.content) { toast('✓ Positions saved — careers page updates in ~60s'); }
-    else { toast('Save failed'); }
+    if (res.ok) { toast('✓ Positions saved — careers page updates in ~60s'); }
+    else { toast('Save failed: ' + (res.error || 'Unknown error')); }
   } catch(e) { toast('Error: ' + e.message); }
 }
 
@@ -1767,26 +1785,28 @@ async function deployUpdate() {
   if (!message) { toast('Deploy message required'); return; }
   if (!content) { toast('File content required'); return; }
   statusEl.style.display = 'block';
-  statusEl.textContent = 'Deploying...';
-  const token = getGHToken();
-  if (!token) { statusEl.textContent = 'No token — cannot deploy'; return; }
+  statusEl.textContent = 'Deploying via Worker...';
+  const secret = getSetting('deploySecret', '');
+  if (!secret) {
+    const s = prompt('Enter your Deploy Secret (from Worker settings):');
+    if (!s) { statusEl.textContent = 'Deploy cancelled — no secret provided'; return; }
+    saveSetting('deploySecret', s);
+  }
   try {
-    const r0  = await fetch(`${GH_API}/${file}`, {headers:{Authorization:'token '+token,Accept:'application/vnd.github.v3+json','User-Agent':'OG-Director'}});
-    const d0  = await r0.json();
-    const enc = btoa(unescape(encodeURIComponent(content)));
-    const r   = await fetch(`${GH_API}/${file}`, {
-      method:'PUT',
-      headers:{Authorization:'token '+token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json','User-Agent':'OG-Director'},
-      body: JSON.stringify({message:`[Director Deploy] ${message}`,content:enc,sha:d0.sha,branch:'main'}),
+    const r = await fetch(`${WORKER}/api/deploy`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', 'X-OG-Deploy-Secret': getSetting('deploySecret',''), 'X-OG-User': 'joshua.kennedy@opengrace.org' },
+      body: JSON.stringify({ path: file, content, message }),
     });
     const res = await r.json();
-    if (res.content) {
+    if (res.ok) {
       statusEl.style.color = 'var(--green)';
       statusEl.textContent = `✓ Deployed ${file} — live in ~60 seconds`;
       toast('✓ Deployed successfully');
     } else {
       statusEl.style.color = 'var(--red)';
-      statusEl.textContent = 'Deploy failed: ' + (res.message||'Unknown error');
+      statusEl.textContent = 'Deploy failed: ' + (res.error || 'Unknown error');
     }
   } catch(e) {
     statusEl.style.color = 'var(--red)';
@@ -1794,10 +1814,6 @@ async function deployUpdate() {
   }
 }
 
-
-// ── Self-deploy ───────────────────────────────────────────────────────────────
-// Reads this page's own source from GitHub, replaces it with the current
-// live page source, and pushes it back. One tap on Home = deployed in ~60s.
 
 async function selfDeploy() {
   const btn      = document.getElementById('self-deploy-btn');
@@ -1810,65 +1826,60 @@ async function selfDeploy() {
     'Live at opengrace.org/director.html within ~60 seconds.'
   )) return;
 
-  const token = getGHToken();
-  if (!token) {
-    statusEl.style.display = 'block';
-    statusEl.style.color   = 'var(--red)';
-    statusEl.textContent   = 'No GitHub token. Enter your token when prompted and try again.';
-    return;
+  let secret = getSetting('deploySecret', '');
+  if (!secret) {
+    secret = prompt('Enter your Deploy Secret (one-time setup):');
+    if (!secret) return;
+    saveSetting('deploySecret', secret);
   }
 
   btn.textContent = '⏳ Deploying...';
   btn.disabled    = true;
   statusEl.style.display = 'block';
   statusEl.style.color   = 'var(--t2)';
-  statusEl.textContent   = 'Getting current file SHA...';
+  statusEl.textContent   = 'Reading page source...';
 
   try {
-    // Step 1: get current SHA
-    const metaResp = await fetch(GH_API + '/director.html', {
-      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'User-Agent': 'OG-Director' }
-    });
-    if (!metaResp.ok) { const e = await metaResp.json(); throw new Error(e.message || 'SHA fetch failed'); }
-    const { sha } = await metaResp.json();
-
-    statusEl.textContent = 'Reading page source...';
-
-    // Step 2: fetch own source (what GitHub Pages is currently serving)
     const selfResp = await fetch(window.location.href.split('?')[0] + '?t=' + Date.now(), { cache: 'no-store' });
     if (!selfResp.ok) throw new Error('Could not read page source: ' + selfResp.status);
     const selfHtml = await selfResp.text();
 
-    statusEl.textContent = 'Pushing to GitHub...';
+    statusEl.textContent = 'Pushing via Worker...';
+    const ts = new Date().toISOString().replace('T', ' ').slice(0, 16);
 
-    // Step 3: base64 encode and commit
-    const encoded = btoa(unescape(encodeURIComponent(selfHtml)));
-    const ts      = new Date().toISOString().replace('T', ' ').slice(0, 16);
-
-    const pushResp = await fetch(GH_API + '/director.html', {
-      method: 'PUT',
-      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json', 'User-Agent': 'OG-Director' },
-      body: JSON.stringify({ message: '[Director Auto-Deploy] Dashboard update ' + ts, content: encoded, sha, branch: 'main' }),
+    const pushResp = await fetch(`${WORKER}/api/deploy`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-OG-Deploy-Secret': secret,
+        'X-OG-User': 'joshua.kennedy@opengrace.org',
+      },
+      body: JSON.stringify({
+        path: 'director.html',
+        content: selfHtml,
+        message: `Dashboard auto-deploy ${ts}`,
+      }),
     });
     const result = await pushResp.json();
-    if (!pushResp.ok) throw new Error(result.message || 'Push failed: ' + pushResp.status);
+    if (!result.ok) throw new Error(result.error || 'Push failed');
 
-    const commitSha = (result.commit?.sha || '').slice(0, 7);
+    const commitSha = (result.commit || '').slice(0, 7);
     statusEl.style.color = 'var(--green)';
-    statusEl.textContent = '\u2713 Deployed — commit ' + commitSha + ' · Live in ~60 seconds';
-    btn.textContent = '\u2713 Deployed';
+    statusEl.textContent = `✓ Deployed — commit ${commitSha} · Live in ~60 seconds`;
+    btn.textContent = '✓ Deployed';
     btn.style.cssText += ';background:var(--green-bg);border-color:var(--green-b);color:#6EE7B7';
     btn.disabled = false;
-    toast('\u2713 Dashboard deployed to GitHub');
+    toast('✓ Dashboard deployed to GitHub');
     setTimeout(() => {
-      btn.textContent = '\ud83d\ude80 Push Dashboard Update to GitHub';
+      btn.textContent = '🚀 Push Dashboard Update to GitHub';
       btn.style.background = btn.style.borderColor = btn.style.color = '';
     }, 8000);
 
   } catch(e) {
     statusEl.style.color = 'var(--red)';
-    statusEl.textContent = '\u2717 Deploy failed: ' + e.message;
-    btn.textContent = '\ud83d\ude80 Push Dashboard Update to GitHub';
+    statusEl.textContent = '✗ Deploy failed: ' + e.message;
+    btn.textContent = '🚀 Push Dashboard Update to GitHub';
     btn.disabled    = false;
     toast('Deploy failed — check status message');
   }
