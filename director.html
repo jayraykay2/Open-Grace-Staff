@@ -646,6 +646,32 @@ body {
 <!-- ═══════════════════════════════════
      TAB: HR
      ═══════════════════════════════════ -->
+<div class="tab-panel" id="tab-logs">
+  <div class="section-head" style="display:flex;justify-content:space-between;align-items:center">
+    <span>Contact logs</span>
+    <div style="display:flex;gap:.5rem">
+      <button class="qa-btn" style="font-size:11px;padding:.25rem .75rem;min-height:0" onclick="loadAllLogs()">↻ Refresh</button>
+      <button class="qa-btn success" style="font-size:11px;padding:.25rem .75rem;min-height:0" onclick="exportLogsCsv()">Export CSV</button>
+    </div>
+  </div>
+  <div class="card" style="padding:.75rem">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem">
+      <select id="log-filter-staff" style="background:var(--s2);border:1px solid var(--b2);border-radius:var(--r-sm);color:var(--t1);font-size:13px;padding:.5rem" onchange="filterLogs()">
+        <option value="">All staff</option>
+      </select>
+      <select id="log-filter-client" style="background:var(--s2);border:1px solid var(--b2);border-radius:var(--r-sm);color:var(--t1);font-size:13px;padding:.5rem" onchange="filterLogs()">
+        <option value="">All clients</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+      <input type="date" id="log-filter-from" style="background:var(--s2);border:1px solid var(--b2);border-radius:var(--r-sm);color:var(--t1);font-size:13px;padding:.5rem" onchange="filterLogs()">
+      <input type="date" id="log-filter-to" style="background:var(--s2);border:1px solid var(--b2);border-radius:var(--r-sm);color:var(--t1);font-size:13px;padding:.5rem" onchange="filterLogs()">
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1rem" id="log-stats"></div>
+  <div id="log-list"><div style="text-align:center;padding:2rem;color:var(--t2);font-size:13px">Tap Refresh to load all contact logs</div></div>
+</div>
+
 <div class="tab-panel" id="tab-hr">
 
   <div class="section-head">Staff overview</div>
@@ -1105,6 +1131,9 @@ body {
   <button class="nav-btn" id="nav-clients" onclick="switchTab('clients')">
     <span class="nav-icon">👥</span>Clients
   </button>
+  <button class="nav-btn" id="nav-logs" onclick="switchTab('logs')">
+    <span class="nav-icon">📋</span>Logs
+  </button>
   <button class="nav-btn" id="nav-hr" onclick="switchTab('hr')">
     <span class="nav-icon">👔</span>HR
   </button>
@@ -1236,7 +1265,7 @@ function copyText(text) {
 }
 
 // ── Tab navigation ────────────────────────────────────────────────────────────
-const TABS = ['home','clients','hr','pipeline','comms','it','settings'];
+const TABS = ['home','clients','logs','hr','pipeline','comms','it','settings'];
 
 function switchTab(name) {
   TABS.forEach(t => {
@@ -1246,6 +1275,7 @@ function switchTab(name) {
   document.getElementById('tab-' + name)?.classList.add('active');
   document.getElementById('nav-' + name)?.classList.add('active');
   window.scrollTo(0, 0);
+  if (name === 'logs' && !window._logsLoaded) loadAllLogs();
 }
 
 // ── Sheet overlays ────────────────────────────────────────────────────────────
@@ -1895,6 +1925,97 @@ document.addEventListener('DOMContentLoaded', () => {
   const name = getSetting('directorName', 'Joshua');
   document.getElementById('set-name').value = name;
 });
+
+// ══════════════════════════════════════════════════
+// CONTACT LOGS — Director View
+// ══════════════════════════════════════════════════
+window._allLogs = [];
+window._logsLoaded = false;
+
+async function loadAllLogs() {
+  const secret = JSON.parse(localStorage.getItem('og_settings_v1') || '{}').deploySecret || '';
+  const listEl = document.getElementById('log-list');
+  const statsEl = document.getElementById('log-stats');
+  if (listEl) listEl.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--t2)">Loading…</div>';
+  if (statsEl) statsEl.innerHTML = '';
+  try {
+    const r = await fetch('https://api.github.com/repos/jayraykay2/Open-Grace-Staff/contents/staff_access.json');
+    const d = await r.json();
+    const bytes = Uint8Array.from(atob(d.content.replace(/\n/g,'')), c => c.charCodeAt(0));
+    const data = JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    window._allLogs = [];
+    (data.staff || []).forEach(s => {
+      (s.contactLogs || []).forEach(l => window._allLogs.push({...l, _staffName: s.name, _staffCode: s.code}));
+    });
+    window._allLogs.sort((a, b) => b.date.localeCompare(a.date));
+    window._logsLoaded = true;
+    const staffSel = document.getElementById('log-filter-staff');
+    const clientSel = document.getElementById('log-filter-client');
+    if (staffSel) {
+      const names = [...new Set(window._allLogs.map(l => l._staffName))].filter(Boolean);
+      staffSel.innerHTML = '<option value="">All staff</option>' + names.map(n => '<option>'+n+'</option>').join('');
+    }
+    if (clientSel) {
+      const names = [...new Set(window._allLogs.map(l => l.clientName))].filter(Boolean);
+      clientSel.innerHTML = '<option value="">All clients</option>' + names.map(n => '<option>'+n+'</option>').join('');
+    }
+    filterLogs();
+  } catch(e) {
+    if (listEl) listEl.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--red)">Error: ' + e.message + '</div>';
+  }
+}
+
+function filterLogs() {
+  const sf = document.getElementById('log-filter-staff')?.value || '';
+  const cf = document.getElementById('log-filter-client')?.value || '';
+  const ff = document.getElementById('log-filter-from')?.value || '';
+  const tf = document.getElementById('log-filter-to')?.value || '';
+  const filtered = window._allLogs.filter(l =>
+    (!sf || l._staffName === sf) && (!cf || l.clientName === cf) &&
+    (!ff || l.date >= ff) && (!tf || l.date <= tf)
+  );
+  const totalHrs = filtered.reduce((s, l) => s + (parseFloat(l.hours)||0), 0);
+  const clients = new Set(filtered.map(l => l.clientName));
+  const statsEl = document.getElementById('log-stats');
+  if (statsEl) statsEl.innerHTML = [
+    ['Logs', filtered.length, 'entries'],
+    ['Hours', totalHrs%1===0?totalHrs:totalHrs.toFixed(1), 'total'],
+    ['Clients', clients.size, 'covered']
+  ].map(([lbl,val,sub]) => '<div class="stat-card"><div class="stat-label">'+lbl+'</div><div class="stat-val" style="font-size:20px">'+val+'</div><div class="stat-sub">'+sub+'</div></div>').join('');
+  const listEl = document.getElementById('log-list');
+  if (!listEl) return;
+  if (!filtered.length) { listEl.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--t2);font-size:13px">'+(window._logsLoaded?'No logs match filters':'Tap Refresh to load logs')+'</div>'; return; }
+  listEl.innerHTML = filtered.map(l => {
+    const isTest = l.notes?.includes('TEST LOG');
+    const domains = (l.domains||[]).map(d => '<span style="background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-b);border-radius:10px;padding:1px 6px;font-size:10px;font-weight:600">#'+d+'</span>').join(' ');
+    return '<div style="background:var(--s1);border:1px solid '+(isTest?'var(--amber-b)':'var(--b1)')+';border-radius:var(--r);padding:.875rem 1rem;margin-bottom:.5rem">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.375rem">'
+      + '<div><div style="font-size:14px;font-weight:600">'+l.clientName+'</div>'
+      + '<div style="font-size:11px;color:var(--t3)">'+l._staffName+' · '+l.date+(l.serviceType?' · '+l.serviceType:'')+'</div></div>'
+      + '<div style="text-align:right"><span style="font-size:16px;font-weight:700;color:var(--green)">'+l.hours+'h</span>'+(isTest?' <span style="font-size:10px;color:var(--amber)">TEST</span>':'')+'</div>'
+      + '</div>'+(domains?'<div style="margin-bottom:.375rem">'+domains+'</div>':'')
+      + '<div style="font-size:12px;color:var(--t2);line-height:1.5">'+((l.notes||'').slice(0,150))+(l.notes?.length>150?'…':'')+'</div>'
+      + (l.id?'<div style="font-size:10px;color:var(--t3);margin-top:.375rem">ID: '+l.id+'</div>':'')
+      + '</div>';
+  }).join('');
+}
+
+function exportLogsCsv() {
+  const sf = document.getElementById('log-filter-staff')?.value || '';
+  const cf = document.getElementById('log-filter-client')?.value || '';
+  const ff = document.getElementById('log-filter-from')?.value || '';
+  const tf = document.getElementById('log-filter-to')?.value || '';
+  const filtered = window._allLogs.filter(l => (!sf||l._staffName===sf)&&(!cf||l.clientName===cf)&&(!ff||l.date>=ff)&&(!tf||l.date<=tf));
+  if (!filtered.length) { showToast && showToast('No logs to export'); return; }
+  const rows = ['Staff,Client,UCI,Date,Hours,Service,Domains,Notes,Signature,Submitted'];
+  filtered.forEach(l => rows.push([l._staffName,l.clientName,l.clientUCI,l.date,l.hours,l.serviceType,(l.domains||[]).join('+'),'"'+(l.notes||'').replace(/"/g,"''")+'"',l.signature,(l.submitted||'').split('T')[0]].join(',')));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([rows.join('\n')], {type:'text/csv'}));
+  a.download = 'OpenGrace_Logs_'+(new Date().toISOString().split('T')[0])+'.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 </script>
 </body>
 </html>
