@@ -86,6 +86,23 @@
       },
       "contactLogs": [
         {
+          "staffName": "Staff Member Name",
+          "staffCode": "OG-2026-001",
+          "clientUCI": "6953825",
+          "clientName": "Burks, Jaybrion",
+          "date": "2026-06-13",
+          "hours": 1,
+          "notes": "LIVE END-TO-END TEST - log-submit working",
+          "domains": [
+            1,
+            2
+          ],
+          "submitted": "2026-06-14T01:23:53.031Z",
+          "id": "log-1781400233063-drr4i",
+          "serverTimestamp": "2026-06-14T01:23:53.063Z",
+          "version": 1
+        },
+        {
           "id": "log-1781399424723",
           "clientUCI": "6953825",
           "clientName": "Burks, Jaybrion",
