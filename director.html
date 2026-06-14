@@ -2021,6 +2021,89 @@ function exportLogsCsv() {
   URL.revokeObjectURL(a.href);
 }
 
+// ── Client Detail View ──────────────────────────────────────────────
+function openClientDetail(cj) {
+  try {
+    var c = JSON.parse(decodeURIComponent(cj));
+    var overlay = document.getElementById('client-detail-overlay');
+    var content = document.getElementById('client-detail-content');
+    if (!overlay || !content) return;
+    document.getElementById('cd-name').textContent = c.name + ' — Client File';
+    var now = new Date();
+    var logs = (window._allLogs||[]).filter(function(l){ return l.clientUCI===c.uci||l.clientName===c.name; });
+    var hrs = logs.reduce(function(s,l){ return s+(parseFloat(l.hours)||0); },0);
+    var qd = c.qprDue ? Math.ceil((new Date(c.qprDue)-now)/86400000) : null;
+    var qdC = qd===null?'var(--t1)':qd<0?'var(--red)':qd<=30?'var(--amber)':'var(--green)';
+    var qdT = qd===null?'—':c.qprDue+' ('+Math.abs(qd)+'d '+(qd<0?'overdue':'away')+')';
+    var h = '';
+    h += '<div class="stat-grid" style="margin-bottom:1rem">';
+    h += '<div class="stat-card"><div class="stat-label">UCI</div><div style="font-size:13px;font-weight:700;font-family:monospace">'+(c.uci||'—')+'</div></div>';
+    h += '<div class="stat-card"><div class="stat-label">Hours</div><div class="stat-val" style="font-size:20px;color:var(--green)">'+hrs+'</div><div class="stat-sub">of '+(c.authorizedHours||'?')+'h</div></div>';
+    h += '<div class="stat-card"><div class="stat-label">Logs</div><div class="stat-val" style="font-size:20px">'+logs.length+'</div><div class="stat-sub">total</div></div></div>';
+    h += '<div class="card" style="margin-bottom:.875rem"><div class="card-title">Client information</div>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.375rem .75rem;font-size:13px">';
+    h += '<div><span style="color:var(--t2)">Name: </span><strong>'+c.name+'</strong></div>';
+    h += '<div><span style="color:var(--t2)">UCI: </span><code>'+(c.uci||'—')+'</code></div>';
+    h += '<div><span style="color:var(--t2)">Service start: </span>'+(c.serviceStart||'—')+'</div>';
+    h += '<div><span style="color:var(--t2)">Auth hours: </span>'+(c.authorizedHours||'?')+'h</div>';
+    h += '<div><span style="color:var(--t2)">Coordinator: </span>'+(c.coordinator||'—')+'</div>';
+    h += '<div><span style="color:var(--t2)">Status: </span>'+(c.status||'Active')+'</div>';
+    h += '<div style="grid-column:1/-1"><span style="color:var(--t2)">QPR due: </span><strong style="color:'+qdC+'">'+qdT+'</strong></div>';
+    h += '</div></div>';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">';
+    h += '<div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3)">Contact log history ('+logs.length+')</div>';
+    if (logs.length) h += '<button onclick="exportClientLogsCsv(\'' + 'ENC_NAME' + '\',\'' + (c.uci||'') + '\')" style="background:none;border:none;color:var(--blue);font-size:12px;cursor:pointer">Export CSV</button>';
+    h += '</div>';
+    if (!logs.length) {
+      h += '<div style="text-align:center;padding:2rem;color:var(--t2);font-size:13px">No contact logs yet.<br><span style="color:var(--t3);font-size:11px">Logs submitted by staff will appear here.</span></div>';
+    } else {
+      logs.forEach(function(l){
+        var dm = (l.domains||[]).map(function(d){ return '<span style="background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-b);border-radius:10px;padding:1px 6px;font-size:10px;font-weight:600;margin-right:3px">#'+d+'</span>'; }).join('');
+        var isT = l.notes&&l.notes.includes('TEST LOG');
+        h += '<div style="background:var(--s2);border:1px solid '+(isT?'var(--amber-b)':'var(--b1)')+';border-radius:var(--r-sm);padding:.875rem;margin-bottom:.5rem">';
+        h += '<div style="display:flex;justify-content:space-between;margin-bottom:.375rem">';
+        h += '<span style="font-size:13px;font-weight:600">'+(l._staffName||'Staff')+'</span>';
+        h += '<span style="font-size:11px;color:var(--t3)">'+l.date+' · '+(l.serviceType||'visit')+' · '+l.hours+'h'+(isT?' [TEST]':'')+'</span></div>';
+        if (dm) h += '<div style="margin-bottom:.375rem">'+dm+'</div>';
+        h += '<div style="font-size:13px;color:var(--t1);line-height:1.6">'+( (l.notes||'No notes').replace(/</g,'&lt;').replace(/>/g,'&gt;') )+'</div>';
+        if (l.followUp) h += '<div style="font-size:11px;color:var(--t2);margin-top:.375rem;border-top:1px solid var(--b1);padding-top:.375rem">Follow-up: '+l.followUp+'</div>';
+        if (l.nextVisit) h += '<div style="font-size:11px;color:var(--t2)">Next visit: '+l.nextVisit+'</div>';
+        if (l.id) h += '<div style="font-size:10px;color:var(--t3);margin-top:.25rem">ID: '+l.id+'</div>';
+        h += '</div>';
+      });
+    }
+    // Fix the export button onclick with correct encoded name
+    h = h.replace('ENC_NAME', encodeURIComponent(c.name));
+    content.innerHTML = h;
+    overlay.style.display = 'flex';
+    if (!window._logsLoaded) loadAllLogs().then(function(){ openClientDetail(cj); });
+  } catch(e) { console.error('clientDetail:', e); }
+}
+
+function closeClientDetail() {
+  var el = document.getElementById('client-detail-overlay');
+  if (el) el.style.display = 'none';
+}
+
+function exportClientLogsCsv(enc, uci) {
+  var name = decodeURIComponent(enc);
+  var logs = (window._allLogs||[]).filter(function(l){ return l.clientUCI===uci||l.clientName===name; });
+  if (!logs.length) return;
+  var rows = ['Date,Staff,Hours,Service,Domains,Notes,Follow-Up,Next Visit,ID'];
+  logs.forEach(function(l){
+    rows.push([l.date,l._staffName||'',l.hours,l.serviceType||'',
+      (l.domains||[]).map(function(d){return '#'+d;}).join(';'),
+      '"'+(l.notes||'').replace(/"/g,"''")+'"',
+      '"'+(l.followUp||'').replace(/"/g,"''")+'"',
+      l.nextVisit||'', l.id||''].join(','));
+  });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));
+  a.download = 'OG_'+name.replace(/[^a-z0-9]/gi,'_')+'_'+(new Date().toISOString().split('T')[0])+'.csv';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+
 // ── OneDrive Export ───────────────────────────────────────────────────────────
 function exportToOneDrive() {
   const sf = document.getElementById('log-filter-staff')?.value || '';
