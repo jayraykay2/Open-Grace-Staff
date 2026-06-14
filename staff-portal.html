@@ -130,15 +130,15 @@
     <!-- LOGIN SCREEN -->
     <div class="login-screen" id="login-screen">
         <img class="login-logo" src="https://opengrace.org/og_logo.jpg" alt="Open Grace">
-        <div class="login-title">Open Grace LLC</div>div>
-        <div class="login-sub">Staff Portal - Family Coordinators</div>div>
+        <div class="login-title">Open Grace LLC</div>
+        <div class="login-sub">Staff Portal - Family Coordinators</div>
         <div class="login-card">
-              <label class="login-label" for="access-code">Staff Access Code</label>label>
+              <label class="login-label" for="access-code">Staff Access Code</label>
               <input class="login-input" id="access-code" type="text" placeholder="OG-XXXX-XXX" maxlength="15" autocomplete="off" autocorrect="off" autocapitalize="characters" onkeydown="if(event.key==='Enter')doLogin()">
-              <button class="login-btn" id="login-btn" onclick="doLogin()">Sign In</button>button>
-              <div class="login-err" id="login-err"></div>div>
-        </div>div>
-    </div>div>
+              <button class="login-btn" id="login-btn" onclick="doLogin()">Sign In</button>
+              <div class="login-err" id="login-err"></div>
+        </div>
+    </div>
 
     <!-- APP (hidden until login) -->
     <div id="app" style="display:none">
@@ -147,296 +147,296 @@
       <header class="app-header">
           <img src="https://opengrace.org/og_logo.jpg" alt="Open Grace">
           <div class="header-text">
-                <h1>Open Grace LLC <span style="color:var(--t3)">-</span>span> Staff Portal</h1>
-              <p id="staff-greeting">Good morning</p>p>
-          </div>div>
+                <h1>Open Grace LLC <span style="color:var(--t3)">-</span> Staff Portal</h1>
+              <p id="staff-greeting">Good morning</p>
+          </div>
         <div class="header-right">
-            <div class="active-pill"><div class="status-dot"></div>div>Active</div>div>
-        </div>div>
-      </header>header>
+            <div class="active-pill"><div class="status-dot"></div>Active</div>
+        </div>
+      </header>
     
     <!-- TAB: DASHBOARD -->
     <div class="tab-panel active" id="tab-dashboard">
-      <div class="section-head">My dashboard</div>div>
+      <div class="section-head">My dashboard</div>
       <div class="stat-grid">
           <div class="stat-card">
-                <div class="stat-label">Clients</div>div>
-                <div class="stat-val" id="dash-clients">-</div>div>
-                <div class="stat-sub">assigned</div>div>
-          </div>div>
+                <div class="stat-label">Clients</div>
+                <div class="stat-val" id="dash-clients">-</div>
+                <div class="stat-sub">assigned</div>
+          </div>
           <div class="stat-card">
-                <div class="stat-label">Logs</div>div>
-                <div class="stat-val" id="dash-logs">-</div>div>
-                <div class="stat-sub">this month</div>div>
-          </div>div>
+                <div class="stat-label">Logs</div>
+                <div class="stat-val" id="dash-logs">-</div>
+                <div class="stat-sub">this month</div>
+          </div>
           <div class="stat-card">
-                <div class="stat-label">Hours</div>div>
-                <div class="stat-val" id="dash-hours" style="color:var(--green)">-</div>div>
-                <div class="stat-sub">this month</div>div>
-          </div>div>
-      </div>div>
+                <div class="stat-label">Hours</div>
+                <div class="stat-val" id="dash-hours" style="color:var(--green)">-</div>
+                <div class="stat-sub">this month</div>
+          </div>
+      </div>
     
-      <div id="qpr-alerts"></div>div>
+      <div id="qpr-alerts"></div>
     
       <div class="card">
-          <div class="card-title">Quick actions</div>div>
+          <div class="card-title">Quick actions</div>
           <div style="display:flex;flex-direction:column;gap:.5rem">
-                <button class="qa-btn primary" style="justify-content:center" onclick="switchTab('log')">Submit today's contact log</button>button>
-                <button class="qa-btn success" style="justify-content:center" onclick="switchTab('hours')">View my timesheet</button>button>
-                <a class="qa-btn" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank">File an incident report</a>a>
-          </div>div>
-      </div>div>
+                <button class="qa-btn primary" style="justify-content:center" onclick="switchTab('log')">Submit today's contact log</button>
+                <button class="qa-btn success" style="justify-content:center" onclick="switchTab('hours')">View my timesheet</button>
+                <a class="qa-btn" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank">File an incident report</a>
+          </div>
+      </div>
     
-      <div class="section-head">Recent logs</div>div>
-      <div id="recent-logs"></div>div>
+      <div class="section-head">Recent logs</div>
+      <div id="recent-logs"></div>
     
       <div class="card" style="background:var(--purple-bg);border-color:var(--purple-b)">
-          <div style="font-size:13px;font-weight:600;color:#C4B5FD;margin-bottom:.375rem">Training Academy</div>div>
-          <p style="font-size:12px;color:var(--t2);margin-bottom:.75rem">Complete your required CFS training modules.</p>p>
-          <a class="qa-btn" href="https://opengrace.org/training.html" target="_blank" style="justify-content:center;background:var(--purple-bg);border-color:var(--purple-b);color:#C4B5FD">Open Training Academy</a>a>
-      </div>div>
-    </div>div>
+          <div style="font-size:13px;font-weight:600;color:#C4B5FD;margin-bottom:.375rem">Training Academy</div>
+          <p style="font-size:12px;color:var(--t2);margin-bottom:.75rem">Complete your required CFS training modules.</p>
+          <a class="qa-btn" href="https://opengrace.org/training.html" target="_blank" style="justify-content:center;background:var(--purple-bg);border-color:var(--purple-b);color:#C4B5FD">Open Training Academy</a>
+      </div>
+    </div>
     
     <!-- TAB: CONTACT LOG -->
     <div class="tab-panel" id="tab-log">
-      <div class="section-head">Daily contact log</div>div>
+      <div class="section-head">Daily contact log</div>
       <div class="card">
-          <div class="card-title">New log entry</div>div>
+          <div class="card-title">New log entry</div>
       
           <div class="field-group">
-                <label class="field-label">Client</label>label>
+                <label class="field-label">Client</label>
                 <select class="field-select" id="log-client">
-                        <option value="">- Select client -</option>option>
-                </select>select>
-          </div>div>
+                        <option value="">- Select client -</option>
+                </select>
+          </div>
       
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
                 <div class="field-group">
-                        <label class="field-label">Date of visit</label>label>
+                        <label class="field-label">Date of visit</label>
                         <input class="field-input" type="date" id="log-date">
-                </div>div>
+                </div>
                 <div class="field-group">
-                        <label class="field-label">Hours</label>label>
+                        <label class="field-label">Hours</label>
                         <select class="field-select" id="log-hours">
-                                  <option value=".25">15 min</option>option>
-                                  <option value=".5">30 min</option>option>
-                                  <option value=".75">45 min</option>option>
-                                  <option value="1" selected>1 hour</option>option>
-                                  <option value="1.5">1.5 hrs</option>option>
-                                  <option value="2">2 hours</option>option>
-                                  <option value="2.5">2.5 hrs</option>option>
-                                  <option value="3">3 hours</option>option>
-                                  <option value="3.5">3.5 hrs</option>option>
-                                  <option value="4">4 hours</option>option>
-                        </select>select>
-                </div>div>
-          </div>div>
+                                  <option value=".25">15 min</option>
+                                  <option value=".5">30 min</option>
+                                  <option value=".75">45 min</option>
+                                  <option value="1" selected>1 hour</option>
+                                  <option value="1.5">1.5 hrs</option>
+                                  <option value="2">2 hours</option>
+                                  <option value="2.5">2.5 hrs</option>
+                                  <option value="3">3 hours</option>
+                                  <option value="3.5">3.5 hrs</option>
+                                  <option value="4">4 hours</option>
+                        </select>
+                </div>
+          </div>
       
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
                 <div class="field-group">
-                        <label class="field-label">Start time</label>label>
+                        <label class="field-label">Start time</label>
                         <input class="field-input" type="time" id="log-start">
-                </div>div>
+                </div>
                 <div class="field-group">
-                        <label class="field-label">End time</label>label>
+                        <label class="field-label">End time</label>
                         <input class="field-input" type="time" id="log-end">
-                </div>div>
-          </div>div>
+                </div>
+          </div>
       
           <div class="field-group">
-                <label class="field-label">Service type</label>label>
+                <label class="field-label">Service type</label>
                 <select class="field-select" id="log-service">
-                        <option value="in-person">In-person visit</option>option>
-                        <option value="phone">Phone / video call</option>option>
-                        <option value="community">Community outing</option>option>
-                        <option value="appointment">Medical appointment</option>option>
-                        <option value="crisis">Crisis support</option>option>
-                        <option value="other">Other</option>option>
-                </select>select>
-          </div>div>
+                        <option value="in-person">In-person visit</option>
+                        <option value="phone">Phone / video call</option>
+                        <option value="community">Community outing</option>
+                        <option value="appointment">Medical appointment</option>
+                        <option value="crisis">Crisis support</option>
+                        <option value="other">Other</option>
+                </select>
+          </div>
       
           <div class="field-group">
-                <label class="field-label">Location</label>label>
+                <label class="field-label">Location</label>
                 <input class="field-input" type="text" id="log-location" placeholder="e.g. Client home, Community center">
-          </div>div>
+          </div>
       
           <div class="field-group">
-                <label class="field-label">CFS domains addressed</label>label>
-                <div class="domain-grid" id="domain-grid"></div>div>
-          </div>div>
+                <label class="field-label">CFS domains addressed</label>
+                <div class="domain-grid" id="domain-grid"></div>
+          </div>
       
           <div class="field-group">
-                <label class="field-label">IPP goals worked on</label>label>
+                <label class="field-label">IPP goals worked on</label>
                 <input class="field-input" type="text" id="log-ipp" placeholder="Describe which IPP goals were addressed">
-          </div>div>
+          </div>
       
           <div class="field-group">
-                <label class="field-label">Progress notes</label>label>
+                <label class="field-label">Progress notes</label>
                 <textarea class="field-textarea" id="log-notes" placeholder="Actions taken, outcomes achieved, observations..."></textarea>
-          </div>div>
+          </div>
       
           <div class="field-group">
-                <label class="field-label">Family / consumer participation</label>label>
+                <label class="field-label">Family / consumer participation</label>
                 <select class="field-select" id="log-participation">
-                        <option value="engaged">Engaged and receptive</option>option>
-                        <option value="partial">Partially engaged</option>option>
-                        <option value="resistant">Resistant / not available</option>option>
-                        <option value="crisis">In crisis - see incident report</option>option>
-                </select>select>
-          </div>div>
+                        <option value="engaged">Engaged and receptive</option>
+                        <option value="partial">Partially engaged</option>
+                        <option value="resistant">Resistant / not available</option>
+                        <option value="crisis">In crisis - see incident report</option>
+                </select>
+          </div>
       
           <div class="field-group">
-                <label class="field-label">Follow-up actions</label>label>
+                <label class="field-label">Follow-up actions</label>
                 <input class="field-input" type="text" id="log-followup" placeholder="Next steps, upcoming appointments...">
-          </div>div>
+          </div>
       
           <div class="field-group">
-                <label class="field-label">Next visit planned</label>label>
+                <label class="field-label">Next visit planned</label>
                 <input class="field-input" type="date" id="log-next">
-          </div>div>
+          </div>
       
           <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);padding:.875rem;margin-bottom:.75rem">
-                <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:.75rem">Compliance acknowledgments</div>div>
+                <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:.75rem">Compliance acknowledgments</div>
                 <label style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.625rem;cursor:pointer">
                         <input type="checkbox" id="ack-mandated" style="margin-top:2px;accent-color:var(--blue);flex-shrink:0">
-                        <span style="font-size:12px;color:var(--t2)">I acknowledge my role as a mandated reporter and have reported any suspected abuse or neglect.</span>span>
-                </label>label>
+                        <span style="font-size:12px;color:var(--t2)">I acknowledge my role as a mandated reporter and have reported any suspected abuse or neglect.</span>
+                </label>
                 <label style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.625rem;cursor:pointer">
                         <input type="checkbox" id="ack-incident" style="margin-top:2px;accent-color:var(--blue);flex-shrink:0">
-                        <span style="font-size:12px;color:var(--t2)">No incidents occurred during this visit, OR I have filed a separate incident report.</span>span>
-                </label>label>
+                        <span style="font-size:12px;color:var(--t2)">No incidents occurred during this visit, OR I have filed a separate incident report.</span>
+                </label>
                 <label style="display:flex;align-items:flex-start;gap:.75rem;cursor:pointer">
                         <input type="checkbox" id="ack-hipaa" style="margin-top:2px;accent-color:var(--blue);flex-shrink:0">
-                        <span style="font-size:12px;color:var(--t2)">I understand this information is confidential under HIPAA and will not be shared without authorization.</span>span>
-                </label>label>
-          </div>div>
+                        <span style="font-size:12px;color:var(--t2)">I understand this information is confidential under HIPAA and will not be shared without authorization.</span>
+                </label>
+          </div>
       
           <div class="field-group">
-                <label class="field-label">Electronic signature (type your full name)</label>label>
+                <label class="field-label">Electronic signature (type your full name)</label>
                 <input class="field-input" type="text" id="log-signature" placeholder="Full name as signature">
-          </div>div>
+          </div>
       
           <button class="qa-btn primary" style="width:100%;justify-content:center;margin-top:.5rem" id="submit-log-btn" onclick="submitLog()">
                 Submit contact log
-          </button>button>
-          <div id="submit-status" style="font-size:12px;margin-top:.5rem;text-align:center;min-height:18px"></div>div>
-      </div>div>
+          </button>
+          <div id="submit-status" style="font-size:12px;margin-top:.5rem;text-align:center;min-height:18px"></div>
+      </div>
     
       <div class="section-head" style="display:flex;justify-content:space-between;align-items:center">
           <span>My log history</span>
           <span id="log-count" style="font-size:10px;color:var(--t3)"></span>
-      </div>div>
-      <div id="log-history"></div>div>
-    </div>div>
+      </div>
+      <div id="log-history"></div>
+    </div>
     
     <!-- TAB: HOURS -->
     <div class="tab-panel" id="tab-hours">
-      <div class="section-head">Monthly timesheet</div>div>
+      <div class="section-head">Monthly timesheet</div>
     
       <div class="alert-banner">
-          <div class="alert-icon">📅</div>div>
+          <div class="alert-icon">📅</div>
           <div class="alert-info">
                 <h4 id="cutoff-title">IRC billing cut-off</h4>
-                <p id="cutoff-desc">Submit all hours by the 4th of the month at 4:30 PM.</p>p>
-          </div>div>
-      </div>div>
+                <p id="cutoff-desc">Submit all hours by the 4th of the month at 4:30 PM.</p>
+          </div>
+      </div>
     
       <div class="card">
-          <div class="card-title">Period</div>div>
-          <select class="field-select" id="ts-month" onchange="renderTimesheet()"></select>select>
-      </div>div>
+          <div class="card-title">Period</div>
+          <select class="field-select" id="ts-month" onchange="renderTimesheet()"></select>
+      </div>
     
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-bottom:1rem">
           <div class="stat-card">
-                <div class="stat-label">Total hours</div>div>
-                <div class="stat-val" id="ts-total" style="color:var(--green)">0</div>div>
-                <div class="stat-sub">this period</div>div>
-          </div>div>
+                <div class="stat-label">Total hours</div>
+                <div class="stat-val" id="ts-total" style="color:var(--green)">0</div>
+                <div class="stat-sub">this period</div>
+          </div>
           <div class="stat-card">
-                <div class="stat-label">Visits</div>div>
-                <div class="stat-val" id="ts-visits">0</div>div>
-                <div class="stat-sub">contact logs</div>div>
-          </div>div>
-      </div>div>
+                <div class="stat-label">Visits</div>
+                <div class="stat-val" id="ts-visits">0</div>
+                <div class="stat-sub">contact logs</div>
+          </div>
+      </div>
     
-      <div id="ts-entries"></div>div>
+      <div id="ts-entries"></div>
     
-      <button class="qa-btn" style="width:100%;justify-content:center;margin-top:.5rem" onclick="exportTimesheet()">Export timesheet</button>button>
-    </div>div>
+      <button class="qa-btn" style="width:100%;justify-content:center;margin-top:.5rem" onclick="exportTimesheet()">Export timesheet</button>
+    </div>
     
     <!-- TAB: RESOURCES -->
     <div class="tab-panel" id="tab-resources">
-      <div class="section-head">Send to families</div>div>
+      <div class="section-head">Send to families</div>
     
       <div class="card">
-          <div class="card-title">Quick share</div>div>
+          <div class="card-title">Quick share</div>
           <div style="display:flex;flex-direction:column;gap:.625rem">
                 <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);padding:.75rem">
-                        <div style="font-size:13px;font-weight:500;margin-bottom:2px">Client Welcome Packet</div>div>
-                        <div style="font-size:11px;color:var(--t3);margin-bottom:.625rem">Share at or after first meeting</div>div>
+                        <div style="font-size:13px;font-weight:500;margin-bottom:2px">Client Welcome Packet</div>
+                        <div style="font-size:11px;color:var(--t3);margin-bottom:.625rem">Share at or after first meeting</div>
                         <div style="display:flex;gap:.5rem">
-                                  <a href="sms:?body=Hi, this is your Open Grace LLC Family Coordinator. Here is your Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf" class="qa-btn success" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Text</a>a>
-                                  <a href="mailto:?subject=Welcome to Open Grace LLC&body=Here is your Client Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf" class="qa-btn primary" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Email</a>a>
-                        </div>div>
-                </div>div>
+                                  <a href="sms:?body=Hi, this is your Open Grace LLC Family Coordinator. Here is your Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf" class="qa-btn success" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Text</a>
+                                  <a href="mailto:?subject=Welcome to Open Grace LLC&body=Here is your Client Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf" class="qa-btn primary" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Email</a>
+                        </div>
+                </div>
                 <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);padding:.75rem">
-                        <div style="font-size:13px;font-weight:500;margin-bottom:2px">CFS Service Acknowledgment</div>div>
-                        <div style="font-size:11px;color:var(--t3);margin-bottom:.625rem">Required before services begin</div>div>
+                        <div style="font-size:13px;font-weight:500;margin-bottom:2px">CFS Service Acknowledgment</div>
+                        <div style="font-size:11px;color:var(--t3);margin-bottom:.625rem">Required before services begin</div>
                         <div style="display:flex;gap:.5rem">
-                                  <a href="sms:?body=Hi, please complete the Open Grace CFS Service Acknowledgment: https://form.jotform.com/261451993406057" class="qa-btn success" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Text</a>a>
-                                  <a href="mailto:?subject=Action Needed - CFS Service Acknowledgment&body=Please complete: https://form.jotform.com/261451993406057" class="qa-btn primary" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Email</a>a>
-                        </div>div>
-                </div>div>
+                                  <a href="sms:?body=Hi, please complete the Open Grace CFS Service Acknowledgment: https://form.jotform.com/261451993406057" class="qa-btn success" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Text</a>
+                                  <a href="mailto:?subject=Action Needed - CFS Service Acknowledgment&body=Please complete: https://form.jotform.com/261451993406057" class="qa-btn primary" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Email</a>
+                        </div>
+                </div>
                 <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);padding:.75rem">
-                        <div style="font-size:13px;font-weight:500;margin-bottom:2px">Emergency Contacts</div>div>
-                        <div style="font-size:11px;color:var(--t3);margin-bottom:.625rem">APS, CPS, 211, IRC, Open Grace</div>div>
+                        <div style="font-size:13px;font-weight:500;margin-bottom:2px">Emergency Contacts</div>
+                        <div style="font-size:11px;color:var(--t3);margin-bottom:.625rem">APS, CPS, 211, IRC, Open Grace</div>
                         <div style="display:flex;gap:.5rem">
-                                  <a href="sms:?body=Important contacts:%0AOpen Grace: (951) 880-4132%0AAPS: 1-877-477-3646%0ACPS Riverside: 1-800-442-4918%0A211 IE: Dial 211%0AIRC: (909) 890-3000%0AEmergency: 911" class="qa-btn success" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Text</a>a>
-                                  <a href="mailto:?subject=Important Contacts - Open Grace LLC" class="qa-btn primary" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Email</a>a>
-                        </div>div>
-                </div>div>
-          </div>div>
-      </div>div>
+                                  <a href="sms:?body=Important contacts:%0AOpen Grace: (951) 880-4132%0AAPS: 1-877-477-3646%0ACPS Riverside: 1-800-442-4918%0A211 IE: Dial 211%0AIRC: (909) 890-3000%0AEmergency: 911" class="qa-btn success" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Text</a>
+                                  <a href="mailto:?subject=Important Contacts - Open Grace LLC" class="qa-btn primary" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Email</a>
+                        </div>
+                </div>
+          </div>
+      </div>
     
-      <div class="section-head">Staff links</div>div>
+      <div class="section-head">Staff links</div>
       <a class="link-row" href="https://opengrace.org/training.html" target="_blank">
           <span class="link-icon">🎓</span>
-          <div class="link-text"><strong>Training Academy</strong><small>Required CFS training modules</small></div>div>
+          <div class="link-text"><strong>Training Academy</strong><small>Required CFS training modules</small></div>
           <span class="link-arrow">›</span>
-      </a>a>
+      </a>
       <a class="link-row" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank">
           <span class="link-icon">🚨</span>
-          <div class="link-text"><strong>Incident Report</strong><small>File same day as any incident</small></div>div>
+          <div class="link-text"><strong>Incident Report</strong><small>File same day as any incident</small></div>
           <span class="link-arrow">›</span>
-      </a>a>
+      </a>
       <a class="link-row" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank">
           <span class="link-icon">📘</span>
-          <div class="link-text"><strong>Employee Handbook</strong><small>Policies and procedures</small></div>div>
+          <div class="link-text"><strong>Employee Handbook</strong><small>Policies and procedures</small></div>
           <span class="link-arrow">›</span>
-      </a>a>
+      </a>
     
-      <div class="section-head">Contact director</div>div>
+      <div class="section-head">Contact director</div>
       <div class="card">
-          <div style="font-size:14px;font-weight:600;margin-bottom:.25rem">Joshua Kennedy</div>div>
-          <div style="font-size:12px;color:var(--t2);margin-bottom:.875rem">Director - Open Grace LLC</div>div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:.25rem">Joshua Kennedy</div>
+          <div style="font-size:12px;color:var(--t2);margin-bottom:.875rem">Director - Open Grace LLC</div>
           <div style="display:flex;gap:.5rem">
-                <a href="tel:9518804132" class="qa-btn success" style="flex:1;justify-content:center">Call</a>a>
-                <a href="sms:9518804132" class="qa-btn primary" style="flex:1;justify-content:center">Text</a>a>
-                <a href="mailto:joshua.kennedy@opengrace.org" class="qa-btn" style="flex:1;justify-content:center">Email</a>a>
-          </div>div>
-      </div>div>
-    </div>div>
+                <a href="tel:9518804132" class="qa-btn success" style="flex:1;justify-content:center">Call</a>
+                <a href="sms:9518804132" class="qa-btn primary" style="flex:1;justify-content:center">Text</a>
+                <a href="mailto:joshua.kennedy@opengrace.org" class="qa-btn" style="flex:1;justify-content:center">Email</a>
+          </div>
+      </div>
+    </div>
     
     <!-- TAB: SETTINGS -->
     <div class="tab-panel" id="tab-settings">
-      <div class="section-head">My account</div>div>
+      <div class="section-head">My account</div>
       <div class="card">
-          <div class="card-title">Staff info</div>div>
-          <div style="margin-bottom:.5rem"><span style="font-size:12px;color:var(--t2)">Name: </span><span id="settings-name" style="font-size:14px;font-weight:500">-</span></div>div>
-          <div style="margin-bottom:.5rem"><span style="font-size:12px;color:var(--t2)">Role: </span><span id="settings-role" style="font-size:14px">-</span></div>div>
+          <div class="card-title">Staff info</div>
+          <div style="margin-bottom:.5rem"><span style="font-size:12px;color:var(--t2)">Name: </span><span id="settings-name" style="font-size:14px;font-weight:500">-</span></div>
+          <div style="margin-bottom:.5rem"><span style="font-size:12px;color:var(--t2)">Role: </span><span id="settings-role" style="font-size:14px">-</span></div>
           <div><span style="font-size:12px;color:var(--t2)">Code: </span><span id="settings-code" style="font-size:14px;font-family:monospace">-</span></div>
       </div>
-      <button class="qa-btn danger" style="width:100%;justify-content:center" onclick="if(confirm('Sign out?')){signOut()}">Sign out</button>button>
+      <button class="qa-btn danger" style="width:100%;justify-content:center" onclick="if(confirm('Sign out?')){signOut()}">Sign out</button>
     </div>
     
     </div><!-- end #app -->
@@ -445,20 +445,20 @@
   <nav class="bottom-nav" id="bottom-nav" style="display:none">
     <button class="nav-btn active" id="nav-dashboard" onclick="switchTab('dashboard')">
         <span class="nav-icon">🏠</span>Home
-    </button>button>
+    </button>
     <button class="nav-btn" id="nav-log" onclick="switchTab('log')">
         <span class="nav-icon">📝</span>Log
-    </button>button>
+    </button>
     <button class="nav-btn" id="nav-hours" onclick="switchTab('hours')">
         <span class="nav-icon">⏱</span>Hours
-    </button>button>
+    </button>
     <button class="nav-btn" id="nav-resources" onclick="switchTab('resources')">
         <span class="nav-icon">📚</span>Resources
-    </button>button>
+    </button>
     <button class="nav-btn" id="nav-settings" onclick="switchTab('settings')">
         <span class="nav-icon">⚙️</span>Settings
-    </button>button>
-  </nav>nav>
+    </button>
+  </nav>
   
   <div class="toast-container" id="toast-container"></div>
   
