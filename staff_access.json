@@ -2,7 +2,7 @@
   "_readme": "Open Grace LLC — Staff Access Control & Coordinator Data. Director manages via Director Dashboard.",
   "_hipaa_notice": "This file controls access to PHI. Handle with care. Do not share publicly.",
   "_version": "2.0",
-  "last_updated": "2026-06-11",
+  "last_updated": "2026-06-14",
   "staff": [
     {
       "code": "OG-DIR-2026",
@@ -83,7 +83,26 @@
         "reason": null,
         "notes": null,
         "completedDate": null
-      }
+      },
+      "contactLogs": [
+        {
+          "id": "log-1781399424723",
+          "clientUCI": "6953825",
+          "clientName": "Burks, Jaybrion",
+          "date": "2026-06-13",
+          "startTime": "10:00",
+          "endTime": "11:00",
+          "hours": 1,
+          "serviceType": "in-person",
+          "domains": [
+            1,
+            2
+          ],
+          "notes": "CONNECTION TEST - verified storage pipeline works. Safe to delete.",
+          "familyResponse": "engaged",
+          "submitted": "2026-06-14T01:10:24.723Z"
+        }
+      ]
     }
   ]
 }
