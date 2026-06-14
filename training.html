@@ -238,48 +238,53 @@ async function unlock() {
   const inputEl = document.getElementById('code-input');
   if (!code) { errEl.textContent = 'Please enter your access code.'; return; }
 
-  fetch(STAFF_URL + '?t=' + Date.now())
-    .then(r => r.json())
-    .then(data => {
-      const staff = (data.staff || []).find(s => s.code === code && s.active);
-      if (staff) {
-        currentStaff = staff;
-        await loadProgress();
-        document.getElementById('lock').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        document.getElementById('topbar-name').textContent = staff.name;
-        document.getElementById('dash-name').textContent = staff.name;
-        document.getElementById('dash-role').textContent = staff.position || 'Family Coordinator';
-        sessionStorage.setItem('og_staff_code', code);
-        renderDashboard();
-        errEl.textContent = '';
-      } else {
-        inputEl.classList.add('err');
-        errEl.textContent = 'Invalid or inactive code. Contact the Director.';
-        setTimeout(() => inputEl.classList.remove('err'), 400);
-        inputEl.value = '';
-      }
-    })
-    .catch(() => {
-      // Offline fallback — check sessionStorage cache
-      const cached = sessionStorage.getItem('og_staff_cache');
-      if (cached) {
-        try {
-          const data = JSON.parse(cached);
-          const staff = (data.staff || []).find(s => s.code === code && s.active);
-          if (staff) {
-            currentStaff = staff;
-            await loadProgress();
-            document.getElementById('lock').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-            document.getElementById('topbar-name').textContent = staff.name;
-            document.getElementById('dash-name').textContent = staff.name;
-            renderDashboard();
-          }
-        } catch(e) {}
-      }
-      errEl.textContent = 'Connection error. Check your internet and try again.';
-    });
+  const btn = document.querySelector('.lock-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Checking...'; }
+  try {
+    const r = await fetch(STAFF_URL + '?t=' + Date.now());
+    const data = await r.json();
+    sessionStorage.setItem('og_staff_cache', JSON.stringify(data));
+    const staff = (data.staff || []).find(s => s.code === code && s.active);
+    if (staff) {
+      currentStaff = staff;
+      await loadProgress();
+      document.getElementById('lock').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('topbar-name').textContent = staff.name;
+      document.getElementById('dash-name').textContent = staff.name;
+      document.getElementById('dash-role').textContent = staff.position || 'Family Coordinator';
+      sessionStorage.setItem('og_staff_code', code);
+      renderDashboard();
+      errEl.textContent = '';
+    } else {
+      inputEl.classList.add('err');
+      errEl.textContent = 'Invalid or inactive code. Contact the Director.';
+      setTimeout(() => inputEl.classList.remove('err'), 400);
+      inputEl.value = '';
+      if (btn) { btn.disabled = false; btn.textContent = 'Access Academy'; }
+    }
+  } catch(e) {
+    const cached = sessionStorage.getItem('og_staff_cache');
+    if (cached) {
+      try {
+        const data = JSON.parse(cached);
+        const staff = (data.staff || []).find(s => s.code === code && s.active);
+        if (staff) {
+          currentStaff = staff;
+          await loadProgress();
+          document.getElementById('lock').style.display = 'none';
+          document.getElementById('app').style.display = 'block';
+          document.getElementById('topbar-name').textContent = staff.name;
+          document.getElementById('dash-name').textContent = staff.name;
+          renderDashboard();
+          if (btn) { btn.disabled = false; btn.textContent = 'Access Academy'; }
+          return;
+        }
+      } catch(ex) {}
+    }
+    errEl.textContent = 'Connection error. Check your internet and try again.';
+    if (btn) { btn.disabled = false; btn.textContent = 'Access Academy'; }
+  }
 }
 
 function lockApp() {
