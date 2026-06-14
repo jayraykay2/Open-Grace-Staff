@@ -157,6 +157,14 @@
     
     <!-- TAB: DASHBOARD -->
     <div class="tab-panel active" id="tab-dashboard">
+
+      <div id="billing-banner" style="display:none;border-radius:var(--r);padding:.875rem 1rem;margin-bottom:.875rem;align-items:flex-start;gap:.75rem">
+        <span style="font-size:22px;flex-shrink:0" id="billing-icon">📅</span>
+        <div><div style="font-size:13px;font-weight:700;margin-bottom:3px" id="billing-title">IRC billing cut-off</div><div style="font-size:12px;color:var(--t2)" id="billing-desc"></div></div>
+      </div>
+
+      <div id="qpr-alerts"></div>
+
       <div class="section-head">My dashboard</div>
       <div class="stat-grid">
           <div class="stat-card">
@@ -175,15 +183,17 @@
                 <div class="stat-sub">this month</div>
           </div>
       </div>
-    
-      <div id="qpr-alerts"></div>
-    
+
+      <div id="client-cards"></div>
+
       <div class="card">
           <div class="card-title">Quick actions</div>
           <div style="display:flex;flex-direction:column;gap:.5rem">
-                <button class="qa-btn primary" style="justify-content:center" onclick="switchTab('log')">Submit today's contact log</button>
-                <button class="qa-btn success" style="justify-content:center" onclick="switchTab('hours')">View my timesheet</button>
-                <a class="qa-btn" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank">File an incident report</a>
+                <button class="qa-btn primary" style="justify-content:center;font-size:14px;padding:1rem;font-weight:600" onclick="switchTab('log')">📝  Submit today's contact log</button>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+                  <button class="qa-btn success" style="justify-content:center" onclick="switchTab('hours')">⏱  Timesheet</button>
+                  <a class="qa-btn danger" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank" style="justify-content:center">🚨  Incident</a>
+                </div>
           </div>
       </div>
     
@@ -753,66 +763,58 @@
 
     // DASHBOARD
     function renderDashboard(){
-        const logs=load(K.logs,[]);
-        const now=new Date();
-        const monthKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-        const monthLogs=logs.filter(l=>l.date&&l.date.startsWith(monthKey));
-        const totalHours=monthLogs.reduce((s,l)=>s+(l.hours||0),0);
-
-        const dc=document.getElementById('dash-clients');
-        const dl=document.getElementById('dash-logs');
-        const dh=document.getElementById('dash-hours');
-        if(dc)dc.textContent=gClients.length||'-';
-        if(dl)dl.textContent=monthLogs.length;
-        if(dh)dh.textContent=totalHours%1===0?totalHours:totalHours.toFixed(1);
-
-        // QPR alerts
-        const alertsEl=document.getElementById('qpr-alerts');
-        if(alertsEl){
-              const alerts=gClients.filter(c=>{
-                      if(!c.qprDue)return false;
-                      const days=Math.ceil((new Date(c.qprDue)-now)/86400000);
-                      return days<=30;
-              });
-              alertsEl.innerHTML=alerts.map(c=>{
-                      const days=Math.ceil((new Date(c.qprDue)-now)/86400000);
-                      const urgent=days<0;
-                      return `<div style="background:${urgent?'var(--red-bg)':'var(--amber-bg)'};border:1px solid ${urgent?'var(--red-b)':'var(--amber-b)'};border-radius:var(--r);padding:.75rem 1rem;margin-bottom:.625rem;display:flex;gap:.75rem;align-items:center">
-                              <span style="font-size:18px">${urgent?'🚨':'⚠️'}</span>
-                                      <div>
-                                                <div style="font-size:13px;font-weight:600;color:${urgent?'var(--red)':'var(--amber)'}">${c.name} - QPR ${urgent?'OVERDUE':'due in '+days+' day'+(days!==1?'s':'')}</div>
-                                                          <div style="font-size:11px;color:var(--t2)">Due ${c.qprDue} - UCI ${c.uci}</div>
-                                                                  </div>
-                                                                        </div>`;
-              }).join('');
+        const logs = load(K.logs, []);
+        const now  = new Date();
+        const monthKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+        const monthLogs = logs.filter(l => l.date && l.date.startsWith(monthKey));
+        const totalHours = monthLogs.reduce((s,l) => s+(l.hours||0), 0);
+        const dc=document.getElementById('dash-clients'), dl=document.getElementById('dash-logs'), dh=document.getElementById('dash-hours');
+        if(dc) dc.textContent = gClients.length || '0';
+        if(dl) dl.textContent = monthLogs.length;
+        if(dh) dh.textContent = totalHours%1===0 ? totalHours : totalHours.toFixed(1);
+        // BILLING BANNER
+        const today = now.toISOString().split('T')[0];
+        const upcoming = BILLING_SCHEDULE.find(b => b.cutoff >= today);
+        const bannerEl = document.getElementById('billing-banner');
+        if(upcoming && bannerEl){
+            const daysLeft = Math.ceil((new Date(upcoming.cutoff+'T16:30:00')-now)/86400000);
+            const urg = daysLeft <= 3;
+            bannerEl.style.display='flex'; bannerEl.style.background=urg?'var(--red-bg)':'var(--amber-bg)'; bannerEl.style.border='1px solid '+(urg?'var(--red-b)':'var(--amber-b)');
+            const ic=document.getElementById('billing-icon'), ti=document.getElementById('billing-title'), di=document.getElementById('billing-desc');
+            if(ic) ic.textContent=urg?'🚨':'📅';
+            if(ti){ti.textContent=upcoming.serviceMonth+' billing cut-off'; ti.style.color=urg?'var(--red)':'var(--amber)';}
+            if(di) di.textContent='Due '+upcoming.cutoff+' at 4:30 PM · '+(daysLeft>0?daysLeft+'d remaining':'DUE TODAY')+' · Pay date: '+upcoming.payDate;
         }
-
-        // Recent logs
-        const recentEl=document.getElementById('recent-logs');
-        if(recentEl){
-              const recent=logs.slice(0,3);
-              recentEl.innerHTML=recent.length?recent.map(l=>`
-                    <div class="log-item">
-                            <div class="log-item-head"><span class="log-item-name">${l.clientName}</span><span class="log-item-date">${l.date}</span></div>
-                                    <div class="log-item-meta">${l.hours}h - ${l.notes.slice(0,80)}${l.notes.length>80?'...':''}</div>
-                                            <div class="log-item-domains">${(l.domains||[]).map(d=>'<span class="badge badge-blue">#'+d+'</span>').join('')}</div>
-                                                  </div>
-                                                      `).join(''):'<div style="text-align:center;padding:1rem;color:var(--t3);font-size:13px">No logs yet this month</div>';
-        }
-
-        // Billing cutoff
-        const now2=new Date();
-        const today=now2.toISOString().split('T')[0];
-        const upcoming=BILLING_SCHEDULE.find(b=>b.cutoff>=today);
-        if(upcoming){
-              const days=Math.ceil((new Date(upcoming.cutoff+'T16:30:00')-now2)/86400000);
-              const ct=document.getElementById('cutoff-title');
-              const cd=document.getElementById('cutoff-desc');
-              if(ct)ct.textContent=upcoming.serviceMonth+' billing cut-off';
-              if(cd)cd.textContent=`Due ${upcoming.cutoff} at 4:30 PM - ${days>0?days+' day'+(days!==1?'s':'')+' away':'TODAY'} - Pay date: ${upcoming.payDate}`;
-        }
+        // CLIENT CARDS
+        const ccEl=document.getElementById('client-cards');
+        if(ccEl){ ccEl.innerHTML=gClients.length?gClients.map(c=>{
+            const qd=c.qprDue?Math.ceil((new Date(c.qprDue)-now)/86400000):null, qUrg=qd!==null&&qd<=30;
+            const chrs=monthLogs.filter(l=>l.clientUCI===c.uci).reduce((s,l)=>s+(l.hours||0),0);
+            const allLogs=logs.filter(l=>l.clientUCI===c.uci), pct=c.authorizedHours?Math.min(Math.round(chrs/c.authorizedHours*100),100):0;
+            const qColor=qd===null?'var(--t3)':(qd<0?'var(--red)':qUrg?'var(--amber)':'var(--green)');
+            const qBg=qd===null?'transparent':(qd<0?'var(--red-bg)':qUrg?'var(--amber-bg)':'var(--green-bg)');
+            const qBd=qd===null?'transparent':(qd<0?'var(--red-b)':qUrg?'var(--amber-b)':'var(--green-b)');
+            return '<div style="background:var(--s1);border:1px solid '+(qUrg?'var(--amber-b)':'var(--b2)')+';border-radius:var(--r);padding:1rem;margin-bottom:.75rem">'
+              +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem">'
+              +'<div><div style="font-size:16px;font-weight:600">'+c.name+'</div><div style="font-size:11px;color:var(--t3);margin-top:3px">UCI '+c.uci+(c.coordinator?' · '+c.coordinator:'')+'</div></div>'
+              +(qd!==null?'<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:'+qBg+';color:'+qColor+';border:1px solid '+qBd+'">QPR '+(qd<0?'OVERDUE':qd===0?'TODAY':'in '+qd+'d')+'</span>':'')
+              +'</div>'
+              +'<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-bottom:.5rem"><span>This month: <strong style="color:var(--t1)">'+(chrs%1===0?chrs:chrs.toFixed(1))+'h</strong> / '+(c.authorizedHours||'?')+'h auth</span><span style="color:var(--t3)">'+allLogs.length+' logs</span></div>'
+              +'<div style="height:5px;background:var(--b1);border-radius:3px;overflow:hidden;margin-bottom:'+(c.qprDue?'.5rem':'0')+'">'
+              +'<div style="height:5px;background:'+(pct>=90?'var(--red)':pct>=75?'var(--amber)':'var(--green)')+';width:'+pct+'%;border-radius:3px;transition:width .4s"></div></div>'
+              +(c.qprDue?'<div style="font-size:11px;color:var(--t3)">QPR due: '+c.qprDue+'</div>':'')
+              +'</div>';
+        }).join(''):''; }
+        // QPR ALERTS
+        const al=document.getElementById('qpr-alerts');
+        if(al){ al.innerHTML=gClients.filter(c=>c.qprDue&&Math.ceil((new Date(c.qprDue)-now)/86400000)<=14).map(c=>{
+            const qd=Math.ceil((new Date(c.qprDue)-now)/86400000), ov=qd<0;
+            return '<div style="background:'+(ov?'var(--red-bg)':'var(--amber-bg)')+';border:1px solid '+(ov?'var(--red-b)':'var(--amber-b)')+';border-radius:var(--r);padding:.75rem 1rem;margin-bottom:.5rem;display:flex;gap:.75rem;align-items:center"><span>'+(ov?'🚨':'⚠️')+'</span><div><div style="font-size:13px;font-weight:600;color:'+(ov?'var(--red)':'var(--amber)')+'">'+c.name+' — QPR '+(ov?'OVERDUE':'in '+qd+'d')+'</div><div style="font-size:11px;color:var(--t2)">Due '+c.qprDue+' · UCI '+c.uci+'</div></div></div>';
+        }).join('');}
+        // RECENT LOGS
+        const rl=document.getElementById('recent-logs');
+        if(rl){ const rec=logs.slice(0,3); rl.innerHTML=rec.length?rec.map(l=>'<div class="log-item"><div class="log-item-head"><span class="log-item-name">'+l.clientName+'</span><span class="log-item-date">'+l.date+(l._local?' (pending)':'')+'</span></div><div class="log-item-meta">'+l.hours+'h · '+(l.serviceType||'visit')+(l.notes?' · '+l.notes.slice(0,70)+(l.notes.length>70?'...':''):'')+'</div><div class="log-item-domains">'+(l.domains||[]).map(d=>'<span class="badge badge-blue">#'+d+'</span>').join('')+'</div></div>').join(''):'<div style="text-align:center;padding:1.5rem;color:var(--t3);font-size:13px">No logs submitted yet</div>';}
     }
-
     // TIMESHEET
     function buildMonthSelector(){
         const sel=document.getElementById('ts-month');
