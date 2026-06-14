@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -652,6 +653,7 @@ body {
     <div style="display:flex;gap:.5rem">
       <button class="qa-btn" style="font-size:11px;padding:.25rem .75rem;min-height:0" onclick="loadAllLogs()">↻ Refresh</button>
       <button class="qa-btn success" style="font-size:11px;padding:.25rem .75rem;min-height:0" onclick="exportLogsCsv()">Export CSV</button>
+      <button class="qa-btn primary" style="font-size:11px;padding:.25rem .75rem;min-height:0" onclick="exportToOneDrive()">📁 Save to OneDrive</button>
     </div>
   </div>
   <div class="card" style="padding:.75rem">
@@ -1429,8 +1431,11 @@ function renderClientRoster() {
           ? `<span class="qpr-badge qpr-soon">QPR in ${days}d</span>`
           : `<span class="qpr-badge qpr-ok">QPR ${c.qprDue}</span>`;
     }
-    return `<div class="client-card">
-      <div class="client-name">${c.name}</div>
+    return `<div class="client-card" onclick="openClientDetail('${encodeURIComponent(JSON.stringify(c))}')" style="cursor:pointer" title="Click to view ${c.name}'s full file">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.375rem">
+        <div class="client-name" style="margin-bottom:0">${c.name}</div>
+        <span style="font-size:10px;color:var(--t3)">View file ›</span>
+      </div>
       <div class="client-meta">UCI ${c.uci} · Started ${c.serviceStart||'—'} · ${c.coordinator||'Unassigned'}</div>
       <div class="prog-wrap">
         <div class="prog-bg"><div class="prog-fill" style="width:${Math.min(pct,100)}%;background:${barC}"></div></div>
@@ -2015,6 +2020,159 @@ function exportLogsCsv() {
   a.click();
   URL.revokeObjectURL(a.href);
 }
+
+
+
+<!-- CLIENT DETAIL MODAL -->
+<div class="overlay" id="client-detail-overlay" style="display:none;z-index:300" onclick="if(event.target===this)closeClientDetail()">
+  <div class="overlay-sheet" style="max-height:90vh;overflow-y:auto">
+    <div class="sheet-handle"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="font-size:18px;font-weight:700" id="cd-name">Client File</h2>
+      <button onclick="closeClientDetail()" style="background:none;border:none;color:var(--t2);font-size:20px;cursor:pointer;padding:.25rem">✕</button>
+    </div>
+    <div id="client-detail-content"></div>
+  </div>
+</div>
+
+
+// ── Client Detail View ────────────────────────────────────────────────────────
+function openClientDetail(clientJson) {
+  try {
+    const c = JSON.parse(decodeURIComponent(clientJson));
+    document.getElementById('cd-name').textContent = c.name + ' — Client File';
+    const overlay = document.getElementById('client-detail-overlay');
+    const content = document.getElementById('client-detail-content');
+    
+    // Get this client's logs
+    const logs = (window._allLogs || []).filter(l => l.clientUCI === c.uci || l.clientName === c.name);
+    const totalHours = logs.reduce((s, l) => s + (parseFloat(l.hours)||0), 0);
+    const now = new Date();
+    const qprDays = c.qprDue ? Math.ceil((new Date(c.qprDue) - now) / 86400000) : null;
+    
+    content.innerHTML = `
+      <div class="stat-grid" style="margin-bottom:1rem">
+        <div class="stat-card"><div class="stat-label">UCI</div><div style="font-size:14px;font-weight:600;font-family:monospace">${c.uci||'—'}</div></div>
+        <div class="stat-card"><div class="stat-label">Hours</div><div class="stat-val" style="font-size:20px;color:var(--green)">${totalHours||0}</div><div class="stat-sub">of ${c.authorizedHours||'?'}h auth</div></div>
+        <div class="stat-card"><div class="stat-label">Total logs</div><div class="stat-val" style="font-size:20px">${logs.length}</div><div class="stat-sub">contact logs</div></div>
+      </div>
+
+      <div class="card" style="margin-bottom:.875rem">
+        <div class="card-title">Client information</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:13px">
+          <div><span style="color:var(--t2)">Name: </span><strong>${c.name}</strong></div>
+          <div><span style="color:var(--t2)">UCI: </span><strong>${c.uci||'—'}</strong></div>
+          <div><span style="color:var(--t2)">Service start: </span>${c.serviceStart||'—'}</div>
+          <div><span style="color:var(--t2)">Auth hours: </span>${c.authorizedHours||'?'}h</div>
+          <div><span style="color:var(--t2)">Coordinator: </span>${c.coordinator||'—'}</div>
+          <div><span style="color:var(--t2)">Coord email: </span>${c.coordinatorEmail||'—'}</div>
+          <div><span style="color:var(--t2)">Status: </span>${c.status||'Active'}</div>
+          <div><span style="color:var(--t2)">QPR due: </span><strong style="color:${qprDays!==null&&qprDays<0?'var(--red)':qprDays!==null&&qprDays<=30?'var(--amber)':'var(--green)'}">${c.qprDue||'—'}${qprDays!==null?' ('+Math.abs(qprDays)+'d '+(qprDays<0?'overdue':'away')+')',''}</strong></div>
+        </div>
+      </div>
+
+      <div class="section-head" style="display:flex;justify-content:space-between">
+        <span>Contact log history (${logs.length} entries)</span>
+        ${logs.length ? '<button onclick="exportClientLogsCsv(\''+encodeURIComponent(c.name)+'\',\''+c.uci+'\')" style="background:none;border:none;color:var(--blue);font-size:12px;cursor:pointer">Export CSV</button>' : ''}
+      </div>
+      ${logs.length === 0 ? '<div style="text-align:center;padding:1.5rem;color:var(--t2);font-size:13px">No contact logs yet for this client.<br><span style="font-size:11px;color:var(--t3)">Logs submitted by staff will appear here.</span></div>' :
+        logs.map(l => `<div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);padding:.875rem;margin-bottom:.5rem">
+          <div style="display:flex;justify-content:space-between;margin-bottom:.375rem">
+            <div>
+              <span style="font-size:13px;font-weight:600">${l._staffName||'Unknown'}</span>
+              <span style="font-size:11px;color:var(--t3);margin-left:.5rem">${l.date} · ${l.serviceType||'visit'} · ${l.hours}h</span>
+            </div>
+            <span style="font-size:10px;color:var(--t3)">${(l.id||'').slice(-10)}</span>
+          </div>
+          ${(l.domains||[]).map(d => '<span style="background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-b);border-radius:10px;padding:1px 6px;font-size:10px;font-weight:600;margin-right:3px">#'+d+'</span>').join('')}
+          <div style="font-size:13px;color:var(--t1);margin-top:.5rem;line-height:1.6;white-space:pre-wrap">${l.notes||'No notes'}</div>
+          ${l.followUp ? '<div style="font-size:11px;color:var(--t2);margin-top:.375rem">Follow-up: '+l.followUp+'</div>' : ''}
+          ${l.nextVisit ? '<div style="font-size:11px;color:var(--t2)">Next visit: '+l.nextVisit+'</div>' : ''}
+        </div>`).join('')
+      }
+    `;
+    overlay.style.display = 'flex';
+    
+    // Auto-load logs if not already loaded
+    if (!window._logsLoaded) loadAllLogs().then(() => openClientDetail(clientJson));
+  } catch(e) { console.error('Client detail error:', e); }
+}
+
+function closeClientDetail() {
+  document.getElementById('client-detail-overlay').style.display = 'none';
+}
+
+function exportClientLogsCsv(clientName, clientUCI) {
+  const name = decodeURIComponent(clientName);
+  const logs = (window._allLogs || []).filter(l => l.clientUCI === clientUCI || l.clientName === name);
+  if (!logs.length) return;
+  const rows = ['Date,Staff,Hours,Service,Domains,Notes,Follow-Up,Next Visit,Signature'];
+  logs.forEach(l => rows.push([l.date,l._staffName,l.hours,l.serviceType,(l.domains||[]).join('+'),'"'+(l.notes||'').replace(/"/g,"''") + '"',l.followUp||'',l.nextVisit||'',l.signature||''].join(',')));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([rows.join('\n')], {type:'text/csv'}));
+  a.download = 'OG_Client_'+name.replace(/[^a-z0-9]/gi,'_')+'_'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ── OneDrive Export ───────────────────────────────────────────────────────────
+function exportToOneDrive() {
+  const sf = document.getElementById('log-filter-staff')?.value || '';
+  const cf = document.getElementById('log-filter-client')?.value || '';
+  const ff = document.getElementById('log-filter-from')?.value || '';
+  const tf = document.getElementById('log-filter-to')?.value || '';
+  const filtered = (window._allLogs || []).filter(l =>
+    (!sf||l._staffName===sf)&&(!cf||l.clientName===cf)&&(!ff||l.date>=ff)&&(!tf||l.date<=tf)
+  );
+  if (!filtered.length) { showToast && showToast('No logs to export'); return; }
+
+  const today = new Date().toISOString().split('T')[0];
+  const totalHrs = filtered.reduce((s,l) => s+(parseFloat(l.hours)||0), 0);
+  const clients = [...new Set(filtered.map(l => l.clientName))];
+  
+  const rows = [
+    'OPEN GRACE LLC — DAILY CONTACT LOG EXPORT',
+    'IRC Vendor: PJ6208 | Coordinated Family Support Services',
+    'Generated: ' + new Date().toLocaleString() + ' | Riverside & San Bernardino Counties',
+    '',
+    'Date,Client Name,Client UCI,Staff Name,Hours,Service Type,Location,CFS Domains,IPP Goals,Progress Notes,Family Participation,Follow-Up Actions,Next Visit,Signature,Log ID',
+  ];
+  
+  filtered.sort((a,b)=>a.date.localeCompare(b.date)).forEach(l => rows.push([
+    l.date, l.clientName, l.clientUCI, l._staffName, l.hours, l.serviceType||'',
+    l.location||'', '"'+(l.domains||[]).map(d=>'#'+d).join('; ')+'"',
+    '"'+(l.ippGoals||'').replace(/"/g,"''")+'"',
+    '"'+(l.notes||'').replace(/"/g,"''")+'"',
+    l.participation||'', '"'+(l.followUp||'').replace(/"/g,"''")+'"',
+    l.nextVisit||'', l.signature||'', l.id||''
+  ].join(',')));
+  
+  rows.push('');
+  rows.push('SUMMARY');
+  rows.push('Total Logs:,' + filtered.length);
+  rows.push('Total Hours:,' + totalHrs.toFixed(1) + 'h');
+  rows.push('Clients Covered:,' + clients.join('; '));
+  rows.push('Period:,' + (ff||filtered[0]?.date||today) + ' to ' + (tf||filtered[filtered.length-1]?.date||today));
+  rows.push('');
+  rows.push('This document was automatically generated by the Open Grace LLC Director Dashboard.');
+  rows.push('Contact: joshua.kennedy@opengrace.org | (951) 880-4132');
+
+  // Step 1: Download the CSV file
+  const filename = 'OG_ContactLogs_' + (ff||today).slice(0,7).replace('-','') + '_' + today + '.csv';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+rows.join('\n')], {type:'text/csv;charset=utf-8'}));
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+
+  // Step 2: Open the OneDrive folder in a new tab
+  setTimeout(() => {
+    const oneDriveUrl = 'https://netorg20110136-my.sharepoint.com/:f:/g/personal/joshua_kennedy_opengrace_org/EiWoTfjJXP9IiRQx-o3cA2sBLaOLm7sH7GdJiYo-M1Xt9g';
+    window.open(oneDriveUrl, '_blank');
+    showToast && showToast('CSV downloaded! OneDrive opened — drag the file in.');
+  }, 500);
+}
+
 
 </script>
 </body>
