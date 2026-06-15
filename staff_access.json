@@ -1,5 +1,5 @@
 {
-  "_readme": "Open Grace LLC — Staff Access Control & Coordinator Data. Director manages via Director Dashboard.",
+  "_readme": "Public config only. No PHI. Client rosters and contact logs live in a private backend. Do not store PHI or live access codes here.",
   "_hipaa_notice": "This file controls access to PHI. Handle with care. Do not share publicly.",
   "_version": "2.0",
   "last_updated": "2026-06-14",
@@ -11,10 +11,6 @@
       "active": true,
       "hired": "2026-01-01",
       "terminated": null,
-      "phone": "951-880-4132",
-      "email": "joshua.kennedy@opengrace.org",
-      "notes": "Director — full system access",
-      "clients": [],
       "onboarding": {
         "liveScan": true,
         "cprFirstAid": true,
@@ -28,6 +24,10 @@
         "completed": true,
         "completedDate": "2026-01-01"
       },
+      "phone": "",
+      "email": "",
+      "notes": "",
+      "clients": [],
       "handoff": {
         "inProgress": false,
         "toStaffCode": null,
@@ -45,23 +45,6 @@
       "active": true,
       "hired": "2026-06-05",
       "terminated": null,
-      "phone": "",
-      "email": "",
-      "notes": "First hire — replace with actual name when onboarded",
-      "clients": [
-        {
-          "name": "Burks, Jaybrion",
-          "uci": "6953825",
-          "authorizedHours": 30,
-          "usedHours": 0,
-          "alertThreshold": 80,
-          "serviceStart": "2026-04-22",
-          "qprDue": "2026-07-21",
-          "coordinator": "Christina Castaneda",
-          "coordinatorEmail": "ccastaneda@inlandrc.org",
-          "status": "active"
-        }
-      ],
       "onboarding": {
         "liveScan": false,
         "cprFirstAid": false,
@@ -75,6 +58,10 @@
         "completed": false,
         "completedDate": null
       },
+      "phone": "",
+      "email": "",
+      "notes": "",
+      "clients": [],
       "handoff": {
         "inProgress": false,
         "toStaffCode": null,
@@ -83,73 +70,7 @@
         "reason": null,
         "notes": null,
         "completedDate": null
-      },
-      "contactLogs": [
-        {
-          "staffName": "Staff Member Name",
-          "staffCode": "OG-2026-001",
-          "clientUCI": "6953825",
-          "clientName": "Burks, Jaybrion",
-          "date": "2026-06-14",
-          "startTime": "10:00",
-          "endTime": "11:00",
-          "hours": 1,
-          "serviceType": "in-person",
-          "location": "Client home - Riverside CA",
-          "domains": [
-            1,
-            2,
-            9
-          ],
-          "ippGoals": "Goal 1: Increase independence in daily living. Goal 3: Community integration.",
-          "notes": "TEST LOG - System verification June 14 2026. Staff arrived at client home. Worked on daily living skills and reviewed upcoming medical appointments. Family engaged and receptive. Demonstrated proper use of communication device. Client showed improvement in self-advocacy. Safe to delete - this is a test entry.",
-          "participation": "engaged",
-          "followUp": "Schedule next visit June 21. Confirm medical appointment with IRC coordinator.",
-          "nextVisit": "2026-06-21",
-          "ackMandated": true,
-          "ackIncident": true,
-          "ackHipaa": true,
-          "signature": "Staff Member Name",
-          "submitted": "2026-06-14T04:16:26.839Z",
-          "id": "log-1781410587012-chqlh",
-          "serverTimestamp": "2026-06-14T04:16:27.012Z",
-          "version": 1
-        },
-        {
-          "staffName": "Staff Member Name",
-          "staffCode": "OG-2026-001",
-          "clientUCI": "6953825",
-          "clientName": "Burks, Jaybrion",
-          "date": "2026-06-13",
-          "hours": 1,
-          "notes": "LIVE END-TO-END TEST - log-submit working",
-          "domains": [
-            1,
-            2
-          ],
-          "submitted": "2026-06-14T01:23:53.031Z",
-          "id": "log-1781400233063-drr4i",
-          "serverTimestamp": "2026-06-14T01:23:53.063Z",
-          "version": 1
-        },
-        {
-          "id": "log-1781399424723",
-          "clientUCI": "6953825",
-          "clientName": "Burks, Jaybrion",
-          "date": "2026-06-13",
-          "startTime": "10:00",
-          "endTime": "11:00",
-          "hours": 1,
-          "serviceType": "in-person",
-          "domains": [
-            1,
-            2
-          ],
-          "notes": "CONNECTION TEST - verified storage pipeline works. Safe to delete.",
-          "familyResponse": "engaged",
-          "submitted": "2026-06-14T01:10:24.723Z"
-        }
-      ]
+      }
     }
   ]
 }
