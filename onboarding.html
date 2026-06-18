@@ -5,48 +5,106 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Open Grace — Staff Onboarding</title>
 <style>
-:root{--navy:#2D2B7F;--orange:#F47C20;--gold:#F5A623;--green:#1D9E75;}
+:root{
+  --navy:#2D2B7F;--orange:#F47C20;--gold:#F5A623;--green:#1D9E75;--red:#D84040;
+  --bg:#0F0D2E;--card:#1A1760;
+  /* WCAG-AA text tiers on the dark backgrounds */
+  --t1:#FFFFFF;          /* primary  ~ 16:1 */
+  --t2:#CFCEDE;          /* body     ~ 9:1  */
+  --t3:#ABA9C2;          /* caption  ~ 6:1  */
+}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
-  background:#0F0D2E;color:#fff;min-height:100vh;font-size:16px;}
+  background:var(--bg);color:var(--t1);min-height:100vh;font-size:16px;line-height:1.5;}
+
+/* Visible keyboard focus everywhere */
+a:focus-visible,button:focus-visible,input:focus-visible{
+  outline:3px solid var(--orange);outline-offset:2px;border-radius:6px;}
+
+/* Skip link */
+.skip{position:absolute;left:-999px;top:0;background:var(--orange);color:#1a1100;
+  font-weight:700;padding:10px 16px;border-radius:0 0 8px 0;z-index:300;}
+.skip:focus{left:0;}
+
 .backbar{background:var(--navy);padding:14px 20px;display:flex;align-items:center;
   position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3);}
-.backbar a{color:rgba(255,255,255,.85);text-decoration:none;font-size:15px;font-weight:600;}
-.backbar a:hover{color:#fff;}
-.wrap{max-width:540px;margin:0 auto;padding:20px 16px 60px;}
+.backbar a{color:#fff;text-decoration:none;font-size:15px;font-weight:600;}
+.backbar a:hover{text-decoration:underline;}
+
+.wrap{max-width:560px;margin:0 auto;padding:20px 16px 64px;}
+
+h1.page-title{font-size:22px;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;}
+.page-sub{font-size:14px;color:var(--t2);margin-bottom:20px;}
+
+/* Progress */
+.progress{background:var(--card);border:1px solid rgba(255,255,255,.14);border-radius:13px;
+  padding:16px 18px;margin-bottom:20px;}
+.progress-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+.progress-label{font-size:14px;font-weight:700;}
+.progress-count{font-size:13px;color:var(--t2);font-weight:600;}
+.progress-track{height:10px;background:rgba(255,255,255,.12);border-radius:6px;overflow:hidden;}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--gold));
+  border-radius:6px;transition:width .35s ease;}
+@media (prefers-reduced-motion:reduce){.progress-fill{transition:none;}}
+
+/* Stuck / help callout */
+.help-box{background:rgba(244,124,32,.10);border:1px solid rgba(244,124,32,.4);
+  border-radius:12px;padding:14px 16px;margin-bottom:22px;}
+.help-title{font-size:14px;font-weight:700;color:var(--orange);margin-bottom:6px;}
+.help-body{font-size:14px;color:var(--t2);line-height:1.6;}
+.help-body a{color:var(--orange);font-weight:700;text-decoration:underline;}
+
+/* Academy banner */
 .academy-banner{background:linear-gradient(135deg,#2D2B7F,#1a1860);border-radius:14px;
-  padding:20px 22px;margin-bottom:20px;display:flex;align-items:center;gap:16px;}
-.academy-icon{font-size:36px;flex-shrink:0;}
-.academy-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;}
-.academy-body{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:12px;}
-.academy-btn{display:inline-block;background:var(--orange);color:#fff;font-size:13px;
-  font-weight:700;padding:10px 20px;border-radius:8px;text-decoration:none;}
-.sec{font-size:10px;font-weight:800;color:var(--orange);letter-spacing:2.5px;
-  text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:8px;}
-.sec::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.1);}
-.step-card{background:#1A1760;border:1px solid rgba(255,255,255,.1);border-radius:13px;
-  padding:16px 18px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;}
-.step-num{width:32px;height:32px;border-radius:50%;background:var(--navy);
-  display:flex;align-items:center;justify-content:center;font-size:14px;
-  font-weight:800;flex-shrink:0;margin-top:2px;}
+  padding:20px 22px;margin-bottom:24px;display:flex;align-items:flex-start;gap:16px;}
+.academy-icon{font-size:34px;flex-shrink:0;line-height:1;}
+.academy-title{font-size:16px;font-weight:800;margin-bottom:4px;}
+.academy-body{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:12px;}
+.academy-btn{display:inline-block;background:var(--orange);color:#1a1100;font-size:14px;
+  font-weight:800;padding:11px 20px;border-radius:8px;text-decoration:none;min-height:44px;
+  line-height:22px;}
+.academy-btn:hover{filter:brightness(1.06);}
+
+/* Phase heading */
+h2.phase{font-size:13px;font-weight:800;color:var(--orange);letter-spacing:1.5px;
+  text-transform:uppercase;margin:26px 0 12px;display:flex;align-items:center;gap:10px;}
+h2.phase::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.14);}
+
+/* Step card with real checkbox */
+.step{background:var(--card);border:1px solid rgba(255,255,255,.14);border-radius:13px;
+  padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;}
+.step.done{border-color:rgba(29,158,117,.55);background:rgba(29,158,117,.08);}
+.step-check{flex-shrink:0;margin-top:2px;}
+.step-check input{width:26px;height:26px;cursor:pointer;accent-color:var(--green);}
+.step-main{flex:1;min-width:0;}
 .step-title{font-size:15px;font-weight:700;margin-bottom:4px;}
-.step-body{font-size:13px;color:rgba(255,255,255,.6);line-height:1.6;margin-bottom:8px;}
-.step-link{display:inline-block;background:rgba(244,124,32,.15);color:var(--orange);
-  font-size:13px;font-weight:700;padding:8px 16px;border-radius:8px;
-  text-decoration:none;border:1px solid rgba(244,124,32,.3);}
-.step-link:hover{background:rgba(244,124,32,.25);}
-.note-box{background:rgba(255,255,255,.05);border-left:4px solid var(--orange);
-  border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:20px;
-  font-size:13px;color:rgba(255,255,255,.7);line-height:1.7;}
-.contact-card{background:#1A1760;border:1px solid rgba(255,255,255,.1);border-radius:13px;
+.step.done .step-title{text-decoration:line-through;color:var(--t2);}
+.step-body{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:10px;}
+.step-tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;
+  text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-bottom:8px;}
+.tag-required{background:rgba(216,64,64,.18);color:#FF9B9B;border:1px solid rgba(216,64,64,.5);}
+.tag-director{background:rgba(245,166,35,.16);color:var(--gold);border:1px solid rgba(245,166,35,.45);}
+.step-link{display:inline-flex;align-items:center;min-height:44px;background:rgba(244,124,32,.16);
+  color:#FBB877;font-size:14px;font-weight:700;padding:0 16px;border-radius:8px;
+  text-decoration:none;border:1px solid rgba(244,124,32,.45);}
+.step-link:hover{background:rgba(244,124,32,.28);}
+
+/* Contact */
+.contact-card{background:var(--card);border:1px solid rgba(255,255,255,.14);border-radius:13px;
   padding:16px 18px;margin-bottom:10px;}
 .contact-name{font-size:15px;font-weight:700;margin-bottom:4px;}
-.contact-role{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:10px;}
-.contact-links{display:flex;gap:12px;flex-wrap:wrap;}
-.contact-links a{font-size:13px;font-weight:700;color:var(--orange);text-decoration:none;}
+.contact-role{font-size:13px;color:var(--t3);margin-bottom:12px;}
+.contact-links{display:flex;gap:10px;flex-wrap:wrap;}
+.contact-links a{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;
+  font-size:14px;font-weight:700;color:#FBB877;text-decoration:none;
+  background:rgba(244,124,32,.12);border:1px solid rgba(244,124,32,.4);border-radius:8px;}
+.contact-links a:hover{background:rgba(244,124,32,.22);}
+.note{font-size:13px;color:var(--t3);margin-top:18px;line-height:1.6;}
 </style>
 </head>
 <body>
+
+<a class="skip" href="#main">Skip to onboarding steps</a>
 
 <div class="backbar">
   <a href="staff-portal.html">&#8592; Back to Staff Portal</a>
@@ -54,120 +112,190 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
 
 <div class="wrap">
 
-  <!-- TRAINING ACADEMY BANNER -->
+  <h1 class="page-title">Welcome to Open Grace</h1>
+  <p class="page-sub">Your onboarding checklist. Work top to bottom — each phase builds on the one before it. Check off steps as you finish; your progress is saved on this device.</p>
+
+  <!-- PROGRESS -->
+  <div class="progress" role="group" aria-labelledby="prog-label">
+    <div class="progress-head">
+      <span class="progress-label" id="prog-label">Your progress</span>
+      <span class="progress-count" id="prog-count" aria-live="polite">0 of 10 steps complete</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+  </div>
+
+  <!-- HELP / STUCK -->
+  <div class="help-box">
+    <div class="help-title">Can't sign in or stuck on a step?</div>
+    <p class="help-body">If your access code says "invalid," your account may not be activated yet — that's normal on day one. Call the Director directly at <a href="tel:9518804132">951-880-4132</a> and you'll be unblocked. You don't need email set up to reach this checklist.</p>
+  </div>
+
+  <!-- ACADEMY -->
   <div class="academy-banner">
-    <div class="academy-icon">🎓</div>
+    <span class="academy-icon" aria-hidden="true">🎓</span>
     <div>
       <div class="academy-title">Open Grace Staff Training Academy</div>
-      <div class="academy-body">Complete your required training modules before your first day of client contact. Each module includes a knowledge check — score 80% or higher to earn your certificate.</div>
-      <a class="academy-btn" href="https://opengrace.org/training.html" target="_blank">Start Training Academy →</a>
+      <p class="academy-body">Finish your required training modules before your first day of client contact. Each module ends with a knowledge check — score 80% or higher to earn your certificate.</p>
+      <a class="academy-btn" href="https://opengrace.org/training.html" target="_blank" rel="noopener noreferrer">Start Training Academy →</a>
     </div>
   </div>
 
-  <div class="note-box">
-    Complete these steps in order before your first day of client contact. 
-    Contact the Director with any questions: <strong>951-880-4132</strong> or 
-    <strong>joshua.kennedy@opengrace.org</strong>
-  </div>
+  <main id="main">
 
-  <div class="sec">Step 1 — Before You Begin</div>
+  <!-- PHASE A -->
+  <h2 class="phase">Phase 1 · Get connected first</h2>
 
-  <div class="step-card">
-    <div class="step-num" style="background:#D84040;">1</div>
-    <div>
-      <div class="step-title">Complete the Onboarding Form</div>
-      <div class="step-body">Submit your employment documents, acknowledgements, and certifications through Jotform. Required before your first service contact.</div>
-      <a class="step-link" href="https://form.jotform.com/261451114945050" target="_blank">Open Onboarding Form →</a>
+  <div class="step" data-step="a1">
+    <div class="step-check"><input type="checkbox" id="a1" aria-describedby="a1d" aria-label="Mark complete: Microsoft Teams & 365 access"></div>
+    <div class="step-main">
+      <span class="step-tag tag-director">Director sends this</span>
+      <div class="step-title">Microsoft Teams &amp; 365 access</div>
+      <p class="step-body" id="a1d">The Director will email you an invitation to join Open Grace's Microsoft Teams and 365 workspace. Accept it and confirm you can sign in. If it hasn't arrived, call the Director.</p>
     </div>
   </div>
 
-  <div class="step-card">
-    <div class="step-num" style="background:#D84040;">2</div>
-    <div>
-      <div class="step-title">Live Scan Fingerprinting</div>
-      <div class="step-body">You must complete Live Scan fingerprinting before working with any consumer. Open Grace will reimburse this cost after 30 days of active employment with your original receipt.</div>
-      <a class="step-link" href="https://opengrace.org/Request_for_Live_Scan_-_Open_Grace.pdf" target="_blank">Download Live Scan Request Form →</a>
+  <div class="step" data-step="a2">
+    <div class="step-check"><input type="checkbox" id="a2" aria-describedby="a2d" aria-label="Mark complete: Sign in to your Staff Portal"></div>
+    <div class="step-main">
+      <span class="step-tag tag-director">Director sends this</span>
+      <div class="step-title">Sign in to your Staff Portal</div>
+      <p class="step-body" id="a2d">Open the Staff Portal and sign in with the access code the Director gives you (format OG-####-###). This is where you'll log daily contacts. If the code is rejected, it isn't active yet — call the Director.</p>
+      <a class="step-link" href="staff-portal.html">Open Staff Portal →</a>
     </div>
   </div>
 
-  <div class="step-card">
-    <div class="step-num" style="background:#D84040;">3</div>
-    <div>
-      <div class="step-title">CPR / First Aid Certification</div>
-      <div class="step-body">A current CPR/First Aid certification is required before client contact. Open Grace will reimburse this cost after 30 days of active employment with your original receipt.</div>
+  <!-- PHASE B -->
+  <h2 class="phase">Phase 2 · Clearances before any client contact</h2>
+
+  <div class="step" data-step="b1">
+    <div class="step-check"><input type="checkbox" id="b1" aria-describedby="b1d" aria-label="Mark complete: Live Scan fingerprinting"></div>
+    <div class="step-main">
+      <span class="step-tag tag-required">Required first</span>
+      <div class="step-title">Live Scan fingerprinting</div>
+      <p class="step-body" id="b1d">Complete Live Scan fingerprinting before working with any consumer. Open Grace reimburses the cost after 30 days of active employment — keep your original receipt.</p>
+      <a class="step-link" href="https://opengrace.org/Request_for_Live_Scan_-_Open_Grace.pdf" target="_blank" rel="noopener noreferrer">Download Live Scan form →</a>
     </div>
   </div>
 
-  <div class="sec">Step 2 — Review & Sign</div>
+  <div class="step" data-step="b2">
+    <div class="step-check"><input type="checkbox" id="b2" aria-describedby="b2d" aria-label="Mark complete: CPR / First Aid certification"></div>
+    <div class="step-main">
+      <span class="step-tag tag-required">Required first</span>
+      <div class="step-title">CPR / First Aid certification</div>
+      <p class="step-body" id="b2d">Hold a current CPR/First Aid certification before client contact. Reimbursed after 30 days of active employment with your original receipt.</p>
+    </div>
+  </div>
 
-  <div class="step-card">
-    <div class="step-num" style="background:#BA7517;">4</div>
-    <div>
+  <div class="step" data-step="b3">
+    <div class="step-check"><input type="checkbox" id="b3" aria-describedby="b3d" aria-label="Mark complete: Mandated Reporter training"></div>
+    <div class="step-main">
+      <span class="step-tag tag-required">Required first</span>
+      <div class="step-title">Mandated Reporter training</div>
+      <p class="step-body" id="b3d">As a Family Coordinator you are a mandated reporter under California law. Complete the state-approved training and save your certificate — you'll attach it to the onboarding form in Phase 3. (The Training Academy also includes this module if you haven't done it elsewhere.)</p>
+    </div>
+  </div>
+
+  <!-- PHASE C -->
+  <h2 class="phase">Phase 3 · Review, train, and sign</h2>
+
+  <div class="step" data-step="c1">
+    <div class="step-check"><input type="checkbox" id="c1" aria-describedby="c1d" aria-label="Mark complete: Read the Employee Handbook"></div>
+    <div class="step-main">
       <div class="step-title">Read the Employee Handbook</div>
-      <div class="step-body">Review the full Employee Handbook covering all Open Grace policies, procedures, and expectations. You will sign an acknowledgement in your onboarding form.</div>
-      <a class="step-link" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank">Read Handbook →</a>
+      <p class="step-body" id="c1d">Review the full Employee Handbook covering Open Grace policies, procedures, and expectations. You'll sign the acknowledgement inside the onboarding form below.</p>
+      <a class="step-link" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank" rel="noopener noreferrer">Read Handbook →</a>
     </div>
   </div>
 
-  <div class="step-card">
-    <div class="step-num" style="background:#BA7517;">5</div>
-    <div>
-      <div class="step-title">Complete Mandated Reporter Training</div>
-      <div class="step-body">As a Family Coordinator you are a mandated reporter under California law. Complete the state-approved training and submit your certificate in the onboarding form.</div>
+  <div class="step" data-step="c2">
+    <div class="step-check"><input type="checkbox" id="c2" aria-describedby="c2d" aria-label="Mark complete: Complete Day 1 Training Academy modules"></div>
+    <div class="step-main">
+      <div class="step-title">Complete Day 1 Training Academy modules</div>
+      <p class="step-body" id="c2d">Finish the Day 1 modules before your first client contact: Title 17 &amp; CFS, HIPAA, Mandated Reporter, and Open Grace Policies. Each has a quiz — score 80%+ to earn the certificate.</p>
+      <a class="step-link" href="https://opengrace.org/training.html" target="_blank" rel="noopener noreferrer">Open Training Academy →</a>
     </div>
   </div>
 
-  <div class="sec">Step 3 — Systems Access</div>
-
-  <div class="step-card">
-    <div class="step-num" style="background:var(--navy);">6</div>
-    <div>
-      <div class="step-title">Microsoft Teams & 365 Setup</div>
-      <div class="step-body">The Director will send you an invitation to join Open Grace's Microsoft Teams workspace. Accept the invitation and confirm access before your first week.</div>
+  <div class="step" data-step="c3">
+    <div class="step-check"><input type="checkbox" id="c3" aria-describedby="c3d" aria-label="Mark complete: Submit the Onboarding Form"></div>
+    <div class="step-main">
+      <span class="step-tag tag-required">Do this last in Phase 3</span>
+      <div class="step-title">Submit the Onboarding Form</div>
+      <p class="step-body" id="c3d">Submit your employment documents, acknowledgements, and certificates — Live Scan confirmation, CPR/First Aid, Mandated Reporter certificate, and your handbook acknowledgement. Complete the earlier steps first so you have everything ready to attach.</p>
+      <a class="step-link" href="https://form.jotform.com/261451114945050" target="_blank" rel="noopener noreferrer">Open Onboarding Form →</a>
     </div>
   </div>
 
-  <div class="step-card">
-    <div class="step-num" style="background:var(--navy);">7</div>
-    <div>
-      <div class="step-title">Daily Contact Log — Test Submission</div>
-      <div class="step-body">Submit a test entry to the daily contact log using your staff access code. The Director will confirm your submission went through successfully.</div>
-      <a class="step-link" href="https://opengrace.org/contact-log.html" target="_blank">Open Contact Log →</a>
+  <!-- PHASE D -->
+  <h2 class="phase">Phase 4 · Confirm your systems work</h2>
+
+  <div class="step" data-step="d1">
+    <div class="step-check"><input type="checkbox" id="d1" aria-describedby="d1d" aria-label="Mark complete: Send a test Daily Contact Log entry"></div>
+    <div class="step-main">
+      <div class="step-title">Send a test Daily Contact Log entry</div>
+      <p class="step-body" id="d1d">Submit one test entry to the Daily Contact Log using your staff access code. The Director will confirm it came through. This proves your logging works before you see a client.</p>
+      <a class="step-link" href="https://opengrace.org/contact-log.html" target="_blank" rel="noopener noreferrer">Open Contact Log →</a>
     </div>
   </div>
 
-  <div class="step-card">
-    <div class="step-num" style="background:var(--navy);">8</div>
-    <div>
-      <div class="step-title">Coordinator Portal Access</div>
-      <div class="step-body">Your personal coordinator portal shows your assigned clients, training progress, and onboarding checklist. Log in with your staff access code.</div>
-      <a class="step-link" href="https://opengrace.org/coordinator.html" target="_blank">Open Coordinator Portal →</a>
+  <div class="step" data-step="d2">
+    <div class="step-check"><input type="checkbox" id="d2" aria-describedby="d2d" aria-label="Mark complete: Open your Coordinator Portal"></div>
+    <div class="step-main">
+      <div class="step-title">Open your Coordinator Portal</div>
+      <p class="step-body" id="d2d">Your Coordinator Portal shows your assigned clients, training progress, and onboarding status. Sign in with your access code to confirm you can see it.</p>
+      <a class="step-link" href="https://opengrace.org/coordinator.html" target="_blank" rel="noopener noreferrer">Open Coordinator Portal →</a>
     </div>
   </div>
 
-  <div class="sec">Step 4 — Training Academy</div>
+  </main>
 
-  <div class="step-card">
-    <div class="step-num" style="background:var(--green);">9</div>
-    <div>
-      <div class="step-title">Complete Day 1 Training Modules</div>
-      <div class="step-body">Complete all four Day 1 required modules before your first client contact: Title 17 & CFS, HIPAA, Mandated Reporter, and Open Grace Policies. Each has a quiz — score 80%+ to earn your certificate.</div>
-      <a class="step-link" href="https://opengrace.org/training.html" target="_blank">Start Training Academy →</a>
-    </div>
-  </div>
-
-  <div class="sec">Your Director</div>
-
+  <!-- DIRECTOR -->
+  <h2 class="phase">Your Director</h2>
   <div class="contact-card">
     <div class="contact-name">Joshua Kennedy</div>
-    <div class="contact-role">Director — Open Grace LLC &bull; IRC Vendor PJ6208</div>
+    <div class="contact-role">Director — Open Grace LLC · IRC Vendor PJ6208</div>
     <div class="contact-links">
-      <a href="tel:9518804132">📞 951-880-4132</a>
-      <a href="mailto:joshua.kennedy@opengrace.org">✉️ Email</a>
-      <a href="https://teams.microsoft.com" target="_blank">💬 Teams</a>
+      <a href="tel:9518804132"><span aria-hidden="true">📞</span> 951-880-4132</a>
+      <a href="mailto:joshua.kennedy@opengrace.org"><span aria-hidden="true">✉️</span> Email</a>
+      <a href="https://teams.microsoft.com" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">💬</span> Teams</a>
     </div>
   </div>
 
+  <p class="note">Your checklist progress is saved only on this device for your convenience. Your Director confirms completion from the actual submissions (onboarding form, certificates, and test log), not from these checkboxes.</p>
+
 </div>
+
+<script>
+(function(){
+  var KEY='og_onboard_progress_v1';
+  var boxes=Array.prototype.slice.call(document.querySelectorAll('.step input[type=checkbox]'));
+  var total=boxes.length;
+  var fill=document.getElementById('prog-fill');
+  var count=document.getElementById('prog-count');
+
+  function read(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+  function write(o){try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}
+
+  function refresh(){
+    var done=0;
+    boxes.forEach(function(b){
+      var card=b.closest('.step');
+      if(b.checked){done++;card.classList.add('done');}else{card.classList.remove('done');}
+    });
+    var pct=total?Math.round(done/total*100):0;
+    fill.style.width=pct+'%';
+    count.textContent=done+' of '+total+' steps complete';
+  }
+
+  var saved=read();
+  boxes.forEach(function(b){
+    if(saved[b.id])b.checked=true;
+    b.addEventListener('change',function(){
+      var s=read();s[b.id]=b.checked;write(s);refresh();
+    });
+  });
+  refresh();
+})();
+</script>
 </body>
 </html>

@@ -139,19 +139,20 @@ button{font-family:var(--sans);cursor:pointer}
 <body>
 
 <!-- ══ LOCK ══ -->
-<div id="lock">
+<div id="lock" style="display:none">
   <div class="lock-logo"><a href="https://opengrace.org/staff-portal.html"><img src="https://opengrace.org/og_logo.jpg" alt="Open Grace"></a><a href="https://opengrace.org/staff-portal.html" onclick="if(history.length>1){history.back();return false;}" style="position:fixed;top:12px;left:12px;z-index:99999;background:#080D18;color:#fff;padding:9px 16px;border-radius:999px;font:600 15px -apple-system,system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 12px rgba(0,0,0,.35)">&larr; Back</a></div>
   <div class="lock-title">Staff Training Academy</div>
   <div class="lock-sub">Open Grace LLC &bull; IRC Vendor PJ6208</div>
   <div class="lock-card">
-    <div class="lock-label">Enter Your Staff Access Code</div>
+    <div class="lock-label">Sign in to save your progress</div>
     <input class="lock-input" id="code-input" type="password" inputmode="text"
       maxlength="12" placeholder="OG-XXXX-XXX" autocomplete="off"
       onkeydown="if(event.key==='Enter')unlock()" />
-    <button class="lock-btn" onclick="unlock()">Access Academy</button>
+    <button class="lock-btn" onclick="unlock()">Sign in</button>
     <div class="lock-err" id="lock-err"></div>
+    <button onclick="enterAsGuest()" style="width:100%;margin-top:12px;background:transparent;border:none;color:var(--sub);font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline">Browse without signing in →</button>
   </div>
-  <div class="lock-note">Use the access code provided by the Director.<br>Contact Open Grace at 951-880-4132 for access.</div>
+  <div class="lock-note">Signing in with your staff code saves your completed modules and certificates under your name. You can start the training without it.<br>Need a code? Contact the Director at 951-880-4132.</div>
 </div>
 
 <!-- ══ APP ══ -->
@@ -162,7 +163,7 @@ button{font-family:var(--sans);cursor:pointer}
       <div class="topbar-title">Training Academy</div>
       <div class="topbar-sub" id="topbar-name">Open Grace LLC</div>
     </div>
-    <div class="topbar-lock" onclick="lockApp()" title="Lock">🔒</div>
+    <div class="topbar-lock" id="topbar-auth" style="margin-left:auto;display:flex;align-items:center;gap:8px"></div>
   </div>
 
   <!-- DASHBOARD -->
@@ -254,6 +255,7 @@ async function unlock() {
       document.getElementById('dash-name').textContent = staff.name;
       document.getElementById('dash-role').textContent = staff.position || 'Family Coordinator';
       sessionStorage.setItem('og_staff_code', code);
+      updateSignInUI();
       renderDashboard();
       errEl.textContent = '';
     } else {
@@ -276,8 +278,9 @@ async function unlock() {
           document.getElementById('app').style.display = 'block';
           document.getElementById('topbar-name').textContent = staff.name;
           document.getElementById('dash-name').textContent = staff.name;
+          updateSignInUI();
           renderDashboard();
-          if (btn) { btn.disabled = false; btn.textContent = 'Access Academy'; }
+          if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
           return;
         }
       } catch(ex) {}
@@ -296,14 +299,65 @@ function lockApp() {
   document.getElementById('lock-err').textContent = '';
 }
 
-// Auto-login
-window.addEventListener('DOMContentLoaded', () => {
+// Open-access entry: everyone lands in the training; signing in only saves progress under a name.
+window.addEventListener('DOMContentLoaded', async () => {
+  await enterAsGuest();
   const saved = sessionStorage.getItem('og_staff_code');
-  if (saved) {
-    document.getElementById('code-input').value = saved;
-    unlock();
-  }
+  if (saved) await silentReauth(saved);
 });
+
+async function enterAsGuest() {
+  currentStaff = { code: 'GUEST', name: 'Guest', position: 'Family Coordinator' };
+  try { await loadProgress(); } catch (e) {}
+  document.getElementById('lock').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('topbar-name').textContent = 'Browsing as guest';
+  document.getElementById('dash-name').textContent = 'Guest';
+  document.getElementById('dash-role').textContent = 'Family Coordinator';
+  updateSignInUI();
+  renderDashboard();
+}
+
+async function silentReauth(code) {
+  try {
+    const r = await fetch(STAFF_URL + '?t=' + Date.now());
+    const data = await r.json();
+    sessionStorage.setItem('og_staff_cache', JSON.stringify(data));
+    const staff = (data.staff || []).find(s => s.code === code && s.active);
+    if (staff) {
+      currentStaff = staff;
+      await loadProgress();
+      document.getElementById('topbar-name').textContent = staff.name;
+      document.getElementById('dash-name').textContent = staff.name;
+      document.getElementById('dash-role').textContent = staff.position || 'Family Coordinator';
+      updateSignInUI();
+      renderDashboard();
+    }
+  } catch (e) {}
+}
+
+function openSignIn() {
+  document.getElementById('lock-err').textContent = '';
+  document.getElementById('lock').style.display = 'flex';
+  const ci = document.getElementById('code-input');
+  if (ci) { ci.value = ''; ci.focus(); }
+}
+
+function signOutToGuest() {
+  sessionStorage.removeItem('og_staff_code');
+  enterAsGuest();
+}
+
+function updateSignInUI() {
+  const el = document.getElementById('topbar-auth');
+  if (!el) return;
+  if (currentStaff && currentStaff.code && currentStaff.code !== 'GUEST') {
+    el.innerHTML = '<span style="opacity:.75;font-size:13px">' + escHtml(currentStaff.name) + '</span>' +
+      '<button onclick="signOutToGuest()" style="background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer">Sign out</button>';
+  } else {
+    el.innerHTML = '<button onclick="openSignIn()" style="background:#F47C20;border:none;color:#1a1100;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer">Sign in to save progress</button>';
+  }
+}
 
 // ════════ PROGRESS ════════
 async function loadProgress() {
