@@ -751,6 +751,85 @@ function toast(msg, dur=2500) {
   el.classList.add('show');
   setTimeout(()=>el.classList.remove('show'), dur);
 }
+
+// ════════ OVERALL COMPLETION — Day-1 Required Training ════════
+(function(){
+  var REQUIRED_IDS = ['M01','M02','M03','M04'];
+  var DIRECTOR_EMAIL = 'joshua.kennedy@opengrace.org';
+
+  var st = document.createElement('style');
+  st.textContent = "#og-cfab{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9998;display:none;background:#1f7a3d;color:#fff;border:none;border-radius:999px;padding:13px 20px;font-size:14px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.35);cursor:pointer;max-width:92vw;}"
+    + "#og-cov{position:fixed;inset:0;z-index:9999;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.55);overflow:auto;padding:24px 12px;}"
+    + "#og-ccard{background:#fff;color:#222;max-width:680px;width:100%;border-radius:14px;padding:22px;box-sizing:border-box;}"
+    + "#og-cert{border:3px solid #2D2B7F;border-radius:10px;padding:26px 22px;text-align:center;margin:14px 0;}"
+    + "#og-cert h2{font-family:Georgia,serif;color:#2D2B7F;margin:.2rem 0;font-size:22px;}"
+    + "#og-cert .nm{font-family:Georgia,serif;font-size:28px;font-weight:700;color:#2D2B7F;border-bottom:2px solid #F47C20;display:inline-block;padding:4px 18px 8px;margin:8px 0;}"
+    + "#og-cert .mods{text-align:left;max-width:440px;margin:12px auto 0;font-size:13px;color:#333;padding-left:18px;}"
+    + ".og-field{display:block;width:100%;box-sizing:border-box;margin:6px 0;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;}"
+    + ".og-cbtn{display:inline-block;margin:8px 6px 0 0;padding:11px 16px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;}"
+    + "@media print{body *{visibility:hidden!important;}#og-cert,#og-cert *{visibility:visible!important;}#og-cov{position:absolute;background:#fff;padding:0;display:block!important;}#og-ccard{box-shadow:none;}#og-cert{position:absolute;left:0;top:0;width:100%;border:none;}}";
+  document.head.appendChild(st);
+
+  var fab = document.createElement('button');
+  fab.id='og-cfab';
+  fab.textContent='\ud83c\udf93 Required Training Complete \u2014 Get Certificate';
+  fab.onclick=openCompletion;
+  document.body.appendChild(fab);
+
+  var ov = document.createElement('div');
+  ov.id='og-cov';
+  ov.addEventListener('click',function(e){ if(e.target===ov) ov.style.display='none'; });
+  document.body.appendChild(ov);
+
+  function pInfo(){ return (typeof getP==='function' && currentStaff)? getP() : null; }
+  function isComplete(){ var p=pInfo(); return !!p && REQUIRED_IDS.every(function(id){return p.completed.indexOf(id)>=0;}); }
+  function updateFab(){ try{ fab.style.display = isComplete()? 'block':'none'; }catch(e){} }
+  setInterval(updateFab, 2500);
+  window.addEventListener('load', updateFab);
+
+  function esc(x){ return (x||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
+  function openCompletion(){
+    var p=pInfo(); if(!p) return;
+    var nm=(currentStaff&&currentStaff.name)||'';
+    var pos=(currentStaff&&currentStaff.position)||'Family Coordinator';
+    var today=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    var rows=REQUIRED_IDS.map(function(id){var m=MODULES.find(function(x){return x.id===id;});var d=(p.dates&&p.dates[id])||today;return '<li>\u2713 '+(m?m.title:id)+' <span style=\"color:#888\">\u2014 '+d+'</span></li>';}).join('');
+    ov.innerHTML='<div id=\"og-ccard\">'
+      +'<h3 style=\"margin:.2rem 0 0;color:#2D2B7F\">Required Training Complete</h3>'
+      +'<p style=\"font-size:13px;color:#555;margin:.4rem 0 0\">Confirm your name, print your certificate, and notify the Director. Your Open Grace email is set up after onboarding and required training are confirmed.</p>'
+      +'<label style=\"font-size:12px;color:#555\">Your full name</label>'
+      +'<input id=\"og-cname\" class=\"og-field\" value=\"'+esc(nm)+'\">'
+      +'<label style=\"font-size:12px;color:#555\">Your personal email (optional \u2014 to receive a copy)</label>'
+      +'<input id=\"og-cemail\" class=\"og-field\" type=\"email\" placeholder=\"you@example.com\">'
+      +'<div id=\"og-cert\">'
+        +'<div style=\"font-size:12px;letter-spacing:1px;color:#F47C20;font-weight:700\">OPEN GRACE LLC \u00b7 IRC VENDOR PJ6208</div>'
+        +'<h2>Certificate of Training Completion</h2>'
+        +'<div class=\"nm\" id=\"og-cnamep\">'+(esc(nm)||'\u2014')+'</div>'
+        +'<div style=\"font-size:13px;color:#555\">'+esc(pos)+'</div>'
+        +'<p style=\"font-size:13px;color:#333;margin:12px 0 0\">has completed all Day-1 Required Before Client Contact training:</p>'
+        +'<ul class=\"mods\">'+rows+'</ul>'
+        +'<p style=\"font-size:12px;color:#888;margin-top:14px\">Completed '+today+' \u00b7 Open Grace Family Coordinator Academy</p>'
+      +'</div>'
+      +'<button class=\"og-cbtn\" style=\"background:#2D2B7F;color:#fff\" onclick=\"window.print()\">\ud83d\udda8 Print / Save Certificate</button>'
+      +'<button class=\"og-cbtn\" style=\"background:#1f7a3d;color:#fff\" id=\"og-notify\">\u2709 Notify Director</button>'
+      +'<button class=\"og-cbtn\" style=\"background:#eee;color:#333\" onclick=\"document.getElementById(\'og-cov\').style.display=\'none\'\">Close</button>'
+      +'</div>';
+    ov.style.display='flex';
+    var ni=document.getElementById('og-cname');
+    ni.addEventListener('input',function(){document.getElementById('og-cnamep').textContent=ni.value||'\u2014';});
+    document.getElementById('og-notify').onclick=function(){
+      var who=(document.getElementById('og-cname').value||nm||'New hire').trim();
+      var cc=(document.getElementById('og-cemail').value||'').trim();
+      var lines=REQUIRED_IDS.map(function(id){var m=MODULES.find(function(x){return x.id===id;});var d=(p.dates&&p.dates[id])||today;return '- '+(m?m.title:id)+' ('+d+')';}).join('%0D%0A');
+      var subj=encodeURIComponent('Training Completion \u2014 '+who+' (Day-1 Required)');
+      var body=encodeURIComponent(who+' ('+pos+') has completed all Day-1 Required Before Client Contact training as of '+today+'.\n\nCompleted modules:\n').replace(/%0A/g,'%0D%0A')+lines+'%0D%0A%0D%0A'+encodeURIComponent('\u2014 Sent from the Open Grace Family Coordinator Academy');
+      var href='mailto:'+DIRECTOR_EMAIL+'?subject='+subj+'&body='+body;
+      if(cc) href+='&cc='+encodeURIComponent(cc);
+      window.location.href=href;
+    };
+  }
+})();
 </script>
 </body>
 </html>
