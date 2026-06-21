@@ -2330,5 +2330,24 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 <script src="/og-passkey.js"></script>
+
+<script src="/og-msal.js"></script>
+<script>
+// Bootstrap MSAL after passkey gate clears
+(function() {
+  const _orig = window.removeGate;
+  window.removeGate = function() {
+    if (typeof _orig === 'function') _orig();
+    if (window.ogMsal) {
+      window.ogMsal.init().then(ok => {
+        if (ok) {
+          if (typeof renderClientRoster === 'function') renderClientRoster();
+          if (typeof renderPipeline === 'function') renderPipeline();
+        }
+      });
+    }
+  };
+})();
+</script>
 </body>
 </html>
