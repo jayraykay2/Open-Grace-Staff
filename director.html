@@ -628,6 +628,9 @@ body {
   cursor: pointer;
   padding: 4px;
 }
+
+/* ── Passkey Auth Gate ── */
+#og-auth-gate{position:fixed;inset:0;z-index:99999;background:#080D18;display:flex;align-items:center;justify-content:center;transition:opacity .35s ease,transform .35s ease;opacity:1}.og-gate-inner{display:flex;flex-direction:column;align-items:center;padding:2rem 1.5rem;text-align:center;max-width:320px;width:100%}.og-gate-logo img{width:72px;height:72px;border-radius:18px;object-fit:cover;margin-bottom:1.25rem}.og-gate-title{font-size:22px;font-weight:700;color:#EDF2FF;margin-bottom:.25rem}.og-gate-sub{font-size:13px;color:#8B96AA;margin-bottom:2rem;text-transform:uppercase}.og-gate-status{font-size:15px;color:#8B96AA;margin-bottom:1.5rem;min-height:44px;display:flex;align-items:center;justify-content:center}.og-gate-btn{display:flex;align-items:center;gap:.6rem;background:#4F8EF7;color:#fff;border:none;border-radius:14px;padding:14px 28px;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:.75rem;width:100%;justify-content:center}.og-gate-register{background:rgba(79,142,247,.12);color:#4F8EF7;border:1px solid rgba(79,142,247,.25);border-radius:12px;padding:13px 24px;font-size:15px;font-weight:600;cursor:pointer;width:100%;margin-bottom:.75rem}.og-gate-fallback{background:none;border:none;color:#4A5568;font-size:13px;cursor:pointer;padding:.5rem;text-decoration:underline}#og-install-banner{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));left:1rem;right:1rem;background:#16202E;border:1px solid rgba(79,142,247,.25);border-radius:14px;padding:.875rem 1rem;display:flex;align-items:center;gap:.75rem;z-index:9999;font-size:13px;color:#EDF2FF}#og-install-banner span{flex:1}#og-install-yes{background:#4F8EF7;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer}#og-install-no{background:none;border:none;color:#4A5568;font-size:16px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -2313,6 +2316,16 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/og-sw.js', { scope: '/director.html' })
       .catch(err => console.warn('SW registration failed:', err));
+  });
+}
+</script>
+<script src="/og-passkey.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/og-sw.js', { scope: '/director.html' })
+      .catch(err => console.warn('SW failed:', err));
   });
 }
 </script>
