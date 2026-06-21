@@ -1,38 +1,27 @@
-<script>location.replace("https://form.jotform.com/JoshuaKennedy940/Prescreening")</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Open Grace LLC — Family Pre-Screening Assessment</title>
+<title>Open Grace — Family Pre-Screening</title>
 <style>
   :root {
-    --navy: #2D2B7F;
-    --orange: #F47C20;
-    --light: #F8F4FF;
-    --g50: #F8F7FF;
-    --g100: #E8E6F0;
-    --g400: #888;
-    --g700: #444;
-    --g900: #1a1a1a;
-    --red-bg: #FCEBEB;
-    --red-text: #791F1F;
-    --red-dark: #A32D2D;
-    --green-bg: #EAF3DE;
-    --green-text: #27500A;
-    --green-dark: #3B6D11;
-    --border: rgba(0,0,0,0.12);
-    --radius: 10px;
-    --radius-sm: 7px;
+    --navy: #1E1C5E;
+    --orange: #FF6B1A;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    font-size: 18px;
-    color: var(--g700);
     background: #F4F2FB;
     min-height: 100vh;
-    padding: 0 0 60px;
+    display: flex;
+    flex-direction: column;
+  }
+  .rainbow-bar {
+    height: 5px;
+    background: linear-gradient(90deg,
+      #e63946 0%, #f4a261 16.6%, #e9c46a 33.3%,
+      #2a9d8f 50%, #457b9d 66.6%, #6a4c93 83.3%, #e63946 100%);
   }
   .topbar {
     background: var(--navy);
@@ -46,792 +35,133 @@
     box-shadow: 0 2px 10px rgba(0,0,0,0.25);
   }
   .topbar a {
-    color: rgba(255,255,255,0.8);
+    color: rgba(255,255,255,0.75);
     text-decoration: none;
     font-size: 14px;
-    font-weight: 600;
+    transition: color .2s;
   }
   .topbar a:hover { color: #fff; }
   .topbar-title {
-    color: rgba(255,255,255,0.5);
-    font-size: 13px;
-    margin-left: auto;
-  }
-  .card {
-    background: #fff;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    padding: 24px;
-    margin-bottom: 16px;
-  }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
-  .form-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-  }
-  .form-logo {
-    width: 44px; height: 44px;
-    background: var(--navy);
-    border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; flex-shrink: 0;
-  }
-  .form-header h1 { font-size: 20px; font-weight: 700; color: var(--g900); }
-  .form-header p { font-size: 14px; color: var(--g400); margin-top: 2px; }
-  .intro-notice {
-    background: var(--light);
-    border-left: 4px solid var(--navy);
-    padding: 14px 18px;
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--g700);
-    margin-bottom: 20px;
-  }
-  .progress-wrap { margin-bottom: 18px; }
-  .progress-meta { display: flex; justify-content: space-between; font-size: 14px; color: var(--g400); margin-bottom: 6px; }
-  .progress-bar { height: 7px; background: var(--g100); border-radius: 99px; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--navy); border-radius: 99px; transition: width 0.4s ease; }
-  .section-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 18px;
-    background: var(--navy);
-    border-radius: var(--radius-sm);
-    margin-bottom: 20px;
-  }
-  .section-num {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: rgba(255,255,255,0.18);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px; font-weight: 700; color: #fff; flex-shrink: 0;
-  }
-  .section-title { font-size: 16px; font-weight: 600; color: #fff; }
-  .section-step { margin-left: auto; font-size: 13px; color: rgba(255,255,255,0.55); }
-  .field { margin-bottom: 18px; }
-  .field label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--g400);
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-  }
-  .field .req { color: var(--orange); margin-left: 3px; }
-  .field .hint { font-size: 13px; color: var(--g400); margin-bottom: 5px; font-style: italic; text-transform: none; font-weight: 400; letter-spacing: 0; }
-  input[type="text"], input[type="tel"], input[type="email"], input[type="date"], select, textarea {
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 13px 14px;
-    font-size: 17px;
-    font-family: inherit;
-    color: var(--g900);
-    background: #fff;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  input:focus, select:focus, textarea:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(45,43,127,0.1); }
-  textarea { resize: vertical; }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
-  .grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0 10px; }
-  .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
-  .check-grid label, .radio-group label {
-    display: flex; align-items: flex-start; gap: 10px;
-    font-size: 16px; font-weight: 400; color: var(--g700);
-    cursor: pointer; text-transform: none; letter-spacing: 0;
-    line-height: 1.6; margin-bottom: 0;
-  }
-  .check-grid input, .radio-group input { margin-top: 4px; accent-color: var(--navy); flex-shrink: 0; width: 20px; height: 20px; }
-  .radio-group { display: flex; flex-wrap: wrap; gap: 6px 20px; }
-  .avail-row {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 14px;
-    background: var(--g50);
-    border-radius: var(--radius-sm);
-    margin-bottom: 8px;
-  }
-  .avail-day { width: 90px; font-size: 16px; font-weight: 600; color: var(--g900); flex-shrink: 0; }
-  .avail-slots { display: flex; gap: 16px; flex-wrap: wrap; }
-  .avail-slots label { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 400; color: var(--g700); cursor: pointer; margin-bottom: 0; text-transform: none; letter-spacing: 0; }
-  .consent-box {
-    background: var(--light);
-    border: 1px solid rgba(45,43,127,0.2);
-    border-radius: var(--radius);
-    padding: 16px 18px;
-    margin-bottom: 16px;
-  }
-  .consent-box .heading { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 12px; }
-  .consent-item { display: flex; gap: 12px; margin-bottom: 16px; cursor: pointer; align-items: flex-start; }
-  .consent-item input { margin-top: 3px; accent-color: var(--navy); flex-shrink: 0; width: 22px; height: 22px; }
-  .consent-item span { font-size: 15px; color: var(--g700); line-height: 1.65; }
-  .legal-note { font-size: 13px; color: var(--g400); line-height: 1.65; margin-bottom: 14px; }
-  .warn-box {
-    padding: 12px 16px;
-    background: #FFF3E0;
-    border: 1px solid rgba(244,124,32,0.3);
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    color: #6B3A00;
-    line-height: 1.65;
-  }
-  .btn-row { display: flex; gap: 10px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
-  .btn {
-    flex: 1;
-    padding: 18px 20px;
-    border-radius: var(--radius-sm);
-    font-size: 17px;
-    font-weight: 700; min-height: 56px;
-    cursor: pointer;
-    border: 1px solid var(--border);
-    background: #fff;
-    color: var(--g700);
-    font-family: inherit;
-    transition: all 0.15s;
-  }
-  .btn:hover { background: var(--g50); }
-  .btn-primary {
-    flex: 2;
-    background: var(--navy);
     color: #fff;
-    border-color: var(--navy);
-  }
-  .btn-primary:hover { background: #1e1c5e; }
-  .btn-primary:disabled { background: var(--g100); color: var(--g400); border-color: var(--g100); cursor: not-allowed; }
-  .hidden { display: none; }
-  .error-box {
-    padding: 12px 16px;
-    background: var(--red-bg);
-    border: 1px solid rgba(226,75,74,0.3);
-    border-radius: var(--radius-sm);
     font-size: 15px;
-    color: var(--red-text);
-    margin-top: 10px;
+    font-weight: 600;
+    flex: 1;
   }
-
-  /* Results */
-  .result-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 18px;
+  .topbar-lang {
+    color: rgba(255,255,255,0.75);
+    font-size: 13px;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 4px 10px;
+    border-radius: 20px;
+    transition: all .2s;
+  }
+  .topbar-lang:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .page-wrap {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+    width: 100%;
+    flex: 1;
+  }
+  .form-header {
     background: var(--navy);
-    border-radius: var(--radius);
-    margin-bottom: 16px;
+    border-radius: 12px;
+    padding: 28px 28px 24px;
+    margin-bottom: 24px;
     color: #fff;
   }
-  .result-header-icon { font-size: 22px; }
-  .result-header h2 { font-size: 17px; font-weight: 700; margin: 0; }
-  .result-header p { font-size: 14px; color: rgba(255,255,255,0.6); margin: 2px 0 0; }
-  .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-  .metric { background: var(--g50); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
-  .metric-label { font-size: 14px; color: var(--g400); margin-bottom: 5px; }
-  .metric-value { font-size: 26px; font-weight: 700; color: var(--g900); }
-  .metric-value.sm { font-size: 16px; }
-  .result-block {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    margin-bottom: 12px;
-  }
-  .result-block .blabel {
-    font-size: 13px;
+  .form-header h1 {
+    font-size: 22px;
     font-weight: 700;
-    color: var(--g400);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
     margin-bottom: 8px;
+    line-height: 1.3;
   }
-  .result-block p { font-size: 16px; color: var(--g700); line-height: 1.7; }
-  .result-block .item { margin-bottom: 9px; padding-bottom: 9px; border-bottom: 1px solid var(--border); }
-  .result-block .item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-  .result-block .item-title { font-size: 16px; font-weight: 700; color: var(--g900); margin-bottom: 2px; }
-  .result-block .item-body { font-size: 15px; color: var(--g400); line-height: 1.6; }
-  .result-red { background: var(--red-bg); border-color: rgba(226,75,74,0.3); }
-  .result-red .blabel { color: var(--red-dark); }
-  .result-red .flag { display: flex; gap: 8px; font-size: 15px; color: var(--red-text); line-height: 1.6; margin-bottom: 4px; }
-  .result-green { background: var(--green-bg); border-color: rgba(99,153,34,0.3); }
-  .result-green .blabel { color: var(--green-dark); }
-  .result-green .strength { display: flex; gap: 8px; font-size: 15px; color: var(--green-text); line-height: 1.6; margin-bottom: 4px; }
-  .result-navy { background: var(--light); border-color: rgba(45,43,127,0.2); }
-  .result-navy .blabel { color: var(--navy); }
-  .footer-stamp {
-    padding: 12px 16px;
-    background: var(--g50);
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    color: var(--g400);
+  .form-header p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.6;
+  }
+  .form-header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.9);
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 10px;
+    margin-right: 6px;
+  }
+  .form-frame {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    min-height: 600px;
+  }
+  .form-frame iframe {
+    display: block;
+    width: 100%;
+    min-height: 640px;
+    border: none;
+  }
+  .footer-note {
     text-align: center;
-    margin-top: 8px;
+    color: #888;
+    font-size: 13px;
+    margin-top: 20px;
+    line-height: 1.6;
   }
-  @media (max-width: 580px) {
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
-    .metrics { grid-template-columns: 1fr; }
-    .avail-row { flex-direction: column; align-items: flex-start; }
-    .avail-day { width: auto; }
+  .footer-note a { color: var(--navy); text-decoration: none; }
+  .footer-note a:hover { text-decoration: underline; }
+  @media (max-width: 600px) {
+    .page-wrap { padding: 20px 12px 40px; }
+    .form-header { padding: 20px; }
+    .form-header h1 { font-size: 18px; }
   }
 </style>
 </head>
 <body>
 
+<div class="rainbow-bar"></div>
+
 <div class="topbar">
-  <a href="client-portal.html">&#8592; Back to Family Portal</a>
-  <span class="topbar-title">Pre-Screening Assessment</span>
+  <a href="client-portal.html">&#8592; Family Portal</a>
+  <span class="topbar-title">Pre-Screening</span>
+  <a class="topbar-lang" href="family-prescreening-es.html">Español</a>
 </div>
 
-<div class="wrap">
+<div class="page-wrap">
 
-  <!-- FORM VIEW -->
-  <div id="form-view">
-    <div class="form-header">
-      <div class="form-logo">&#128203;</div>
-      <div>
-        <h1>CFS Family Pre-Screening Assessment</h1>
-        <p>Open Grace LLC &bull; IRC Vendor PJ6208 &bull; Confidential &bull; HIPAA Protected</p>
-      </div>
-    </div>
-
-    <div class="intro-notice" id="intro-notice">
-      This assessment helps Open Grace LLC understand your family's needs before your initial meeting with a Family Coordinator. Completing it allows us to begin service planning and submit your information to your IRC Service Coordinator. All information is confidential and protected under HIPAA. Estimated time: 10–15 minutes.
-    </div>
-
-    <div class="progress-wrap">
-      <div class="progress-meta">
-        <span id="prog-label">Section 1 of 9</span>
-        <span id="prog-pct">11% complete</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:11%"></div></div>
-    </div>
-
-    <div class="section-header">
-      <div class="section-num" id="sec-num">1</div>
-      <span class="section-title" id="sec-title">Family &amp; Household Information</span>
-      <span class="section-step" id="sec-step">1/9</span>
-    </div>
-
-    <div id="error-box" class="error-box hidden"></div>
-
-    <!-- SECTION 0: Family -->
-    <div class="section-body" id="s0">
-      <div class="grid-2">
-        <div class="field"><label>Guardian / Rep Full Name <span class="req">*</span></label><input type="text" id="guardianName" /></div>
-        <div class="field"><label>Relationship to Client <span class="req">*</span></label><input type="text" id="relationship" placeholder="e.g. Mother, Legal Guardian" /></div>
-      </div>
-      <div class="grid-2">
-        <div class="field"><label>Phone Number <span class="req">*</span></label><input type="tel" id="phone" placeholder="(951) 000-0000" /></div>
-        <div class="field"><label>Email Address</label><input type="email" id="email" /></div>
-      </div>
-      <div class="field"><label>Home Address</label><input type="text" id="address" /></div>
-      <div class="grid-3">
-        <div class="field"><label>City</label><input type="text" id="city" /></div>
-        <div class="field"><label>State</label><input type="text" id="state" placeholder="CA" /></div>
-        <div class="field"><label>ZIP</label><input type="text" id="zip" /></div>
-      </div>
-      <div class="grid-2">
-        <div class="field"><label>Household Size</label>
-          <select id="householdSize"><option value="">— Select —</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7 or more</option></select>
-        </div>
-        <div class="field"><label>Other children in home?</label>
-          <select id="otherChildren"><option value="">— Select —</option><option>No</option><option>Yes — 1</option><option>Yes — 2</option><option>Yes — 3 or more</option></select>
-        </div>
-      </div>
-      <div class="grid-2">
-        <div class="field"><label>Primary Home Language</label><input type="text" id="homeLanguage" placeholder="e.g. English, Spanish" /></div>
-        <div class="field"><label>Interpreter Needed?</label>
-          <select id="interpreterNeeded"><option value="">— Select —</option><option>No</option><option>Yes</option><option>Preferred but not required</option></select>
-        </div>
-      </div>
-    </div>
-
-    <!-- SECTION 1: Client -->
-    <div class="section-body hidden" id="s1">
-      <div class="grid-2">
-        <div class="field"><label>Client Full Legal Name <span class="req">*</span></label><input type="text" id="clientName" /></div>
-        <div class="field"><label>Date of Birth <span class="req">*</span></label><input type="date" id="clientDOB" /></div>
-      </div>
-      <div class="field"><label>UCI Number (if known)</label><input type="text" id="uci" placeholder="e.g. 7446993" /></div>
-      <div class="field"><label>Diagnoses / Identified Conditions <span class="hint">— check all that apply</span></label>
-        <div class="check-grid">
-          <label><input type="checkbox" name="diagnosis" value="Intellectual Disability"> Intellectual Disability</label>
-          <label><input type="checkbox" name="diagnosis" value="Autism Spectrum Disorder"> Autism Spectrum Disorder</label>
-          <label><input type="checkbox" name="diagnosis" value="Down Syndrome"> Down Syndrome</label>
-          <label><input type="checkbox" name="diagnosis" value="Cerebral Palsy"> Cerebral Palsy</label>
-          <label><input type="checkbox" name="diagnosis" value="Epilepsy / Seizure Disorder"> Epilepsy / Seizure Disorder</label>
-          <label><input type="checkbox" name="diagnosis" value="Traumatic Brain Injury"> Traumatic Brain Injury</label>
-          <label><input type="checkbox" name="diagnosis" value="Genetic Syndrome"> Genetic Syndrome</label>
-          <label><input type="checkbox" name="diagnosis" value="Global Developmental Delay"> Global Developmental Delay</label>
-          <label><input type="checkbox" name="diagnosis" value="Other" id="dx-other-chk" onclick="toggleOther('dx-other-chk','dx-other-field')"> Other</label>
-        </div>
-        <div id="dx-other-field" class="hidden" style="margin-top:8px"><input type="text" id="diagnosisOther" placeholder="Describe other diagnoses" /></div>
-      </div>
-      <div class="field"><label>Communication Level <span class="req">*</span></label>
-        <select id="communicationLevel"><option value="">— Select —</option><option>Verbal — fully communicates needs</option><option>Verbal — limited vocabulary</option><option>Uses AAC / device</option><option>Minimal verbal — gestures/signs</option><option>Non-verbal</option></select>
-      </div>
-      <div class="field"><label>Mobility Level <span class="req">*</span></label>
-        <select id="mobilityLevel"><option value="">— Select —</option><option>Independent</option><option>Needs supervision</option><option>Needs physical assistance</option><option>Uses mobility device — independent</option><option>Uses mobility device — with assistance</option><option>Non-ambulatory</option></select>
-      </div>
-      <div class="field"><label>General Independence Level <span class="req">*</span></label>
-        <select id="independenceLevel"><option value="">— Select —</option><option>High — minimal support needed</option><option>Moderate — some support needed</option><option>Low — frequent support needed</option><option>Minimal — full-time support required</option></select>
-      </div>
-    </div>
-
-    <!-- SECTION 2: Daily Living -->
-    <div class="section-body hidden" id="s2">
-      <div class="field"><label>ADL Areas Requiring Support <span class="hint">— check all that apply</span></label>
-        <div class="check-grid">
-          <label><input type="checkbox" name="adlSupport" value="Bathing / hygiene"> Bathing / hygiene</label>
-          <label><input type="checkbox" name="adlSupport" value="Dressing / grooming"> Dressing / grooming</label>
-          <label><input type="checkbox" name="adlSupport" value="Meal preparation"> Meal preparation</label>
-          <label><input type="checkbox" name="adlSupport" value="Feeding"> Feeding</label>
-          <label><input type="checkbox" name="adlSupport" value="Toileting"> Toileting</label>
-          <label><input type="checkbox" name="adlSupport" value="Medication management"> Medication management</label>
-          <label><input type="checkbox" name="adlSupport" value="Money management"> Money management</label>
-          <label><input type="checkbox" name="adlSupport" value="Transportation"> Transportation</label>
-          <label><input type="checkbox" name="adlSupport" value="Household chores"> Household chores</label>
-          <label><input type="checkbox" name="adlSupport" value="Shopping / errands"> Shopping / errands</label>
-          <label><input type="checkbox" name="adlSupport" value="Healthcare appointments"> Healthcare appointments</label>
-        </div>
-      </div>
-      <div class="field"><label>Describe Support Needs for Daily Activities</label><textarea id="adlDetails" rows="3" placeholder="Frequency, intensity, and type of support needed..."></textarea></div>
-      <div class="field"><label>Safety Risks or Concerns <span class="hint">— check all that apply</span></label>
-        <div class="check-grid">
-          <label><input type="checkbox" name="safetyRisks" value="Elopement risk"> Elopement risk</label>
-          <label><input type="checkbox" name="safetyRisks" value="Self-injurious behavior"> Self-injurious behavior</label>
-          <label><input type="checkbox" name="safetyRisks" value="Aggression toward others"> Aggression toward others</label>
-          <label><input type="checkbox" name="safetyRisks" value="Property destruction"> Property destruction</label>
-          <label><input type="checkbox" name="safetyRisks" value="Wandering"> Wandering</label>
-          <label><input type="checkbox" name="safetyRisks" value="Falls risk"> Falls risk</label>
-          <label><input type="checkbox" name="safetyRisks" value="Choking / aspiration risk"> Choking / aspiration risk</label>
-          <label><input type="checkbox" name="safetyRisks" value="None identified"> None identified</label>
-        </div>
-      </div>
-      <div class="field"><label>Describe Safety Concerns and Current Precautions</label><textarea id="safetyDetails" rows="2"></textarea></div>
-      <div class="field"><label>Current Community Access Level</label>
-        <select id="communityAccess"><option value="">— Select —</option><option>Regularly participates in community</option><option>Rarely accesses community</option><option>Does not currently access community</option><option>Accesses with significant support</option><option>Some participation with moderate support</option></select>
-      </div>
-      <div class="field"><label>Community Access Details / Barriers</label><textarea id="communityDetails" rows="2" placeholder="What barriers exist? What settings are preferred or avoided?"></textarea></div>
-    </div>
-
-    <!-- SECTION 3: Behavioral -->
-    <div class="section-body hidden" id="s3">
-      <div class="field"><label>Behavioral Concerns <span class="hint">— check all that apply</span></label>
-        <div class="check-grid">
-          <label><input type="checkbox" name="behaviorConcerns" value="Aggression — physical"> Aggression — physical</label>
-          <label><input type="checkbox" name="behaviorConcerns" value="Aggression — verbal"> Aggression — verbal</label>
-          <label><input type="checkbox" name="behaviorConcerns" value="Self-injurious behavior"> Self-injurious behavior</label>
-          <label><input type="checkbox" name="behaviorConcerns" value="Tantrums / meltdowns"> Tantrums / meltdowns</label>
-          <label><input type="checkbox" name="behaviorConcerns" value="Elopement"> Elopement</label>
-          <label><input type="checkbox" name="behaviorConcerns" value="Property destruction"> Property destruction</label>
-          <label><input type="checkbox" name="behaviorConcerns" value="Noncompliance"> Noncompliance</label>
-          <label><input type="checkbox" name="behaviorConcerns" value="Anxiety-driven behaviors"> Anxiety-driven behaviors</label>
-          <label><input type="checkbox" name="behaviorConcerns" value="Stereotypy / repetitive behaviors"> Stereotypy / repetitive behaviors</label>
-          <label><input type="checkbox" name="behaviorConcerns" value="None significant"> None significant</label>
-        </div>
-      </div>
-      <div class="grid-2">
-        <div class="field"><label>Frequency</label>
-          <select id="behaviorFrequency"><option value="">— Select —</option><option>Rarely (monthly or less)</option><option>Occasionally (weekly)</option><option>Frequently (multiple times/week)</option><option>Daily</option><option>Multiple times daily</option></select>
-        </div>
-        <div class="field"><label>Intensity / Impact</label>
-          <select id="behaviorIntensity"><option value="">— Select —</option><option>Mild — easily redirected</option><option>Moderate — requires intervention</option><option>Severe — poses safety risk</option><option>Variable</option></select>
-        </div>
-      </div>
-      <div class="field"><label>Behavioral Support Plan (BSP)?</label>
-        <select id="bsp"><option value="">— Select —</option><option>Yes — active BSP</option><option>Yes — but outdated</option><option>No</option><option>In development</option></select>
-      </div>
-      <div class="field"><label>Known Triggers or Antecedents</label><textarea id="triggersList" rows="2" placeholder="What tends to trigger challenging behaviors?"></textarea></div>
-      <div class="field"><label>Mental Health Diagnoses or Concerns <span class="hint">— check all that apply</span></label>
-        <div class="check-grid">
-          <label><input type="checkbox" name="mentalHealth" value="Anxiety disorder"> Anxiety disorder</label>
-          <label><input type="checkbox" name="mentalHealth" value="Depression"> Depression</label>
-          <label><input type="checkbox" name="mentalHealth" value="ADHD"> ADHD</label>
-          <label><input type="checkbox" name="mentalHealth" value="PTSD"> PTSD</label>
-          <label><input type="checkbox" name="mentalHealth" value="Bipolar disorder"> Bipolar disorder</label>
-          <label><input type="checkbox" name="mentalHealth" value="Mood dysregulation"> Mood dysregulation</label>
-          <label><input type="checkbox" name="mentalHealth" value="None identified"> None identified</label>
-          <label><input type="checkbox" name="mentalHealth" value="Unknown / unassessed"> Unknown / unassessed</label>
-        </div>
-      </div>
-      <div class="field"><label>Mental Health Details</label><textarea id="mentalHealthDetails" rows="2" placeholder="Current treatment, medications, therapist..."></textarea></div>
-    </div>
-
-    <!-- SECTION 4: Medical -->
-    <div class="section-body hidden" id="s4">
-      <div class="field"><label>Medical Conditions <span class="hint">— check all that apply</span></label>
-        <div class="check-grid">
-          <label><input type="checkbox" name="medicalConditions" value="Epilepsy / seizures"> Epilepsy / seizures</label>
-          <label><input type="checkbox" name="medicalConditions" value="G-tube / feeding tube"> G-tube / feeding tube</label>
-          <label><input type="checkbox" name="medicalConditions" value="Oxygen dependency"> Oxygen dependency</label>
-          <label><input type="checkbox" name="medicalConditions" value="Diabetes"> Diabetes</label>
-          <label><input type="checkbox" name="medicalConditions" value="Heart condition"> Heart condition</label>
-          <label><input type="checkbox" name="medicalConditions" value="Respiratory condition"> Respiratory condition</label>
-          <label><input type="checkbox" name="medicalConditions" value="Vision impairment"> Vision impairment</label>
-          <label><input type="checkbox" name="medicalConditions" value="Hearing impairment"> Hearing impairment</label>
-          <label><input type="checkbox" name="medicalConditions" value="None significant"> None significant</label>
-        </div>
-      </div>
-      <div class="field"><label>Describe Medical Needs and Supports</label><textarea id="medicalDetails" rows="2"></textarea></div>
-      <div class="field"><label>Current Medications (general — no dosages required)</label><textarea id="medications" rows="2" placeholder="List by name and purpose"></textarea></div>
-      <div class="field"><label>Seizure History</label>
-        <select id="seizureHistory"><option value="">— Select —</option><option>No seizure history</option><option>Controlled — on medication</option><option>Breakthrough seizures occasionally</option><option>Uncontrolled — frequent seizures</option><option>Unknown</option></select>
-      </div>
-      <div class="field"><label>Sensory Needs <span class="hint">— check all that apply</span></label>
-        <div class="check-grid">
-          <label><input type="checkbox" name="sensoryNeeds" value="Sensory-seeking behaviors"> Sensory-seeking behaviors</label>
-          <label><input type="checkbox" name="sensoryNeeds" value="Sensory-avoidant behaviors"> Sensory-avoidant behaviors</label>
-          <label><input type="checkbox" name="sensoryNeeds" value="Tactile sensitivity"> Tactile sensitivity</label>
-          <label><input type="checkbox" name="sensoryNeeds" value="Auditory sensitivity"> Auditory sensitivity</label>
-          <label><input type="checkbox" name="sensoryNeeds" value="Visual sensitivity"> Visual sensitivity</label>
-          <label><input type="checkbox" name="sensoryNeeds" value="None identified"> None identified</label>
-        </div>
-      </div>
-      <div class="field"><label>Current Therapies / Services <span class="hint">— check all that apply</span></label>
-        <div class="check-grid">
-          <label><input type="checkbox" name="therapies" value="ABA / behavior therapy"> ABA / behavior therapy</label>
-          <label><input type="checkbox" name="therapies" value="Speech-language therapy"> Speech-language therapy</label>
-          <label><input type="checkbox" name="therapies" value="Occupational therapy"> Occupational therapy</label>
-          <label><input type="checkbox" name="therapies" value="Physical therapy"> Physical therapy</label>
-          <label><input type="checkbox" name="therapies" value="Counseling / psychotherapy"> Counseling / psychotherapy</label>
-          <label><input type="checkbox" name="therapies" value="Respite"> Respite</label>
-          <label><input type="checkbox" name="therapies" value="Independent living services"> Independent living services</label>
-          <label><input type="checkbox" name="therapies" value="Other IRC services"> Other IRC services</label>
-        </div>
-      </div>
-      <div class="field"><label>Therapy / Service Details</label><textarea id="therapiesDetails" rows="2" placeholder="Provider names, frequency, service gaps..."></textarea></div>
-    </div>
-
-    <!-- SECTION 5: Caregiver -->
-    <div class="section-body hidden" id="s5">
-      <div class="grid-2">
-        <div class="field"><label>Primary Caregiver</label>
-          <select id="primaryCaregiver"><option value="">— Select —</option><option>Mother</option><option>Father</option><option>Both parents</option><option>Grandparent</option><option>Legal guardian</option><option>Other family member</option><option>Paid caregiver</option></select>
-        </div>
-        <div class="field"><label>Is Caregiver Employed?</label>
-          <select id="caregiverEmployed" onchange="toggleEmployed()"><option value="">— Select —</option><option>No — full-time caregiver</option><option>Yes — part-time</option><option>Yes — full-time</option><option>Varies</option></select>
-        </div>
-      </div>
-      <div class="field hidden" id="hours-field"><label>Hours Worked Per Week</label>
-        <select id="hoursWorked"><option value="">— Select —</option><option>Less than 10</option><option>10–20</option><option>21–30</option><option>31–40</option><option>40+</option></select>
-      </div>
-      <div class="field"><label>Additional Support in the Home</label>
-        <select id="additionalSupport"><option value="">— Select —</option><option>None — caregiver is sole support</option><option>Extended family helps occasionally</option><option>Extended family helps regularly</option><option>Paid in-home support</option><option>Multiple caregivers</option></select>
-      </div>
-      <div class="grid-2">
-        <div class="field"><label>Respite Care Needed?</label>
-          <select id="respiteNeeded"><option value="">— Select —</option><option>No</option><option>Yes — occasionally</option><option>Yes — regularly</option><option>Urgently needed</option><option>Currently receiving</option></select>
-        </div>
-        <div class="field"><label>Caregiver Stress Level</label>
-          <select id="stressLevel"><option value="">— Select —</option><option>1 — Managing well</option><option>2 — Some stress</option><option>3 — Moderate stress</option><option>4 — High stress</option><option>5 — Crisis level</option></select>
-        </div>
-      </div>
-      <div class="field"><label>Recent Crisis Situations or Emergency Contacts (past year)</label><textarea id="crisisHistory" rows="2" placeholder="CPS, law enforcement, hospital, emergency contacts..."></textarea></div>
-      <div class="field"><label>Current IRC Concerns or Compliance Issues</label><textarea id="ircConcerns" rows="2"></textarea></div>
-    </div>
-
-    <!-- SECTION 6: Goals -->
-    <div class="section-body hidden" id="s6">
-      <div class="field"><label>Top 1–3 Goals for CFS Services <span class="req">*</span></label>
-        <textarea id="topGoals" rows="3" placeholder="e.g. Build independence in daily routines, improve community access, caregiver support..."></textarea>
-      </div>
-      <div class="field"><label>Skill-Building Priorities <span class="hint">— check all that apply</span></label>
-        <div class="check-grid">
-          <label><input type="checkbox" name="skillBuilding" value="Self-care / hygiene"> Self-care / hygiene</label>
-          <label><input type="checkbox" name="skillBuilding" value="Communication skills"> Communication skills</label>
-          <label><input type="checkbox" name="skillBuilding" value="Social skills"> Social skills</label>
-          <label><input type="checkbox" name="skillBuilding" value="Emotional regulation"> Emotional regulation</label>
-          <label><input type="checkbox" name="skillBuilding" value="Vocational / pre-vocational"> Vocational / pre-vocational</label>
-          <label><input type="checkbox" name="skillBuilding" value="Independent living"> Independent living</label>
-          <label><input type="checkbox" name="skillBuilding" value="Community safety"> Community safety</label>
-          <label><input type="checkbox" name="skillBuilding" value="Leisure / recreational"> Leisure / recreational</label>
-          <label><input type="checkbox" name="skillBuilding" value="Academic support"> Academic support</label>
-          <label><input type="checkbox" name="skillBuilding" value="Money / budgeting"> Money / budgeting</label>
-        </div>
-      </div>
-      <div class="field"><label>Desired Community Settings or Activities</label><textarea id="communityGoals" rows="2" placeholder="e.g. library, parks, sports, religious community..."></textarea></div>
-      <div class="field"><label>Parent / Caregiver Training Needs</label><textarea id="parentTraining" rows="2" placeholder="e.g. behavior strategies, AAC use, transition planning..."></textarea></div>
-      <div class="field"><label>Coordination Needs with Other Providers / Systems</label><textarea id="coordinationNeeds" rows="2" placeholder="e.g. school IEP, DOR, mental health, medical team..."></textarea></div>
-    </div>
-
-    <!-- SECTION 7: Availability -->
-    <div class="section-body hidden" id="s7">
-      <p style="font-size:16px;color:var(--g400);margin-bottom:16px;">Select all times you are generally available. This helps match a Family Coordinator to your schedule.</p>
-      <div id="avail-grid"></div>
-      <div class="field" style="margin-top:12px"><label>Scheduling Notes or Constraints</label><textarea id="preferredTimes" rows="2" placeholder="School pickup times, work schedules, preferences..."></textarea></div>
-      <div class="grid-2">
-        <div class="field"><label>Transportation Assistance Needed?</label>
-          <select id="transportNeeded"><option value="">— Select —</option><option>No — family has transportation</option><option>Yes — occasionally</option><option>Yes — regularly</option><option>Depends on destination</option></select>
-        </div>
-        <div class="field"><label>Home Visits Acceptable?</label>
-          <select id="homeVisitOk"><option value="">— Select —</option><option>Yes — preferred</option><option>Yes — acceptable</option><option>Prefer community only</option><option>No — not at this time</option></select>
-        </div>
-      </div>
-    </div>
-
-    <!-- SECTION 8: Consent -->
-    <div class="section-body hidden" id="s8">
-      <div class="consent-box">
-        <p class="heading">Please read each statement carefully and check to confirm your acknowledgement.</p>
-        <label class="consent-item"><input type="checkbox" id="rightfulRep"><span>I am the client or a legally authorized representative of the client named in this assessment and have the authority to submit this form on their behalf.</span></label>
-        <label class="consent-item"><input type="checkbox" id="consentToServices"><span>I consent to Coordinated Family Support (CFS) services by Open Grace LLC Family Coordinators per the current Individual Program Plan (IPP), and understand all services are subject to IRC authorization.</span></label>
-        <label class="consent-item"><input type="checkbox" id="consentToIPP"><span>I understand CFS services may not exceed the hours and service types authorized in the current IPP, and that changes must be coordinated through the IRC Service Coordinator.</span></label>
-        <label class="consent-item"><input type="checkbox" id="hipaaAck"><span>I have been informed of Open Grace LLC's HIPAA Privacy Practices and consent to use of information in this assessment for service planning and care coordination with IRC.</span></label>
-        <label class="consent-item"><input type="checkbox" id="consentToShare"><span>I authorize Open Grace LLC to share this assessment with the assigned IRC Service Coordinator to initiate, plan, or modify CFS services. Information will not be shared beyond authorized parties without additional written consent.</span></label>
-        <label class="consent-item"><input type="checkbox" id="consentToContact"><span>I consent to be contacted by Open Grace LLC by phone or email for scheduling, service coordination, and follow-up related to CFS services.</span></label>
-      </div>
-      <p class="legal-note">Open Grace LLC staff are mandated reporters under California law and must report suspected abuse or neglect to appropriate authorities. Consent may be withdrawn at any time by written notice to the Director at joshua.kennedy@opengrace.org or by calling 951-880-4132.</p>
-      <div class="grid-2">
-        <div class="field"><label>Full Legal Name of Person Completing This Form <span class="req">*</span></label><input type="text" id="consentName" /></div>
-        <div class="field"><label>Relationship to Client <span class="req">*</span></label><input type="text" id="consentRelationship" /></div>
-      </div>
-      <div class="field"><label>Date</label><input type="date" id="consentDate" /></div>
-      <div class="warn-box"><strong>Important:</strong> By submitting, you authorize Open Grace LLC to share this assessment with your IRC Service Coordinator for service planning. This does not guarantee services — all services are subject to IRC authorization through the IPP process.</div>
-    </div>
-
-    <div class="btn-row">
-      <button class="btn hidden" id="btn-back" onclick="prevStep()">&#8592; Back</button>
-      <button class="btn btn-primary" id="btn-next" onclick="nextStep()">Continue &#8594;</button>
-    </div>
+  <div class="form-header">
+    <h1>Open Grace — Family Pre-Screening</h1>
+    <p>Help us understand your family's needs. This short form takes about 2 minutes. A Family Coordinator will follow up with you soon.</p>
+    <span class="badge">🔒 Secure &amp; Confidential</span>
+    <span class="badge">IRC Vendor PJ6208</span>
   </div>
 
-  <!-- RESULTS VIEW -->
-  <div id="result-view" class="hidden">
-    <div class="result-header">
-      <div class="result-header-icon">&#10003;</div>
-      <div>
-        <h2>Assessment submitted</h2>
-        <p id="res-subtitle">Analysis complete</p>
-      </div>
-    </div>
-    <div class="metrics">
-      <div class="metric"><div class="metric-label">Acuity level</div><div class="metric-value sm" id="res-acuity" style="font-size:13px">—</div></div>
-      <div class="metric"><div class="metric-label">Proposed hrs / week</div><div class="metric-value" id="res-hours">—</div></div>
-      <div class="metric"><div class="metric-label">Suggested range</div><div class="metric-value sm" id="res-range">—</div></div>
-    </div>
-    <div class="result-block">
-      <div class="blabel">Clinical summary</div>
-      <p id="res-summary"></p>
-    </div>
-    <div class="result-block">
-      <div class="blabel">Hour recommendation justification</div>
-      <p id="res-justification"></p>
-    </div>
-    <div class="result-block result-red hidden" id="res-flags-block">
-      <div class="blabel">Urgent concerns</div>
-      <div id="res-flags"></div>
-    </div>
-    <div class="result-block">
-      <div class="blabel">Recommended services</div>
-      <div id="res-services"></div>
-    </div>
-    <div class="result-block">
-      <div class="blabel">Engagement strategies</div>
-      <div id="res-strategies"></div>
-    </div>
-    <div class="result-block result-green hidden" id="res-strengths-block">
-      <div class="blabel">Strengths to leverage</div>
-      <div id="res-strengths"></div>
-    </div>
-    <div class="result-block result-navy">
-      <div class="blabel">Notes for IRC service coordinator</div>
-      <p id="res-coordinator"></p>
-    </div>
-    <div class="result-block" style="background:var(--g50)">
-      <div class="blabel">Availability assessment</div>
-      <p id="res-avail"></p>
-    </div>
-    <div class="footer-stamp" id="res-footer"></div>
+  <div class="form-frame">
+    <iframe
+      src="https://forms.office.com/Pages/ResponsePage.aspx?id=n9gWGeMOckmlE9kfswBwQERInGw2UjVFjCMVqiFbowpUNUVEM1g3QzUwRjJCTTdIRkk5U0s2STY4Mi4u&embed=true"
+      width="100%"
+      height="640"
+      frameborder="0"
+      marginwidth="0"
+      marginheight="0"
+      style="border: none; width: 100%; min-height: 640px;"
+      allowfullscreen
+      webkitallowfullscreen
+      mozallowfullscreen
+      msallowfullscreen>
+    </iframe>
   </div>
 
-  <!-- LOADING -->
-  <div id="loading-view" class="hidden" style="text-align:center;padding:60px 20px">
-    <div style="font-size:40px;margin-bottom:16px">&#128203;</div>
-    <p style="font-size:19px;font-weight:700;color:var(--g900);margin-bottom:8px">Analyzing assessment…</p>
-    <p style="font-size:16px;color:var(--g400)">Reviewing responses and generating clinical recommendations.</p>
+  <div class="footer-note">
+    Need help? Call us at <a href="tel:+19514445678">(951) 444-5678</a> or email <a href="mailto:info@opengrace.org">info@opengrace.org</a><br>
+    Prefer Spanish? <a href="family-prescreening-es.html">Ver en Español</a>
   </div>
 
 </div>
 
-<script>
-const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-const TIMES = ["Morning (8am–12pm)","Afternoon (12pm–4pm)","Evening (4pm–7pm)"];
-const SECTIONS = [
-  "Family & Household Information","Client Profile","Daily Living & Functional Needs",
-  "Behavioral & Emotional Support","Medical & Health Considerations",
-  "Caregiver Capacity & Support Needs","Family Goals & Priorities",
-  "Availability & Scheduling","Acknowledgements & Authorization"
-];
-let currentStep = 0;
-const totalSteps = 9;
-
-// Build availability grid
-const ag = document.getElementById('avail-grid');
-DAYS.forEach(day => {
-  const row = document.createElement('div');
-  row.className = 'avail-row';
-  row.innerHTML = `<div class="avail-day">${day}</div><div class="avail-slots">${TIMES.map(t=>`<label><input type="checkbox" name="avail_${day.toLowerCase()}" value="${t}"> ${t}</label>`).join('')}</div>`;
-  ag.appendChild(row);
-});
-
-// Set today's date
-document.getElementById('consentDate').value = new Date().toISOString().split('T')[0];
-
-function toggleOther(chkId, fieldId) {
-  const chk = document.getElementById(chkId);
-  const field = document.getElementById(fieldId);
-  if (chk && field) field.classList.toggle('hidden', !chk.checked);
-}
-function toggleEmployed() {
-  const v = document.getElementById('caregiverEmployed').value;
-  document.getElementById('hours-field').classList.toggle('hidden', v === 'No — full-time caregiver' || !v);
-}
-
-function updateUI() {
-  document.getElementById('prog-label').textContent = `Section ${currentStep+1} of ${totalSteps}`;
-  document.getElementById('prog-pct').textContent = `${Math.round(((currentStep+1)/totalSteps)*100)}% complete`;
-  document.getElementById('prog-fill').style.width = `${((currentStep+1)/totalSteps)*100}%`;
-  document.getElementById('sec-num').textContent = currentStep+1;
-  document.getElementById('sec-title').innerHTML = SECTIONS[currentStep];
-  document.getElementById('sec-step').textContent = `${currentStep+1}/${totalSteps}`;
-  document.getElementById('intro-notice').classList.toggle('hidden', currentStep > 0);
-  document.getElementById('btn-back').classList.toggle('hidden', currentStep === 0);
-  const isLast = currentStep === totalSteps - 1;
-  const btn = document.getElementById('btn-next');
-  btn.textContent = isLast ? 'Submit & Analyze Assessment ✉' : 'Continue →';
-  btn.onclick = isLast ? submitForm : nextStep;
-}
-
-function nextStep() {
-  document.getElementById('error-box').classList.add('hidden');
-  document.getElementById(`s${currentStep}`).classList.add('hidden');
-  currentStep++;
-  document.getElementById(`s${currentStep}`).classList.remove('hidden');
-  updateUI();
-  window.scrollTo(0, 0);
-}
-function prevStep() {
-  document.getElementById(`s${currentStep}`).classList.add('hidden');
-  currentStep--;
-  document.getElementById(`s${currentStep}`).classList.remove('hidden');
-  updateUI();
-  window.scrollTo(0, 0);
-}
-
-function getChecked(name) {
-  return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(el=>el.value);
-}
-function val(id) { const el = document.getElementById(id); return el ? el.value : ''; }
-function checked(id) { const el = document.getElementById(id); return el ? el.checked : false; }
-
-function canSubmit() {
-  return checked('rightfulRep') && checked('consentToServices') && checked('consentToIPP') &&
-         checked('hipaaAck') && checked('consentToShare') && checked('consentToContact') &&
-         val('consentName').trim() && val('consentRelationship').trim();
-}
-
-async function submitForm() {
-  if (!canSubmit()) {
-    const eb = document.getElementById('error-box');
-    eb.textContent = 'Please complete all required acknowledgements and enter your name and relationship before submitting.';
-    eb.classList.remove('hidden');
-    return;
-  }
-  document.getElementById('form-view').classList.add('hidden');
-  document.getElementById('loading-view').classList.remove('hidden');
-  window.scrollTo(0, 0);
-
-  const availParts = DAYS.map(d => {
-    const slots = getChecked(`avail_${d.toLowerCase()}`);
-    return slots.length ? `${d}: ${slots.join(', ')}` : null;
-  }).filter(Boolean);
-  const availSummary = availParts.join('; ') || 'Not specified';
-
-  const prompt = `You are a clinical coordinator for Open Grace LLC, a CFS (Coordinated Family Support) provider vendored through Inland Counties Regional Center (IRC) in California under Title 17. Analyze this family pre-screening and provide clinical recommendations.
-
-Hour ranges: 20–25 hrs = mild-low moderate; 25–45 hrs = moderate; 45–70 hrs = moderately high/extensive; 70+ hrs = requires strong justification (high acuity, extensive contextual factors).
-
-ASSESSMENT:
-Client: ${val('clientName')||'N/A'}, DOB: ${val('clientDOB')||'N/A'}, UCI: ${val('uci')||'N/A'}
-Diagnoses: ${getChecked('diagnosis').join(', ')}${val('diagnosisOther')?'; '+val('diagnosisOther'):''}
-Communication: ${val('communicationLevel')} | Mobility: ${val('mobilityLevel')} | Independence: ${val('independenceLevel')}
-ADL needs: ${getChecked('adlSupport').join(', ')} — ${val('adlDetails')}
-Safety risks: ${getChecked('safetyRisks').join(', ')} — ${val('safetyDetails')}
-Community access: ${val('communityAccess')} — ${val('communityDetails')}
-Behavioral: ${getChecked('behaviorConcerns').join(', ')} | Freq: ${val('behaviorFrequency')} | Intensity: ${val('behaviorIntensity')} | BSP: ${val('bsp')}
-Triggers: ${val('triggersList')}
-Mental health: ${getChecked('mentalHealth').join(', ')} — ${val('mentalHealthDetails')}
-Medical: ${getChecked('medicalConditions').join(', ')} — ${val('medicalDetails')}
-Medications: ${val('medications')} | Seizures: ${val('seizureHistory')}
-Sensory: ${getChecked('sensoryNeeds').join(', ')}
-Therapies: ${getChecked('therapies').join(', ')} — ${val('therapiesDetails')}
-Caregiver: ${val('primaryCaregiver')} | Employed: ${val('caregiverEmployed')} | Hours/wk: ${val('hoursWorked')}
-Support: ${val('additionalSupport')} | Respite: ${val('respiteNeeded')} | Stress: ${val('stressLevel')}
-Crisis history: ${val('crisisHistory')} | IRC concerns: ${val('ircConcerns')}
-Household: ${val('householdSize')} | Language: ${val('homeLanguage')} | Interpreter: ${val('interpreterNeeded')}
-Goals: ${val('topGoals')}
-Skill priorities: ${getChecked('skillBuilding').join(', ')}
-Community goals: ${val('communityGoals')}
-Parent training: ${val('parentTraining')}
-Coordination needs: ${val('coordinationNeeds')}
-Availability: ${availSummary}
-Transport: ${val('transportNeeded')} | Home visits: ${val('homeVisitOk')}
-
-Respond ONLY with valid JSON, no markdown, no extra text:
-{"clinicalSummary":"2-3 sentence summary","acuityLevel":"Mild-Low Moderate|Moderate|Moderately High|Extensive|High Acuity","recommendedHours":{"min":number,"max":number,"proposed":number},"justification":"3-4 sentence clinical justification","recommendedServices":[{"service":"name","rationale":"why"}],"engagementStrategies":[{"strategy":"name","detail":"specific approach"}],"coordinatorNotes":"key points for IRC coordinator","availabilityMatch":"scheduling fit assessment","redFlags":["urgent concerns if any"],"strengthsToLeverage":["protective factors"]}`;
-
-  try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, messages: [{ role: "user", content: prompt }] })
-    });
-    const data = await resp.json();
-    const text = (data.content || []).find(b => b.type === 'text')?.text || '';
-    const clean = text.replace(/```json|```/g, '').trim();
-    const r = JSON.parse(clean);
-
-    const acuityColors = {"Mild-Low Moderate":"#1D9E75","Moderate":"#185FA5","Moderately High":"#BA7517","Extensive":"#D85A30","High Acuity":"#A32D2D"};
-    document.getElementById('res-acuity').textContent = r.acuityLevel;
-    document.getElementById('res-acuity').style.color = acuityColors[r.acuityLevel] || '#2D2B7F';
-    document.getElementById('res-hours').textContent = r.recommendedHours?.proposed ?? '—';
-    document.getElementById('res-range').textContent = `${r.recommendedHours?.min||'?'}–${r.recommendedHours?.max||'?'} hrs/wk`;
-    document.getElementById('res-summary').textContent = r.clinicalSummary || '';
-    document.getElementById('res-justification').textContent = r.justification || '';
-    document.getElementById('res-coordinator').textContent = r.coordinatorNotes || '';
-    document.getElementById('res-avail').textContent = r.availabilityMatch || '';
-    document.getElementById('res-subtitle').textContent = `Analysis complete — ${val('clientName')||'client'} · ${val('consentDate')}`;
-    document.getElementById('res-footer').textContent = `Open Grace LLC · IRC Vendor PJ6208 · 951-880-4132 · joshua.kennedy@opengrace.org`;
-
-    if (r.redFlags && r.redFlags.filter(f=>f&&f.trim()).length > 0) {
-      document.getElementById('res-flags-block').classList.remove('hidden');
-      document.getElementById('res-flags').innerHTML = r.redFlags.filter(f=>f&&f.trim()).map(f=>`<div class="flag">⚠ ${f}</div>`).join('');
-    }
-
-    document.getElementById('res-services').innerHTML = (r.recommendedServices||[]).map((s,i,arr)=>`<div class="item"><div class="item-title">${s.service}</div><div class="item-body">${s.rationale}</div></div>`).join('');
-    document.getElementById('res-strategies').innerHTML = (r.engagementStrategies||[]).map((s,i,arr)=>`<div class="item"><div class="item-title">${s.strategy}</div><div class="item-body">${s.detail}</div></div>`).join('');
-
-    if (r.strengthsToLeverage && r.strengthsToLeverage.filter(s=>s&&s.trim()).length > 0) {
-      document.getElementById('res-strengths-block').classList.remove('hidden');
-      document.getElementById('res-strengths').innerHTML = r.strengthsToLeverage.filter(s=>s&&s.trim()).map(s=>`<div class="strength">★ ${s}</div>`).join('');
-    }
-
-    document.getElementById('loading-view').classList.add('hidden');
-    document.getElementById('result-view').classList.remove('hidden');
-    window.scrollTo(0, 0);
-
-  } catch (e) {
-    document.getElementById('loading-view').classList.add('hidden');
-    document.getElementById('form-view').classList.remove('hidden');
-    const eb = document.getElementById('error-box');
-    eb.textContent = 'Analysis could not be completed. Please check your connection and try again, or contact the Director at 951-880-4132.';
-    eb.classList.remove('hidden');
-    window.scrollTo(0, 0);
-  }
-}
-
-updateUI();
-</script>
 </body>
 </html>
