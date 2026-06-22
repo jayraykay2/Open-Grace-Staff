@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Open Grace LLC Family Pre-Screening — Start your CFS journey. Complete this short form and a Family Coordinator will follow up within one business day.">
+<title>Family Pre-Screening — Open Grace LLC</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1E1C5E;--navy2:#2D2B7F;--navy3:#3D3A9A;
+  --orange:#FF6B1A;--orange2:#FF8C4A;--orange3:#FFF0E8;
+  --purple:#7B35C1;--gold:#FFB800;
+  --white:#FFFFFF;--off:#F8F7FF;
+  --g100:#F2F1FA;--g200:#E4E2F0;--g400:#9895B5;--g700:#3D3B52;--g900:#1A1830;
+  --display:'Fraunces',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;
+  --radius:16px;--shadow:0 4px 32px rgba(30,28,94,0.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--off);color:var(--g700);line-height:1.7;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column;}
+
+/* NAV */
+.nav{background:var(--navy);padding:0 40px;height:70px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 20px rgba(0,0,0,.2);}
+.nav-logo{height:40px;width:40px;object-fit:contain;border-radius:10px;background:white;padding:3px;flex-shrink:0;}
+.nav-name{font-size:17px;font-weight:700;color:white;flex:1;}
+.nav-name span{color:var(--orange);}
+.nav-links{display:flex;gap:6px;align-items:center;}
+.nav-link{color:rgba(255,255,255,.75);font-size:13px;font-weight:600;text-decoration:none;padding:7px 16px;border-radius:20px;transition:all .2s;}
+.nav-link:hover{background:rgba(255,255,255,.1);color:white;}
+.lang-toggle{display:flex;background:rgba(255,255,255,.1);border-radius:20px;overflow:hidden;flex-shrink:0;}
+.lang-btn{padding:7px 14px;font-size:12px;font-weight:700;text-decoration:none;transition:all .2s;color:rgba(255,255,255,.6);}
+.lang-btn.active{background:var(--orange);color:white;}
+
+/* RAINBOW */
+.rainbow{height:5px;background:linear-gradient(90deg,var(--orange),var(--gold),var(--purple),var(--navy2),var(--orange));}
+
+/* HERO */
+.hero{background:linear-gradient(160deg,var(--navy) 0%,#151340 55%,#0f0d2e 100%);padding:60px 24px 48px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(123,53,193,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-eyebrow{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;}
+.hero-title{font-family:var(--display);font-size:clamp(28px,5vw,44px);color:white;line-height:1.15;margin-bottom:12px;}
+.hero-title em{color:var(--orange);font-style:italic;}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.65);max-width:500px;margin:0 auto;line-height:1.75;}
+
+/* STEPS */
+.steps-bar{background:white;border-bottom:1px solid var(--g200);padding:24px 40px;}
+.steps{display:flex;gap:0;max-width:600px;margin:0 auto;position:relative;}
+.steps::before{content:'';position:absolute;top:20px;left:20px;right:20px;height:2px;background:var(--g200);}
+.step{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;position:relative;z-index:1;}
+.step-dot{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:var(--g200);color:var(--g400);}
+.step.active .step-dot{background:var(--orange);color:white;}
+.step.done .step-dot{background:var(--navy2);color:white;}
+.step-label{font-size:11px;font-weight:700;color:var(--g400);letter-spacing:.5px;text-transform:uppercase;text-align:center;}
+.step.active .step-label{color:var(--navy);}
+
+/* FORM SECTION */
+.form-section{flex:1;padding:40px 24px 64px;display:flex;flex-direction:column;align-items:center;}
+.form-card{background:white;border-radius:24px;box-shadow:var(--shadow);width:100%;max-width:720px;overflow:hidden;}
+.form-card-header{background:linear-gradient(135deg,var(--orange3),#FFE0C8);padding:28px 32px 24px;border-bottom:1px solid rgba(255,107,26,.12);}
+.form-card-header h2{font-family:var(--display);font-size:22px;color:var(--navy);margin-bottom:6px;}
+.form-card-header p{font-size:13px;color:var(--g700);line-height:1.7;}
+.form-card-header .badges{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.3px;}
+.badge-orange{background:var(--orange3);color:var(--orange);}
+.badge-navy{background:#E8E7FF;color:var(--navy2);}
+.form-embed-wrap{padding:0;}
+.form-embed-wrap iframe{display:block;width:100%;border:none;}
+
+/* TRUST STRIP */
+.trust-strip{max-width:720px;width:100%;margin-top:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.trust-item{background:white;border-radius:var(--radius);padding:20px;text-align:center;box-shadow:0 2px 12px rgba(30,28,94,.06);}
+.trust-icon{font-size:24px;margin-bottom:8px;}
+.trust-item h4{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.trust-item p{font-size:12px;color:var(--g400);line-height:1.6;}
+
+/* FOOTER */
+footer{background:var(--g900);padding:28px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+footer p{font-size:12px;color:rgba(255,255,255,.4);}
+.footer-links{display:flex;gap:20px;}
+footer a{color:rgba(255,255,255,.5);text-decoration:none;font-size:12px;}
+footer a:hover{color:rgba(255,255,255,.8);}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .steps-bar{padding:20px 16px;}
+  .form-card-header{padding:20px 20px 18px;}
+  .trust-strip{grid-template-columns:1fr;}
+  footer{flex-direction:column;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <img src="assets/og-logo.png" alt="Open Grace" class="nav-logo" onerror="this.style.display='none'">
+  <div class="nav-name">Open <span>Grace</span></div>
+  <div class="nav-links">
+    <a href="landing.html" class="nav-link">Home</a>
+    <a href="family-portal.html" class="nav-link">Family Portal</a>
+  </div>
+  <div class="lang-toggle">
+    <a href="family-prescreening.html" class="lang-btn active">EN</a>
+    <a href="family-prescreening-es.html" class="lang-btn">ES</a>
+  </div>
+</nav>
+
+<div class="rainbow"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Open Grace LLC · CFS Pre-Screening</div>
+  <h1 class="hero-title">Let's get you started</h1>
+  <p class="hero-sub">Answer a few quick questions — about 2 minutes — and a Family Coordinator will follow up within one business day.</p>
+</section>
+
+<!-- STEPS -->
+<div class="steps-bar">
+  <div class="steps">
+    <div class="step active">
+      <div class="step-dot">1</div>
+      <div class="step-label">Pre-Screening</div>
+    </div>
+    <div class="step">
+      <div class="step-dot">2</div>
+      <div class="step-label">Coordinator Call</div>
+    </div>
+    <div class="step">
+      <div class="step-dot">3</div>
+      <div class="step-label">Assessment</div>
+    </div>
+    <div class="step">
+      <div class="step-dot">4</div>
+      <div class="step-label">Services Begin</div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<section class="form-section">
+  <div class="form-card">
+    <div class="form-card-header">
+      <h2>Open Grace — Family Pre-Screening</h2>
+      <p>This form is secure and confidential. Your information is protected under HIPAA and will only be used to follow up on your CFS inquiry.</p>
+      <div class="badges">
+        <span class="badge badge-orange">🔒 HIPAA Protected</span>
+        <span class="badge badge-navy">⏱ ~2 Minutes</span>
+        <span class="badge badge-navy">📞 Follow-up within 1 business day</span>
+      </div>
+    </div>
+    <div class="form-embed-wrap">
+      <iframe
+        src="https://forms.office.com/Pages/ResponsePage.aspx?id=n9gWGeMOckmlE9kfswBwQERInGw2UjVFjCMVqiFbowpUNUVEM1g3QzUwRjJCTTdIRkk5U0s2STY4Mi4u&embed=true"
+        width="100%"
+        height="900px"
+        frameborder="0"
+        marginwidth="0"
+        marginheight="0"
+        style="border:none;max-width:100%;max-height:100vh"
+        allowfullscreen
+        webkitallowfullscreen
+        mozallowfullscreen
+        msallowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <!-- TRUST STRIP -->
+  <div class="trust-strip">
+    <div class="trust-item">
+      <div class="trust-icon">🔒</div>
+      <h4>Your Info Is Safe</h4>
+      <p>We never share your information without written consent. HIPAA-compliant under our M365 BAA.</p>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">🌎</div>
+      <h4>Bilingual Services</h4>
+      <p>Fully bilingual support in English and Spanish. <a href="family-prescreening-es.html" style="color:var(--orange);font-weight:700;">Ver en español →</a></p>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">📞</div>
+      <h4>Prefer to Call?</h4>
+      <p>Reach Director Joshua Kennedy at <a href="tel:9518804132" style="color:var(--orange);font-weight:700;">(951) 880-4132</a> — call or text.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Open Grace LLC · CFS Provider · IRC Vendor PJ6208 · Riverside &amp; San Bernardino Counties</p>
+  <div class="footer-links">
+    <a href="landing.html">Home</a>
+    <a href="family-portal.html">Family Portal</a>
+    <a href="es.html">Español</a>
+    <a href="tel:9518804132">(951) 880-4132</a>
+  </div>
+</footer>
+
+</body>
+</html>
