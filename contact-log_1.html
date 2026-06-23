@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Log — Open Grace LLC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<style>
+  :root {
+    --navy: #1E1C5E;
+    --navy-light: #2a2878;
+    --orange: #FF6B1A;
+    --orange-hover: #e55a0d;
+    --bg: #0f0e2e;
+    --card: #1a1843;
+    --card-border: #2e2c5a;
+    --text: #e8e6ff;
+    --muted: #9896c8;
+    --input-bg: #12103a;
+    --input-border: #2e2c5a;
+    --input-focus: #FF6B1A;
+    --success: #22c55e;
+    --error: #ef4444;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Rainbow bar */
+  .rainbow-bar {
+    height: 5px;
+    background: linear-gradient(to right,
+      #e53e3e, #ed8936, #ecc94b, #48bb78, #4299e1, #667eea, #9f7aea);
+    width: 100%;
+  }
+
+  /* Top nav */
+  .nav {
+    background: var(--navy);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .nav-brand {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .nav-brand span { color: var(--orange); }
+  .nav-links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .nav-links a {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.06); }
+
+  /* Auth bar */
+  .auth-bar {
+    background: var(--card);
+    border-bottom: 1px solid var(--card-border);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .auth-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+  }
+  .auth-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+  }
+  .auth-dot.signed-in { background: var(--success); }
+  .auth-user { color: var(--text); font-weight: 500; }
+  .auth-label { color: var(--muted); }
+  .btn-auth {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--card-border);
+    cursor: pointer;
+    background: var(--input-bg);
+    color: var(--text);
+    transition: all 0.2s;
+  }
+  .btn-auth:hover { background: var(--card-border); }
+
+  /* Page layout */
+  .page-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+
+  .page-header {
+    margin-bottom: 24px;
+  }
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .page-subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  /* Form card */
+  .form-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 28px;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--orange);
+    margin-bottom: 16px;
+    margin-top: 28px;
+  }
+  .section-label:first-of-type { margin-top: 0; }
+
+  .field-row {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .field-row.two { grid-template-columns: 1fr 1fr; }
+  .field-row.three { grid-template-columns: 1fr 1fr 1fr; }
+
+  @media (max-width: 560px) {
+    .field-row.two, .field-row.three { grid-template-columns: 1fr; }
+  }
+
+  label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 5px;
+  }
+  label .req { color: var(--orange); margin-left: 2px; }
+
+  input[type="text"],
+  input[type="date"],
+  input[type="time"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 7px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    padding: 9px 12px;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--input-focus);
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239896c8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--card-border);
+    margin: 24px 0 20px;
+  }
+
+  /* Submit */
+  .submit-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .btn-submit {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 28px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover:not(:disabled) { background: var(--orange-hover); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .submit-hint {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  /* Status messages */
+  .status-msg {
+    display: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-top: 16px;
+    font-weight: 500;
+  }
+  .status-msg.success {
+    display: block;
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: #86efac;
+  }
+  .status-msg.error {
+    display: block;
+    background: rgba(239,68,68,0.12);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #fca5a5;
+  }
+
+  /* Spinner */
+  .spinner {
+    display: none;
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  .btn-submit.loading .spinner { display: inline-block; }
+  .btn-submit.loading .btn-text { display: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Gate overlay when not signed in */
+  .auth-gate {
+    text-align: center;
+    padding: 48px 20px;
+  }
+  .auth-gate-icon {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+  }
+  .auth-gate h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .auth-gate p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 24px;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .btn-sign-in {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-sign-in:hover { background: var(--orange-hover); }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="rainbow-bar"></div>
+
+<nav class="nav">
+  <a class="nav-brand" href="/staff-portal.html">Open <span>Grace</span></a>
+  <div class="nav-links">
+    <a href="/staff-portal.html">Staff Portal</a>
+    <a href="/director.html">Director</a>
+    <a href="/training.html">Training</a>
+  </div>
+</nav>
+
+<div class="auth-bar">
+  <div class="auth-status">
+    <div class="auth-dot" id="authDot"></div>
+    <span class="auth-label" id="authLabel">Not signed in</span>
+    <span class="auth-user hidden" id="authUser"></span>
+  </div>
+  <button class="btn-auth hidden" id="btnSignOut" onclick="signOut()">Sign Out</button>
+</div>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <h1 class="page-title">Daily Contact Log</h1>
+    <p class="page-subtitle">Document all client contact — saved to SharePoint and filed to the client's folder.</p>
+  </div>
+
+  <!-- Auth gate (shown when not signed in) -->
+  <div class="form-card auth-gate" id="authGate">
+    <div class="auth-gate-icon">🔒</div>
+    <h2>Staff Sign-In Required</h2>
+    <p>Sign in with your Open Grace Microsoft 365 account to submit contact logs.</p>
+    <button class="btn-sign-in" onclick="signIn()">Sign In with Microsoft</button>
+  </div>
+
+  <!-- Contact log form (shown when signed in) -->
+  <div class="form-card hidden" id="logForm">
+
+    <div class="section-label">Staff & Client</div>
+
+    <div class="field-row two">
+      <div>
+        <label>Staff Code <span class="req">*</span></label>
+        <input type="text" id="staffCode" placeholder="e.g. OG-2026-001" required>
+      </div>
+      <div>
+        <label>Staff Name</label>
+        <input type="text" id="staffName" placeholder="Auto-filled from sign-in" readonly style="opacity:0.6;">
+      </div>
+    </div>
+
+    <div class="field-row two">
+      <div>
+        <label>Client Name <span class="req">*</span></label>
+        <input type="text" id="clientName" placeholder="Last, First" required>
+      </div>
+      <div>
+        <label>Client UCI</label>
+        <input type="text" id="clientUCI" placeholder="7-digit UCI">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Contact Details</div>
+
+    <div class="field-row three">
+      <div>
+        <label>Date <span class="req">*</span></label>
+        <input type="date" id="logDate" required>
+      </div>
+      <div>
+        <label>Time</label>
+        <input type="time" id="logTime">
+      </div>
+      <div>
+        <label>Hours Spent <span class="req">*</span></label>
+        <input type="number" id="hoursSpent" step="0.25" min="0.25" max="8" placeholder="e.g. 1.5" required>
+      </div>
+    </div>
+
+    <div class="field-row two">
+      <div>
+        <label>Contact Type <span class="req">*</span></label>
+        <select id="contactType" required>
+          <option value="" disabled selected>Select type</option>
+          <option>Phone</option>
+          <option>Home Visit</option>
+          <option>Office Visit</option>
+          <option>Email</option>
+          <option>Text</option>
+          <option>Virtual / Video</option>
+          <option>Collateral Contact</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Location</label>
+        <input type="text" id="location" placeholder="e.g. Client home, Office, Remote">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div>
+        <label>Domain / Service Area <span class="req">*</span></label>
+        <select id="domain" required>
+          <option value="" disabled selected>Select domain</option>
+          <option>Employment</option>
+          <option>Education / Training</option>
+          <option>Health / Medical</option>
+          <option>Mental Health</option>
+          <option>Housing</option>
+          <option>Financial / Benefits</option>
+          <option>Legal / Immigration</option>
+          <option>Family / Social Support</option>
+          <option>Transportation</option>
+          <option>Basic Needs</option>
+          <option>Crisis Support</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div>
+        <label>Other Participants</label>
+        <input type="text" id="participants" placeholder="e.g. Parent, Case worker, School counselor">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Notes</div>
+
+    <div class="field-row">
+      <div>
+        <label>Contact Notes <span class="req">*</span></label>
+        <textarea id="notes" rows="5" placeholder="Describe what was discussed, services coordinated, and client progress..." required></textarea>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div>
+        <label>Follow-Up Actions</label>
+        <textarea id="followUp" rows="3" placeholder="Next steps, referrals made, upcoming appointments..."></textarea>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <button class="btn-submit" id="btnSubmit" onclick="submitLog()">
+        <span class="btn-text">Submit Contact Log</span>
+        <span class="spinner"></span>
+      </button>
+      <span class="submit-hint">Saved to SharePoint + client folder</span>
+    </div>
+
+    <div id="statusMsg" class="status-msg"></div>
+
+  </div><!-- /logForm -->
+</div>
+
+<script>
+// ─── MSAL Config ───────────────────────────────────────────────────────────
+const msalConfig = {
+  auth: {
+    clientId: "ede1a3cf-cf8d-466b-94f0-ed1008ad0f5f",
+    authority: "https://login.microsoftonline.com/1916d89f-0ee3-4972-a513-d91fb3007040",
+    redirectUri: window.location.origin + "/contact-log.html"
+  },
+  cache: { cacheLocation: "sessionStorage" }
+};
+
+const msalInstance = new msal.PublicClientApplication(msalConfig);
+let currentAccount = null;
+
+// ─── PASTE YOUR POWER AUTOMATE HTTP TRIGGER URL HERE ───────────────────────
+const FLOW_URL = "https://default1916d89f0ee34972a513d91fb30070.40.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4d51a547ef2e496b888f669479b9da28/triggers/manual/paths/invoke?api-version=1";
+// ───────────────────────────────────────────────────────────────────────────
+
+// Handle redirect
+(async () => {
+  await msalInstance.initialize();
+  try {
+    const resp = await msalInstance.handleRedirectPromise();
+    if (resp) { currentAccount = resp.account; }
+  } catch(e) { console.warn(e); }
+  updateAuthUI();
+})();
+
+function updateAuthUI() {
+  const accounts = msalInstance.getAllAccounts();
+  currentAccount = accounts.length > 0 ? accounts[0] : null;
+
+  const dot    = document.getElementById("authDot");
+  const label  = document.getElementById("authLabel");
+  const user   = document.getElementById("authUser");
+  const signOut= document.getElementById("btnSignOut");
+  const gate   = document.getElementById("authGate");
+  const form   = document.getElementById("logForm");
+
+  if (currentAccount) {
+    dot.classList.add("signed-in");
+    label.textContent = "";
+    user.textContent  = currentAccount.name || currentAccount.username;
+    user.classList.remove("hidden");
+    signOut.classList.remove("hidden");
+    gate.classList.add("hidden");
+    form.classList.remove("hidden");
+
+    // Pre-fill staff name
+    document.getElementById("staffName").value = currentAccount.name || "";
+
+    // Default today's date + current time
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0,10);
+    const timeStr = now.toTimeString().slice(0,5);
+    const dateInput = document.getElementById("logDate");
+    const timeInput = document.getElementById("logTime");
+    if (!dateInput.value) dateInput.value = dateStr;
+    if (!timeInput.value) timeInput.value = timeStr;
+  } else {
+    dot.classList.remove("signed-in");
+    label.textContent = "Not signed in";
+    user.classList.add("hidden");
+    signOut.classList.add("hidden");
+    gate.classList.remove("hidden");
+    form.classList.add("hidden");
+  }
+}
+
+function signIn() {
+  msalInstance.loginRedirect({
+    scopes: ["User.Read", "Sites.ReadWrite.All"]
+  });
+}
+
+function signOut() {
+  msalInstance.logoutRedirect({ account: currentAccount });
+}
+
+async function submitLog() {
+  const required = ["staffCode","clientName","logDate","hoursSpent","contactType","domain","notes"];
+  let valid = true;
+  required.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) {
+      el.style.borderColor = "var(--error)";
+      valid = false;
+    } else {
+      el.style.borderColor = "";
+    }
+  });
+
+  if (!valid) {
+    showStatus("Please fill in all required fields.", "error");
+    return;
+  }
+
+  if (FLOW_URL === "PASTE_POWER_AUTOMATE_HTTP_URL_HERE") {
+    showStatus("⚠️ Flow URL not configured yet. Paste your Power Automate HTTP trigger URL into contact-log.html.", "error");
+    return;
+  }
+
+  const btn = document.getElementById("btnSubmit");
+  btn.classList.add("loading");
+  btn.disabled = true;
+
+  const payload = {
+    staffCode:    document.getElementById("staffCode").value.trim(),
+    staffName:    document.getElementById("staffName").value.trim(),
+    clientName:   document.getElementById("clientName").value.trim(),
+    clientUCI:    document.getElementById("clientUCI").value.trim(),
+    logDate:      document.getElementById("logDate").value,
+    logTime:      document.getElementById("logTime").value,
+    contactType:  document.getElementById("contactType").value,
+    domain:       document.getElementById("domain").value,
+    hoursSpent:   document.getElementById("hoursSpent").value,
+    location:     document.getElementById("location").value.trim(),
+    participants: document.getElementById("participants").value.trim(),
+    notes:        document.getElementById("notes").value.trim(),
+    followUp:     document.getElementById("followUp").value.trim()
+  };
+
+  try {
+    const resp = await fetch(FLOW_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (resp.ok) {
+      showStatus(`✅ Contact log submitted for ${payload.clientName} and saved to their SharePoint folder.`, "success");
+      resetForm();
+    } else {
+      throw new Error(`HTTP ${resp.status}`);
+    }
+  } catch(err) {
+    showStatus(`❌ Submission failed: ${err.message}. Try again or contact your administrator.`, "error");
+  } finally {
+    btn.classList.remove("loading");
+    btn.disabled = false;
+  }
+}
+
+function resetForm() {
+  const keep = ["staffCode","staffName"];
+  const now = new Date();
+  document.querySelectorAll("#logForm input, #logForm select, #logForm textarea").forEach(el => {
+    if (keep.includes(el.id)) return;
+    if (el.id === "logDate") { el.value = now.toISOString().slice(0,10); return; }
+    if (el.id === "logTime") { el.value = now.toTimeString().slice(0,5); return; }
+    el.value = "";
+    if (el.tagName === "SELECT") el.selectedIndex = 0;
+  });
+}
+
+function showStatus(msg, type) {
+  const el = document.getElementById("statusMsg");
+  el.textContent = msg;
+  el.className = "status-msg " + type;
+  el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+</script>
+</body>
+</html>
