@@ -631,6 +631,18 @@ body {
 
 /* ── Passkey Auth Gate ── */
 #og-auth-gate{position:fixed;inset:0;z-index:99999;background:#080D18;display:flex;align-items:center;justify-content:center;transition:opacity .35s ease,transform .35s ease;opacity:1}.og-gate-inner{display:flex;flex-direction:column;align-items:center;padding:2rem 1.5rem;text-align:center;max-width:320px;width:100%}.og-gate-logo img{width:72px;height:72px;border-radius:18px;object-fit:cover;margin-bottom:1.25rem}.og-gate-title{font-size:22px;font-weight:700;color:#EDF2FF;margin-bottom:.25rem}.og-gate-sub{font-size:13px;color:#8B96AA;margin-bottom:2rem;text-transform:uppercase}.og-gate-status{font-size:15px;color:#8B96AA;margin-bottom:1.5rem;min-height:44px;display:flex;align-items:center;justify-content:center}.og-gate-btn{display:flex;align-items:center;gap:.6rem;background:#4F8EF7;color:#fff;border:none;border-radius:14px;padding:14px 28px;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:.75rem;width:100%;justify-content:center}.og-gate-register{background:rgba(79,142,247,.12);color:#4F8EF7;border:1px solid rgba(79,142,247,.25);border-radius:12px;padding:13px 24px;font-size:15px;font-weight:600;cursor:pointer;width:100%;margin-bottom:.75rem}.og-gate-fallback{background:none;border:none;color:#4A5568;font-size:13px;cursor:pointer;padding:.5rem;text-decoration:underline}#og-install-banner{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));left:1rem;right:1rem;background:#16202E;border:1px solid rgba(79,142,247,.25);border-radius:14px;padding:.875rem 1rem;display:flex;align-items:center;gap:.75rem;z-index:9999;font-size:13px;color:#EDF2FF}#og-install-banner span{flex:1}#og-install-yes{background:#4F8EF7;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer}#og-install-no{background:none;border:none;color:#4A5568;font-size:16px;cursor:pointer}
+
+/* ── Attention / Alert card (auto-injected) ── */
+#home-alerts-card { margin-bottom: .875rem; }
+.alert-item { display:flex;gap:.625rem;align-items:flex-start;padding:.625rem .75rem;border-radius:var(--r-sm);margin-bottom:.375rem; }
+.alert-item:last-child { margin-bottom:0; }
+.alert-red   { background:var(--red-bg);   border:1px solid var(--red-b);   }
+.alert-amber { background:var(--amber-bg); border:1px solid var(--amber-b); }
+.alert-green { background:var(--green-bg); border:1px solid var(--green-b); }
+.alert-icon  { font-size:15px;flex-shrink:0;margin-top:1px; }
+.alert-body  { flex:1; }
+.alert-title  { font-size:13px;font-weight:600;color:var(--t1);line-height:1.3; }
+.alert-detail { font-size:11px;color:var(--t2);margin-top:2px;line-height:1.4; }
 </style>
 </head>
 <body>
@@ -672,6 +684,24 @@ body {
     </div>
   </div>
 
+  <!-- ATTENTION QUEUE (auto-generated) -->
+  <div class="card" id="home-alerts-card" style="margin-bottom:.875rem;">
+    <div class="card-title"><span class="card-title-icon">🚨</span>Attention needed</div>
+    <div style="font-size:13px;color:var(--t2);padding:.5rem 0">Loading…</div>
+  </div>
+
+  <!-- QPR TRACKER -->
+  <div class="card" style="margin-bottom:.875rem;">
+    <div class="card-title"><span class="card-title-icon">📋</span>QPR Tracker</div>
+    <div class="alert-item alert-amber">
+      <span class="alert-icon">⏰</span>
+      <div class="alert-body">
+        <div class="alert-title">Burks, Jaybrion (OG-001) — QPR due Jul 21, 2026</div>
+        <div class="alert-detail">UCI 6953825 · 32/80 hrs used (40%) · Draft not started · Navigator: Ambre Carter · Assign Claude QPR Monitor → scan OG_ContactLogs_2026-06-14.csv</div>
+      </div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-title"><span class="card-title-icon">⚡</span>Quick actions</div>
     <div class="qa-grid">
@@ -680,6 +710,9 @@ body {
       <a class="qa-btn warn" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank">🚨 Incident Report</a>
       <button class="qa-btn" onclick="switchTab('pipeline')">🔄 View Pipeline</button>
     </div>
+    <button class="qa-btn" style="width:100%;justify-content:center;gap:.5rem;margin-bottom:.375rem" onclick="forceSyncPipeline();forceSyncClients();setTimeout(renderHomeAlerts,300)">
+      🔄 Sync Current Data
+    </button>
     <button class="qa-btn success" id="self-deploy-btn" style="width:100%;justify-content:center;gap:.5rem" onclick="selfDeploy()">
       🚀 Push Dashboard Update to GitHub
     </button>
@@ -1514,19 +1547,32 @@ function updateHomeStats(p) {
 
 function forceSyncPipeline() {
   const seed = {
+    // ── PENDING REFERRALS ──
     'referral-pending': [
-      { name:'Burks, Jaybrion', phone:'(909) 722-0525', date:'2026-04-22',
-        notes:'UCI 6953825 | Coordinator: Christina Castaneda | Service start 04/22/2026 | QPR due 07/21/2026', added:'2026-04-22' },
-      { name:'Pinto, Arianna', phone:'(323) 490-6850', date:'2026-05-29',
-        notes:'UCI 7446993 | Mother: Veronica Falcon | Coordinator: Tarah Bass', added:'2026-05-29' },
-      { name:'Beinbrech, Marykate', phone:'(562) 631-7043', date:'2026-05-18',
-        notes:'UCI 8283031 | Mother: Christi Beinbrech | Coordinator: Tarah Bass', added:'2026-05-18' },
+      { name:'REF-P01 — Unassigned ⚠️', phone:'', date:'2026-06-22',
+        notes:'STUCK 4 DAYS — No owner. Director action needed: assign to Ambre or hold with documented reason.', added:'2026-06-22' },
+      { name:'REF-P02 — New Referral', phone:'', date:'2026-06-24',
+        notes:'ACE assigned. Next: send pre-screen link via family-portal.html.', added:'2026-06-24' },
+      { name:'REF-A01 — Contact Stage', phone:'', date:'2026-06-23',
+        notes:'ACE assigned. First call unanswered. Next: second attempt + send pre-screen link by text.', added:'2026-06-23' },
+      { name:'REF-A02 — Prescreen Stage', phone:'', date:'2026-06-25',
+        notes:'ACE assigned. Pre-screen completed via MS Forms. Next: director review to approve advancing.', added:'2026-06-25' },
     ],
-    'referral-assign': [],
+    // ── AUTHORIZATION STAGE — waiting on Enclosure D ──
+    'referral-assign': [
+      { name:'Pinto, Arianna — Authorization ⚠️', phone:'(323) 490-6850', date:'2026-06-19',
+        notes:'UCI 7446993 | Coordinator: Tarah Bass | 7 days at stage | Request Enclosure D from IRC SC now.', added:'2026-06-19' },
+      { name:'Beinbrech, Marykate — Authorization ⚠️', phone:'(562) 631-7043', date:'2026-06-21',
+        notes:'UCI 8283031 | Coordinator: Tarah Bass | SP Marykate folder open Jun 19 | Enclosure D not received.', added:'2026-06-21' },
+    ],
+    // ── ONBOARDING ──
     'onboarding': [
-      { name:'Escajeda, Sandra', phone:'(714) 340-9366', date:'2026-06-09', notes:'Position: Family Coordinator | Applied June 9', added:'2026-06-09' },
-      { name:'Allah, Mecca', phone:'(310) 760-6833', date:'2026-06-08', notes:"Position: Case Manager | Master's in Special Education", added:'2026-06-08' },
-      { name:'Carter-Earl, Ambre', phone:'(310) 606-0578', date:'2026-06-07', notes:'Position: Family Coordinator | Verbal offer extended', added:'2026-06-07' },
+      { name:'Burks, Jaybrion — Active Client ⚠️', phone:'(909) 722-0525', date:'2026-01-15',
+        notes:'UCI 6953825 | OG-001 | Navigator: Ambre Carter | QPR due 07/21/2026 (28 days) | Family orientation + acknowledgement outstanding.', added:'2026-01-15' },
+      { name:'REF-C01 — Onboarding Setup ⚠️', phone:'', date:'2026-06-23',
+        notes:'ACE assigned. STUCK 3 days. Next: enter QPR date in Client Log.xlsx and set service rhythm.', added:'2026-06-23' },
+      { name:'REF-C02 — Onboarding', phone:'', date:'2026-06-25',
+        notes:'ACE assigned. Next: complete family orientation call.', added:'2026-06-25' },
     ],
     'completed': []
   };
@@ -1546,6 +1592,54 @@ function forceSyncPipeline() {
   save(K.pipeline, current);
   renderPipeline();
   toast(added > 0 ? `✓ Synced — ${added} entr${added===1?'y':'ies'} added` : '✓ Pipeline up to date');
+}
+
+function forceSyncClients() {
+  const clientSeed = [
+    { name:'Burks, Jaybrion', uci:'6953825', serviceStart:'2026-01-15', qprDue:'2026-07-21',
+      authorizedHours:80, usedHours:32, coordinator:'Ambre Carter-Earl (OG-2026-001)', active:true,
+      notes:'OG-001 | IRC Coordinator: Tarah Bass | QPR due Jul 21 2026 | Orientation outstanding' }
+  ];
+  const existing = load(K.clients, []);
+  let added = 0;
+  clientSeed.forEach(seed => {
+    const already = existing.some(c => (c.uci||'').trim()===seed.uci || (c.name||'').toLowerCase().trim()===seed.name.toLowerCase().trim());
+    if (!already) { existing.push(seed); added++; }
+  });
+  save(K.clients, existing);
+  renderClientRoster();
+  renderHomeAlerts();
+  toast(added > 0 ? '✓ Client sync — '+added+' client'+(added===1?'':'s')+' added' : '✓ Clients already up to date');
+}
+
+function renderHomeAlerts() {
+  const el = document.getElementById('home-alerts-card');
+  if (!el) return;
+  const today = new Date();
+  const clients = load(K.clients, []);
+  const pipe = getPipeline();
+  const items = [];
+  clients.filter(c => c.active !== false && c.qprDue).forEach(c => {
+    const days = Math.ceil((new Date(c.qprDue) - today) / 86400000);
+    if (days <= 35) {
+      const cls = days < 0 ? 'alert-red' : 'alert-amber';
+      const label = days < 0 ? 'QPR OVERDUE '+Math.abs(days)+'d' : 'QPR in '+days+' days — '+c.qprDue;
+      items.push({ cls, icon:'📋', title:label, detail:c.name+' · UCI '+c.uci+' · '+( c.usedHours||0)+'/'+( c.authorizedHours||'?')+' hrs used · Start Enclosure D draft' });
+    }
+  });
+  const pending = pipe['referral-pending'] || [];
+  const stuck = pending.filter(i => (i.notes||'').includes('STUCK') || (i.name||'').includes('⚠'));
+  if (stuck.length) items.push({ cls:'alert-red', icon:'⚠️', title:stuck.length+' referral'+(stuck.length>1?'s':'')+' stuck — director action needed', detail:stuck.map(i=>i.name).join(' · ') });
+  const auth = pipe['referral-assign'] || [];
+  if (auth.length) items.push({ cls:'alert-amber', icon:'🏛️', title:auth.length+' referral'+(auth.length>1?'s':'')+' awaiting Enclosure D from IRC', detail:auth.map(i=>i.name.replace(/ — Authorization ⚠️/,'').replace(/ — Authorization/,'')).join(' · ') });
+  const ob = (pipe['onboarding']||[]).filter(i=>(i.notes||'').includes('orientation') || (i.name||'').includes('⚠'));
+  if (ob.length && ob.some(i=>i.name.includes('Burks')||i.notes.includes('orientation'))) items.push({ cls:'alert-amber', icon:'✅', title:'Family orientation + acknowledgement outstanding', detail:'Burks, Jaybrion (OG-001) — required before service rhythm starts' });
+  if (!items.length) {
+    el.innerHTML = '<div class="card-title"><span class="card-title-icon">✅</span>All clear</div><div style="font-size:13px;color:var(--t2);padding:.5rem 0">No urgent items. Good work.</div>';
+    return;
+  }
+  el.innerHTML = '<div class="card-title"><span class="card-title-icon">🚨</span>Attention needed ('+items.length+')</div>'+
+    items.map(i=>'<div class="alert-item '+i.cls+'"><span class="alert-icon">'+i.icon+'</span><div class="alert-body"><div class="alert-title">'+i.title+'</div><div class="alert-detail">'+i.detail+'</div></div></div>').join('');
 }
 
 function resetPipeline() {
@@ -2076,6 +2170,8 @@ document.addEventListener('DOMContentLoaded', () => {
   calcWage();
   const name = getSetting('directorName', 'Joshua');
   document.getElementById('set-name').value = name;
+  forceSyncClients();
+  setTimeout(renderHomeAlerts, 250);
 });
 
 // ══════════════════════════════════════════════════
