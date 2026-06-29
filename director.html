@@ -1991,7 +1991,7 @@ function handleFileSelect(event) {
   event.target.value = '';
 }
 
-function processUpload(file) {
+async function processUpload(file) {
   const { type, entityId, docIdx } = _uploadContext;
   const maxMB = 25;
   if (file.size > maxMB * 1024 * 1024) { toast(`✕ ${file.name} exceeds ${maxMB}MB limit`); return; }
