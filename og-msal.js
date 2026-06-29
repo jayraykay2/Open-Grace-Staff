@@ -61,8 +61,9 @@ async function ogMsalInit() {
         _msalToken = r.accessToken; _msalUser = r.account; _msalReady = true; return true;
       } catch {}
     }
-    const r = await _msalApp.acquireTokenPopup({ scopes: OG_GRAPH_SCOPES, prompt: 'select_account' });
-    _msalToken = r.accessToken; _msalUser = r.account; _msalReady = true; return true;
+    // Use redirect instead of popup to avoid popup blockers
+    await _msalApp.acquireTokenRedirect({ scopes: OG_GRAPH_SCOPES, prompt: 'select_account' });
+    return false; // page will redirect — result handled via handleRedirectPromise
   } catch (err) { console.warn('[OG-MSAL] Init failed:', err); return false; }
 }
 
