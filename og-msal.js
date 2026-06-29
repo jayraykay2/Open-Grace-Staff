@@ -55,7 +55,13 @@ async function ogMsalInit() {
     });
     await _msalApp.initialize();
     const redirectResult = await _msalApp.handleRedirectPromise();
-    if (redirectResult) { _msalToken = redirectResult.accessToken; _msalUser = redirectResult.account; }
+    if (redirectResult) {
+      _msalToken = redirectResult.accessToken;
+      _msalUser = redirectResult.account;
+      _msalReady = true;
+      console.log('[OG-MSAL] Redirect auth complete:', _msalUser?.username);
+      return true;
+    }
     const accounts = _msalApp.getAllAccounts();
     if (accounts.length > 0) {
       try {
