@@ -37,7 +37,7 @@ async function loadMsal() {
   if (window.msal) return;
   await new Promise((resolve, reject) => {
     const s = document.createElement('script');
-    s.src = 'https://alcdn.msauth.net/browser/3.11.1/js/msal-browser.min.js';
+    s.src = '/msal-browser.min.js'; // self-hosted — avoids CDN blocking by Cloudflare
     s.onload = resolve; s.onerror = reject;
     document.head.appendChild(s);
   });
