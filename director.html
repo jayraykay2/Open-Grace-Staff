@@ -1016,6 +1016,7 @@ const CLIENTS = [
     misc:[]
   }
 ];
+window.CLIENTS = CLIENTS;
 
 const STAFF_DATA = [
   {
@@ -1085,19 +1086,14 @@ const STAFF_DATA = [
 ];
 
 let PIPELINE = [
-  {id:'REF-P01',lane:'Initial Contact',age:'4d',owner:'Director',status:'stuck',name:'Unassigned Referral',phone:'',next:'Assign owner. Make initial contact call within 48 hrs of referral.'},
-  {id:'REF-P02',lane:'Initial Contact',age:'2d',owner:'ACE',status:'new',name:'New Inquiry',phone:'',next:'Make initial contact. Send welcome message with pre-screening link.'},
-  {id:'REF-A01',lane:'Pre-Screening',age:'3d',owner:'ACE',status:'new',name:'First Contact Made',phone:'(951) 555-0142',next:'Complete pre-screening assessment by phone or video.'},
-  {id:'REF-A02',lane:'Pre-Screening',age:'1d',owner:'ACE',status:'review',name:'Pre-Screen Complete',phone:'(909) 555-0183',next:'Schedule authorization meeting — in person or virtual.'},
-  {id:'REF-B01',lane:'Authorization Mtg',age:'7d',owner:'ACE',status:'irc',name:'Pinto, Arianna (7446993)',phone:'(323) 490-6850',next:'Complete auth meeting. Collect acknowledgment signatures. Send Enclosure C to family.'},
-  {id:'REF-B02',lane:'Authorization Mtg',age:'5d',owner:'ACE',status:'irc',name:'Beinbrech, Marykate (8283031)',phone:'(562) 631-7043',next:'Auth meeting done. Enclosure C sent. Confirm IRC authorization before starting services.'},
-  {id:'REF-C01',lane:'Active Services',age:'3d',owner:'ACE',status:'stuck',name:'Onboarding Setup',phone:'',next:'Begin daily contact logs. QPR (Enclosure D) due at 90 days from service start.'},
-  {id:'REF-C02',lane:'QPR Prep',age:'1d',owner:'ACE',status:'new',name:'Family Orientation',phone:'',next:'Day 75 of 90. Compile contact logs. Draft QPR Enclosure D narrative.'}
+  {id:'REF-001',lane:'Authorization Mtg',age:'2d',owner:'Director',status:'urgent',name:'Burks, Jaybrion (6953825)',phone:'(909) 648-5743',next:'Enclosure C not yet sent to IRC. Send to Tarah Bass (tarah.bass@inlandrc.org) to authorize services. Then begin daily contact logs.',_spId:null},
+  {id:'REF-B01',lane:'Authorization Mtg',age:'2d',owner:'ACE',status:'irc',name:'Pinto, Arianna (7446993)',phone:'(323) 490-6850',next:'Enclosure C filed 6/27. Awaiting Enclosure D from IRC SC. Confirm IRC authorization receipt before starting services.',_spId:null},
+  {id:'REF-B02',lane:'Authorization Mtg',age:'14d',owner:'ACE',status:'irc',name:'Beinbrech, Marykate (8283031)',phone:'(562) 631-7043',next:'Auth meeting done. Awaiting Enclosure D from IRC SC. Confirm IRC authorization receipt before starting services.',_spId:null}
 ];
+window.PIPELINE = PIPELINE;
 
 const ATTN = [
   {cls:'urgent',n:'!',t:'Enclosure C not sent — Burks, Jaybrion (UCI 6953825)',d:'Auth meeting stage · Enclosure C must be sent before IRC can authorize. Contact IRC SC Tarah Bass · tarah.bass@inlandrc.org.',act:'Open Client File',fn:"openClientDetail('burks')"},
-  {cls:'urgent',n:'!',t:'REF-P01 stuck 4 days — no owner assigned',d:'Director decision required: assign Ambre or document hold reason.',act:'View Pipeline',fn:"switchTab('pipeline')"},
   {cls:'warning',n:'2',t:'3 clients pending IRC authorization',d:'Burks (Enc. C not sent) · Pinto (filed 6/27, awaiting IRC) · Beinbrech (pre-screen done, needs auth meeting)',act:'View Pipeline',fn:"switchTab('pipeline')"},
   {cls:'warning',n:'3',t:'Beinbrech auth meeting not yet scheduled',d:'Pre-screening complete 6/15. Next step: schedule in-person or virtual authorization meeting with family.',act:'View Pipeline',fn:"switchTab('pipeline')"},
   {cls:'done',n:'✓',t:'Referral Inbox Agent — Live & Published',d:'Monitoring joshua.kennedy@opengrace.org · Auto-creates SP Navigator Submissions items.',act:'View Flow',fn:"openLink('https://make.powerautomate.com/environments/Default-1916d89f-0ee3-4972-a513-d91fb3007040/flows/b96d2c0b-fc71-f111-ab0f-6045bd0911f6')"},
@@ -1209,6 +1205,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Refresh dashboard from SP (non-blocking)
         await window.ogMsal.refresh();
+        renderPipeline(); renderAttn(); // re-render after SP sync
 
         // Apply role-based filtering — navigator sees only their clients
         if (role === 'navigator') {
