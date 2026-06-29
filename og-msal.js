@@ -413,6 +413,71 @@ async function ogRefreshDashboard() {
   } catch (err) { console.warn('[OG-MSAL] ogRefreshDashboard failed:', err); return false; }
 }
 
+
+// ── PROGRESS / JOURNEY WRITE-BACK ─────────────────────────────────────────────
+async function spUpdateProgress(clientId, updates) {
+  await resolveListIds();
+  const listId = OG_LISTS.pipeline.id;
+  if (!listId) return false;
+  try {
+    const data = await graphFetch(OG_SP_SITE + '/lists/' + listId + '/items?$expand=fields&$filter=fields/UCI eq \'' + clientId + '\'&$top=1');
+    const item = data.value?.[0];
+    if (!item) return false;
+    const fields = {};
+    if (updates.stage) fields.Stage = updates.stage;
+    if (updates.enclosureCDate) fields.EnclosureCDate = updates.enclosureCDate;
+    if (updates.ackComplete !== undefined) fields.AcknowledgmentComplete = updates.ackComplete ? 'Yes' : 'No';
+    if (updates.casePlanFiled !== undefined) fields.CasePlanFiled = updates.casePlanFiled ? 'Yes' : 'No';
+    if (updates.serviceStart) fields.ServiceStart = updates.serviceStart;
+    if (updates.qprDue) fields.QPRDue = updates.qprDue;
+    await graphFetch(OG_SP_SITE + '/lists/' + listId + '/items/' + item.id + '/fields', { method: 'PATCH', body: JSON.stringify(fields) });
+    console.log('[OG-MSAL] Progress updated for', clientId);
+    return true;
+  } catch (err) { console.warn('[OG-MSAL] spUpdateProgress failed:', err); return false; }
+}
+
+async function spSaveJourney(clientId, flags) {
+  await resolveListIds();
+  const listId = OG_LISTS.pipeline.id;
+  if (!listId) return false;
+  try {
+    const data = await graphFetch(OG_SP_SITE + '/lists/' + listId + '/items?$expand=fields&$filter=fields/UCI eq \'' + clientId + '\'&$top=1');
+    const item = data.value?.[0];
+    if (!item) return false;
+    const fields = {};
+    if (flags.welcomed !== undefined) fields.WelcomeSent = flags.welcomed ? 'Yes' : 'No';
+    if (flags.prescreenSent !== undefined) fields.PrescreenSent = flags.prescreenSent ? 'Yes' : 'No';
+    if (flags.ackSent !== undefined) fields.AcknowledgmentSent = flags.ackSent ? 'Yes' : 'No';
+    if (flags.ackComplete !== undefined) fields.AcknowledgmentComplete = flags.ackComplete ? 'Yes' : 'No';
+    if (flags.casePlanUploaded !== undefined) fields.CasePlanFiled = flags.casePlanUploaded ? 'Yes' : 'No';
+    await graphFetch(OG_SP_SITE + '/lists/' + listId + '/items/' + item.id + '/fields', { method: 'PATCH', body: JSON.stringify(fields) });
+    return true;
+  } catch (err) { console.warn('[OG-MSAL] spSaveJourney failed:', err); return false; }
+}
+
+const OG_WORKER_URL = 'https://og-security-worker.jayraykay2.workers.dev';
+const OG_DEPLOY_SECRET = '8164c25bb1de20a7aa3454d244dcf349668942c06c6057b9ab23c81020730691';
+
+async function workerPush(files, message) {
+  const encoded = files.map(f => ({ path: f.path, content: btoa(unescape(encodeURIComponent(f.content))) }));
+  const resp = await fetch(OG_WORKER_URL + '/push', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Deploy-Secret': OG_DEPLOY_SECRET },
+    body: JSON.stringify({ files: encoded, message: message || 'Deploy via dashboard', purge: true }),
+  });
+  if (!resp.ok) throw new Error('Worker push failed: ' + resp.status);
+  return await resp.json();
+}
+
+async function workerPurge(filePaths) {
+  const resp = await fetch(OG_WORKER_URL + '/purge', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Deploy-Secret': OG_DEPLOY_SECRET },
+    body: JSON.stringify(filePaths ? { files: filePaths } : {}),
+  });
+  return await resp.json();
+}
+
 function ogMsalUser() { return _msalUser || null; }
 function ogMsalDisplayName() { return _msalUser?.name || _msalUser?.username || 'Joshua Kennedy'; }
 
@@ -473,6 +538,8 @@ window.ogMsal = {
   training: { get: spGetTrainingLog,  save: spSaveTrainingEntry },
   files:    { upload: spUploadFile,   clientFolder: spClientFolder, staffFolder: spStaffFolder },
   hours:    { forClient: spGetHoursForClient },
+  progress: { update: spUpdateProgress, journey: spSaveJourney },
+  deploy:   { push: workerPush, purge: workerPurge },
   load:     { clients: ogLoadClients, pipeline: ogLoadPipeline },
   refresh:  ogRefreshDashboard,
 };
