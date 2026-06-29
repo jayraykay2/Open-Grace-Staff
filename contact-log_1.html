@@ -312,6 +312,41 @@
   .btn-sign-in:hover { background: var(--orange-hover); }
 
   .hidden { display: none !important; }
+/* ── CFS COMPONENTS ── */
+.guide-btn{background:none;border:1px solid var(--orange);color:var(--orange);border-radius:999px;padding:2px 10px;font-size:.72rem;font-weight:700;cursor:pointer;margin-left:8px;transition:.15s;}
+.guide-btn:hover{background:var(--orange);color:#fff;}
+.cfs-components{display:grid;gap:6px;margin-top:8px;}
+.cfs-cb{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid #2e2c5a;background:#12103a;cursor:pointer;transition:.15s;line-height:1.3;}
+.cfs-cb:hover{border-color:var(--orange);background:#1a1840;}
+.cfs-cb input{margin-top:3px;accent-color:var(--orange);flex-shrink:0;width:16px;height:16px;}
+.cfs-cb input:checked ~ .cfs-label{color:var(--orange);}
+.cfs-cb:has(input:checked){border-color:var(--orange);background:#1e1060;}
+.cfs-num{width:20px;height:20px;border-radius:50%;background:#2e2c5a;color:#aaa;font-size:.65rem;font-weight:800;display:grid;place-items:center;flex-shrink:0;margin-top:1px;}
+.cfs-cb:has(input:checked) .cfs-num{background:var(--orange);color:#fff;}
+.cfs-label{font-size:.82rem;font-weight:600;color:#e0e0ff;display:block;}
+.cfs-desc{font-size:.72rem;color:#888;display:block;margin-top:2px;font-weight:400;}
+
+/* ── FLOATING GUIDE ── */
+.guide-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:800;display:none;align-items:flex-end;justify-content:flex-end;padding:20px;}
+.guide-overlay.open{display:flex;}
+.guide-panel{background:#0f0d2a;border:1px solid #2e2c5a;border-radius:16px;width:100%;max-width:380px;max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:slideUp .25s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.guide-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #2e2c5a;position:sticky;top:0;background:#0f0d2a;z-index:1;}
+.guide-title{font-size:.95rem;font-weight:700;color:#fff;}
+.guide-close{background:none;border:none;color:#888;font-size:1.1rem;cursor:pointer;padding:4px;}
+.guide-close:hover{color:#fff;}
+.guide-item{padding:14px 18px;border-bottom:1px solid #1a1840;}
+.guide-item:last-child{border-bottom:none;}
+.guide-item-hd{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.guide-num{width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:.65rem;font-weight:800;display:grid;place-items:center;flex-shrink:0;}
+.guide-item-label{font-size:.85rem;font-weight:700;color:#fff;}
+.guide-formal{font-size:.7rem;color:#888;font-style:italic;margin-bottom:5px;}
+.guide-examples{font-size:.75rem;color:#aaa;line-height:1.5;}
+.guide-example-tag{display:inline-block;background:#1a1840;border:1px solid #2e2c5a;border-radius:999px;padding:1px 8px;font-size:.68rem;margin:2px 2px 0 0;color:#c0c0e0;}
+
+/* ── FLOATING TRIGGER ── */
+.guide-fab{position:fixed;bottom:24px;right:24px;z-index:700;background:var(--orange);color:#fff;border:none;border-radius:999px;padding:10px 18px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(255,107,26,.4);display:flex;align-items:center;gap:7px;transition:.15s;}
+.guide-fab:hover{background:#e55a0d;transform:translateY(-2px);}
 </style>
 </head>
 <body>
@@ -418,22 +453,20 @@
 
     <div class="field-row">
       <div>
-        <label>Domain / Service Area <span class="req">*</span></label>
-        <select id="domain" required>
-          <option value="" disabled selected>Select domain</option>
-          <option>Employment</option>
-          <option>Education / Training</option>
-          <option>Health / Medical</option>
-          <option>Mental Health</option>
-          <option>Housing</option>
-          <option>Financial / Benefits</option>
-          <option>Legal / Immigration</option>
-          <option>Family / Social Support</option>
-          <option>Transportation</option>
-          <option>Basic Needs</option>
-          <option>Crisis Support</option>
-          <option>Other</option>
-        </select>
+        <label>CFS Components Addressed <span class="req">*</span> <button type="button" class="guide-btn" onclick="toggleGuide()">❓ Help me choose</button></label>
+        <div class="cfs-components" id="cfs-components">
+          <label class="cfs-cb"><input type="checkbox" name="components" value="1"> <span class="cfs-num">1</span> <span class="cfs-label">🏠 Living at Home</span><span class="cfs-desc">Supports that help the person stay living with their family</span></label>
+          <label class="cfs-cb"><input type="checkbox" name="components" value="2"> <span class="cfs-num">2</span> <span class="cfs-label">🗺️ Finding Services &amp; Resources</span><span class="cfs-desc">Helping the family find, apply for, or navigate any services or programs</span></label>
+          <label class="cfs-cb"><input type="checkbox" name="components" value="3"> <span class="cfs-num">3</span> <span class="cfs-label">📋 Understanding the Diagnosis</span><span class="cfs-desc">Providing information about the individual's diagnosis or connecting to resources about it</span></label>
+          <label class="cfs-cb"><input type="checkbox" name="components" value="4"> <span class="cfs-num">4</span> <span class="cfs-label">🤝 Working with Other Providers</span><span class="cfs-desc">Coordinating or communicating with schools, doctors, therapists, or other service providers</span></label>
+          <label class="cfs-cb"><input type="checkbox" name="components" value="5"> <span class="cfs-num">5</span> <span class="cfs-label">📅 Appointments &amp; Scheduling</span><span class="cfs-desc">Helping set up, track, or follow up on medical, therapy, or other appointments</span></label>
+          <label class="cfs-cb"><input type="checkbox" name="components" value="6"> <span class="cfs-num">6</span> <span class="cfs-label">🚗 Transportation</span><span class="cfs-desc">Identifying or arranging transportation options for the individual or family</span></label>
+          <label class="cfs-cb"><input type="checkbox" name="components" value="7"> <span class="cfs-num">7</span> <span class="cfs-label">🛡️ Backup Support Plans</span><span class="cfs-desc">Planning for what happens when a regular provider or support isn't available</span></label>
+          <label class="cfs-cb"><input type="checkbox" name="components" value="8"> <span class="cfs-num">8</span> <span class="cfs-label">🔮 Future Planning</span><span class="cfs-desc">Planning ahead for life changes, including families with aging caregivers</span></label>
+          <label class="cfs-cb"><input type="checkbox" name="components" value="9"> <span class="cfs-num">9</span> <span class="cfs-label">🎯 Building Independence</span><span class="cfs-desc">Training or activities that help the individual do more on their own</span></label>
+          <label class="cfs-cb"><input type="checkbox" name="components" value="10"> <span class="cfs-num">10</span> <span class="cfs-label">📝 Other</span><span class="cfs-desc">Something within the scope of CFS that doesn't fit the categories above</span></label>
+        </div>
+        <div class="cfs-error" id="cfs-error" style="display:none;color:#FF6B1A;font-size:.75rem;margin-top:4px;">Please select at least one CFS component.</div>
       </div>
     </div>
 
@@ -554,7 +587,7 @@ function signOut() {
 }
 
 async function submitLog() {
-  const required = ["staffCode","clientName","logDate","hoursSpent","contactType","domain","notes"];
+  const required = ["staffCode","clientName","logDate","hoursSpent","contactType","notes"];
   let valid = true;
   required.forEach(id => {
     const el = document.getElementById(id);
@@ -580,6 +613,15 @@ async function submitLog() {
   btn.classList.add("loading");
   btn.disabled = true;
 
+  // Validate CFS components
+  const checkedComponents = [...document.querySelectorAll('input[name="components"]:checked')];
+  if (!checkedComponents.length) {
+    document.getElementById('cfs-error').style.display = 'block';
+    document.getElementById('cfs-components').scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  document.getElementById('cfs-error').style.display = 'none';
+
   const payload = {
     staffCode:    document.getElementById("staffCode").value.trim(),
     staffName:    document.getElementById("staffName").value.trim(),
@@ -588,7 +630,7 @@ async function submitLog() {
     logDate:      document.getElementById("logDate").value,
     logTime:      document.getElementById("logTime").value,
     contactType:  document.getElementById("contactType").value,
-    domain:       document.getElementById("domain").value,
+    cfsComponents: [...document.querySelectorAll('input[name="components"]:checked')].map(cb => cb.value).join(';'),
     hoursSpent:   document.getElementById("hoursSpent").value,
     location:     document.getElementById("location").value.trim(),
     participants: document.getElementById("participants").value.trim(),
@@ -634,6 +676,133 @@ function showStatus(msg, type) {
   el.textContent = msg;
   el.className = "status-msg " + type;
   el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+</script>
+<!-- FLOATING CFS COMPONENT GUIDE -->
+<button class="guide-fab" onclick="toggleGuide()">❓ CFS Component Guide</button>
+
+<div class="guide-overlay" id="guide-overlay" onclick="if(event.target===this)toggleGuide()">
+  <div class="guide-panel">
+    <div class="guide-header">
+      <div class="guide-title">📋 CFS Component Guide</div>
+      <button class="guide-close" onclick="toggleGuide()">✕</button>
+    </div>
+
+    <div class="guide-item">
+      <div class="guide-item-hd"><div class="guide-num">1</div><div class="guide-item-label">🏠 Living at Home</div></div>
+      <div class="guide-formal">Identifying and providing supports to successfully reside in the family home</div>
+      <div class="guide-examples">Use when you:
+        <br><span class="guide-example-tag">Helped family set up home routines</span>
+        <span class="guide-example-tag">Coordinated in-home support</span>
+        <span class="guide-example-tag">Addressed safety concerns at home</span>
+        <span class="guide-example-tag">Helped with daily living activities</span>
+      </div>
+    </div>
+
+    <div class="guide-item">
+      <div class="guide-item-hd"><div class="guide-num">2</div><div class="guide-item-label">🗺️ Finding Services &amp; Resources</div></div>
+      <div class="guide-formal">Navigating services and supports, creating pathways to overcoming barriers</div>
+      <div class="guide-examples">Use when you:
+        <br><span class="guide-example-tag">Found a new program or benefit</span>
+        <span class="guide-example-tag">Helped with an application</span>
+        <span class="guide-example-tag">Removed a barrier to accessing services</span>
+        <span class="guide-example-tag">Linked to community resources</span>
+      </div>
+    </div>
+
+    <div class="guide-item">
+      <div class="guide-item-hd"><div class="guide-num">3</div><div class="guide-item-label">📋 Understanding the Diagnosis</div></div>
+      <div class="guide-formal">Providing information or resources on the individual's diagnosis and identified supports</div>
+      <div class="guide-examples">Use when you:
+        <br><span class="guide-example-tag">Explained diagnosis to family</span>
+        <span class="guide-example-tag">Shared educational materials</span>
+        <span class="guide-example-tag">Connected to a specialist or support group</span>
+        <span class="guide-example-tag">Discussed behavior strategies</span>
+      </div>
+    </div>
+
+    <div class="guide-item">
+      <div class="guide-item-hd"><div class="guide-num">4</div><div class="guide-item-label">🤝 Working with Other Providers</div></div>
+      <div class="guide-formal">Coordinating consistency in training across providers</div>
+      <div class="guide-examples">Use when you:
+        <br><span class="guide-example-tag">Contacted a school or therapist</span>
+        <span class="guide-example-tag">Attended an IEP or team meeting</span>
+        <span class="guide-example-tag">Shared info between providers</span>
+        <span class="guide-example-tag">Coordinated care approaches</span>
+      </div>
+    </div>
+
+    <div class="guide-item">
+      <div class="guide-item-hd"><div class="guide-num">5</div><div class="guide-item-label">📅 Appointments &amp; Scheduling</div></div>
+      <div class="guide-formal">Assisting with scheduling of service delivery including medical and other appointments</div>
+      <div class="guide-examples">Use when you:
+        <br><span class="guide-example-tag">Scheduled a doctor visit</span>
+        <span class="guide-example-tag">Followed up on a missed appointment</span>
+        <span class="guide-example-tag">Set up therapy or evaluation</span>
+        <span class="guide-example-tag">Created a calendar or reminder system</span>
+      </div>
+    </div>
+
+    <div class="guide-item">
+      <div class="guide-item-hd"><div class="guide-num">6</div><div class="guide-item-label">🚗 Transportation</div></div>
+      <div class="guide-formal">Identifying transportation options or services</div>
+      <div class="guide-examples">Use when you:
+        <br><span class="guide-example-tag">Found a ride to appointments</span>
+        <span class="guide-example-tag">Applied for Dial-A-Ride or paratransit</span>
+        <span class="guide-example-tag">Discussed bus routes or Uber Health</span>
+        <span class="guide-example-tag">Arranged transport for activities</span>
+      </div>
+    </div>
+
+    <div class="guide-item">
+      <div class="guide-item-hd"><div class="guide-num">7</div><div class="guide-item-label">🛡️ Backup Support Plans</div></div>
+      <div class="guide-formal">Identifying backup providers/supports when the plan fails</div>
+      <div class="guide-examples">Use when you:
+        <br><span class="guide-example-tag">Created a backup care plan</span>
+        <span class="guide-example-tag">Found coverage when a provider cancelled</span>
+        <span class="guide-example-tag">Identified emergency contacts</span>
+        <span class="guide-example-tag">Planned for caregiver illness/absence</span>
+      </div>
+    </div>
+
+    <div class="guide-item">
+      <div class="guide-item-hd"><div class="guide-num">8</div><div class="guide-item-label">🔮 Future Planning</div></div>
+      <div class="guide-formal">Providing futures planning, including those with aging caregivers</div>
+      <div class="guide-examples">Use when you:
+        <br><span class="guide-example-tag">Discussed long-term living options</span>
+        <span class="guide-example-tag">Talked about what happens when caregivers age</span>
+        <span class="guide-example-tag">Helped with estate or guardianship planning</span>
+        <span class="guide-example-tag">Connected to transition planning resources</span>
+      </div>
+    </div>
+
+    <div class="guide-item">
+      <div class="guide-item-hd"><div class="guide-num">9</div><div class="guide-item-label">🎯 Building Independence</div></div>
+      <div class="guide-formal">Providing training to the individual which maximizes their independence</div>
+      <div class="guide-examples">Use when you:
+        <br><span class="guide-example-tag">Practiced daily living skills</span>
+        <span class="guide-example-tag">Worked on money management</span>
+        <span class="guide-example-tag">Taught self-advocacy</span>
+        <span class="guide-example-tag">Practiced communication or social skills</span>
+      </div>
+    </div>
+
+    <div class="guide-item">
+      <div class="guide-item-hd"><div class="guide-num">10</div><div class="guide-item-label">📝 Other</div></div>
+      <div class="guide-formal">Need identified within scope of CFS not covered in #1–9</div>
+      <div class="guide-examples">Use when the activity is clearly within CFS scope but doesn't fit neatly into any of the above. Always add a note explaining what it was.</div>
+    </div>
+
+    <div style="padding:14px 18px;font-size:.75rem;color:#888;line-height:1.5;border-top:1px solid #2e2c5a;">
+      💡 <strong style="color:#aaa;">Tip:</strong> You can select more than one component per contact log entry. Most visits address 2–3 components. Your selections feed directly into the Quarterly Report (Enclosure D).
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleGuide() {
+  const overlay = document.getElementById('guide-overlay');
+  overlay.classList.toggle('open');
 }
 </script>
 </body>
