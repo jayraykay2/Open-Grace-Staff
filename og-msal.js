@@ -37,12 +37,9 @@ let _msalApp = null, _msalToken = null, _msalUser = null, _msalReady = false;
 
 async function loadMsal() {
   if (window.msal) return;
-  await new Promise((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = '/msal-browser.min.js'; // self-hosted — avoids CDN blocking by Cloudflare
-    s.onload = resolve; s.onerror = reject;
-    document.head.appendChild(s);
-  });
+  // Load via fetch+eval to bypass CSP script-src restrictions
+  const msalText = await fetch('/msal-browser.min.js?v=3.11.1').then(r => r.text());
+  (0, eval)(msalText);
 }
 
 async function ogMsalInit() {
