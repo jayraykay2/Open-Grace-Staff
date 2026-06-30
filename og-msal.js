@@ -23,7 +23,7 @@ const OG_MSAL_CONFIG = {
 };
 
 const OG_GRAPH_SCOPES = ['User.Read', 'Sites.ReadWrite.All'];
-const OG_SP_SITE = 'https://graph.microsoft.com/v1.0/sites/netorg20110136.sharepoint.com:/sites/OpenGrace-Records';
+const OG_SP_SITE = 'https://graph.microsoft.com/v1.0/sites/netorg20110136.sharepoint.com:/sites/OpenGrace-Records:';
 
 const OG_LISTS = {
   clients:      { name: 'Clients',               id: null },
