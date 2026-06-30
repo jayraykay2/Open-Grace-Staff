@@ -663,7 +663,7 @@ table.data-tbl tbody td{padding:11px 12px;vertical-align:middle;}
   <div class="card">
     <div class="filter-bar">
       <input class="filter-input" placeholder="🔍  Search..." style="min-width:180px;">
-      <select class="filter-input" style="min-width:130px;"><option>All clients</option><option>Burks, Jaybrion</option></select>
+      <select class="filter-input" id="cn-tab-filter" style="min-width:130px;" onchange="renderCNTable()"><option value="">All clients</option></select>
       <select class="filter-input" style="min-width:130px;"><option>All workers</option><option>Ambre Carter-Earl</option><option>Joshua Kennedy</option></select>
       <select class="filter-input" style="min-width:160px;"><option value="">All components</option><option>1 - Living at Home</option><option>2 - Finding Services</option><option>3 - Understanding Diagnosis</option><option>4 - Provider Coordination</option><option>5 - Appointments</option><option>6 - Transportation</option><option>7 - Backup Support</option><option>8 - Future Planning</option><option>9 - Independence Skills</option><option>10 - Other</option></select>
       <input type="date" class="filter-input" style="min-width:120px;">
@@ -766,7 +766,8 @@ table.data-tbl tbody td{padding:11px 12px;vertical-align:middle;}
     <div style="padding:20px;">
       <div class="cn-form">
         <div class="cn-form-row">
-          <div class="fld"><label>Client / Family <span class="req">*</span></label><select id="cn-client"><option value="">Select client...</option><option value="burks">Burks, Jaybrion (OG-001)</option></select></div>
+          <div class="fld"><label>Client / Family <span class="req">*</span></label><select id="cn-client"></select></div>
+          <div class="fld" id="cn-client-locked-msg" style="display:none;font-size:.72rem;color:var(--ink4);align-self:center;margin-top:18px;">Locked to currently open client folder</div>
           <div class="fld"><label>Date <span class="req">*</span></label><input type="date" id="cn-date"></div>
         </div>
         <div class="cn-form-row">
@@ -926,7 +927,7 @@ const CLIENTS = [
     serviceStart:'2026-01-15',qprDue:'2026-07-21',
     authHours:80,usedHours:32,stage:'Authorization Mtg',stageIdx:2,
     navigatorId:'ambre',navigator:'Ambre Carter-Earl',
-    coordinator:'Tarah Bass',phone:'(909) 648-5743',status:'pipeline',
+    coordinator:'Tarah Bass',phone:'(909) 648-5743',status:'pipeline',referralStatus:'Awaiting Enclosure C',
     journey:{welcomed:true,prescreenSent:true,prescreenComplete:true,ackSent:false,ackComplete:false,casePlanUploaded:false},
     lastNote:{date:'2026-06-14',author:'Ambre Carter-Earl',type:'Home Visit',method:'In Person',
       service:'CFS Direct Service',location:'Client Home',domains:['Daily Living','Community Access'],
@@ -964,7 +965,7 @@ const CLIENTS = [
     serviceStart:'',qprDue:'',
     authHours:0,usedHours:0,stage:'Authorization Mtg',stageIdx:2,
     navigatorId:'ambre',navigator:'Ambre Carter-Earl',
-    coordinator:'Tarah Bass',phone:'(323) 490-6850',status:'pipeline',
+    coordinator:'Tarah Bass',phone:'(323) 490-6850',status:'pipeline',referralStatus:'POS Pending Management Approval',
     journey:{welcomed:true,prescreenSent:true,prescreenComplete:true,ackSent:true,ackComplete:true,casePlanUploaded:false},
     lastNote:null,caseNotes:[],
     forms:[
@@ -993,7 +994,7 @@ const CLIENTS = [
     serviceStart:'',qprDue:'',
     authHours:0,usedHours:0,stage:'Pre-Screening',stageIdx:1,
     navigatorId:'ambre',navigator:'Ambre Carter-Earl',
-    coordinator:'Tarah Bass',phone:'(562) 631-7043',status:'pipeline',
+    coordinator:'Tarah Bass',phone:'(562) 631-7043',status:'pipeline',referralStatus:'Authorization Meeting Scheduled',
     journey:{welcomed:true,prescreenSent:true,prescreenComplete:true,ackSent:false,ackComplete:false,casePlanUploaded:false},
     lastNote:{date:'2026-06-15',author:'Ambre Carter-Earl',type:'Pre-Screening',method:'Phone',service:'CFS Direct Service',location:'Remote / Phone',domains:[],hours:1,note:'Pre-screening assessment completed 6/15/2026. Family eligible. Schedule authorization meeting.',qpr:'',clientId:'beinbrech'},
     caseNotes:[
@@ -1205,7 +1206,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Refresh dashboard from SP (non-blocking)
         await window.ogMsal.refresh();
-        renderPipeline(); renderAttn(); // re-render after SP sync
+        renderPipeline(); renderAttn(); renderCNTable(); // re-render after SP sync
+        if (currentClient) renderClientModalTab('overview');
 
         // Apply role-based filtering — navigator sees only their clients
         if (role === 'navigator') {
@@ -1366,11 +1368,23 @@ function renderClientModalTab(tab) {
 
   if (tab === 'overview') {
     const stepper = stages.map((s,i) => `<div class="step ${i<c.stageIdx?'done':i===c.stageIdx?'active':''}"><div class="step-dot">${i<c.stageIdx?'✓':i+1}</div><div class="step-label">${s}</div></div>`).join('');
+    const REFERRAL_STATUSES = ['No Status Set','Referral Received','Pre-Screen In Progress','Awaiting Enclosure C','POS Pending Management Approval','POS Approved','Authorization Meeting Scheduled','Active Services','On Hold','Closed'];
+    const curStatus = c.referralStatus || 'No Status Set';
     body.innerHTML = `
       <div class="modal-section">
         <div class="ms-title">Client Journey</div>
         <div class="stepper">${stepper}</div>
         ${c.journey ? journeyHTML(c) : ''}
+      </div>
+      <div class="modal-section">
+        <div class="ms-title">Referral / POS Status</div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <select id="ref-status-select" style="flex:1;min-width:220px;padding:8px 10px;border-radius:var(--r);border:1px solid var(--navy-ring);font-size:.82rem;">
+            ${REFERRAL_STATUSES.map(s => `<option value="${s}" ${s===curStatus?'selected':''}>${s}</option>`).join('')}
+          </select>
+          <button class="act-btn primary" onclick="updateReferralStatus('${c.id}')">Update Status</button>
+        </div>
+        <div style="font-size:.72rem;color:var(--ink4);margin-top:6px;">Current: <strong>${curStatus}</strong>${c._statusUpdated ? ' · updated ' + c._statusUpdated : ''}</div>
       </div>
       <div class="modal-section"><div class="g2" style="gap:20px;">
         <div><div class="ms-title">Client Information</div>
@@ -1768,9 +1782,26 @@ function renderSPFolders() {
 }
 
 // ── CASE NOTE FORM ────────────────────────────────────────────────────────────
-function openCNModal() { document.getElementById('cn-modal').classList.add('open'); }
+function openCNModal() {
+  const sel = document.getElementById('cn-client');
+  const lockMsg = document.getElementById('cn-client-locked-msg');
+  if (currentClient) {
+    // Locked to the currently open client folder — no other clients shown
+    sel.innerHTML = `<option value="${currentClient.id}">${currentClient.name} (${currentClient.ogId})</option>`;
+    sel.value = currentClient.id;
+    sel.disabled = true;
+    if (lockMsg) lockMsg.style.display = '';
+  } else {
+    // Opened from the general Case Notes tab — show all clients
+    sel.disabled = false;
+    if (lockMsg) lockMsg.style.display = 'none';
+    sel.innerHTML = '<option value="">Select client...</option>' +
+      CLIENTS.map(c => `<option value="${c.id}">${c.name} (${c.ogId})</option>`).join('');
+  }
+  document.getElementById('cn-modal').classList.add('open');
+}
 
-function saveCaseNote() {
+async function saveCaseNote() {
   const type    = document.getElementById('cn-type').value;
   const method  = document.getElementById('cn-method').value;
   const date    = document.getElementById('cn-date').value;
@@ -1786,7 +1817,8 @@ function saveCaseNote() {
   const domains = [...document.querySelectorAll('.domain-cb input[type=checkbox]:checked')]
     .map(cb => COMP_LABELS[cb.value] ? cb.value + ' – ' + COMP_LABELS[cb.value] : cb.value);
   const newNote = {
-    author: 'Joshua Kennedy', date, type, method,
+    author: (window.ogMsal && window.ogMsal.displayName && window.ogMsal.displayName()) || 'Joshua Kennedy',
+    date, type, method,
     service: document.getElementById('cn-service').value,
     location: document.getElementById('cn-location').value,
     domains, hours: parseFloat(hours),
@@ -1794,26 +1826,75 @@ function saveCaseNote() {
     qpr: document.getElementById('cn-qpr').value,
     clientId: clientV
   };
-  caseNotes.unshift(newNote);
   const c = CLIENTS.find(cl => cl.id === clientV);
-  if (c) { c.lastNote = newNote; c.usedHours = Math.min(c.authHours||999, (c.usedHours||0) + parseFloat(hours)); }
+
+  // Write to SharePoint Contact Logs list FIRST so we know whether it really persisted
+  let spOk = false;
+  if (window.ogMsal && window._ogSpReady) {
+    try {
+      spOk = await window.ogMsal.notes.save({ ...newNote, uci: c?.uci || '' });
+    } catch (err) { console.warn('[OG] SP case note save failed:', err); spOk = false; }
+  }
+
+  caseNotes.unshift(newNote);
+  if (c) {
+    c.caseNotes = c.caseNotes || [];
+    c.caseNotes.unshift(newNote);
+    c.lastNote = newNote;
+    c.usedHours = Math.min(c.authHours||999, (c.usedHours||0) + parseFloat(hours));
+  }
   const staffMember = STAFF_DATA.find(s => s.id === 'ambre');
   if (staffMember && staffMember.authHours) staffMember.usedHours = Math.min(staffMember.authHours, staffMember.usedHours + parseFloat(hours));
 
-  // Write to SharePoint Contact Logs list
-  if (window.ogMsal && window._ogSpReady) {
-    window.ogMsal.notes.save({ ...newNote, uci: c?.uci || '' })
-      .then(ok => { if (ok) console.log('[OG] Case note written to SP Contact Logs'); })
-      .catch(err => console.warn('[OG] SP case note save failed (note saved locally):', err));
-  }
-
   closeModal('cn-modal');
-  toast('✓ Case note saved' + (window._ogSpReady ? ' → SharePoint' : ' locally'));
+  if (window._ogSpReady) {
+    toast(spOk ? '✓ Case note saved → SharePoint' : '⚠ Saved locally only — SharePoint write failed, check connection');
+  } else {
+    toast('✓ Case note saved locally (not connected to SharePoint)');
+  }
   renderClientTable(); renderStaffTable();
-  if (currentClient) renderClientModalTab('notes');
+  if (currentClient) renderClientModalTab('overview');
   renderCNTable();
   ['cn-type','cn-method','cn-note','cn-followup','cn-qpr','cn-hours','cn-next'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   document.querySelectorAll('.domain-cb input[type=checkbox]').forEach(cb => cb.checked = false);
+}
+
+async function updateReferralStatus(clientId) {
+  const c = CLIENTS.find(cl => cl.id === clientId);
+  if (!c) { toast('Client not found'); return; }
+  const sel = document.getElementById('ref-status-select');
+  const newStatus = sel ? sel.value : '';
+  const prevStatus = c.referralStatus || 'No Status Set';
+  c.referralStatus = newStatus;
+  c._statusUpdated = new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+
+  let spOk = false;
+  if (window.ogMsal && window._ogSpReady && c._spId) {
+    try { spOk = await window.ogMsal.clients.updateStatus(c._spId, newStatus); }
+    catch (err) { console.warn('[OG] updateReferralStatus failed:', err); spOk = false; }
+  }
+
+  // Auto-log a case note for the status change so it's visible in the audit trail
+  if (prevStatus !== newStatus) {
+    const autoNote = {
+      author: (window.ogMsal && window.ogMsal.displayName && window.ogMsal.displayName()) || 'Joshua Kennedy',
+      date: new Date().toISOString().split('T')[0], type: 'Case Staffing', method: 'Phone',
+      service: 'Documentation / Admin', location: 'Remote / Phone', domains: [], hours: 0,
+      note: `Referral status updated: "${prevStatus}" → "${newStatus}"`, followup: '', qpr: '', clientId
+    };
+    caseNotes.unshift(autoNote);
+    c.caseNotes = c.caseNotes || [];
+    c.caseNotes.unshift(autoNote);
+    c.lastNote = autoNote;
+    if (window.ogMsal && window._ogSpReady) {
+      window.ogMsal.notes.save({ ...autoNote, uci: c.uci || '' }).catch(()=>{});
+    }
+  }
+
+  toast(spOk ? `✓ Status updated → SharePoint` : (window._ogSpReady ? '⚠ Status updated locally — SharePoint write failed' : '✓ Status updated locally'));
+  renderClientTable();
+  if (currentClient && currentClient.id === clientId) renderClientModalTab('overview');
+  renderCNTable();
 }
 
 // ── AUTO-POPULATE: new referral banner ────────────────────────────────────────
