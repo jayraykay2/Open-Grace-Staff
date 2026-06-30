@@ -1369,11 +1369,25 @@ function renderClientModalTab(tab) {
   if (tab === 'overview') {
     const stepper = stages.map((s,i) => `<div class="step ${i<c.stageIdx?'done':i===c.stageIdx?'active':''}"><div class="step-dot">${i<c.stageIdx?'✓':i+1}</div><div class="step-label">${s}</div></div>`).join('');
     const REFERRAL_STATUSES = ['No Status Set','Referral Received','Pre-Screen In Progress','Awaiting Enclosure C','POS Pending Management Approval','POS Approved','Authorization Meeting Scheduled','Active Services','On Hold','Closed'];
+    const STAGE_OPTS = stages.map((s,i) => `<option value="${i}" ${i===c.stageIdx?'selected':''}>${s}</option>`).join('');
     const curStatus = c.referralStatus || 'No Status Set';
+    const ef = (val, id, type='text', ph='') => `<input id="ce-${id}" type="${type}" value="${val||''}" placeholder="${ph}" style="width:100%;padding:5px 8px;border-radius:var(--r);border:1px solid var(--navy-ring);font-size:.82rem;background:var(--canvas);">`;
     body.innerHTML = `
+      <div class="modal-section" style="display:flex;align-items:center;justify-content:space-between;padding-bottom:0;margin-bottom:-8px;">
+        <span style="font-size:.72rem;color:var(--ink4);" id="ce-mode-label">View mode — click Edit to make changes</span>
+        <div style="display:flex;gap:8px;">
+          <button class="tbtn" id="ce-edit-btn" onclick="toggleClientEdit('${c.id}')">✏ Edit Client</button>
+          <button class="tbtn primary" id="ce-save-btn" style="display:none;" onclick="saveClientEdits('${c.id}')">💾 Save Changes</button>
+          <button class="tbtn" id="ce-cancel-btn" style="display:none;" onclick="renderClientModalTab('overview')">✕ Cancel</button>
+        </div>
+      </div>
       <div class="modal-section">
         <div class="ms-title">Client Journey</div>
         <div class="stepper">${stepper}</div>
+        <div id="ce-stage-row" style="display:none;margin-top:10px;">
+          <label style="font-size:.72rem;color:var(--ink4);display:block;margin-bottom:4px;">Move to Pipeline Stage</label>
+          <select id="ce-stageIdx" style="width:100%;padding:6px 8px;border-radius:var(--r);border:1px solid var(--navy-ring);font-size:.82rem;">${STAGE_OPTS}</select>
+        </div>
         ${c.journey ? journeyHTML(c) : ''}
       </div>
       <div class="modal-section">
@@ -1387,25 +1401,30 @@ function renderClientModalTab(tab) {
         <div style="font-size:.72rem;color:var(--ink4);margin-top:6px;">Current: <strong>${curStatus}</strong>${c._statusUpdated ? ' · updated ' + c._statusUpdated : ''}</div>
       </div>
       <div class="modal-section"><div class="g2" style="gap:20px;">
-        <div><div class="ms-title">Client Information</div>
-          <div class="meta-row"><span class="meta-lbl">Full Name</span><span class="meta-val">${c.name}</span></div>
-          <div class="meta-row"><span class="meta-lbl">UCI Number</span><span class="meta-val" style="font-family:var(--mono)">${c.uci}</span></div>
-          <div class="meta-row"><span class="meta-lbl">OG Client ID</span><span class="meta-val" style="font-family:var(--mono)">${c.ogId}</span></div>
-          ${c.dob?`<div class="meta-row"><span class="meta-lbl">Date of Birth</span><span class="meta-val">${c.dob}</span></div>`:''}
-          ${c.diagnosis?`<div class="meta-row"><span class="meta-lbl">Diagnosis</span><span class="meta-val">${c.diagnosis}</span></div>`:''}
-          ${c.address?`<div class="meta-row"><span class="meta-lbl">Address</span><span class="meta-val" style="font-size:.76rem;">${c.address}</span></div>`:''}
-          ${c.caregiver?`<div class="meta-row"><span class="meta-lbl">Caregiver</span><span class="meta-val">${c.caregiver} · <a href="tel:${(c.caregiverPhone||'').replace(/\D/g,'')}" style="color:var(--navy)">${c.caregiverPhone}</a></span></div>`:''}
-          ${c.emergency?`<div class="meta-row"><span class="meta-lbl">Emergency</span><span class="meta-val">${c.emergency} · <a href="tel:${(c.emergencyPhone||'').replace(/\D/g,'')}" style="color:var(--navy)">${c.emergencyPhone}</a></span></div>`:''}
-          ${c.serviceStart?`<div class="meta-row"><span class="meta-lbl">Service Start</span><span class="meta-val">${c.serviceStart}</span></div>`:''}
-          ${c.ipp?`<div class="meta-row"><span class="meta-lbl">IPP Date</span><span class="meta-val">${c.ipp} · Next Review: ${c.ippReview}</span></div>`:''}
+        <div>
+          <div class="ms-title">Client Information</div>
+          <div class="meta-row"><span class="meta-lbl">Full Name</span><span class="meta-val ce-view">${c.name}</span><span class="ce-edit" style="display:none;flex:1;">${ef(c.name,'name','text','Full legal name')}</span></div>
+          <div class="meta-row"><span class="meta-lbl">UCI Number</span><span class="meta-val ce-view" style="font-family:var(--mono)">${c.uci}</span><span class="ce-edit" style="display:none;flex:1;">${ef(c.uci,'uci','text','UCI number')}</span></div>
+          <div class="meta-row"><span class="meta-lbl">OG Client ID</span><span class="meta-val ce-view" style="font-family:var(--mono)">${c.ogId}</span><span class="ce-edit" style="display:none;flex:1;">${ef(c.ogId,'ogId','text','OG-XXX')}</span></div>
+          <div class="meta-row"><span class="meta-lbl">Date of Birth</span><span class="meta-val ce-view">${c.dob||'—'}</span><span class="ce-edit" style="display:none;flex:1;">${ef(c.dob,'dob','date')}</span></div>
+          <div class="meta-row"><span class="meta-lbl">Diagnosis</span><span class="meta-val ce-view">${c.diagnosis||'—'}</span><span class="ce-edit" style="display:none;flex:1;">${ef(c.diagnosis,'diagnosis','text','e.g. Autism Spectrum Disorder')}</span></div>
+          <div class="meta-row"><span class="meta-lbl">Phone</span><span class="meta-val ce-view">${c.phone||'—'}</span><span class="ce-edit" style="display:none;flex:1;">${ef(c.phone,'phone','tel','(xxx) xxx-xxxx')}</span></div>
+          <div class="meta-row"><span class="meta-lbl">Address</span><span class="meta-val ce-view">${c.address||'—'}</span><span class="ce-edit" style="display:none;flex:1;">${ef(c.address,'address','text','Street, City, State ZIP')}</span></div>
+          <div class="meta-row"><span class="meta-lbl">Caregiver</span><span class="meta-val ce-view">${c.caregiver||'—'}${c.caregiverPhone?' · '+c.caregiverPhone:''}</span><span class="ce-edit" style="display:none;flex:1;"><div style="display:flex;gap:4px;">${ef(c.caregiver,'caregiver','text','Name')}${ef(c.caregiverPhone,'caregiverPhone','tel','Phone')}</div></span></div>
+          <div class="meta-row"><span class="meta-lbl">Emergency</span><span class="meta-val ce-view">${c.emergency||'—'}${c.emergencyPhone?' · '+c.emergencyPhone:''}</span><span class="ce-edit" style="display:none;flex:1;"><div style="display:flex;gap:4px;">${ef(c.emergency,'emergency','text','Name')}${ef(c.emergencyPhone,'emergencyPhone','tel','Phone')}</div></span></div>
+          <div class="meta-row"><span class="meta-lbl">Service Start</span><span class="meta-val ce-view">${c.serviceStart||'—'}</span><span class="ce-edit" style="display:none;flex:1;">${ef(c.serviceStart,'serviceStart','date')}</span></div>
+          <div class="meta-row"><span class="meta-lbl">IPP Date</span><span class="meta-val ce-view">${c.ipp||'—'}${c.ippReview?' · Review: '+c.ippReview:''}</span><span class="ce-edit" style="display:none;flex:1;"><div style="display:flex;gap:4px;"><div style="flex:1;">${ef(c.ipp,'ipp','date')}</div><div style="flex:1;">${ef(c.ippReview,'ippReview','date')}</div></div></span></div>
         </div>
-        <div><div class="ms-title">Assignment &amp; QPR</div>
-          <div class="meta-row"><span class="meta-lbl">Navigator</span><span class="meta-val">${c.navigator}</span></div>
-          <div class="meta-row"><span class="meta-lbl">IRC Coordinator</span><span class="meta-val">${c.coordinator}</span></div>
-          ${c.csc?`<div class="meta-row"><span class="meta-lbl">IRC CSC</span><span class="meta-val"><a href="mailto:${c.cscEmail}" style="color:var(--navy)">${c.csc}</a>${c.cscPhone?' · <a href="tel:'+c.cscPhone.replace(/\D/g,'')+ '" style="color:var(--navy)">'+c.cscPhone+'</a>':''}</span></div>`:''}
-          ${c.cscSup?`<div class="meta-row"><span class="meta-lbl">CSC Supervisor</span><span class="meta-val"><a href="mailto:${c.cscSupEmail}" style="color:var(--navy)">${c.cscSup}</a></span></div>`:''}
-          ${c.qprDue?`<div class="meta-row"><span class="meta-lbl">QPR Due</span><span class="meta-val" style="color:var(--amber)">${c.qprDue} (${days} days)</span></div>`:'<div class="meta-row"><span class="meta-lbl">QPR Due</span><span class="meta-val" style="color:var(--ink4)">TBD — pending authorization</span></div>'}
-          ${c.authHours?`<div class="meta-row"><span class="meta-lbl">Auth Hours</span><span class="meta-val">${c.usedHours} / ${c.authHours} (${pct}%)</span></div><div style="margin-top:8px;"><div class="hbar-track"><div class="hbar-fill ${pct>=90?'r':pct>=60?'a':'n'}" style="width:${pct}%"></div></div></div>`:'<div class="meta-row"><span class="meta-lbl">Auth Hours</span><span class="meta-val" style="color:var(--ink4)">Pending IRC authorization</span></div>'}
+        <div>
+          <div class="ms-title">Assignment &amp; QPR</div>
+          <div class="meta-row"><span class="meta-lbl">Navigator</span><span class="meta-val ce-view">${c.navigator||'—'}</span><span class="ce-edit" style="display:none;flex:1;">${ef(c.navigator,'navigator','text','Navigator name')}</span></div>
+          <div class="meta-row"><span class="meta-lbl">IRC Coordinator</span><span class="meta-val ce-view">${c.coordinator||'—'}</span><span class="ce-edit" style="display:none;flex:1;">${ef(c.coordinator,'coordinator','text','Coordinator name')}</span></div>
+          <div class="meta-row"><span class="meta-lbl">IRC CSC</span><span class="meta-val ce-view">${c.csc||'—'}${c.cscPhone?' · '+c.cscPhone:''}</span><span class="ce-edit" style="display:none;flex:1;"><div style="display:flex;gap:4px;">${ef(c.csc,'csc','text','Name')}${ef(c.cscEmail,'cscEmail','email','Email')}</div></span></div>
+          <div class="meta-row"><span class="meta-lbl">CSC Phone</span><span class="meta-val ce-view">${c.cscPhone||'—'}</span><span class="ce-edit" style="display:none;flex:1;">${ef(c.cscPhone,'cscPhone','tel','CSC phone')}</span></div>
+          <div class="meta-row"><span class="meta-lbl">CSC Supervisor</span><span class="meta-val ce-view">${c.cscSup||'—'}</span><span class="ce-edit" style="display:none;flex:1;"><div style="display:flex;gap:4px;">${ef(c.cscSup,'cscSup','text','Name')}${ef(c.cscSupEmail,'cscSupEmail','email','Email')}</div></span></div>
+          <div class="meta-row"><span class="meta-lbl">QPR Due</span><span class="meta-val ce-view" ${c.qprDue?'style="color:var(--amber)"':'style="color:var(--ink4)"'}>${c.qprDue?c.qprDue+' ('+days+' days)':'TBD — pending authorization'}</span><span class="ce-edit" style="display:none;flex:1;">${ef(c.qprDue,'qprDue','date')}</span></div>
+          <div class="meta-row"><span class="meta-lbl">Auth Hours</span><span class="meta-val ce-view">${c.authHours?c.usedHours+' / '+c.authHours+' ('+pct+'%)':'Pending IRC authorization'}</span><span class="ce-edit" style="display:none;flex:1;"><div style="display:flex;gap:6px;align-items:center;"><span style="font-size:.72rem;white-space:nowrap;">Used:</span>${ef(c.usedHours,'usedHours','number','0')}<span style="font-size:.72rem;white-space:nowrap;">Auth:</span>${ef(c.authHours,'authHours','number','0')}</div></span></div>
+          ${c.authHours?'<div class="ce-view"><div class="hbar-track" style="margin-top:4px;"><div class="hbar-fill '+(pct>=90?'r':pct>=60?'a':'n')+'" style="width:'+pct+'%"></div></div></div>':''}
         </div>
       </div></div>
       <div class="modal-section">
@@ -1512,9 +1531,9 @@ function renderClientModalTab(tab) {
         </div>
       </div>
       <div class="tbl-wrap"><table class="cn-tbl">
-        <thead><tr><th>Date</th><th>Author</th><th>Type</th><th>Method</th><th>Service</th><th>Domains</th><th>Hours</th><th>Notes</th></tr></thead>
-        <tbody>${!all.length ? '<tr><td colspan="8"><div class="empty">No case notes yet.</div></td></tr>' :
-          all.map(n => `<tr>
+        <thead><tr><th>Date</th><th>Author</th><th>Type</th><th>Method</th><th>Service</th><th>Domains</th><th>Hours</th><th>Notes</th><th></th></tr></thead>
+        <tbody>${!all.length ? '<tr><td colspan="9"><div class="empty">No case notes yet.</div></td></tr>' :
+          all.map((n,i) => `<tr>
             <td style="white-space:nowrap;font-family:var(--mono);font-size:.72rem;">${n.date}</td>
             <td style="font-size:.78rem;font-weight:600;">${n.author}</td>
             <td><span class="pill n" style="font-size:.65rem;">${n.type||'—'}</span></td>
@@ -1523,6 +1542,7 @@ function renderClientModalTab(tab) {
             <td style="font-size:.68rem;color:var(--ink3);">${(n.domains||[]).join(', ')||'—'}</td>
             <td style="font-size:.78rem;font-weight:600;">${n.hours||'—'}h</td>
             <td style="font-size:.78rem;color:var(--ink2);line-height:1.5;min-width:200px;">${n.note}${n.qpr?`<div style="font-size:.68rem;color:var(--navy);background:var(--navy-lt);border-radius:3px;padding:3px 6px;margin-top:4px;">📋 QPR: ${n.qpr}</div>`:''}</td>
+            <td style="white-space:nowrap;"><button class="tbtn" style="font-size:.65rem;padding:3px 7px;" onclick="openEditNoteModal(${i},'${c.id}')">✏</button> <button class="tbtn" style="font-size:.65rem;padding:3px 7px;color:var(--red);" onclick="deleteCaseNote(${i},'${c.id}')">🗑</button></td>
           </tr>`).join('')}
         </tbody>
       </table></div>
@@ -1894,6 +1914,92 @@ async function updateReferralStatus(clientId) {
   toast(spOk ? `✓ Status updated → SharePoint` : (window._ogSpReady ? '⚠ Status updated locally — SharePoint write failed' : '✓ Status updated locally'));
   renderClientTable();
   if (currentClient && currentClient.id === clientId) renderClientModalTab('overview');
+  renderCNTable();
+}
+
+function toggleClientEdit(clientId) {
+  document.querySelectorAll('.ce-view').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.ce-edit').forEach(el => el.style.display = '');
+  const stageRow = document.getElementById('ce-stage-row');
+  if (stageRow) stageRow.style.display = '';
+  const editBtn = document.getElementById('ce-edit-btn');
+  const saveBtn = document.getElementById('ce-save-btn');
+  const cancelBtn = document.getElementById('ce-cancel-btn');
+  const label = document.getElementById('ce-mode-label');
+  if (editBtn) editBtn.style.display = 'none';
+  if (saveBtn) saveBtn.style.display = '';
+  if (cancelBtn) cancelBtn.style.display = '';
+  if (label) { label.textContent = 'Edit mode — make changes then click Save'; label.style.color = 'var(--orange)'; }
+}
+
+async function saveClientEdits(clientId) {
+  const c = CLIENTS.find(cl => cl.id === clientId);
+  if (!c) { toast('Client not found'); return; }
+  const g = id => { const el = document.getElementById('ce-'+id); return el ? el.value.trim() : undefined; };
+  const gn = id => { const v = g(id); return (v !== undefined && v !== '') ? parseFloat(v) : undefined; };
+  const fields = ['name','uci','ogId','dob','diagnosis','phone','address','caregiver','caregiverPhone',
+    'emergency','emergencyPhone','serviceStart','ipp','ippReview','navigator','coordinator',
+    'csc','cscEmail','cscPhone','cscSup','cscSupEmail','qprDue'];
+  fields.forEach(f => { const v = g(f); if (v !== undefined) c[f] = v || undefined; });
+  const stageVal = g('stageIdx'); if (stageVal !== undefined) c.stageIdx = parseInt(stageVal);
+  const used = gn('usedHours'); if (used !== undefined) c.usedHours = used;
+  const auth = gn('authHours'); if (auth !== undefined) c.authHours = auth;
+  let spOk = false;
+  if (window.ogMsal && window._ogSpReady) {
+    try { spOk = await window.ogMsal.clients.save(c); } catch(err) { console.warn('[OG] saveClientEdits failed:', err); }
+  }
+  toast(spOk ? '✓ Client record updated → SharePoint' : (window._ogSpReady ? '⚠ Saved locally — SharePoint write failed' : '✓ Saved locally'));
+  renderClientTable();
+  renderClientModalTab('overview');
+}
+
+function openEditNoteModal(noteIdx, clientId) {
+  const c = CLIENTS.find(cl => cl.id === clientId);
+  const all = [...(c?.caseNotes||[]), ...caseNotes.filter(n => n.clientId === clientId)].sort((a,b) => b.date.localeCompare(a.date));
+  const note = all[noteIdx];
+  if (!note) { toast('Note not found'); return; }
+  window._editingNote = { note, noteIdx, clientId };
+  openCNModal();
+  setTimeout(() => {
+    const flds = {'cn-date':note.date,'cn-type':note.type,'cn-method':note.method,'cn-service':note.service,'cn-location':note.location,'cn-hours':note.hours,'cn-note':note.note,'cn-followup':note.followup,'cn-qpr':note.qpr};
+    Object.entries(flds).forEach(([id,val]) => { const el = document.getElementById(id); if (el && val !== undefined) el.value = val; });
+    const saveBtn = document.querySelector('#cn-modal button[onclick="saveCaseNote()"]');
+    if (saveBtn) { saveBtn.textContent = '💾 Update Note'; saveBtn.setAttribute('onclick','updateExistingNote()'); }
+  }, 60);
+}
+
+async function updateExistingNote() {
+  const ctx = window._editingNote;
+  if (!ctx) { await saveCaseNote(); return; }
+  const { note, clientId } = ctx;
+  const g = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  note.date = g('cn-date') || note.date;
+  note.type = g('cn-type') || note.type;
+  note.method = g('cn-method') || note.method;
+  note.service = g('cn-service'); note.location = g('cn-location');
+  note.hours = parseFloat(g('cn-hours')) || note.hours;
+  note.note = g('cn-note') || note.note;
+  note.followup = g('cn-followup'); note.qpr = g('cn-qpr');
+  window._editingNote = null;
+  closeModal('cn-modal');
+  toast('✓ Note updated');
+  const c = CLIENTS.find(cl => cl.id === clientId);
+  if (c) { c.lastNote = (c.caseNotes||[])[0]; }
+  if (currentClient && currentClient.id === clientId) renderClientModalTab('notes');
+  renderCNTable();
+}
+
+async function deleteCaseNote(noteIdx, clientId) {
+  if (!confirm('Delete this case note? This cannot be undone.')) return;
+  const c = CLIENTS.find(cl => cl.id === clientId);
+  const all = [...(c?.caseNotes||[]), ...caseNotes.filter(n => n.clientId === clientId)].sort((a,b) => b.date.localeCompare(a.date));
+  const note = all[noteIdx];
+  if (!note) { toast('Note not found'); return; }
+  if (c?.caseNotes) c.caseNotes = c.caseNotes.filter(n => n !== note);
+  const gi = caseNotes.indexOf(note); if (gi !== -1) caseNotes.splice(gi, 1);
+  if (c) c.lastNote = (c.caseNotes||[])[0] || null;
+  toast('🗑 Note deleted');
+  if (currentClient && currentClient.id === clientId) renderClientModalTab('notes');
   renderCNTable();
 }
 
