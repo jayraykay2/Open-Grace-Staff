@@ -117,6 +117,7 @@ async function spGetClients() {
       authorizedHours: parseFloat(item.fields.AuthorizedHours) || 0,
       usedHours: parseFloat(item.fields.UsedHours) || 0,
       coordinator: item.fields.Coordinator || '', active: item.fields.Active !== false,
+      referralStatus: item.fields.ReferralStatus || '',
     }));
   } catch (err) { console.warn('[OG-MSAL] spGetClients failed:', err); return null; }
 }
@@ -129,6 +130,7 @@ async function spSaveClient(client) {
     Title: client.name || '', UCI: client.uci || '', ServiceStart: client.serviceStart || '',
     QPRDue: client.qprDue || '', AuthorizedHours: client.authorizedHours || 0,
     UsedHours: client.usedHours || 0, Coordinator: client.coordinator || '', Active: client.active !== false,
+    ReferralStatus: client.referralStatus || '',
   };
   try {
     if (client._spId) {
@@ -138,6 +140,19 @@ async function spSaveClient(client) {
     }
     return true;
   } catch (err) { console.warn('[OG-MSAL] spSaveClient failed:', err); return false; }
+}
+
+async function spUpdateReferralStatus(spId, referralStatus) {
+  await resolveListIds();
+  const listId = OG_LISTS.clients.id;
+  if (!listId || !spId) return false;
+  try {
+    await graphFetch(`${OG_SP_SITE}/lists/${listId}/items/${spId}/fields`, {
+      method: 'PATCH',
+      body: JSON.stringify({ ReferralStatus: referralStatus || '' })
+    });
+    return true;
+  } catch (err) { console.warn('[OG-MSAL] spUpdateReferralStatus failed:', err); return false; }
 }
 
 async function spDeleteClient(spId) {
@@ -381,6 +396,7 @@ async function ogRefreshDashboard() {
           local.authHours = spC.authHours || local.authHours;
           local.stage = spC.stage || local.stage;
           local._spId = spC._spId;
+          local.referralStatus = spC.referralStatus || local.referralStatus || '';
         }
       });
     }
@@ -406,6 +422,19 @@ async function ogRefreshDashboard() {
             });
           }
         });
+      });
+    }
+    // Refresh case notes from Contact Logs — attach to matching client by UCI
+    const spNotes = await spGetContactLogs();
+    if (spNotes && spNotes.length > 0 && window.CLIENTS) {
+      window.CLIENTS.forEach(c => {
+        const mine = spNotes.filter(n => n.uci && n.uci === c.uci)
+          .map(n => ({ ...n, clientId: c.id }));
+        if (mine.length) {
+          // SP-sourced notes replace any local placeholder for this client, sorted newest first
+          c.caseNotes = mine.sort((a,b) => (b.date||'').localeCompare(a.date||''));
+          c.lastNote = c.caseNotes[0];
+        }
       });
     }
     console.log('[OG-MSAL] Dashboard refreshed from SharePoint');
@@ -532,7 +561,7 @@ window.ogMsal = {
   email:       ogUserEmail,
   filterByRole: ogFilterClientsByRole,
   graphFetch,
-  clients:  { get: spGetClients,      save: spSaveClient,       delete: spDeleteClient },
+  clients:  { get: spGetClients,      save: spSaveClient,       delete: spDeleteClient, updateStatus: spUpdateReferralStatus },
   pipeline: { get: spGetPipeline,     add: spAddPipelineItem,   move: spMovePipelineItem, delete: spDeletePipelineItem },
   notes:    { get: spGetContactLogs,  save: spSaveContactLog },
   training: { get: spGetTrainingLog,  save: spSaveTrainingEntry },
