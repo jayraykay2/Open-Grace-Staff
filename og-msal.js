@@ -116,7 +116,7 @@ async function spGetClients() {
       serviceStart: item.fields.ServiceStart || '', qprDue: item.fields.QPRDue || '',
       authorizedHours: parseFloat(item.fields.AuthorizedHours) || 0,
       usedHours: parseFloat(item.fields.UsedHours) || 0,
-      coordinator: item.fields.Coordinator || '', active: item.fields.Active !== false,
+      coordinator: item.fields.Coordinator || '', active: item.fields.Active !== 'No',
       referralStatus: item.fields.ReferralStatus || '',
     }));
   } catch (err) { console.warn('[OG-MSAL] spGetClients failed:', err); return null; }
@@ -129,7 +129,7 @@ async function spSaveClient(client) {
   const fields = {
     Title: client.name || '', UCI: client.uci || '', ServiceStart: client.serviceStart || '',
     QPRDue: client.qprDue || '', AuthorizedHours: client.authorizedHours || 0,
-    UsedHours: client.usedHours || 0, Coordinator: client.coordinator || '', Active: client.active !== false,
+    UsedHours: client.usedHours || 0, Coordinator: client.coordinator || '', Active: client.active !== false ? 'Yes' : 'No',
     ReferralStatus: client.referralStatus || '',
   };
   try {
