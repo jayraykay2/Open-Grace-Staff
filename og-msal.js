@@ -286,11 +286,12 @@ async function spSaveContactLog(note) {
     };
     if (note._spId) {
       await graphFetch(`${OG_SP_SITE}/lists/${listId}/items/${note._spId}/fields`, { method: 'PATCH', body: JSON.stringify(fields) });
+      return note._spId;
     } else {
-      await graphFetch(`${OG_SP_SITE}/lists/${listId}/items`, { method: 'POST', body: JSON.stringify({ fields }) });
+      const created = await graphFetch(`${OG_SP_SITE}/lists/${listId}/items`, { method: 'POST', body: JSON.stringify({ fields }) });
+      return created?.id || true;
     }
-    return true;
-  } catch (err) { console.warn('[OG-MSAL] spSaveContactLog failed:', err); return false; }
+  } catch (err) { console.warn('[OG-MSAL] spSaveContactLog failed:', err); return null; }
 }
 
 // ── TRAINING LOG ───────────────────────────────────────────────────────────────
