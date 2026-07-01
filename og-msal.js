@@ -111,15 +111,16 @@ async function spGetClients() {
   if (!listId) return null;
   try {
     const data = await graphFetch(`${OG_SP_SITE}/lists/${listId}/items?$expand=fields&$select=id,fields&$top=200`);
+    const d = v => v ? v.split('T')[0] : '';
     return (data.value || []).map(item => ({
       _spId: item.id, name: item.fields.Title || '', uci: item.fields.UCI || '',
       ogId: item.fields.OGClientID || '', dob: item.fields.DOB || '',
       diagnosis: item.fields.Diagnosis || '', phone: item.fields.Phone || '',
       address: item.fields.Address || '', caregiver: item.fields.Caregiver || '',
       caregiverPhone: item.fields.CaregiverPhone || '', emergency: item.fields.Emergency || '',
-      emergencyPhone: item.fields.EmergencyPhone || '', serviceStart: item.fields.ServiceStart || '',
+      emergencyPhone: item.fields.EmergencyPhone || '', serviceStart: d(item.fields.ServiceStart),
       ipp: item.fields.IPPDate || '', ippReview: item.fields.IPPReview || '',
-      qprDue: item.fields.QPRDue || '', authHours: parseFloat(item.fields.AuthorizedHours) || 0,
+      qprDue: d(item.fields.QPRDue), authHours: parseFloat(item.fields.AuthorizedHours) || 0,
       usedHours: parseFloat(item.fields.UsedHours) || 0, navigator: item.fields.Navigator || '',
       coordinator: item.fields.Coordinator || '', csc: item.fields.CSC || '',
       cscEmail: item.fields.CSCEmail || '', cscPhone: item.fields.CSCPhone || '',
@@ -133,18 +134,19 @@ async function spSaveClient(client) {
   await resolveListIds();
   const listId = OG_LISTS.clients.id;
   if (!listId) return false;
+  const dt = v => v ? (v.includes('T') ? v : v + 'T00:00:00Z') : null;
   const fields = {
-    Title: client.name || '', UCI: client.uci || '', OGClientID: client.ogId || '',
-    DOB: client.dob || '', Diagnosis: client.diagnosis || '',
-    Phone: client.phone || '', Address: client.address || '',
-    Caregiver: client.caregiver || '', CaregiverPhone: client.caregiverPhone || '',
-    Emergency: client.emergency || '', EmergencyPhone: client.emergencyPhone || '',
-    ServiceStart: client.serviceStart || '', IPPDate: client.ipp || '', IPPReview: client.ippReview || '',
-    QPRDue: client.qprDue || '', AuthorizedHours: client.authHours || 0,
+    Title: client.name || '', UCI: client.uci || '', OGClientID: client.ogId || null,
+    DOB: client.dob || null, Diagnosis: client.diagnosis || null,
+    Phone: client.phone || null, Address: client.address || null,
+    Caregiver: client.caregiver || null, CaregiverPhone: client.caregiverPhone || null,
+    Emergency: client.emergency || null, EmergencyPhone: client.emergencyPhone || null,
+    ServiceStart: dt(client.serviceStart), IPPDate: client.ipp || null, IPPReview: client.ippReview || null,
+    QPRDue: dt(client.qprDue), AuthorizedHours: client.authHours || 0,
     UsedHours: client.usedHours || 0,
-    Navigator: client.navigator || '', Coordinator: client.coordinator || '',
-    CSC: client.csc || '', CSCEmail: client.cscEmail || '', CSCPhone: client.cscPhone || '',
-    CSCSupervisor: client.cscSup || '', CSCSupervisorEmail: client.cscSupEmail || '',
+    Navigator: client.navigator || null, Coordinator: client.coordinator || null,
+    CSC: client.csc || null, CSCEmail: client.cscEmail || null, CSCPhone: client.cscPhone || null,
+    CSCSupervisor: client.cscSup || null, CSCSupervisorEmail: client.cscSupEmail || null,
     Active: client.active !== false ? 'Yes' : 'No',
     ReferralStatus: client.referralStatus || '',
   };
