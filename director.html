@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Open Grace — Director Dashboard</title>
-<script src="og-msal.js?v=2026-06-30b" defer></script>
+<script src="og-msal.js?v=2026-07-01" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#1E1C5E;--navy2:#2A2878;--navy-lt:#EEEDF8;--navy-ring:#A5A3D6;--orange:#FF6B1A;--orange2:#E55A0D;--orange-lt:#FFF3ED;--orange-ring:#FFBB99;--green:#16A34A;--green-lt:#F0FDF4;--green-ring:#86EFAC;--amber:#D97706;--amber-lt:#FFFBEB;--amber-ring:#FCD34D;--red:#DC2626;--red-lt:#FEF2F2;--red-ring:#FCA5A5;--white:#FFFFFF;--canvas:#F5F6FA;--ink:#111827;--ink2:#374151;--ink3:#6B7280;--ink4:#9CA3AF;--ink5:#D1D5DB;--ink6:#E5E7EB;--ink7:#F9FAFB;--sidebar-w:230px;--topbar-h:56px;--font:'Inter',system-ui,sans-serif;--mono:'DM Mono',monospace;--r:6px;--r2:10px;--r3:14px;--sh:0 1px 3px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);--sh2:0 4px 16px rgba(0,0,0,.10);}
@@ -1844,38 +1844,40 @@ async function saveCaseNote() {
     domains, hours: parseFloat(hours),
     note, followup: document.getElementById('cn-followup').value,
     qpr: document.getElementById('cn-qpr').value,
-    clientId: clientV
+    clientId: clientV, _spId: null
   };
   const c = CLIENTS.find(cl => cl.id === clientV);
 
-  // Write to SharePoint Contact Logs list FIRST so we know whether it really persisted
-  let spOk = false;
+  // Write to SP first — capture returned item ID so edit/delete can PATCH later
+  let spItemId = null;
   if (window.ogMsal && window._ogSpReady) {
     try {
-      spOk = await window.ogMsal.notes.save({ ...newNote, uci: c?.uci || '' });
-    } catch (err) { console.warn('[OG] SP case note save failed:', err); spOk = false; }
+      spItemId = await window.ogMsal.notes.save({ ...newNote, uci: c?.uci || '' });
+      if (spItemId) newNote._spId = spItemId;
+    } catch (err) { console.warn('[OG] SP case note save failed:', err); }
   }
 
-  caseNotes.unshift(newNote);
+  // Store ONLY in c.caseNotes — NOT in global caseNotes[] — to prevent duplicates
   if (c) {
     c.caseNotes = c.caseNotes || [];
     c.caseNotes.unshift(newNote);
     c.lastNote = newNote;
     c.usedHours = Math.min(c.authHours||999, (c.usedHours||0) + parseFloat(hours));
-  }
+  } else { caseNotes.unshift(newNote); }
   const staffMember = STAFF_DATA.find(s => s.id === 'ambre');
   if (staffMember && staffMember.authHours) staffMember.usedHours = Math.min(staffMember.authHours, staffMember.usedHours + parseFloat(hours));
 
   closeModal('cn-modal');
+  const spOk = !!spItemId;
   if (window._ogSpReady) {
-    toast(spOk ? '✓ Case note saved → SharePoint' : '⚠ Saved locally only — SharePoint write failed, check connection');
+    toast(spOk ? `✓ Case note saved → SharePoint (ID: ${spItemId})` : '⚠ Saved locally only — SharePoint write failed');
   } else {
     toast('✓ Case note saved locally (not connected to SharePoint)');
   }
   renderClientTable(); renderStaffTable();
   if (currentClient) renderClientModalTab('overview');
   renderCNTable();
-  ['cn-type','cn-method','cn-note','cn-followup','cn-qpr','cn-hours','cn-next'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['cn-type','cn-method','cn-service','cn-location','cn-note','cn-followup','cn-qpr','cn-hours','cn-next'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   document.querySelectorAll('.domain-cb input[type=checkbox]').forEach(cb => cb.checked = false);
 }
 
@@ -1902,12 +1904,11 @@ async function updateReferralStatus(clientId) {
       service: 'Documentation / Admin', location: 'Remote / Phone', domains: [], hours: 0,
       note: `Referral status updated: "${prevStatus}" → "${newStatus}"`, followup: '', qpr: '', clientId
     };
-    caseNotes.unshift(autoNote);
     c.caseNotes = c.caseNotes || [];
     c.caseNotes.unshift(autoNote);
     c.lastNote = autoNote;
     if (window.ogMsal && window._ogSpReady) {
-      window.ogMsal.notes.save({ ...autoNote, uci: c.uci || '' }).catch(()=>{});
+      window.ogMsal.notes.save({ ...autoNote, uci: c.uci || '' }).then(id => { if (id) autoNote._spId = id; }).catch(()=>{});
     }
   }
 
@@ -2497,22 +2498,30 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 function openLink(url) { window.open(url, '_blank', 'noopener'); }
 function renderCNTable() {
   const tbody = document.getElementById('cn-tbody'); if (!tbody) return;
-  const all = [...caseNotes, ...(CLIENTS.flatMap(c => (c.caseNotes||[])))]
-    .sort((a,b) => b.date.localeCompare(a.date));
-  if (!all.length) { tbody.innerHTML = '<tr><td colspan="9"><div class="empty"><div class="empty-icon">📝</div>No case notes yet. Add the first one.</div></td></tr>'; return; }
-  tbody.innerHTML = all.map(n => `<tr>
+  const filterSel = document.getElementById('cn-tab-filter');
+  if (filterSel && filterSel.options.length <= 1) {
+    filterSel.innerHTML = '<option value="">All clients</option>' +
+      CLIENTS.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  }
+  const filterVal = filterSel ? filterSel.value : '';
+  // Only use c.caseNotes — not global caseNotes[] — to prevent duplicates
+  let all = CLIENTS.flatMap(c => (c.caseNotes||[]).map(n => ({...n, _cid: c.id, _cname: c.name})));
+  if (filterVal) all = all.filter(n => (n.clientId||n._cid) === filterVal);
+  all.sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  if (!all.length) { tbody.innerHTML = '<tr><td colspan="10"><div class="empty"><div class="empty-icon">📝</div>No case notes yet. Add the first one.</div></td></tr>'; return; }
+  tbody.innerHTML = all.map((n,i) => `<tr>
     <td style="white-space:nowrap;font-family:var(--mono);font-size:.72rem;">${n.date}</td>
     <td style="font-size:.78rem;font-weight:600;">${n.author}</td>
-    <td style="font-size:.75rem;">${CLIENTS.find(c=>c.id===n.clientId)?.name||n.clientId||'—'}</td>
+    <td style="font-size:.75rem;">${n._cname||CLIENTS.find(c=>c.id===n.clientId)?.name||'—'}</td>
     <td><span class="pill n" style="font-size:.62rem;">${n.type||'—'}</span></td>
     <td><span class="pill gr" style="font-size:.62rem;">${n.method||'—'}</span></td>
     <td style="font-size:.72rem;color:var(--ink3);">${n.service||'—'}</td>
     <td style="font-size:.68rem;">${(n.domains||[]).map(d=>`<span class="pill n" style="font-size:.58rem;margin-right:2px;">${d}</span>`).join('')||'—'}</td>
     <td style="font-size:.78rem;font-weight:600;">${n.hours||'—'}h</td>
-    <td style="font-size:.78rem;color:var(--ink2);line-height:1.5;min-width:180px;">${n.note}${n.qpr?`<div style="font-size:.68rem;color:var(--navy);background:var(--navy-lt);border-radius:3px;padding:3px 6px;margin-top:4px;">📋 QPR: ${n.qpr}</div>`:''}</td>
+    <td style="font-size:.78rem;color:var(--ink2);line-height:1.5;min-width:180px;">${n.note}${n.followup?`<div style="font-size:.68rem;color:var(--ink3);margin-top:3px;">↳ ${n.followup}</div>`:''}${n.qpr?`<div style="font-size:.68rem;color:var(--navy);background:var(--navy-lt);border-radius:3px;padding:3px 6px;margin-top:4px;">📋 QPR: ${n.qpr}</div>`:''}</td>
+    <td style="white-space:nowrap;"><button class="tbtn" style="font-size:.65rem;padding:3px 7px;" title="Edit" onclick="openEditNoteModal(${i},'${n.clientId||n._cid}')">✏</button> <button class="tbtn" style="font-size:.65rem;padding:3px 7px;color:var(--red);" title="Delete" onclick="deleteCaseNote(${i},'${n.clientId||n._cid}')">🗑</button></td>
   </tr>`).join('');
 }
-
 function refreshAll() { renderAttn(); renderClientTable(); renderStaffTable(); renderPipeline(); renderCNTable(); toast('↻ Dashboard refreshed'); }
 function toast(msg) {
   const w = document.getElementById('toast-wrap');
