@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Staff Portal · Open Grace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0e2e; --card:#1a1843; --card-border:#2e2c5a;
+  --input-bg:#12103a; --input-border:#2e2c5a; --input-focus:#FF6B1A;
+  --navy:#1E1C5E; --navy-light:#2a2878;
+  --orange:#FF6B1A; --orange-hover:#e55a0d;
+  --text:#e8e6ff; --muted:#9896c8;
+  --success:#22c55e; --error:#ef4444;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+h1,h2,h3{font-family:'Fraunces',serif;}
+button{font-family:inherit;}
+input,select,textarea{
+  width:100%;background:var(--input-bg);border:1px solid var(--input-border);
+  border-radius:8px;color:var(--text);padding:11px 12px;font-size:.95rem;font-family:inherit;
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--input-focus);}
+label{display:block;font-size:.78rem;font-weight:600;color:var(--muted);margin:14px 0 5px;text-transform:uppercase;letter-spacing:.04em;}
+.btn{display:block;width:100%;background:var(--orange);color:#fff;border:none;border-radius:8px;
+  padding:13px;font-size:1rem;font-weight:700;cursor:pointer;transition:.15s;margin-top:18px;}
+.btn:hover{background:var(--orange-hover);}
+.btn:disabled{opacity:.5;cursor:default;}
+.btn-ghost{background:none;border:1px solid var(--card-border);color:var(--muted);}
+.btn-ghost:hover{background:var(--card);border-color:var(--orange);color:var(--orange);}
+.status-msg{margin-top:14px;padding:10px 12px;border-radius:8px;font-size:.85rem;display:none;}
+.status-msg.error{display:block;background:rgba(239,68,68,.12);border:1px solid var(--error);color:#fca5a5;}
+.status-msg.success{display:block;background:rgba(34,197,94,.12);border:1px solid var(--success);color:#86efac;}
+.status-msg.info{display:block;background:rgba(255,107,26,.1);border:1px solid var(--orange);color:#ffb98a;}
+
+/* ── LOGIN ── */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-card{width:100%;max-width:400px;background:var(--card);border:1px solid var(--card-border);
+  border-radius:16px;padding:32px 28px;}
+.login-brand{text-align:center;margin-bottom:26px;}
+.login-brand h1{font-size:1.7rem;color:#fff;}
+.login-brand h1 span{color:var(--orange);}
+.login-brand p{color:var(--muted);font-size:.85rem;margin-top:4px;}
+.login-alt{margin-top:16px;text-align:center;}
+.login-alt button{background:none;border:none;color:var(--muted);font-size:.83rem;cursor:pointer;text-decoration:underline;}
+.login-alt button:hover{color:var(--orange);}
+.remember-row{display:flex;align-items:center;gap:8px;margin-top:16px;}
+.remember-row input{width:16px;height:16px;accent-color:var(--orange);}
+.remember-row span{font-size:.85rem;color:var(--muted);}
+.code-hint{font-size:.82rem;color:var(--muted);margin-top:10px;line-height:1.45;}
+
+/* ── APP SHELL ── */
+#app{display:none;min-height:100vh;padding-bottom:76px;}
+.topbar{position:sticky;top:0;z-index:20;background:var(--navy);border-bottom:1px solid var(--card-border);
+  display:flex;align-items:center;justify-content:space-between;padding:14px 18px;}
+.topbar h1{font-size:1.1rem;color:#fff;}
+.topbar h1 span{color:var(--orange);}
+.topbar .who{font-size:.78rem;color:var(--muted);text-align:right;line-height:1.3;}
+.topbar .who b{color:var(--text);display:block;font-size:.85rem;}
+.topbar .logout{background:none;border:1px solid var(--card-border);color:var(--muted);border-radius:999px;
+  padding:4px 12px;font-size:.72rem;cursor:pointer;margin-left:12px;}
+.topbar .logout:hover{border-color:var(--error);color:var(--error);}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+.pane-title{font-size:1.25rem;margin-bottom:4px;color:#fff;}
+.pane-sub{font-size:.83rem;color:var(--muted);margin-bottom:18px;}
+
+/* bottom nav */
+.tabbar{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--navy);
+  border-top:1px solid var(--card-border);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
+.tabbar button{background:none;border:none;color:var(--muted);font-size:.62rem;font-weight:600;
+  display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 8px;border-radius:8px;min-width:56px;}
+.tabbar button .ic{font-size:1.15rem;}
+.tabbar button.active{color:var(--orange);}
+.tabbar button .badge{position:absolute;transform:translate(14px,-4px);background:var(--error);color:#fff;
+  border-radius:999px;font-size:.58rem;padding:1px 5px;display:none;}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:16px;margin-bottom:12px;}
+.client-card h3{font-size:1.02rem;color:#fff;margin-bottom:2px;}
+.client-meta{font-size:.78rem;color:var(--muted);display:grid;grid-template-columns:1fr 1fr;gap:3px 12px;margin-top:8px;}
+.client-meta b{color:var(--text);font-weight:600;}
+.qpr-chip{display:inline-block;font-size:.68rem;font-weight:700;border-radius:999px;padding:2px 10px;margin-top:6px;}
+.qpr-ok{background:rgba(34,197,94,.15);color:#86efac;}
+.qpr-soon{background:rgba(255,107,26,.18);color:#ffb98a;}
+.qpr-over{background:rgba(239,68,68,.18);color:#fca5a5;}
+.empty{color:var(--muted);font-size:.88rem;text-align:center;padding:28px 10px;}
+
+/* messages */
+.msg-card{border-left:3px solid var(--card-border);}
+.msg-card.unread{border-left-color:var(--orange);}
+.msg-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.msg-head h3{font-size:.95rem;color:#fff;}
+.msg-date{font-size:.7rem;color:var(--muted);white-space:nowrap;}
+.msg-from{font-size:.74rem;color:var(--orange);font-weight:700;margin-top:2px;}
+.msg-body{font-size:.86rem;color:var(--text);margin-top:8px;line-height:1.5;white-space:pre-wrap;}
+.msg-mark{background:none;border:none;color:var(--muted);font-size:.72rem;cursor:pointer;text-decoration:underline;margin-top:8px;}
+
+/* hours */
+.hours-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.hours-grid label{margin:0 0 4px;text-align:center;}
+.hours-grid input{text-align:center;padding:9px 4px;}
+.hours-total{text-align:right;font-size:.95rem;margin-top:12px;color:var(--muted);}
+.hours-total b{color:var(--orange);font-size:1.2rem;}
+.hist-row{display:flex;justify-content:space-between;align-items:center;font-size:.84rem;padding:9px 0;border-bottom:1px solid var(--card-border);}
+.hist-row:last-child{border-bottom:none;}
+.hist-status{font-size:.68rem;font-weight:700;border-radius:999px;padding:2px 9px;}
+.hist-Pending{background:rgba(255,107,26,.15);color:#ffb98a;}
+.hist-Approved{background:rgba(34,197,94,.15);color:#86efac;}
+
+/* ── CFS COMPONENTS (matches contact-log.html) ── */
+.guide-btn{background:none;border:1px solid var(--orange);color:var(--orange);border-radius:999px;
+  padding:2px 10px;font-size:.72rem;font-weight:700;cursor:pointer;margin-left:8px;transition:.15s;}
+.guide-btn:hover{background:var(--orange);color:#fff;}
+.cfs-components{display:grid;gap:6px;margin-top:8px;}
+.cfs-cb{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;
+  border:1px solid #2e2c5a;background:#12103a;cursor:pointer;transition:.15s;line-height:1.3;}
+.cfs-cb:hover{border-color:var(--orange);background:#1a1840;}
+.cfs-cb input{margin-top:3px;accent-color:var(--orange);flex-shrink:0;width:16px;height:16px;}
+.cfs-cb:has(input:checked){border-color:var(--orange);background:#1e1060;}
+.cfs-num{width:20px;height:20px;border-radius:50%;background:#2e2c5a;color:#aaa;font-size:.65rem;
+  font-weight:800;display:grid;place-items:center;flex-shrink:0;margin-top:1px;}
+.cfs-cb:has(input:checked) .cfs-num{background:var(--orange);color:#fff;}
+.cfs-label{font-size:.82rem;font-weight:600;color:#e0e0ff;display:block;}
+.cfs-desc{font-size:.72rem;color:#888;display:block;margin-top:1px;}
+#guide-overlay{position:fixed;inset:0;background:rgba(6,5,26,.85);z-index:50;display:none;
+  align-items:flex-end;justify-content:center;}
+#guide-overlay.open{display:flex;}
+.guide-panel{background:var(--card);border:1px solid var(--card-border);border-radius:16px 16px 0 0;
+  max-width:560px;width:100%;max-height:82vh;overflow-y:auto;padding:20px;}
+.guide-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.guide-head h3{font-size:1.05rem;color:#fff;}
+.guide-head button{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;}
+.guide-item{padding:10px 0;border-bottom:1px solid var(--card-border);font-size:.83rem;}
+.guide-item:last-child{border-bottom:none;}
+.guide-item b{color:var(--orange);}
+.guide-item p{color:var(--muted);margin-top:2px;font-size:.78rem;line-height:1.45;}
+
+/* training */
+.train-link{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text);}
+.train-link .ic{font-size:1.3rem;}
+.train-link small{display:block;color:var(--muted);font-size:.75rem;margin-top:1px;}
+.train-link:hover h3{color:var(--orange);}
+
+@media(min-width:700px){
+  #app{padding-bottom:20px;}
+  .tabbar{position:sticky;top:57px;bottom:auto;border-top:none;border-bottom:1px solid var(--card-border);
+    justify-content:center;gap:6px;}
+  .tabbar button{flex-direction:row;font-size:.8rem;padding:8px 16px;}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-brand">
+      <h1>Open <span>Grace</span></h1>
+      <p>Staff Portal · Coordinated Family Support</p>
+    </div>
+
+    <!-- step 1: email -->
+    <div id="step-email">
+      <label for="li-email">Work email</label>
+      <input type="email" id="li-email" placeholder="firstname.lastname@opengrace.org" autocomplete="email">
+      <button class="btn" id="btn-send-code" onclick="requestCode()">Email me a login code</button>
+      <div class="login-alt"><button onclick="showPinStep()">Use my PIN instead</button></div>
+    </div>
+
+    <!-- step 2a: code -->
+    <div id="step-code" style="display:none">
+      <label for="li-code">6-digit code</label>
+      <input type="text" id="li-code" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code" style="letter-spacing:8px;text-align:center;font-size:1.4rem;">
+      <p class="code-hint">Check your inbox — the code expires in 15 minutes.</p>
+      <div class="remember-row"><input type="checkbox" id="li-remember"><span>Keep me signed in for 30 days</span></div>
+      <button class="btn" onclick="verifyCode()">Sign in</button>
+      <div class="login-alt"><button onclick="backToEmail()">Use a different email</button></div>
+    </div>
+
+    <!-- step 2b: PIN -->
+    <div id="step-pin" style="display:none">
+      <label for="li-pin">4-digit PIN</label>
+      <input type="password" id="li-pin" inputmode="numeric" maxlength="4" placeholder="••••" style="letter-spacing:8px;text-align:center;font-size:1.4rem;">
+      <div class="remember-row"><input type="checkbox" id="li-remember-pin"><span>Keep me signed in for 30 days</span></div>
+      <button class="btn" onclick="verifyPin()">Sign in with PIN</button>
+      <div class="login-alt"><button onclick="backToEmail()">Email me a code instead</button></div>
+    </div>
+
+    <div class="status-msg" id="login-status"></div>
+  </div>
+</div>
+
+<!-- ═══════════ APP ═══════════ -->
+<div id="app">
+  <div class="topbar">
+    <h1>Open <span>Grace</span></h1>
+    <div style="display:flex;align-items:center;">
+      <div class="who"><b id="who-name"></b><span id="who-role"></span></div>
+      <button class="logout" onclick="logout()">Log out</button>
+    </div>
+  </div>
+
+  <nav class="tabbar">
+    <button data-tab="clients" class="active" onclick="showTab('clients')"><span class="ic">👥</span>Clients</button>
+    <button data-tab="log" onclick="showTab('log')"><span class="ic">📝</span>Contact Log</button>
+    <button data-tab="messages" onclick="showTab('messages')" style="position:relative"><span class="ic">💬</span>Messages<span class="badge" id="msg-badge"></span></button>
+    <button data-tab="hours" onclick="showTab('hours')"><span class="ic">⏱️</span>Hours</button>
+    <button data-tab="training" onclick="showTab('training')"><span class="ic">🎓</span>Training</button>
+  </nav>
+
+  <div class="wrap">
+
+    <!-- ── CLIENTS ── -->
+    <section class="tab-pane active" id="pane-clients">
+      <h2 class="pane-title">My clients</h2>
+      <p class="pane-sub">Clients assigned to you. QPR chips show quarterly report deadlines.</p>
+      <div id="clients-list"><p class="empty">Loading…</p></div>
+    </section>
+
+    <!-- ── CONTACT LOG ── -->
+    <section class="tab-pane" id="pane-log">
+      <h2 class="pane-title">Contact log</h2>
+      <p class="pane-sub">Log every client contact. Entries feed the Quarterly Progress Report (Enclosure D).</p>
+      <div class="card">
+        <label for="cl-client">Client</label>
+        <select id="cl-client"><option value="">Select client…</option></select>
+
+        <label for="cl-date">Contact date</label>
+        <input type="date" id="cl-date">
+
+        <label for="cl-type">Contact type</label>
+        <select id="cl-type">
+          <option>In-Person Visit</option><option>Phone Call</option><option>Video Call</option>
+          <option>Text/Email</option><option>Collateral Contact</option>
+        </select>
+
+        <label for="cl-method">Who was contacted</label>
+        <input type="text" id="cl-method" placeholder="e.g. Parent, Case worker, School counselor">
+
+        <label for="cl-service">Service type</label>
+        <select id="cl-service">
+          <option>Direct Support</option><option>Care Coordination</option>
+          <option>Resource Navigation</option><option>Family Training</option><option>Other</option>
+        </select>
+
+        <label for="cl-location">Location</label>
+        <input type="text" id="cl-location" placeholder="e.g. Family home, Community, Phone">
+
+        <label>CFS components addressed <button type="button" class="guide-btn" onclick="toggleGuide()">❓ CFS Component Guide</button></label>
+        <div class="cfs-components" id="cfs-list"></div>
+
+        <label for="cl-hours">Hours spent</label>
+        <input type="number" id="cl-hours" min="0" step="0.25" placeholder="0.0">
+
+        <label for="cl-progress">Progress notes</label>
+        <textarea id="cl-progress" rows="4" placeholder="What happened during this contact?"></textarea>
+
+        <label for="cl-followup">Follow-up actions</label>
+        <textarea id="cl-followup" rows="2" placeholder="Next steps, if any"></textarea>
+
+        <label for="cl-qpr">QPR narrative notes <span style="text-transform:none;font-weight:400">(optional)</span></label>
+        <textarea id="cl-qpr" rows="2" placeholder="Anything to highlight in the quarterly report"></textarea>
+
+        <button class="btn" id="btn-save-log" onclick="saveContactLog()">Save contact log</button>
+        <div class="status-msg" id="log-status"></div>
+      </div>
+    </section>
+
+    <!-- ── MESSAGES ── -->
+    <section class="tab-pane" id="pane-messages">
+      <h2 class="pane-title">Messages</h2>
+      <p class="pane-sub">Messages from your supervisor and the director.</p>
+      <div id="messages-list"><p class="empty">Loading…</p></div>
+    </section>
+
+    <!-- ── HOURS ── -->
+    <section class="tab-pane" id="pane-hours">
+      <h2 class="pane-title">Timesheet</h2>
+      <p class="pane-sub">Submit your hours for the week. Weeks start Monday.</p>
+      <div class="card">
+        <label for="hr-week">Week of (Monday)</label>
+        <input type="date" id="hr-week">
+        <div style="margin-top:14px" class="hours-grid">
+          <div><label>Mon</label><input type="number" id="hr-mon" min="0" step="0.25" placeholder="0"></div>
+          <div><label>Tue</label><input type="number" id="hr-tue" min="0" step="0.25" placeholder="0"></div>
+          <div><label>Wed</label><input type="number" id="hr-wed" min="0" step="0.25" placeholder="0"></div>
+          <div><label>Thu</label><input type="number" id="hr-thu" min="0" step="0.25" placeholder="0"></div>
+          <div><label>Fri</label><input type="number" id="hr-fri" min="0" step="0.25" placeholder="0"></div>
+        </div>
+        <label for="hr-notes">Notes</label>
+        <input type="text" id="hr-notes" placeholder="Optional">
+        <div class="hours-total">Week total: <b id="hr-total">0</b> hrs</div>
+        <button class="btn" onclick="saveHours()">Submit week</button>
+        <div class="status-msg" id="hours-status"></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:.95rem;color:#fff;margin-bottom:8px;">Submitted weeks</h3>
+        <div id="hours-history"><p class="empty">Loading…</p></div>
+      </div>
+    </section>
+
+    <!-- ── TRAINING ── -->
+    <section class="tab-pane" id="pane-training">
+      <h2 class="pane-title">Training & resources</h2>
+      <p class="pane-sub">Required reading and reference material for CFS Navigators.</p>
+      <div class="card"><a class="train-link" href="https://opengrace.org/staff-portal.html" target="_blank" rel="noopener"><span class="ic">🗂️</span><div><h3 style="font-size:.95rem">Staff resource hub</h3><small>Onboarding, forms, and compliance documents</small></div></a></div>
+      <div class="card"><a class="train-link" href="#" onclick="toggleGuide();return false;"><span class="ic">📋</span><div><h3 style="font-size:.95rem">CFS Component Guide</h3><small>The 10 Enclosure D service components, explained</small></div></a></div>
+      <div class="card"><a class="train-link" href="https://www.inlandrc.org" target="_blank" rel="noopener"><span class="ic">🏛️</span><div><h3 style="font-size:.95rem">Inland Regional Center</h3><small>IRC policies and coordinator contacts</small></div></a></div>
+      <div class="card"><div class="train-link"><span class="ic">🔐</span><div><h3 style="font-size:.95rem">HIPAA reminder</h3><small>Never store client details on personal devices. Log all contacts the same day.</small></div></div></div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ── CFS GUIDE OVERLAY ── -->
+<div id="guide-overlay" onclick="if(event.target===this)toggleGuide()">
+  <div class="guide-panel">
+    <div class="guide-head"><h3>📋 CFS Component Guide</h3><button onclick="toggleGuide()">✕</button></div>
+    <div id="guide-body"></div>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:12px;">💡 <b style="color:var(--text)">Tip:</b> You can select more than one component per entry. Most visits address 2–3 components. Your selections feed directly into the Quarterly Report (Enclosure D).</p>
+  </div>
+</div>
+
+<script>
+const WORKER = 'https://og-security-worker.jayraykay2.workers.dev';
+const TOKEN_KEY = 'og_staff_token';
+const STAFF_KEY = 'og_staff_info';
+let STAFF = null;
+let CLIENTS = [];
+
+const CFS = [
+  ['🏠 Living at Home','Identifying and providing supports to successfully reside in the family home'],
+  ['🗺️ Finding Services & Resources','Navigating services and supports, creating pathways to overcoming barriers'],
+  ['📋 Understanding the Diagnosis','Providing information or resources on the individual\'s diagnosis and identified supports'],
+  ['🤝 Working with Other Providers','Coordinating consistency in training across providers'],
+  ['📅 Appointments & Scheduling','Assisting with scheduling of service delivery including medical and other appointments'],
+  ['🚗 Transportation','Identifying transportation options or services'],
+  ['🛡️ Backup Support Plans','Identifying backup providers/supports when the plan fails'],
+  ['🔮 Future Planning','Providing futures planning, including those with aging caregivers'],
+  ['🎯 Building Independence','Providing training to the individual which maximizes their independence'],
+  ['📝 Other','Need identified within scope of CFS not covered in #1–9'],
+];
+
+/* ── helpers ── */
+function el(id){return document.getElementById(id);}
+function status(id,msg,type){const e=el(id);e.textContent=msg;e.className='status-msg '+(type||'');e.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function clearStatus(id){el(id).className='status-msg';}
+async function api(path,opts={}){
+  const token=localStorage.getItem(TOKEN_KEY);
+  const r=await fetch(WORKER+path,{...opts,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{}),...(opts.headers||{})}});
+  const d=await r.json().catch(()=>({}));
+  if(r.status===401&&path.startsWith('/api/')){logout();throw new Error('Session expired. Please log in again.');}
+  if(!r.ok)throw new Error(d.error||('Request failed ('+r.status+')'));
+  return d;
+}
+
+/* ── login flow ── */
+function showPinStep(){el('step-email').style.display='none';el('step-pin').style.display='block';clearStatus('login-status');el('li-pin').focus();}
+function backToEmail(){el('step-code').style.display='none';el('step-pin').style.display='none';el('step-email').style.display='block';clearStatus('login-status');}
+async function requestCode(){
+  const email=el('li-email').value.trim();
+  if(!email){status('login-status','Enter your work email first.','error');return;}
+  const b=el('btn-send-code');b.disabled=true;b.textContent='Sending…';
+  try{
+    await api('/auth/request-code',{method:'POST',body:JSON.stringify({email})});
+    el('step-email').style.display='none';el('step-code').style.display='block';
+    status('login-status','Code sent to '+email,'success');el('li-code').focus();
+  }catch(err){status('login-status',err.message,'error');}
+  b.disabled=false;b.textContent='Email me a login code';
+}
+async function verifyCode(){
+  const email=el('li-email').value.trim(),code=el('li-code').value.trim();
+  if(code.length!==6){status('login-status','Enter the 6-digit code from your email.','error');return;}
+  try{
+    const d=await api('/auth/verify-code',{method:'POST',body:JSON.stringify({email,code,remember:el('li-remember').checked})});
+    enter(d);
+  }catch(err){status('login-status',err.message,'error');}
+}
+async function verifyPin(){
+  const email=el('li-email').value.trim(),pin=el('li-pin').value.trim();
+  if(!email){status('login-status','Enter your work email first.','error');backToEmail();return;}
+  if(pin.length!==4){status('login-status','Enter your 4-digit PIN.','error');return;}
+  try{
+    const d=await api('/auth/verify-pin',{method:'POST',body:JSON.stringify({email,pin,remember:el('li-remember-pin').checked})});
+    enter(d);
+  }catch(err){status('login-status',err.message,'error');}
+}
+function enter(d){
+  localStorage.setItem(TOKEN_KEY,d.token);
+  localStorage.setItem(STAFF_KEY,JSON.stringify(d.staff));
+  STAFF=d.staff;boot();
+}
+function logout(){
+  localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(STAFF_KEY);
+  fetch(WORKER+'/auth/logout',{method:'POST'}).catch(()=>{});
+  el('app').style.display='none';el('login-screen').style.display='flex';
+  backToEmail();el('li-code').value='';el('li-pin').value='';
+}
+
+/* ── app boot ── */
+async function init(){
+  buildCFS();
+  el('cl-date').value=new Date().toISOString().slice(0,10);
+  ['hr-mon','hr-tue','hr-wed','hr-thu','hr-fri'].forEach(id=>el(id).addEventListener('input',calcTotal));
+  el('li-code').addEventListener('keydown',e=>{if(e.key==='Enter')verifyCode();});
+  el('li-pin').addEventListener('keydown',e=>{if(e.key==='Enter')verifyPin();});
+  const token=localStorage.getItem(TOKEN_KEY);
+  if(token){
+    try{
+      const d=await api('/auth/validate');
+      if(d.valid){STAFF=d.staff;boot();return;}
+    }catch(_){}
+    localStorage.removeItem(TOKEN_KEY);
+  }
+}
+function boot(){
+  el('login-screen').style.display='none';el('app').style.display='block';
+  el('who-name').textContent=STAFF.name||STAFF.email;
+  el('who-role').textContent=(STAFF.role||'Staff')+' · '+(STAFF.staffCode||'');
+  loadClients();loadMessages();loadHours();
+}
+
+/* ── tabs ── */
+function showTab(t){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tabbar button').forEach(b=>b.classList.remove('active'));
+  el('pane-'+t).classList.add('active');
+  document.querySelector('.tabbar button[data-tab="'+t+'"]').classList.add('active');
+  window.scrollTo({top:0});
+}
+
+/* ── clients ── */
+function qprChip(due){
+  if(!due)return '';
+  const d=new Date(due);if(isNaN(d))return '';
+  const days=Math.ceil((d-new Date())/86400000);
+  const cls=days<0?'qpr-over':days<=14?'qpr-soon':'qpr-ok';
+  const label=days<0?'QPR overdue':'QPR due '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  return '<span class="qpr-chip '+cls+'">'+label+'</span>';
+}
+async function loadClients(){
+  try{
+    const d=await api('/api/clients');CLIENTS=d.clients||[];
+    const sel=el('cl-client');sel.innerHTML='<option value="">Select client…</option>';
+    if(!CLIENTS.length){el('clients-list').innerHTML='<p class="empty">No clients assigned yet. Check with your supervisor.</p>';return;}
+    el('clients-list').innerHTML=CLIENTS.map(c=>
+      '<div class="card client-card"><h3>'+esc(c.name)+'</h3>'+qprChip(c.qprDue)+
+      '<div class="client-meta">'+
+      '<span>UCI <b>'+esc(c.uci||'—')+'</b></span>'+
+      '<span>ID <b>'+esc(c.ogClientID||'—')+'</b></span>'+
+      (c.caregiver?'<span>Caregiver <b>'+esc(c.caregiver)+'</b></span>':'')+
+      (c.caregiverPhone?'<span>Phone <b>'+esc(c.caregiverPhone)+'</b></span>':'')+
+      (c.authorizedHours?'<span>Hours <b>'+esc(String(c.usedHours||0))+' / '+esc(String(c.authorizedHours))+'</b></span>':'')+
+      '</div></div>').join('');
+    CLIENTS.forEach(c=>{const o=document.createElement('option');o.value=c.ogClientID||c.name;o.textContent=c.name+(c.uci?' · UCI '+c.uci:'');sel.appendChild(o);});
+  }catch(err){el('clients-list').innerHTML='<p class="empty">'+esc(err.message)+'</p>';}
+}
+
+/* ── contact log ── */
+function buildCFS(){
+  el('cfs-list').innerHTML=CFS.map((c,i)=>
+    '<label class="cfs-cb"><input type="checkbox" name="components" value="'+(i+1)+'">'+
+    '<span class="cfs-num">'+(i+1)+'</span>'+
+    '<span><span class="cfs-label">'+c[0]+'</span><span class="cfs-desc">'+c[1]+'</span></span></label>').join('');
+  el('guide-body').innerHTML=CFS.map((c,i)=>
+    '<div class="guide-item"><b>'+(i+1)+' · '+c[0]+'</b><p>'+c[1]+'</p></div>').join('');
+}
+function toggleGuide(){el('guide-overlay').classList.toggle('open');}
+async function saveContactLog(){
+  const ogid=el('cl-client').value;
+  if(!ogid){status('log-status','Select a client.','error');return;}
+  const comps=[...document.querySelectorAll('input[name="components"]:checked')].map(cb=>cb.value);
+  if(!comps.length){status('log-status','Select at least one CFS component.','error');return;}
+  const hours=parseFloat(el('cl-hours').value);
+  if(!hours||hours<=0){status('log-status','Enter the hours spent.','error');return;}
+  if(!el('cl-progress').value.trim()){status('log-status','Progress notes are required.','error');return;}
+  const client=CLIENTS.find(c=>(c.ogClientID||c.name)===ogid)||{};
+  const b=el('btn-save-log');b.disabled=true;b.textContent='Saving…';
+  try{
+    await api('/api/contact-log',{method:'POST',body:JSON.stringify({
+      clientOGID:client.ogClientID||'',clientName:client.name||ogid,uci:client.uci||'',
+      contactDate:el('cl-date').value,contactType:el('cl-type').value,contactMethod:el('cl-method').value,
+      serviceType:el('cl-service').value,location:el('cl-location').value,
+      cfsDomains:comps,hoursSpent:hours,
+      progressNotes:el('cl-progress').value.trim(),followUpActions:el('cl-followup').value.trim(),
+      qprNarrativeNotes:el('cl-qpr').value.trim(),
+    })});
+    status('log-status','Contact log saved. It will appear in the director dashboard.','success');
+    ['cl-method','cl-location','cl-hours','cl-progress','cl-followup','cl-qpr'].forEach(id=>el(id).value='');
+    document.querySelectorAll('input[name="components"]:checked').forEach(cb=>cb.checked=false);
+  }catch(err){status('log-status',err.message,'error');}
+  b.disabled=false;b.textContent='Save contact log';
+}
+
+/* ── messages ── */
+async function loadMessages(){
+  try{
+    const d=await api('/api/messages');const ms=d.messages||[];
+    const unread=ms.filter(m=>!m.read).length;
+    const badge=el('msg-badge');
+    if(unread){badge.textContent=unread;badge.style.display='inline-block';}else{badge.style.display='none';}
+    el('messages-list').innerHTML=ms.length?ms.map(m=>
+      '<div class="card msg-card'+(m.read?'':' unread')+'">'+
+      '<div class="msg-head"><h3>'+esc(m.subject)+'</h3><span class="msg-date">'+new Date(m.date).toLocaleDateString()+'</span></div>'+
+      '<div class="msg-from">'+esc(m.from)+(m.priority==='High'?' · ⚠ High priority':'')+'</div>'+
+      '<div class="msg-body">'+esc(m.body)+'</div>'+
+      (m.read?'':'<button class="msg-mark" onclick="markRead(\''+m.id+'\')">Mark as read</button>')+
+      '</div>').join(''):'<p class="empty">No messages yet.</p>';
+  }catch(err){el('messages-list').innerHTML='<p class="empty">'+esc(err.message)+'</p>';}
+}
+async function markRead(id){
+  try{await api('/api/messages',{method:'POST',body:JSON.stringify({markRead:id})});loadMessages();}catch(_){}
+}
+
+/* ── hours ── */
+function calcTotal(){
+  const t=['hr-mon','hr-tue','hr-wed','hr-thu','hr-fri'].reduce((s,id)=>s+(parseFloat(el(id).value)||0),0);
+  el('hr-total').textContent=t;
+}
+async function saveHours(){
+  if(!el('hr-week').value){status('hours-status','Pick the Monday of the week.','error');return;}
+  try{
+    const d=await api('/api/hours',{method:'POST',body:JSON.stringify({
+      weekOf:el('hr-week').value,
+      monday:el('hr-mon').value,tuesday:el('hr-tue').value,wednesday:el('hr-wed').value,
+      thursday:el('hr-thu').value,friday:el('hr-fri').value,notes:el('hr-notes').value,
+    })});
+    status('hours-status','Week submitted — '+d.totalHours+' hrs, pending approval.','success');
+    ['hr-mon','hr-tue','hr-wed','hr-thu','hr-fri','hr-notes'].forEach(id=>el(id).value='');calcTotal();
+    loadHours();
+  }catch(err){status('hours-status',err.message,'error');}
+}
+async function loadHours(){
+  try{
+    const d=await api('/api/hours-history');const es=d.entries||[];
+    el('hours-history').innerHTML=es.length?es.map(e=>
+      '<div class="hist-row"><span>Week of '+esc(e.weekOf)+'</span><span><b>'+e.total+'</b> hrs '+
+      '<span class="hist-status hist-'+esc(e.approved)+'">'+esc(e.approved)+'</span></span></div>').join(''):
+      '<p class="empty">No weeks submitted yet.</p>';
+  }catch(err){el('hours-history').innerHTML='<p class="empty">'+esc(err.message)+'</p>';}
+}
+
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+init();
+</script>
+</body>
+</html>
