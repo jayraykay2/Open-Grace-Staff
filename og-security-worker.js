@@ -291,8 +291,24 @@ async function handleContactLog(env, request, staff) {
   return json({ saved: true, id: item.id });
 }
 
+function parseAssigned(raw) {
+  const s = String(raw || '').trim();
+  if (!s) return [];
+  // Stored value may be a JSON array (e.g. ["burks","pinto"]) or a comma/semicolon list.
+  let tokens;
+  try {
+    const parsed = JSON.parse(s);
+    tokens = Array.isArray(parsed) ? parsed : [String(parsed)];
+  } catch (_) {
+    tokens = s.split(/[,;]/);
+  }
+  return tokens
+    .map(t => String(t).replace(/[[\]"']/g, '').trim().toLowerCase())
+    .filter(Boolean);
+}
+
 async function handleClients(env, request, staff) {
-  const assigned = String(staff.clients || '').toLowerCase().split(/[,;]/).map(s => s.trim()).filter(Boolean);
+  const assigned = parseAssigned(staff.clients);
   const items = await listItems(env, 'Clients');
   const mine = items.filter(i => {
     const f = i.fields || {};
