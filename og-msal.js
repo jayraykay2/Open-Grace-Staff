@@ -31,6 +31,7 @@ const OG_LISTS = {
   contacts:     { name: 'Contact Logs',           id: null },
   training:     { name: 'Training Log',           id: null },
   compliance:   { name: 'Compliance Alerts',      id: null },
+  staff:        { name: 'Staff Profiles',         id: null },
 };
 
 let _msalApp = null, _msalToken = null, _msalUser = null, _msalReady = false;
@@ -549,6 +550,107 @@ async function syncLocalToSharePoint() {
   } catch (err) { console.warn('[OG-MSAL] Migration failed (non-fatal):', err); }
 }
 
+// ── STAFF PROFILES ─────────────────────────────────────────────────────────────
+
+// SHA-256 hex — must match the worker's hashPIN() so PINs set here work at login.
+async function ogHashPIN(pin) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(pin)));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Assigned clients are stored as a JSON array string, e.g. ["burks","pinto"].
+function ogParseAssigned(raw) {
+  const s = String(raw || '').trim();
+  if (!s) return [];
+  let tokens;
+  try { const p = JSON.parse(s); tokens = Array.isArray(p) ? p : [String(p)]; }
+  catch (_) { tokens = s.split(/[,;]/); }
+  return tokens.map(t => String(t).replace(/[[\]"']/g, '').trim()).filter(Boolean);
+}
+
+async function spGetStaff() {
+  await resolveListIds();
+  const listId = OG_LISTS.staff.id;
+  if (!listId) return null;
+  try {
+    const data = await graphFetch(`${OG_SP_SITE}/lists/${listId}/items?$expand=fields&$select=id,fields&$top=200`);
+    return (data.value || []).map(item => {
+      const f = item.fields || {};
+      let onboarding = {};
+      try { onboarding = f.OnboardingJSON ? JSON.parse(f.OnboardingJSON) : {}; } catch (_) { onboarding = {}; }
+      return {
+        _spId:           item.id,
+        name:            f.Title || '',
+        email:           f.Email || '',
+        role:            f.Role || '',
+        staffCode:       f.StaffCode || '',
+        phone:           f.Phone || '',
+        hiredDate:       f.HiredDate ? f.HiredDate.split('T')[0] : '',
+        active:          f.Active !== 'No',
+        assignedClients: ogParseAssigned(f.AssignedClients),
+        hasPIN:          !!f.PINHash,
+        welcomeSent:     f.WelcomeEmailSent === 'Yes',
+        notes:           f.Notes || '',
+        onboarding,
+      };
+    });
+  } catch (err) { console.warn('[OG-MSAL] spGetStaff failed:', err); return null; }
+}
+
+// Create or update a staff profile. Pass a plain `pin` (4 digits) only when
+// setting/resetting it; it is hashed client-side and never stored in plaintext.
+async function spSaveStaff(staff) {
+  await resolveListIds();
+  const listId = OG_LISTS.staff.id;
+  if (!listId) return null;
+  try {
+    const fields = {
+      Title:           staff.name || '',
+      Email:           (staff.email || '').trim().toLowerCase(),
+      Role:            staff.role || '',
+      StaffCode:       staff.staffCode || '',
+      Phone:           staff.phone || '',
+      Active:          staff.active === false ? 'No' : 'Yes',
+      AssignedClients: JSON.stringify(Array.isArray(staff.assignedClients) ? staff.assignedClients : []),
+    };
+    if (staff.hiredDate) fields.HiredDate = staff.hiredDate;
+    if (staff.onboarding !== undefined) fields.OnboardingJSON = JSON.stringify(staff.onboarding || {});
+    if (staff.notes !== undefined) fields.Notes = staff.notes || '';
+    if (staff.pin) fields.PINHash = await ogHashPIN(staff.pin);
+    if (staff.createdBy) fields.CreatedBy = staff.createdBy;
+
+    if (staff._spId) {
+      await graphFetch(`${OG_SP_SITE}/lists/${listId}/items/${staff._spId}/fields`, { method: 'PATCH', body: JSON.stringify(fields) });
+      return staff._spId;
+    } else {
+      const created = await graphFetch(`${OG_SP_SITE}/lists/${listId}/items`, { method: 'POST', body: JSON.stringify({ fields }) });
+      return created?.id || true;
+    }
+  } catch (err) { console.warn('[OG-MSAL] spSaveStaff failed:', err); return null; }
+}
+
+async function spSetStaffActive(spId, active) {
+  await resolveListIds();
+  const listId = OG_LISTS.staff.id;
+  if (!listId) return false;
+  try {
+    await graphFetch(`${OG_SP_SITE}/lists/${listId}/items/${spId}/fields`, { method: 'PATCH', body: JSON.stringify({ Active: active ? 'Yes' : 'No' }) });
+    return true;
+  } catch (err) { console.warn('[OG-MSAL] spSetStaffActive failed:', err); return false; }
+}
+
+// Set only the assigned-clients list (used by the client-assignment UI).
+async function spSetStaffClients(spId, clientTokens) {
+  await resolveListIds();
+  const listId = OG_LISTS.staff.id;
+  if (!listId) return false;
+  try {
+    const arr = (Array.isArray(clientTokens) ? clientTokens : []).map(t => String(t).trim().toLowerCase()).filter(Boolean);
+    await graphFetch(`${OG_SP_SITE}/lists/${listId}/items/${spId}/fields`, { method: 'PATCH', body: JSON.stringify({ AssignedClients: JSON.stringify(arr) }) });
+    return true;
+  } catch (err) { console.warn('[OG-MSAL] spSetStaffClients failed:', err); return false; }
+}
+
 async function ogLoadClients() {
   if (window._ogSpReady) { const r = await spGetClients(); if (r !== null) return r; }
   try { return JSON.parse(localStorage.getItem('og_clients_v1') || '[]'); } catch { return []; }
@@ -581,6 +683,7 @@ window.ogMsal = {
   pipeline: { get: spGetPipeline,     add: spAddPipelineItem,   move: spMovePipelineItem, delete: spDeletePipelineItem },
   notes:    { get: spGetContactLogs,  save: spSaveContactLog },
   training: { get: spGetTrainingLog,  save: spSaveTrainingEntry },
+  staff:    { get: spGetStaff,        save: spSaveStaff, setActive: spSetStaffActive, setClients: spSetStaffClients, hashPIN: ogHashPIN },
   files:    { upload: spUploadFile,   clientFolder: spClientFolder, staffFolder: spStaffFolder },
   hours:    { forClient: spGetHoursForClient },
   progress: { update: spUpdateProgress, journey: spSaveJourney },
