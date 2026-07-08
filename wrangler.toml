@@ -1,0 +1,10 @@
+name = "og-security-worker"
+main = "og-security-worker.js"
+account_id = "b6a0adcbd6fc9ce5c0e5884921919b54"
+compatibility_date = "2026-06-13"
+
+# Secrets (TENANT_ID, CLIENT_ID, CLIENT_SECRET, OG_JWT_SECRET, DEPLOY_SECRET,
+# CF_ZONE_ID, CF_API_TOKEN, GITHUB_TOKEN) and plain-text vars (ALLOWED_ORIGIN,
+# CF_AUD, DIRECTOR_EMAIL) are already set on the Worker and are preserved across
+# deploys. They are intentionally NOT listed here so they are never wiped or
+# committed to the repo.
