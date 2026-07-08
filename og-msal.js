@@ -97,7 +97,7 @@ async function graphFetch(url, options = {}) {
 async function resolveListIds() {
   if (Object.values(OG_LISTS).every(l => l.id)) return;
   try {
-    const data = await graphFetch(`${OG_SP_SITE}/lists?$select=id,displayName`);
+    const data = await graphFetch(`${OG_SP_SITE}/lists?$select=id,displayName&$top=100`);
     (data.value || []).forEach(list => {
       Object.keys(OG_LISTS).forEach(key => {
         if (OG_LISTS[key].name.toLowerCase() === list.displayName.toLowerCase()) OG_LISTS[key].id = list.id;
