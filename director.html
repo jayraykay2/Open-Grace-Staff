@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Open Grace — Director Dashboard</title>
-<script src="og-msal.js?v=2026-07-08" defer></script>
+<script src="og-msal.js?v=2026-07-08b" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#1E1C5E;--navy2:#2A2878;--navy-lt:#EEEDF8;--navy-ring:#A5A3D6;--orange:#FF6B1A;--orange2:#E55A0D;--orange-lt:#FFF3ED;--orange-ring:#FFBB99;--green:#16A34A;--green-lt:#F0FDF4;--green-ring:#86EFAC;--amber:#D97706;--amber-lt:#FFFBEB;--amber-ring:#FCD34D;--red:#DC2626;--red-lt:#FEF2F2;--red-ring:#FCA5A5;--white:#FFFFFF;--canvas:#F5F6FA;--ink:#111827;--ink2:#374151;--ink3:#6B7280;--ink4:#9CA3AF;--ink5:#D1D5DB;--ink6:#E5E7EB;--ink7:#F9FAFB;--sidebar-w:230px;--topbar-h:56px;--font:'Inter',system-ui,sans-serif;--mono:'DM Mono',monospace;--r:6px;--r2:10px;--r3:14px;--sh:0 1px 3px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);--sh2:0 4px 16px rgba(0,0,0,.10);}
@@ -471,10 +471,10 @@ table.data-tbl tbody td{padding:11px 12px;vertical-align:middle;}
     </div>
   </div>
   <div class="stat-row">
-    <div class="stat-card navy" onclick="switchTab('pipeline')"><div class="sc-num navy" id="stat-active">3</div><div class="sc-label">Pending Authorization</div><div class="sc-sub">Burks · Pinto · Beinbrech</div></div>
-    <div class="stat-card amber" onclick="switchTab('pipeline')"><div class="sc-num amber">0</div><div class="sc-label">Active Clients</div><div class="sc-sub">None authorized yet</div></div>
-    <div class="stat-card orange" onclick="switchTab('pipeline')"><div class="sc-num orange" id="stat-pipeline">8</div><div class="sc-label">Pipeline Referrals</div><div class="sc-sub">3 at Authorization Mtg</div></div>
-    <div class="stat-card red" onclick="switchTab('home')"><div class="sc-num red">4</div><div class="sc-label">Need Attention</div><div class="sc-sub">Director decisions</div></div>
+    <div class="stat-card navy" onclick="switchTab('pipeline')"><div class="sc-num navy" id="stat-pending">3</div><div class="sc-label">Pending Authorization</div><div class="sc-sub" id="stat-pending-sub">Burks · Pinto · Beinbrech</div></div>
+    <div class="stat-card amber" onclick="switchTab('clients')"><div class="sc-num amber" id="stat-active">0</div><div class="sc-label">Active Clients</div><div class="sc-sub" id="stat-active-sub">None authorized yet</div></div>
+    <div class="stat-card orange" onclick="switchTab('pipeline')"><div class="sc-num orange" id="stat-pipeline">8</div><div class="sc-label">Pipeline Referrals</div><div class="sc-sub" id="stat-pipeline-sub">3 at Authorization Mtg</div></div>
+    <div class="stat-card red" onclick="switchTab('home')"><div class="sc-num red" id="stat-attn">4</div><div class="sc-label">Need Attention</div><div class="sc-sub" id="stat-attn-sub">Director decisions</div></div>
   </div>
   <div class="g21">
     <div>
@@ -1272,6 +1272,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         renderClientTable();
         renderStaffTable();
+        await updateDashboardStats();
         console.log('[OG] Connected to SharePoint as', window.ogMsal.displayName(), '(' + role + ')');
         toast('✓ Connected to SharePoint · Live data loaded');
 
@@ -1300,7 +1301,97 @@ function switchTab(name) {
 // ── ATTENTION ─────────────────────────────────────────────────────────────────
 function renderAttn() {
   const el = document.getElementById('attn-list'); if (!el) return;
-  el.innerHTML = ATTN.map(a => `<div class="attn-item ${a.cls}"><div class="ai-icon">${a.n}</div><div><div class="ai-title">${a.t}</div><div class="ai-detail">${a.d}</div>${a.act ? `<button class="ai-cta" onclick="${a.fn}">${a.act} →</button>` : ''}</div><div></div></div>`).join('');
+  const items = (typeof LIVE_ATTN !== 'undefined' && LIVE_ATTN && LIVE_ATTN.length) ? LIVE_ATTN : ATTN;
+  const countEl = document.querySelector('#attn-count, .attn-count');
+  if (countEl) countEl.textContent = items.length + ' items';
+  el.innerHTML = items.map(a => `<div class="attn-item ${a.cls}"><div class="ai-icon">${a.n}</div><div><div class="ai-title">${a.t}</div><div class="ai-detail">${a.d}</div>${a.act ? `<button class="ai-cta" onclick="${a.fn}">${a.act} →</button>` : ''}</div><div></div></div>`).join('');
+}
+
+// ── LIVE DASHBOARD STATS ───────────────────────────────────────────────────────
+// Computes all four header cards + the Attention queue from live data.
+let LIVE_ATTN = null;
+
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr); if (isNaN(d)) return null;
+  return Math.ceil((d - new Date()) / 86400000);
+}
+
+function buildAttention(clients, pipeline) {
+  const items = [];
+  // 1. QPR deadlines within 21 days (or overdue) for any active/pending client
+  clients.filter(c => c.status !== 'inactive' && c.qprDue).forEach(c => {
+    const d = daysUntil(c.qprDue);
+    if (d !== null && d <= 21) {
+      items.push({
+        cls: d < 0 ? 'urgent' : d <= 7 ? 'urgent' : 'warning',
+        n: '!', t: `QPR ${d < 0 ? 'OVERDUE' : 'due in ' + d + ' days'} — ${c.name}`,
+        d: `Quarterly Progress Report (Enclosure D) ${d < 0 ? 'was due ' + c.qprDue : 'due ' + c.qprDue}. UCI ${c.uci || '—'}.`,
+        act: 'Open Client File', fn: `openClientDetail('${c.id}')`,
+      });
+    }
+  });
+  // 2. Clients pending IRC authorization (in pipeline)
+  const pendingAuth = clients.filter(c => c.status === 'pipeline');
+  if (pendingAuth.length) {
+    items.push({
+      cls: 'warning', n: String(items.length + 1),
+      t: `${pendingAuth.length} client${pendingAuth.length > 1 ? 's' : ''} pending IRC authorization`,
+      d: pendingAuth.map(c => `${c.name.split(',')[0]}${c.referralStatus ? ' (' + c.referralStatus + ')' : ''}`).join(' · '),
+      act: 'View Pipeline', fn: "switchTab('pipeline')",
+    });
+  }
+  // 3. Active clients with no navigator assigned
+  const unassigned = clients.filter(c => c.status === 'active' && !c.navigator);
+  if (unassigned.length) {
+    items.push({
+      cls: 'urgent', n: String(items.length + 1),
+      t: `${unassigned.length} active client${unassigned.length > 1 ? 's' : ''} without a navigator`,
+      d: unassigned.map(c => c.name).join(' · ') + ' — assign a navigator to begin service delivery.',
+      act: 'View Clients', fn: "switchTab('clients')",
+    });
+  }
+  // 4. Active clients missing a QPR due date
+  const noQpr = clients.filter(c => c.status === 'active' && !c.qprDue);
+  if (noQpr.length) {
+    items.push({
+      cls: 'warning', n: String(items.length + 1),
+      t: `${noQpr.length} active client${noQpr.length > 1 ? 's' : ''} missing a QPR date`,
+      d: noQpr.map(c => c.name).join(' · ') + ' — set the quarterly report deadline in the client file.',
+      act: 'View Clients', fn: "switchTab('clients')",
+    });
+  }
+  return items;
+}
+
+async function updateDashboardStats() {
+  // Pull live data where available, else use in-memory arrays.
+  let clients = CLIENTS, pipeline = PIPELINE;
+  if (window.ogMsal && window._ogSpReady) {
+    try { const lc = await window.ogMsal.load.clients(); if (lc && lc.length) clients = lc; } catch (_) {}
+    try { const lp = await window.ogMsal.load.pipeline();
+      if (lp) pipeline = Array.isArray(lp) ? lp : Object.values(lp).flat(); } catch (_) {}
+  }
+  const active = clients.filter(c => c.status === 'active');
+  const pending = clients.filter(c => c.status === 'pipeline');
+  const pipeCount = Array.isArray(pipeline) ? pipeline.length : 0;
+
+  const set = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  // Card 1 — Pending Authorization
+  set('stat-pending', pending.length);
+  set('stat-pending-sub', pending.length ? pending.map(c => c.name.split(',')[0]).join(' · ') : 'None pending');
+  // Card 2 — Active Clients
+  set('stat-active', active.length);
+  set('stat-active-sub', active.length ? active.map(c => c.name.split(',')[0]).join(' · ') : 'None authorized yet');
+  // Card 3 — Pipeline Referrals
+  const atAuth = pending.filter(c => (c.stage || '').toLowerCase().includes('auth')).length;
+  set('stat-pipeline', pending.length + pipeCount);
+  set('stat-pipeline-sub', atAuth ? `${atAuth} at Authorization Mtg` : `${pipeCount} new referral${pipeCount !== 1 ? 's' : ''}`);
+  // Card 4 — Need Attention (dynamic)
+  LIVE_ATTN = buildAttention(clients, pipeline);
+  set('stat-attn', LIVE_ATTN.length);
+  set('stat-attn-sub', LIVE_ATTN.length ? 'Director decisions' : 'All clear ✓');
+  renderAttn();
 }
 
 // ── CLIENT TABLE ──────────────────────────────────────────────────────────────
@@ -2693,7 +2784,7 @@ function renderCNTable() {
     <td style="white-space:nowrap;"><button class="tbtn" style="font-size:.65rem;padding:3px 7px;" title="Edit" onclick="openEditNoteModal(${i},'${n.clientId||n._cid}')">✏</button> <button class="tbtn" style="font-size:.65rem;padding:3px 7px;color:var(--red);" title="Delete" onclick="deleteCaseNote(${i},'${n.clientId||n._cid}')">🗑</button></td>
   </tr>`).join('');
 }
-function refreshAll() { renderAttn(); renderClientTable(); renderStaffTable(); renderPipeline(); renderCNTable(); toast('↻ Dashboard refreshed'); }
+function refreshAll() { renderAttn(); renderClientTable(); renderStaffTable(); renderPipeline(); renderCNTable(); updateDashboardStats(); toast('↻ Dashboard refreshed'); }
 function toast(msg) {
   const w = document.getElementById('toast-wrap');
   const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;

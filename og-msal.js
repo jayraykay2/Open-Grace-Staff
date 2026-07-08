@@ -127,6 +127,10 @@ async function spGetClients() {
       cscEmail: item.fields.CSCEmail || '', cscPhone: item.fields.CSCPhone || '',
       cscSup: item.fields.CSCSupervisor || '', cscSupEmail: item.fields.CSCSupervisorEmail || '',
       active: item.fields.Active !== 'No', referralStatus: item.fields.ReferralStatus || '',
+      clientStatus: item.fields.ClientStatus || '',
+      status: (item.fields.ClientStatus || '').toLowerCase() === 'active' ? 'active'
+            : (item.fields.ClientStatus || '').toLowerCase() === 'inactive' ? 'inactive'
+            : 'pipeline',
     }));
   } catch (err) { console.warn('[OG-MSAL] spGetClients failed:', err); return null; }
 }
@@ -573,6 +577,8 @@ async function spGetStaff() {
   const listId = OG_LISTS.staff.id;
   if (!listId) return null;
   try {
+    // $orderby=id forces Graph to read the live item store rather than the
+    // search index, which can lag minutes behind recent writes.
     const data = await graphFetch(`${OG_SP_SITE}/lists/${listId}/items?$expand=fields&$select=id,fields&$orderby=id&$top=200`);
     return (data.value || []).map(item => {
       const f = item.fields || {};
