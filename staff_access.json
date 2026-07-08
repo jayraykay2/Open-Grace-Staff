@@ -2,7 +2,7 @@
   "_readme": "Public config only. No PHI. Client rosters and contact logs live in a private backend. Do not store PHI or live access codes here.",
   "_hipaa_notice": "This file controls access to PHI. Handle with care. Do not share publicly.",
   "_version": "2.0",
-  "last_updated": "2026-06-14",
+  "last_updated": "2026-07-08",
   "staff": [
     {
       "code": "OG-DIR-2026",
@@ -61,6 +61,40 @@
       "phone": "",
       "email": "",
       "notes": "",
+      "clients": [],
+      "handoff": {
+        "inProgress": false,
+        "toStaffCode": null,
+        "toStaffName": null,
+        "initiatedDate": null,
+        "reason": null,
+        "notes": null,
+        "completedDate": null
+      }
+    },
+    {
+      "code": "OG-2026-002",
+      "name": "Joeshay Walker",
+      "position": "Family Coordinator",
+      "active": true,
+      "hired": "2026-07-08",
+      "terminated": null,
+      "onboarding": {
+        "liveScan": false,
+        "cprFirstAid": false,
+        "handbookSigned": false,
+        "jotformOnboarding": false,
+        "mandatedReporter": false,
+        "hipaaAck": false,
+        "teamsSetup": false,
+        "contactLogTest": false,
+        "firstSupervision": false,
+        "completed": false,
+        "completedDate": null
+      },
+      "phone": "",
+      "email": "",
+      "notes": "Added 2026-07-08 to unblock training academy access during onboarding.",
       "clients": [],
       "handoff": {
         "inProgress": false,
