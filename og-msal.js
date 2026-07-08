@@ -111,7 +111,7 @@ async function spGetClients() {
   const listId = OG_LISTS.clients.id;
   if (!listId) return null;
   try {
-    const data = await graphFetch(`${OG_SP_SITE}/lists/${listId}/items?$expand=fields&$select=id,fields&$top=200`);
+    const data = await graphFetch(`${OG_SP_SITE}/lists/${listId}/items?$expand=fields&$select=id,fields&$orderby=id&$top=200`);
     const d = v => v ? v.split('T')[0] : '';
     return (data.value || []).map(item => ({
       _spId: item.id, name: item.fields.Title || '', uci: item.fields.UCI || '',
