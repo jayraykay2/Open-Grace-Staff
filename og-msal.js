@@ -573,7 +573,7 @@ async function spGetStaff() {
   const listId = OG_LISTS.staff.id;
   if (!listId) return null;
   try {
-    const data = await graphFetch(`${OG_SP_SITE}/lists/${listId}/items?$expand=fields&$select=id,fields&$top=200`);
+    const data = await graphFetch(`${OG_SP_SITE}/lists/${listId}/items?$expand=fields&$select=id,fields&$orderby=id&$top=200`);
     return (data.value || []).map(item => {
       const f = item.fields || {};
       let onboarding = {};
