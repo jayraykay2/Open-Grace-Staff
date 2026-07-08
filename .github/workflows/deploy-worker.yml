@@ -1,0 +1,25 @@
+name: Deploy Worker
+
+# Runs when the worker code or its config changes on main,
+# or when triggered manually from the Actions tab.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "og-security-worker.js"
+      - "wrangler.toml"
+      - ".github/workflows/deploy-worker.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: b6a0adcbd6fc9ce5c0e5884921919b54
