@@ -521,9 +521,28 @@ const msalConfig = {
 const msalInstance = new msal.PublicClientApplication(msalConfig);
 let currentAccount = null;
 
-// ─── PASTE YOUR POWER AUTOMATE HTTP TRIGGER URL HERE ───────────────────────
-const FLOW_URL = "https://default1916d89f0ee34972a513d91fb30070.40.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4d51a547ef2e496b888f669479b9da28/triggers/manual/paths/invoke?api-version=1";
+// ─── DIRECT-TO-SHAREPOINT (Microsoft Graph) ────────────────────────────────
+// Writes contact logs straight to the SharePoint "Contact Logs" list using the
+// signed-in user's own MSAL token. No Power Automate flow in the path.
+const GRAPH_SITE_ID = "netorg20110136.sharepoint.com,c877f168-84b1-4fe4-929b-4322d99beb2e,29f001f9-49ec-44b1-991b-281f4fe3ad22";
+const GRAPH_LIST_ID = "9699e9a8-833c-4c23-8181-0312117cce96";
+const GRAPH_ITEMS_URL = `https://graph.microsoft.com/v1.0/sites/${GRAPH_SITE_ID}/lists/${GRAPH_LIST_ID}/items`;
 // ───────────────────────────────────────────────────────────────────────────
+
+// Acquire a Graph token for the signed-in user (silent, falls back to redirect)
+async function getGraphToken() {
+  const account = msalInstance.getAllAccounts()[0];
+  if (!account) throw new Error("Not signed in");
+  const request = { scopes: ["Sites.ReadWrite.All"], account };
+  try {
+    const res = await msalInstance.acquireTokenSilent(request);
+    return res.accessToken;
+  } catch (e) {
+    // Silent failed (consent/expiry) — fall back to interactive
+    await msalInstance.acquireTokenRedirect(request);
+    throw new Error("Redirecting for sign-in…");
+  }
+}
 
 // Handle redirect
 (async () => {
@@ -604,11 +623,6 @@ async function submitLog() {
     return;
   }
 
-  if (FLOW_URL === "PASTE_POWER_AUTOMATE_HTTP_URL_HERE") {
-    showStatus("⚠️ Flow URL not configured yet. Paste your Power Automate HTTP trigger URL into contact-log.html.", "error");
-    return;
-  }
-
   const btn = document.getElementById("btnSubmit");
   btn.classList.add("loading");
   btn.disabled = true;
@@ -618,6 +632,8 @@ async function submitLog() {
   if (!checkedComponents.length) {
     document.getElementById('cfs-error').style.display = 'block';
     document.getElementById('cfs-components').scrollIntoView({behavior:'smooth', block:'center'});
+    btn.classList.remove("loading");
+    btn.disabled = false;
     return;
   }
   document.getElementById('cfs-error').style.display = 'none';
@@ -639,17 +655,43 @@ async function submitLog() {
   };
 
   try {
-    const resp = await fetch(FLOW_URL, {
+    const token = await getGraphToken();
+
+    // Map form fields → SharePoint "Contact Logs" columns
+    const lastName = (payload.clientName.split(",")[0] || payload.clientName).trim().toLowerCase();
+    const notesFull = payload.participants
+      ? `${payload.notes}\n\nParticipants: ${payload.participants}`
+      : payload.notes;
+
+    const fields = {
+      Title:           `${payload.logDate} — ${lastName}`,
+      UCI:             payload.clientUCI,
+      ContactDate:     payload.logDate,
+      NavigatorName:   payload.staffName,
+      ContactType:     payload.contactType,
+      ContactMethod:   payload.contactType,
+      Location:        payload.location,
+      CFSDomains:      payload.cfsComponents,
+      HoursSpent:      parseFloat(payload.hoursSpent) || 0,
+      ProgressNotes:   notesFull,
+      FollowUpActions: payload.followUp
+    };
+
+    const resp = await fetch(GRAPH_ITEMS_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ fields })
     });
 
     if (resp.ok) {
-      showStatus(`✅ Contact log submitted for ${payload.clientName} and saved to their SharePoint folder.`, "success");
+      showStatus(`✅ Contact log saved to SharePoint for ${payload.clientName}.`, "success");
       resetForm();
     } else {
-      throw new Error(`HTTP ${resp.status}`);
+      const errBody = await resp.text();
+      throw new Error(`HTTP ${resp.status} — ${errBody.slice(0, 120)}`);
     }
   } catch(err) {
     showStatus(`❌ Submission failed: ${err.message}. Try again or contact your administrator.`, "error");
