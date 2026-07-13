@@ -42,7 +42,7 @@
       "code": "OG-2026-001",
       "name": "Ambre Carter-Earl",
       "position": "Case Manager / Navigator",
-      "active": true,
+      "active": false,
       "hired": "2026-06-05",
       "terminated": null,
       "onboarding": {
@@ -70,7 +70,9 @@
         "reason": null,
         "notes": null,
         "completedDate": null
-      }
+      },
+      "deactivatedDate": "2026-07-12",
+      "note": "Offer rescinded \u2014 never onboarded. Access revoked."
     },
     {
       "code": "OG-2026-002",
