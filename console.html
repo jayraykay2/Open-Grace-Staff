@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Director Console — Open Grace LLC</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1E1C5E; --navy2:#2D2B7F; --orange:#FF6B1A; --purple:#7B35C1;
+    --gold:#FFB800; --green:#16A34A; --off:#F8F7FF; --line:#E6E4F5;
+    --ink:#1A1830; --muted:#6B6890;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'DM Sans',system-ui,sans-serif; background:var(--off);
+    color:var(--ink); line-height:1.5; padding:0 0 60px;
+  }
+  .rainbow{height:5px;background:linear-gradient(90deg,var(--orange),var(--gold),var(--green),var(--purple),var(--navy2))}
+  header{background:var(--navy);color:#fff;padding:26px 24px 22px}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:700;letter-spacing:-.01em}
+  .sub{opacity:.75;font-size:.9rem;margin-top:3px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:26px}
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px 14px;box-shadow:0 1px 3px rgba(30,28,94,.05);
+  }
+  .card h2{
+    font-family:'Fraunces',serif;font-size:1.05rem;color:var(--navy);
+    display:flex;align-items:center;gap:9px;margin-bottom:4px;
+  }
+  .card .hint{font-size:.78rem;color:var(--muted);margin-bottom:12px}
+  .ico{
+    width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+    font-size:.85rem;flex:0 0 auto;
+  }
+  a.link{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:9px 11px;border-radius:10px;text-decoration:none;color:var(--ink);
+    font-size:.88rem;font-weight:500;border:1px solid transparent;
+    transition:.13s;
+  }
+  a.link:hover{background:var(--off);border-color:var(--line)}
+  a.link .arrow{color:var(--muted);font-size:.8rem}
+  a.link small{display:block;font-weight:400;color:var(--muted);font-size:.73rem;margin-top:1px}
+  .note{
+    margin-top:26px;background:#FFF8E7;border:1px solid #F5E3B0;border-radius:14px;
+    padding:14px 18px;font-size:.84rem;color:#6B5518;
+  }
+  .note b{color:#4A3A0B}
+  footer{text-align:center;color:var(--muted);font-size:.78rem;margin-top:30px}
+</style>
+</head>
+<body>
+<div class="rainbow"></div>
+<header>
+  <div class="wrap">
+    <h1>Director Console</h1>
+    <div class="sub">Open Grace LLC · every admin surface, one page</div>
+  </div>
+</header>
+
+<div class="wrap">
+<div class="grid">
+
+  <!-- DAILY OPERATIONS -->
+  <div class="card">
+    <h2><span class="ico" style="background:#E8F5EC;color:var(--green)">📋</span> Daily Operations</h2>
+    <div class="hint">The things you touch most often</div>
+    <a class="link" href="https://netorg20110136.sharepoint.com/sites/OpenGrace-Records/Lists/Contact%20Logs/AllItems.aspx" target="_blank">
+      <span>Contact Logs<small>Every entry from every coordinator</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://netorg20110136.sharepoint.com/sites/OpenGrace-Records/Lists/Clients/AllItems.aspx" target="_blank">
+      <span>Clients List<small>UCIs, hours, QPR dates, assignments</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://opengrace.org/contact-log.html" target="_blank">
+      <span>Submit a Contact Log<small>The staff-facing form</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://opengrace.org/director.html" target="_blank">
+      <span>Director Dashboard<small>Your main portal</small></span><span class="arrow">↗</span>
+    </a>
+  </div>
+
+  <!-- PEOPLE & ACCESS -->
+  <div class="card">
+    <h2><span class="ico" style="background:#EEE6F8;color:var(--purple)">👥</span> People &amp; Access</h2>
+    <div class="hint">Onboarding, licenses, permissions</div>
+    <a class="link" href="https://admin.cloud.microsoft/?#/users" target="_blank">
+      <span>M365 Users<small>Create accounts, reset passwords, licenses</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers" target="_blank">
+      <span>Entra Users<small>MFA reset → Authentication methods</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://netorg20110136.sharepoint.com/sites/OpenGrace-Records/_layouts/15/people.aspx?MembershipGroupId=0" target="_blank">
+      <span>SharePoint People &amp; Groups<small>Grant site access to new coordinators</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://admin.cloud.microsoft/?#/licenses" target="_blank">
+      <span>Licenses<small>See free seats before buying</small></span><span class="arrow">↗</span>
+    </a>
+  </div>
+
+  <!-- SITE & DEPLOY -->
+  <div class="card">
+    <h2><span class="ico" style="background:#FFF0E6;color:var(--orange)">🚀</span> Site &amp; Deploy</h2>
+    <div class="hint">Ship changes to opengrace.org</div>
+    <a class="link" href="https://github.com/jayraykay2/Open-Grace-Staff" target="_blank">
+      <span>GitHub Repo<small>Upload files → commit to main</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://dash.cloudflare.com/b6a0adcbd6fc9ce5c0e5884921919b54/opengrace.org/caching/configuration" target="_blank">
+      <span>Cloudflare — Purge Cache<small>Always purge after a commit</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://opengrace.org" target="_blank">
+      <span>Live Site<small>opengrace.org</small></span><span class="arrow">↗</span>
+    </a>
+  </div>
+
+  <!-- DOCUMENTS -->
+  <div class="card">
+    <h2><span class="ico" style="background:#E7EAFB;color:var(--navy2)">📁</span> Documents</h2>
+    <div class="hint">Records, HR, and forms</div>
+    <a class="link" href="https://netorg20110136.sharepoint.com/sites/OpenGrace-Records" target="_blank">
+      <span>Records Site<small>Home of everything</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://netorg20110136.sharepoint.com/sites/OpenGrace-Records/Open%20Grace%20Library" target="_blank">
+      <span>Open Grace Library<small>Director folder, personnel files</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://www.irs.gov/pub/irs-pdf/fw4.pdf" target="_blank">
+      <span>Blank W-4 (IRS)<small>Refresh Drive copy each new tax year</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://www.uscis.gov/i-9" target="_blank">
+      <span>Blank I-9 (USCIS)<small>Edition expires 05/31/2027</small></span><span class="arrow">↗</span>
+    </a>
+  </div>
+
+  <!-- AUTOMATION -->
+  <div class="card">
+    <h2><span class="ico" style="background:#FFF6DB;color:#9A7500">⚙️</span> Automation &amp; Config</h2>
+    <div class="hint">Behind the scenes</div>
+    <a class="link" href="https://make.powerautomate.com/environments/Default-1916d89f-0ee3-4972-a513-d91fb3007040/flows" target="_blank">
+      <span>Power Automate Flows<small>Referral inbox, QPR monitor</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Authentication/appId/ede1a3cf-cf8d-466b-94f0-ed1008ad0f5f" target="_blank">
+      <span>App Registration<small>Redirect URIs — add each new MSAL page</small></span><span class="arrow">↗</span>
+    </a>
+    <a class="link" href="https://admin.cloud.microsoft/?#/groups" target="_blank">
+      <span>M365 Groups<small>Site membership lives here</small></span><span class="arrow">↗</span>
+    </a>
+  </div>
+
+</div>
+
+<div class="note">
+  <b>Two things that bite:</b> After any GitHub commit, always <b>purge the Cloudflare cache</b> — otherwise the old file keeps serving.
+  And when you add a new page that uses Microsoft sign-in, you must <b>register its redirect URI</b> in the App Registration, or sign-in will silently bounce.
+</div>
+
+<footer>Open Grace LLC · Support should adapt to the person, not ask the person to adapt to the support.</footer>
+</div>
+</body>
+</html>
