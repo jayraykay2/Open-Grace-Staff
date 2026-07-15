@@ -1,13 +1,35 @@
 /**
- * Open Grace Security Worker — v2 (2026-07-03)
- * FIX: All SharePoint I/O now uses Microsoft Graph (Sites.ReadWrite.All app permission).
- *      v1 used SharePoint REST for Staff Sessions with a Graph-audience token -> silent 401s,
- *      so magic-link codes were never stored. All Graph errors now surface loudly.
+ * Open Grace Security Worker — v3 (2026-07-14)
+ * NEW: Role-based access control.
+ *   - Roles "Director" and "Supervising Coordinator" (from the Role column in
+ *     Staff Profiles) get ALL active clients in /api/clients, so the navigator
+ *     client dropdown shows the full roster and they can write a contact log
+ *     for any client.
+ *   - New endpoint GET /api/contact-logs — reads logs back with role filtering:
+ *     Director / Supervising Coordinator see everything (optional ?client= and
+ *     ?staff= filters); everyone else sees only logs they authored.
+ *   - Contact log writes now also stamp LoggedByEmail + LoggedByCode from the
+ *     verified login token (requires those two text columns on the Contact
+ *     Logs list — see deploy notes).
+ *
+ * v2 (2026-07-03): All SharePoint I/O now uses Microsoft Graph (Sites.ReadWrite.All
+ *      app permission). v1 used SharePoint REST for Staff Sessions with a
+ *      Graph-audience token -> silent 401s, so magic-link codes were never stored.
+ *      All Graph errors now surface loudly.
  * Lookups fetch items and filter in JS (.find) — SP columns are not indexed, $filter fails.
  *
  * Secrets required (already set): TENANT_ID, CLIENT_ID, CLIENT_SECRET, OG_JWT_SECRET,
  *                                 DEPLOY_SECRET, CF_ZONE_ID, CF_API_TOKEN
  */
+
+/* ---------- role-based access ---------- */
+// Roles that can see and log for ALL clients. Values are compared
+// case-insensitively against the Role column in Staff Profiles.
+const FULL_ACCESS_ROLES = ['director', 'supervising coordinator'];
+
+function hasFullAccess(staff) {
+  return FULL_ACCESS_ROLES.includes(String(staff?.role || '').trim().toLowerCase());
+}
 
 const SITE_PATH = 'netorg20110136.sharepoint.com:/sites/OpenGrace-Records:';
 const GRAPH = 'https://graph.microsoft.com/v1.0';
@@ -287,8 +309,73 @@ async function handleContactLog(env, request, staff) {
     ProgressNotes: b.progressNotes || '',
     FollowUpActions: b.followUpActions || '',
     QPRNarrativeNotes: b.qprNarrativeNotes || '',
+    LoggedByEmail: staff.email || '',
+    LoggedByCode: staff.staffCode || '',
   });
   return json({ saved: true, id: item.id });
+}
+
+// GET /api/contact-logs — read logs back with role-based filtering.
+//   Director / Supervising Coordinator: all logs.
+//     Optional filters: ?client=<OGClientID or name fragment>  ?staff=<staff code or name fragment>
+//   Everyone else: only logs they authored (matched by LoggedByEmail,
+//     LoggedByCode, or NavigatorName for logs written before v3).
+async function handleContactLogsRead(env, request, staff) {
+  const url = new URL(request.url);
+  const qClient = (url.searchParams.get('client') || '').trim().toLowerCase();
+  const qStaff = (url.searchParams.get('staff') || '').trim().toLowerCase();
+  const fullAccess = hasFullAccess(staff);
+
+  const items = await listItems(env, 'Contact Logs');
+  let logs = items.filter(i => {
+    const f = i.fields || {};
+    if (fullAccess) return true;
+    const byEmail = (f.LoggedByEmail || '').trim().toLowerCase() === staff.email;
+    const byCode = staff.staffCode && (f.LoggedByCode || '') === staff.staffCode;
+    const byName = staff.name && (f.NavigatorName || '').trim().toLowerCase() === staff.name.trim().toLowerCase();
+    return byEmail || byCode || byName;
+  });
+
+  if (fullAccess && qClient) {
+    logs = logs.filter(i => {
+      const f = i.fields || {};
+      return (f.ClientOGID || '').toLowerCase() === qClient ||
+             (f.Title || '').toLowerCase().includes(qClient);
+    });
+  }
+  if (fullAccess && qStaff) {
+    logs = logs.filter(i => {
+      const f = i.fields || {};
+      return (f.LoggedByCode || '').toLowerCase() === qStaff ||
+             (f.NavigatorName || '').toLowerCase().includes(qStaff);
+    });
+  }
+
+  logs.sort((a, b) => new Date(b.createdDateTime) - new Date(a.createdDateTime));
+  return json({
+    fullAccess,
+    count: logs.length,
+    logs: logs.map(i => ({
+      id: i.id,
+      title: i.fields.Title || '',
+      clientOGID: i.fields.ClientOGID || '',
+      uci: i.fields.UCI || '',
+      contactDate: i.fields.ContactDate || '',
+      navigatorName: i.fields.NavigatorName || '',
+      loggedByEmail: i.fields.LoggedByEmail || '',
+      loggedByCode: i.fields.LoggedByCode || '',
+      contactType: i.fields.ContactType || '',
+      contactMethod: i.fields.ContactMethod || '',
+      serviceType: i.fields.ServiceType || '',
+      location: i.fields.Location || '',
+      cfsDomains: i.fields.CFSDomains || '',
+      hoursSpent: i.fields.HoursSpent || 0,
+      progressNotes: i.fields.ProgressNotes || '',
+      followUpActions: i.fields.FollowUpActions || '',
+      qprNarrativeNotes: i.fields.QPRNarrativeNotes || '',
+      created: i.createdDateTime,
+    })),
+  });
 }
 
 function parseAssigned(raw) {
@@ -310,9 +397,11 @@ function parseAssigned(raw) {
 async function handleClients(env, request, staff) {
   const assigned = parseAssigned(staff.clients);
   const items = await listItems(env, 'Clients');
+  const fullAccess = hasFullAccess(staff);
   const mine = items.filter(i => {
     const f = i.fields || {};
     if (f.Active === 'No') return false;
+    if (fullAccess) return true; // Director / Supervising Coordinator: full roster
     const name = (f.Title || '').toLowerCase();
     const ogid = (f.OGClientID || '').toLowerCase();
     const nav = (f.Navigator || '').toLowerCase();
@@ -434,6 +523,7 @@ export default {
         if (!staff) return json({ error: 'Unauthorized. Please log in again.' }, 401);
         if (path === '/api/clients') return await handleClients(env, request, staff);
         if (path === '/api/contact-log' && request.method === 'POST') return await handleContactLog(env, request, staff);
+        if (path === '/api/contact-logs' && request.method === 'GET') return await handleContactLogsRead(env, request, staff);
         if (path === '/api/messages') return await handleMessages(env, request, staff);
         if (path === '/api/hours' && request.method === 'POST') return await handleHours(env, request, staff);
         if (path === '/api/hours-history') return await handleHoursHistory(env, request, staff);

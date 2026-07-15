@@ -92,6 +92,30 @@
   .alert.bad{background:#FDE8E8;border:1px solid #F5C2C2;color:#8B1A1A}
   .alert b{font-weight:700}
   .loading{color:var(--muted);padding:22px;text-align:center;font-size:.88rem}
+
+  /* ── case notes tab ── */
+  .fbar{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 16px;
+        display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px}
+  .fbar label{display:block;font-size:.66rem;color:var(--muted);font-weight:700;
+        text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+  .fbar select,.fbar input{font-family:inherit;font-size:.85rem;color:var(--ink);
+        border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff}
+  .fbar .grow{flex:1;min-width:170px}
+  .fbar .grow input{width:100%}
+  .fbar button{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:9px 14px;
+        font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer}
+  .fbar button.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  details.note{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:9px;overflow:hidden}
+  details.note summary{list-style:none;cursor:pointer;padding:12px 15px;display:flex;gap:12px;
+        align-items:center;flex-wrap:wrap;font-size:.85rem}
+  details.note summary::-webkit-details-marker{display:none}
+  details.note[open] summary{border-bottom:1px solid var(--line);background:#FBFAFF}
+  details.note .body{padding:13px 15px;font-size:.85rem;line-height:1.55}
+  details.note .body h4{font-size:.68rem;color:var(--muted);text-transform:uppercase;
+        letter-spacing:.05em;margin:10px 0 3px}
+  details.note .body h4:first-of-type{margin-top:0}
+  .dchip{font-size:.66rem;font-weight:700;background:#EFEAFB;color:var(--purple);
+        padding:2px 8px;border-radius:99px;margin:0 4px 4px 0;display:inline-block}
 </style>
 </head>
 <body>
@@ -180,13 +204,120 @@ function logged(uci){
 
 function active(){ return CLIENTS.filter(c=>c.ClientStatus==="Active"); }
 
+/* ── case notes tab ── */
+const NF={client:"",staff:"",from:"",to:"",q:""};
+const CFS_NAMES={"1":"Living at Home","2":"Finding Services & Resources","3":"Understanding the Diagnosis",
+  "4":"Working with Other Providers","5":"Appointments & Scheduling","6":"Transportation",
+  "7":"Backup Support Plans","8":"Future Planning","9":"Building Independence","10":"Other"};
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const noteClient=l=>{
+  const t=String(l.Title||"");
+  const cut=t.split(/\s*[—–-]\s*\d{4}/)[0];
+  return (cut&&cut!==t?cut:t.replace(/^\d{4}-\d{2}-\d{2}\s*[—–-]\s*/,"")).trim()||"—";
+};
+
+function filteredNotes(){
+  return LOGS.filter(l=>{
+    if(NF.client && (l.UCI||"")!==NF.client) return false;
+    if(NF.staff && (l.NavigatorName||"")!==NF.staff) return false;
+    const d=(l.ContactDate||"").slice(0,10);
+    if(NF.from && d<NF.from) return false;
+    if(NF.to && d>NF.to) return false;
+    if(NF.q){
+      const q=NF.q.toLowerCase();
+      const hay=[l.Title,l.ProgressNotes,l.FollowUpActions,l.QPRNarrativeNotes,l.Location,l.ContactMethod]
+        .map(x=>String(x||"")).join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  }).sort((a,b)=>(b.ContactDate||"").localeCompare(a.ContactDate||""));
+}
+
+function setNF(k,v){NF[k]=v;document.getElementById("notes-results").innerHTML=notesResults();}
+
+function renderNotesPane(){
+  const clientOpts=[...CLIENTS].sort((a,b)=>(a.Title||"").localeCompare(b.Title||"")).map(c=>
+    `<option value="${esc(c.UCI||"")}" ${NF.client===(c.UCI||"")?"selected":""}>${esc(c.Title||"—")}${c.UCI?" · "+esc(c.UCI):""}</option>`).join("");
+  const staffNames=[...new Set(LOGS.map(l=>l.NavigatorName).filter(Boolean))].sort();
+  const staffOpts=staffNames.map(n=>`<option value="${esc(n)}" ${NF.staff===n?"selected":""}>${esc(n)}</option>`).join("");
+  document.getElementById("p-notes").innerHTML=`
+    <h2 class="sec">Case notes <span style="font-weight:400;font-size:.8rem;color:var(--muted)">
+      · every contact log, all staff · feeds QPR Enclosure D</span></h2>
+    <div class="fbar">
+      <div><label>Client</label><select onchange="setNF('client',this.value)">
+        <option value="">All clients</option>${clientOpts}</select></div>
+      <div><label>Staff</label><select onchange="setNF('staff',this.value)">
+        <option value="">All staff</option>${staffOpts}</select></div>
+      <div><label>From</label><input type="date" value="${NF.from}" onchange="setNF('from',this.value)"></div>
+      <div><label>To</label><input type="date" value="${NF.to}" onchange="setNF('to',this.value)"></div>
+      <div class="grow"><label>Search notes</label>
+        <input type="search" placeholder="Word or phrase…" value="${esc(NF.q)}" oninput="setNF('q',this.value)"></div>
+      <button class="ghost" onclick="Object.assign(NF,{client:'',staff:'',from:'',to:'',q:''});renderNotesPane()">Clear</button>
+      <button onclick="notesCSV()">⬇ CSV</button>
+    </div>
+    <div id="notes-results">${notesResults()}</div>`;
+}
+
+function notesResults(){
+  const F=filteredNotes();
+  const hrs=F.reduce((s,l)=>s+(parseFloat(l.HoursSpent)||0),0);
+  const mo=new Date().toISOString().slice(0,7);
+  const thisMo=F.filter(l=>(l.ContactDate||"").slice(0,7)===mo).length;
+  return `
+    <div class="kpis">
+      <div class="kpi"><div class="lab">Notes shown</div><div class="val n">${F.length}</div>
+        <div class="note">of ${LOGS.length} total</div></div>
+      <div class="kpi"><div class="lab">Hours</div><div class="val g">${hrs.toFixed(2)}</div>
+        <div class="note">${money(hrs*RATE)} billable</div></div>
+      <div class="kpi"><div class="lab">This month</div><div class="val n">${thisMo}</div>
+        <div class="note">in current filter</div></div>
+      <div class="kpi"><div class="lab">Latest</div><div class="val o" style="font-size:1.05rem">
+        ${F[0]&&F[0].ContactDate?F[0].ContactDate.slice(0,10):"—"}</div>
+        <div class="note">most recent contact</div></div>
+    </div>
+    ${F.length?F.map(l=>{
+      const doms=String(l.CFSDomains||"").split(";").map(x=>x.trim()).filter(Boolean);
+      return `<details class="note">
+        <summary>
+          <b style="min-width:88px">${l.ContactDate?l.ContactDate.slice(0,10):"—"}</b>
+          <span style="min-width:150px"><b>${esc(noteClient(l))}</b>${l.UCI?`<span style="color:var(--muted);font-size:.76rem"> · ${esc(l.UCI)}</span>`:""}</span>
+          <span style="color:var(--muted)">${esc(l.NavigatorName||"—")}${l.LoggedByCode?` · ${esc(l.LoggedByCode)}`:""}</span>
+          <span class="chip ok">${esc(l.ContactType||"—")}</span>
+          <span class="num" style="margin-left:auto;font-weight:700">${(parseFloat(l.HoursSpent)||0).toFixed(2)}h</span>
+        </summary>
+        <div class="body">
+          <div style="font-size:.78rem;color:var(--muted);margin-bottom:6px">
+            ${esc(l.ContactMethod||"")}${l.ServiceType?" · "+esc(l.ServiceType):""}${l.Location?" · "+esc(l.Location):""}
+            ${l.LoggedByEmail?` · logged by ${esc(l.LoggedByEmail)}`:""}</div>
+          ${doms.length?`<div style="margin-bottom:6px">${doms.map(d=>`<span class="dchip">${esc(d)}. ${esc(CFS_NAMES[d]||"")}</span>`).join("")}</div>`:""}
+          <h4>Progress notes</h4><div>${esc(l.ProgressNotes||"—")}</div>
+          ${l.FollowUpActions?`<h4>Follow-up actions</h4><div>${esc(l.FollowUpActions)}</div>`:""}
+          ${l.QPRNarrativeNotes?`<h4>QPR narrative</h4><div>${esc(l.QPRNarrativeNotes)}</div>`:""}
+        </div>
+      </details>`;
+    }).join(""):'<div class="loading">No notes match this filter.</div>'}`;
+}
+
+function notesCSV(){
+  const F=filteredNotes();
+  const cols=["ContactDate","Client","UCI","NavigatorName","LoggedByEmail","LoggedByCode","ContactType",
+    "ContactMethod","ServiceType","Location","CFSDomains","HoursSpent","ProgressNotes","FollowUpActions","QPRNarrativeNotes"];
+  const cell=v=>{v=String(v??"");return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  const rows=[cols.join(",")].concat(F.map(l=>cols.map(c=>
+    cell(c==="Client"?noteClient(l):c==="ContactDate"?(l.ContactDate||"").slice(0,10):l[c])).join(",")));
+  const b=new Blob([rows.join("\n")],{type:"text/csv"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(b);
+  a.download="case-notes-"+new Date().toISOString().slice(0,10)+".csv";
+  a.click();URL.revokeObjectURL(a.href);
+}
+
 function nav(){
   const A=active();
   const overdue=A.filter(c=>c.QPRDue&&days(c.QPRDue)<30).length;
   const tabs=[
     ["home","🏠 Overview",0],
     ["clients","👥 Clients & QPR",A.length],
-    ["notes","📝 Contact Logs",LOGS.length],
+    ["notes","📝 Case Notes",LOGS.length],
     ["money","💵 Finance",0],
     ["staff","👔 Staff",STAFF.filter(s=>s.Active==="Yes").length]
   ];
@@ -272,20 +403,8 @@ function render(){
       <td style="color:var(--muted)">${c.ReferralStatus||"—"}</td></tr>`).join("")
       ||'<tr><td colspan="4" style="color:var(--muted)">None.</td></tr>'}</table>`;
 
-  // ── contact logs ──
-  const sorted=[...LOGS].sort((a,b)=>(b.ContactDate||"").localeCompare(a.ContactDate||""));
-  document.getElementById("p-notes").innerHTML=`
-    <h2 class="sec">Contact logs <span style="font-weight:400;font-size:.8rem;color:var(--muted)">
-      · feeds QPR Enclosure D</span></h2>
-    <table><tr><th>Date</th><th>Client</th><th>Navigator</th><th>Type</th><th>Hours</th><th>Notes</th></tr>
-    ${sorted.length?sorted.map(l=>`<tr>
-      <td>${l.ContactDate?l.ContactDate.split("T")[0]:"—"}</td>
-      <td>${(l.Title||"").replace(/^\d{4}-\d{2}-\d{2}\s*[—-]\s*/,"")||"—"}</td>
-      <td>${l.NavigatorName||"—"}</td>
-      <td>${l.ContactType||"—"}</td>
-      <td class="num">${(parseFloat(l.HoursSpent)||0).toFixed(2)}</td>
-      <td style="color:var(--muted);max-width:340px">${(l.ProgressNotes||"").slice(0,110)}${(l.ProgressNotes||"").length>110?"…":""}</td>
-      </tr>`).join(""):'<tr><td colspan="6" style="color:var(--muted)">No contacts logged yet.</td></tr>'}</table>`;
+  // ── case notes ──
+  renderNotesPane();
 
   // ── finance ──
   const earned=used*RATE, labor=used*COST, margin=earned-labor, perHr=RATE-COST;
