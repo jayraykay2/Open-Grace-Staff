@@ -457,6 +457,8 @@ async function loadClients(){
       '<span>ID <b>'+esc(c.ogClientID||'—')+'</b></span>'+
       (c.caregiver?'<span>Caregiver <b>'+esc(c.caregiver)+'</b></span>':'')+
       (c.caregiverPhone?'<span>Phone <b>'+esc(c.caregiverPhone)+'</b></span>':'')+
+      (c.emergency?'<span>Emergency <b>'+esc(c.emergency)+'</b></span>':'')+
+      (c.emergencyPhone?'<span>Emergency Phone <b>'+esc(c.emergencyPhone)+'</b></span>':'')+
       (c.authorizedHours?'<span>Hours <b>'+esc(String(c.usedHours||0))+' / '+esc(String(c.authorizedHours))+'</b></span>':'')+
       '</div></div>').join('');
     CLIENTS.forEach(c=>{const o=document.createElement('option');o.value=c.ogClientID||c.name;o.textContent=c.name+(c.uci?' · UCI '+c.uci:'');sel.appendChild(o);});

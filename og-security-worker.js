@@ -327,6 +327,8 @@ async function handleClients(env, request, staff) {
       phone: i.fields.Phone || '',
       caregiver: i.fields.Caregiver || '',
       caregiverPhone: i.fields.CaregiverPhone || '',
+      emergency: i.fields.Emergency || '',
+      emergencyPhone: i.fields.EmergencyPhone || '',
       authorizedHours: i.fields.AuthorizedHours || '',
       usedHours: i.fields.UsedHours || '',
     })),
