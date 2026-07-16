@@ -64,6 +64,17 @@ label{display:block;font-size:.78rem;font-weight:600;color:var(--muted);margin:1
 .topbar .logout{background:none;border:1px solid var(--card-border);color:var(--muted);border-radius:999px;
   padding:4px 12px;font-size:.72rem;cursor:pointer;margin-left:12px;}
 .topbar .logout:hover{border-color:var(--error);color:var(--error);}
+.topbar .pinbtn:hover{border-color:var(--orange);color:var(--orange);}
+
+/* ── PIN MODAL ── */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(8,7,26,.72);z-index:60;
+  align-items:center;justify-content:center;padding:20px;}
+.modal-ov.open{display:flex;}
+.modal{width:100%;max-width:360px;background:var(--card);border:1px solid var(--card-border);
+  border-radius:16px;padding:26px 24px;}
+.modal h3{color:#fff;font-size:1.15rem;margin-bottom:4px;}
+.modal .hint{font-size:.8rem;color:var(--muted);line-height:1.5;}
+.modal input{text-align:center;letter-spacing:.5em;font-size:1.3rem;}
 .wrap{max-width:760px;margin:0 auto;padding:18px 16px;}
 .tab-pane{display:none;}
 .tab-pane.active{display:block;}
@@ -203,7 +214,25 @@ label{display:block;font-size:.78rem;font-weight:600;color:var(--muted);margin:1
     <h1>Open <span>Grace</span></h1>
     <div style="display:flex;align-items:center;">
       <div class="who"><b id="who-name"></b><span id="who-role"></span></div>
+      <button class="logout pinbtn" onclick="openPinModal()" style="margin-left:12px;">🔑 PIN</button>
       <button class="logout" onclick="logout()">Log out</button>
+    </div>
+  </div>
+
+  <!-- ── set-your-own-PIN modal ── -->
+  <div class="modal-ov" id="pin-modal">
+    <div class="modal">
+      <h3>Set your sign-in PIN</h3>
+      <p class="hint">Choose a 4-digit PIN for faster sign-in on this and future visits.
+        You can change it here any time. If you ever forget it, use
+        "Email me a code instead" and set a new one.</p>
+      <label>New 4-digit PIN</label>
+      <input type="password" id="pin-new" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="••••">
+      <label>Confirm PIN</label>
+      <input type="password" id="pin-confirm" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="••••">
+      <div class="status-msg" id="pin-status"></div>
+      <button class="btn" id="btn-save-pin" onclick="savePin()">Save PIN</button>
+      <button class="btn btn-ghost" onclick="closePinModal()" style="margin-top:8px;">Cancel</button>
     </div>
   </div>
 
@@ -402,6 +431,27 @@ function logout(){
   fetch(WORKER+'/auth/logout',{method:'POST'}).catch(()=>{});
   el('app').style.display='none';el('login-screen').style.display='flex';
   backToEmail();el('li-code').value='';el('li-pin').value='';
+}
+
+/* ── self-serve PIN ── */
+function openPinModal(){
+  el('pin-new').value='';el('pin-confirm').value='';clearStatus('pin-status');
+  el('pin-modal').classList.add('open');el('pin-new').focus();
+}
+function closePinModal(){el('pin-modal').classList.remove('open');}
+async function savePin(){
+  const p1=el('pin-new').value.trim(),p2=el('pin-confirm').value.trim();
+  if(!/^\d{4}$/.test(p1)){status('pin-status','PIN must be exactly 4 digits.','error');return;}
+  if(p1!==p2){status('pin-status','PINs do not match — try again.','error');return;}
+  const b=el('btn-save-pin');b.disabled=true;b.textContent='Saving…';
+  try{
+    await api('/auth/set-pin',{method:'POST',body:JSON.stringify({pin:p1})});
+    status('pin-status','PIN saved. Use it next time you sign in.','success');
+    setTimeout(closePinModal,1600);
+  }catch(e){
+    status('pin-status',e.message||'Could not save PIN.','error');
+  }
+  b.disabled=false;b.textContent='Save PIN';
 }
 
 /* ── app boot ── */

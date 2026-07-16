@@ -292,6 +292,22 @@ async function handleStaffAuth(env, request) {
   return handleValidate(env, request);
 }
 
+// POST /auth/set-pin — a logged-in staff member sets or changes their own PIN.
+// Requires a valid session token; only ever updates the caller's own row.
+async function handleSetPin(env, request) {
+  const payload = await requireStaff(env, request);
+  if (!payload) return json({ error: 'Unauthorized. Please log in again.' }, 401);
+  const { pin } = await request.json();
+  if (!/^\d{4}$/.test(String(pin || '').trim())) {
+    return json({ error: 'PIN must be exactly 4 digits.' }, 400);
+  }
+  const staff = await findStaff(env, payload.email);
+  if (!staff) return json({ error: 'Staff account not found or inactive.' }, 404);
+  const hash = await hashPIN(String(pin).trim());
+  await updateItem(env, 'Staff Profiles', staff.id, { PINHash: hash });
+  return json({ ok: true });
+}
+
 async function handleContactLog(env, request, staff) {
   const b = await request.json();
   const item = await createItem(env, 'Contact Logs', {
@@ -514,6 +530,7 @@ export default {
       if (path === '/auth/verify-code' && request.method === 'POST') return await handleVerifyCode(env, request);
       if (path === '/auth/verify-pin' && request.method === 'POST') return await handleVerifyPin(env, request);
       if (path === '/auth/validate') return await handleValidate(env, request);
+      if (path === '/auth/set-pin' && request.method === 'POST') return await handleSetPin(env, request);
       if (path === '/auth/logout') return json({ ok: true });
       if (path === '/api/staff-auth') return await handleStaffAuth(env, request);
       if (path === '/deploy' && request.method === 'POST') return await handleDeploy(env, request);
