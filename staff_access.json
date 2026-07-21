@@ -1,8 +1,9 @@
 {
   "_readme": "Public config only. No PHI. Client rosters and contact logs live in a private backend. Do not store PHI or live access codes here.",
   "_hipaa_notice": "This file controls access to PHI. Handle with care. Do not share publicly.",
-  "_version": "2.0",
-  "last_updated": "2026-07-08",
+  "_training_policy": "Training Academy is intentionally ungated (Director decision, July 2026). Completion is verified via quiz-gated certificates submitted through the Training Completion Receipt form (form.jotform.com/262015154400037) and filed in the personnel record.",
+  "_version": "2.1",
+  "last_updated": "2026-07-21",
   "staff": [
     {
       "code": "OG-DIR-2026",
@@ -72,7 +73,7 @@
         "completedDate": null
       },
       "deactivatedDate": "2026-07-12",
-      "note": "Offer rescinded \u2014 never onboarded. Access revoked."
+      "note": "Offer rescinded — never onboarded. Access revoked."
     },
     {
       "code": "OG-2026-002",
@@ -82,21 +83,21 @@
       "hired": "2026-07-08",
       "terminated": null,
       "onboarding": {
-        "liveScan": false,
-        "cprFirstAid": false,
-        "handbookSigned": false,
-        "jotformOnboarding": false,
-        "mandatedReporter": false,
-        "hipaaAck": false,
-        "teamsSetup": false,
-        "contactLogTest": false,
-        "firstSupervision": false,
-        "completed": false,
-        "completedDate": null
+        "liveScan": true,
+        "cprFirstAid": true,
+        "handbookSigned": true,
+        "jotformOnboarding": true,
+        "mandatedReporter": true,
+        "hipaaAck": true,
+        "teamsSetup": true,
+        "contactLogTest": true,
+        "firstSupervision": true,
+        "completed": true,
+        "completedDate": "2026-07-21"
       },
       "phone": "",
       "email": "",
-      "notes": "Added 2026-07-08 to unblock training academy access during onboarding.",
+      "notes": "Onboarding complete — all documents submitted via Jotform. Live Scan cleared and verified. Training completion verified by Director 7/21/2026; receipt filed via Training Completion form.",
       "clients": [],
       "handoff": {
         "inProgress": false,
