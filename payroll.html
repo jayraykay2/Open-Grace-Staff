@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payroll &amp; Timekeeping Policy — Open Grace</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1E1C5E; --navy2:#2D2B7F; --orange:#FF6B1A; --purple:#7B35C1; --gold:#FFB800;
+    --ink:#26243B; --muted:#6B6880; --line:#E8E6F2; --wash:#F7F6FB; --card:#FFFFFF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',Arial,sans-serif;color:var(--ink);background:var(--wash);font-size:16px;line-height:1.6}
+  .band{background:var(--navy);color:#fff;padding:2.25rem 1.25rem 2rem}
+  .wrap{max-width:820px;margin:0 auto}
+  .kicker{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.5rem}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:700;line-height:1.15}
+  .band p{color:#C9C7E8;margin-top:.6rem;max-width:56ch;font-size:.95rem}
+  .band .meta{margin-top:1rem;display:flex;flex-wrap:wrap;gap:.5rem}
+  .pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:.25rem .8rem;font-size:.78rem;font-weight:500}
+  main{padding:1.5rem 1.25rem 3rem}
+  section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.5rem 1.4rem;margin-bottom:1.1rem}
+  h2{font-family:'Fraunces',Georgia,serif;font-size:1.25rem;color:var(--navy);margin-bottom:.75rem;display:flex;align-items:baseline;gap:.6rem}
+  h2 .tick{width:.55rem;height:.55rem;border-radius:2px;background:var(--orange);flex:none;transform:translateY(-.1rem)}
+  h3{font-size:.95rem;color:var(--navy2);margin:1rem 0 .35rem}
+  p+p{margin-top:.6rem}
+  ul{margin:.5rem 0 .25rem 1.2rem}
+  li{margin-bottom:.3rem}
+  .pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-top:.9rem}
+  @media(max-width:560px){.pay-grid{grid-template-columns:1fr}}
+  .pay-card{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .pay-card header{background:var(--navy);color:#fff;padding:.6rem .9rem;font-weight:700;font-size:.85rem;letter-spacing:.03em}
+  .pay-card .body{padding:.85rem .9rem;font-size:.92rem}
+  .pay-card .row{display:flex;justify-content:space-between;gap:.75rem;padding:.3rem 0;border-bottom:1px dashed var(--line)}
+  .pay-card .row:last-child{border-bottom:none}
+  .pay-card .row b{color:var(--navy)}
+  .payday{color:var(--orange);font-weight:700}
+  .callout{border-left:4px solid var(--gold);background:#FFF9EC;border-radius:0 10px 10px 0;padding:.85rem 1rem;font-size:.92rem;margin-top:.9rem}
+  .callout.protect{border-left-color:var(--purple);background:#F7F0FD}
+  .callout b{color:var(--navy)}
+  table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:.75rem}
+  th{background:var(--wash);color:var(--navy);text-align:left;padding:.55rem .7rem;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+  td{padding:.55rem .7rem;border-top:1px solid var(--line);vertical-align:top}
+  .cert{background:var(--navy);color:#fff;border:none}
+  .cert h2{color:#fff}
+  .cert h2 .tick{background:var(--gold)}
+  .cert li{color:#DDDBF3}
+  .cert p{color:#C9C7E8}
+  .sig{display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;margin-top:1.5rem}
+  @media(max-width:560px){.sig{grid-template-columns:1fr}}
+  .sig .slot{border-bottom:1.5px solid rgba(255,255,255,.55);padding-bottom:1.6rem;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:#A9A6D8}
+  footer{padding:0 1.25rem 2.5rem;color:var(--muted);font-size:.8rem;text-align:center}
+  footer .foot-inner{max-width:820px;margin:0 auto;border-top:1px solid var(--line);padding-top:1rem}
+  .print-btn{position:fixed;right:1rem;bottom:1rem;background:var(--orange);color:#fff;border:none;border-radius:999px;padding:.7rem 1.2rem;font-family:inherit;font-weight:700;font-size:.9rem;box-shadow:0 4px 14px rgba(255,107,26,.4);cursor:pointer}
+  @media print{
+    body{background:#fff;font-size:12px}
+    .band{padding:1.2rem}
+    section{border:none;padding:.6rem 0;margin-bottom:.4rem;break-inside:avoid}
+    .print-btn{display:none}
+    .cert{background:#fff;color:var(--ink);border:1px solid var(--line)}
+    .cert h2{color:var(--navy)} .cert li,.cert p{color:var(--ink)}
+    .sig .slot{border-color:var(--ink);color:var(--muted)}
+  }
+</style>
+</head>
+<body>
+
+<div class="band">
+  <div class="wrap">
+    <div class="kicker">Open Grace · Coordinated Family Support Services</div>
+    <h1>Payroll &amp; Timekeeping Policy</h1>
+    <p>How to record your time, document your work, and get paid accurately and on schedule — in line with California labor law and Inland Regional Center documentation standards.</p>
+    <div class="meta">
+      <span class="pill">Applies to all Open Grace staff</span>
+      <span class="pill">Effective July 2026</span>
+      <span class="pill">IRC Vendor PJ6208</span>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section>
+  <h2><span class="tick"></span>Purpose</h2>
+  <p>This policy exists so every employee is paid accurately and on time, and so the time we bill to Inland Regional Center is always backed by complete service documentation. You are responsible for recording all work hours accurately, completing your service documentation, and submitting time by the deadlines below.</p>
+</section>
+
+<section>
+  <h2><span class="tick"></span>Pay schedule</h2>
+  <p>Open Grace pays twice per month.</p>
+  <div class="pay-grid">
+    <div class="pay-card">
+      <header>First half of the month</header>
+      <div class="body">
+        <div class="row"><span>Work period</span><b>1st – 15th</b></div>
+        <div class="row"><span>Time due</span><b>15th, 5:00 PM</b></div>
+        <div class="row"><span>Payday</span><span class="payday">20th</span></div>
+      </div>
+    </div>
+    <div class="pay-card">
+      <header>Second half of the month</header>
+      <div class="body">
+        <div class="row"><span>Work period</span><b>16th – end of month</b></div>
+        <div class="row"><span>Time due</span><b>Last day, 5:00 PM</b></div>
+        <div class="row"><span>Payday</span><span class="payday">5th of next month</span></div>
+      </div>
+    </div>
+  </div>
+  <p style="margin-top:.9rem">If a payday falls on a weekend or recognized holiday, payroll is generally processed on the preceding business day unless otherwise communicated.</p>
+</section>
+
+<section>
+  <h2><span class="tick"></span>Recording your time</h2>
+  <p>Enter all work time in <b>QuickBooks Time</b> on the same day services are provided whenever possible. Every entry must include the consumer served, the service category, the accurate duration (quarter-hour increments: .25 / .50 / .75), and billable status where applicable.</p>
+  <h3>One service record — the Daily Contact Log</h3>
+  <p>Your detailed service notes belong in the <b>Daily Contact Log</b> in the Staff Portal, completed the same day as every client visit. The contact log is Open Grace's official service record. Your QuickBooks Time entry must <b>match the corresponding contact log</b> — same consumer, same date, same duration. Do not duplicate full narrative notes in QuickBooks Time.</p>
+  <ul>
+    <li>Time must reflect actual hours worked — no rounding beyond the quarter-hour, no estimates.</li>
+    <li>No time may be logged for client-facing services by any staff member whose Live Scan clearance is still pending. Client contact is not permitted before clearance is confirmed.</li>
+    <li>Falsifying time records is grounds for disciplinary action up to and including termination.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="tick"></span>Documentation</h2>
+  <p>Time submitted for payroll must correspond with completed documentation: the same-day Daily Contact Log for every visit, any required forms, mileage documentation when applicable, and assigned follow-up documentation.</p>
+  <div class="callout protect">
+    <b>Your pay is protected.</b> Hours you actually worked will be paid on the regular payday in accordance with California law — incomplete documentation will never delay payment of wages earned. Missing or late documentation is instead addressed as a performance matter through coaching and, if it continues, corrective action, and it may affect whether time can be billed to IRC.
+  </div>
+</section>
+
+<section>
+  <h2><span class="tick"></span>Submission deadlines &amp; supervisor review</h2>
+  <p>Submit all time for the 1st–15th by <b>5:00 PM on the 15th</b>, and all time for the 16th–end of month by <b>5:00 PM on the last calendar day</b>.</p>
+  <p>Open Grace will make every effort to process late entries in the current payroll cycle, and all wages will be paid in compliance with California law. Repeatedly missing submission deadlines, however, may result in corrective action — the deadlines exist so your paycheck and our IRC billing both go out accurately and on time.</p>
+  <p>After each deadline, your supervisor reviews hours worked, cross-checks QuickBooks Time entries against Daily Contact Logs, and verifies service categories, consumer assignment, mileage, and billable status. You may be contacted to correct discrepancies before payroll is finalized.</p>
+</section>
+
+<section>
+  <h2><span class="tick"></span>Mileage</h2>
+  <p>When travel is authorized, Open Grace reimburses business mileage at the current IRS standard mileage rate, consistent with California Labor Code §2802. Each mileage entry must include the date, starting location, destination, purpose of travel, and total business miles. Submit mileage with each payroll period.</p>
+</section>
+
+<section>
+  <h2><span class="tick"></span>Overtime</h2>
+  <p>Obtain supervisor approval <b>before</b> working overtime. Under California law, non-exempt employees earn overtime at 1.5× the regular rate for hours over 8 in a workday or 40 in a workweek, and for the first 8 hours on a seventh consecutive workday — and 2× for hours over 12 in a workday or over 8 on that seventh day.</p>
+  <p>Unauthorized overtime must still be reported and will always be paid as the law requires; working overtime without approval may, however, result in corrective action.</p>
+</section>
+
+<section>
+  <h2><span class="tick"></span>Meal &amp; rest breaks</h2>
+  <ul>
+    <li><b>Meal period:</b> an unpaid, duty-free 30-minute meal period beginning before the end of your fifth hour of work (a second meal period before the end of the tenth hour on shifts over 10 hours).</li>
+    <li><b>Rest breaks:</b> a paid 10-minute rest break for every 4 hours worked, or major fraction thereof.</li>
+  </ul>
+  <p>Record meal periods accurately in QuickBooks Time. If your schedule ever prevents you from taking a required break, tell your supervisor the same day.</p>
+</section>
+
+<section>
+  <h2><span class="tick"></span>Paycheck review &amp; corrections</h2>
+  <p>Review each paycheck promptly. Please report any discrepancy within five business days so we can investigate and correct verified errors as quickly as possible — usually before the next payroll run.</p>
+  <div class="callout">
+    <b>Note:</b> the five-day request helps us fix problems fast. It does not limit any right you have under California law to report or recover wages at any time.
+  </div>
+</section>
+
+<section>
+  <h2><span class="tick"></span>Your daily rhythm</h2>
+  <table>
+    <tr><th>When</th><th>What</th></tr>
+    <tr><td><b>Every workday</b></td><td>Provide services → complete the Daily Contact Log → enter time in QuickBooks Time → record mileage if applicable. Same day, every day.</td></tr>
+    <tr><td><b>15th, by 5 PM</b></td><td>Submit all time for the 1st–15th.</td></tr>
+    <tr><td><b>Last day, by 5 PM</b></td><td>Submit all time for the 16th–end of month.</td></tr>
+    <tr><td><b>20th</b></td><td>Payday for the first half of the month.</td></tr>
+    <tr><td><b>5th</b></td><td>Payday for the second half of the prior month.</td></tr>
+  </table>
+</section>
+
+<section class="cert">
+  <h2><span class="tick"></span>Accuracy statement</h2>
+  <p>By submitting a timesheet, I certify that:</p>
+  <ul>
+    <li>The hours reported are accurate and were actually worked.</li>
+    <li>The services recorded were actually provided.</li>
+    <li>My Daily Contact Logs and required documentation are complete.</li>
+    <li>Any mileage claimed is accurate.</li>
+    <li>All entries comply with Open Grace policies.</li>
+  </ul>
+  <div class="sig">
+    <div class="slot">Employee signature</div>
+    <div class="slot">Date</div>
+  </div>
+  <div class="sig" style="margin-top:1rem">
+    <div class="slot">Printed name</div>
+    <div class="slot">Position</div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="foot-inner">
+    Open Grace · Coordinated Family Support Services · IRC Vendor PJ6208 · (951) 880-4132 · info@opengrace.org<br>
+    Questions about this policy? Contact Director Joshua Kennedy.
+  </div>
+</footer>
+
+<button class="print-btn" onclick="window.print()">🖨 Print / Save PDF</button>
+</body>
+</html>

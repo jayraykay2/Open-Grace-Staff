@@ -1,908 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Open Grace - Staff Portal</title>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-        --bg:#080D18;--s1:#0F1623;--s2:#16202E;--s3:#1E2D40;
-        --b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.11);--b3:rgba(255,255,255,.18);
-        --t1:#EDF2FF;--t2:#8B96AA;--t3:#4A5568;
-        --blue:#4F8EF7;--blue-bg:rgba(79,142,247,.12);--blue-b:rgba(79,142,247,.22);
-        --green:#10B981;--green-bg:rgba(16,185,129,.12);--green-b:rgba(16,185,129,.22);
-        --amber:#F59E0B;--amber-bg:rgba(245,158,11,.12);--amber-b:rgba(245,158,11,.22);
-        --red:#EF4444;--red-bg:rgba(239,68,68,.12);--red-b:rgba(239,68,68,.22);
-        --purple:#8B5CF6;--purple-bg:rgba(139,92,246,.12);--purple-b:rgba(139,92,246,.22);
-        --r:12px;--r-sm:8px;--nav-h:68px;--header-h:56px;
-    }
-    body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--t1);font-size:15px;min-height:100vh;padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 1rem);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Resource Hub — Open Grace</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1E1C5E; --navy2:#2D2B7F; --orange:#FF6B1A; --purple:#7B35C1; --gold:#FFB800;
+    --ink:#26243B; --muted:#6B6880; --line:#E8E6F2; --wash:#F7F6FB; --card:#FFFFFF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',Arial,sans-serif;color:var(--ink);background:var(--wash);font-size:16px;line-height:1.55}
+  .band{background:var(--navy);color:#fff;padding:2rem 1.25rem 1.75rem}
+  .wrap{max-width:760px;margin:0 auto}
+  .band .top{display:flex;align-items:center;gap:.9rem}
+  .band img{width:52px;height:52px;border-radius:12px;object-fit:cover}
+  .kicker{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(1.5rem,4.5vw,2rem);font-weight:700;line-height:1.15}
+  .band p.sub{color:#C9C7E8;margin-top:.75rem;font-size:.93rem;max-width:52ch}
+  main{padding:1.4rem 1.25rem 3rem}
+  .primary-cta{display:flex;align-items:center;gap:1rem;background:linear-gradient(120deg,var(--navy2),var(--purple));color:#fff;border-radius:16px;padding:1.15rem 1.25rem;text-decoration:none;margin-bottom:1.4rem;box-shadow:0 6px 18px rgba(45,43,127,.28)}
+  .primary-cta .ic{font-size:1.9rem}
+  .primary-cta h2{font-family:'Fraunces',Georgia,serif;font-size:1.15rem;margin-bottom:.15rem}
+  .primary-cta small{color:#D9D6F5;font-size:.83rem;display:block}
+  .primary-cta .go{margin-left:auto;font-size:1.3rem;color:var(--gold)}
+  .section-head{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.4rem 0 .6rem}
+  .links{display:grid;gap:.6rem}
+  .link-row{display:flex;align-items:center;gap:.9rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem;text-decoration:none;color:var(--ink);transition:border-color .15s}
+  .link-row:hover{border-color:var(--purple)}
+  .link-row .ic{font-size:1.35rem;width:2.1rem;text-align:center;flex:none}
+  .link-row strong{display:block;font-size:.95rem;color:var(--navy)}
+  .link-row small{color:var(--muted);font-size:.8rem}
+  .link-row .arrow{margin-left:auto;color:var(--orange);font-size:1.15rem}
+  .contact{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem}
+  .contact b{color:var(--navy)}
+  .contact .btns{display:flex;gap:.6rem;margin-top:.7rem;flex-wrap:wrap}
+  .btn{flex:1;min-width:120px;text-align:center;background:var(--wash);border:1px solid var(--line);border-radius:999px;padding:.55rem .9rem;text-decoration:none;color:var(--navy);font-weight:700;font-size:.85rem}
+  .btn.orange{background:var(--orange);border-color:var(--orange);color:#fff}
+  footer{padding:0 1.25rem 2.5rem;color:var(--muted);font-size:.78rem;text-align:center}
+  footer .fin{max-width:760px;margin:0 auto;border-top:1px solid var(--line);padding-top:1rem}
+</style>
+</head>
+<body>
 
-    /* LOGIN SCREEN */
-    .login-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;z-index:500}
-    .login-logo{width:72px;height:72px;border-radius:16px;object-fit:cover;margin-bottom:1.5rem}
-    .login-title{font-size:22px;font-weight:700;color:var(--t1);margin-bottom:.25rem;text-align:center}
-    .login-sub{font-size:14px;color:var(--t2);margin-bottom:2rem;text-align:center}
-    .login-card{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:1.5rem;width:100%;max-width:380px}
-    .login-label{font-size:12px;color:var(--t2);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;display:block}
-    .login-input{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r-sm);color:var(--t1);font-size:18px;padding:.875rem 1rem;font-family:inherit;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem}
-    .login-input:focus{outline:none;border-color:var(--blue-b);background:var(--s3)}
-    .login-btn{width:100%;background:var(--blue-bg);border:1px solid var(--blue-b);border-radius:var(--r);color:#93C5FD;font-size:15px;font-weight:600;padding:.875rem;cursor:pointer;font-family:inherit;transition:all .15s}
-    .login-btn:active{opacity:.8}
-    .login-btn:disabled{opacity:.5}
-    .login-err{font-size:12px;color:var(--red);margin-top:.5rem;min-height:18px;text-align:center}
-
-    /* HEADER */
-    .app-header{background:rgba(15,22,35,0.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--b1);padding:.75rem 1rem;display:flex;align-items:center;gap:.75rem;position:sticky;top:0;z-index:100;height:var(--header-h)}
-    .app-header img{width:34px;height:34px;border-radius:8px;flex-shrink:0;object-fit:cover}
-    .header-text h1{font-size:14px;font-weight:600;letter-spacing:-.01em}
-    .header-text p{font-size:12px;color:var(--t2);margin-top:1px}
-    .header-right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
-    .active-pill{display:flex;align-items:center;gap:5px;background:var(--green-bg);border:1px solid var(--green-b);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--green)}
-    .status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-    /* BOTTOM NAV */
-    .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom));background:rgba(15,22,35,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--b1);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom)}
-    .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:9px;font-weight:600;color:var(--t3);cursor:pointer;background:none;border:none;padding:.5rem .125rem .375rem;transition:color .18s;letter-spacing:.04em;text-transform:uppercase;-webkit-tap-highlight-color:transparent}
-    .nav-btn .nav-icon{font-size:22px;transition:transform .2s;line-height:1}
-    .nav-btn.active{color:var(--blue)}
-    .nav-btn.active .nav-icon{transform:scale(1.12)}
-
-    /* TABS */
-    .tab-panel{display:none;padding:1rem 1rem 1.5rem;animation:fadeIn .22s ease}
-    .tab-panel.active{display:block}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-    /* COMMON */
-    .section-head{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);padding:1rem 0 .5rem;border-bottom:1px solid var(--b1);margin-bottom:.875rem}
-    .card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:1rem;margin-bottom:.875rem}
-    .card-title{font-size:11px;font-weight:700;color:var(--t2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.875rem;display:flex;align-items:center;gap:.5rem}
-    .qa-btn{display:flex;align-items:center;gap:.5rem;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:.75rem 1rem;color:var(--t1);font-size:13px;font-weight:500;text-decoration:none;cursor:pointer;transition:all .15s;min-height:46px;font-family:inherit;-webkit-tap-highlight-color:transparent}
-    .qa-btn:active{opacity:.75;transform:scale(.98)}
-    .qa-btn.primary{background:var(--blue-bg);border-color:var(--blue-b);color:#93C5FD}
-    .qa-btn.success{background:var(--green-bg);border-color:var(--green-b);color:#6EE7B7}
-    .qa-btn.danger{background:var(--red-bg);border-color:var(--red-b);color:#FCA5A5}
-    .field-group{margin-bottom:.75rem}
-    .field-label{font-size:12px;color:var(--t2);margin-bottom:.25rem;display:block}
-    .field-input,.field-select,.field-textarea{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r-sm);color:var(--t1);font-size:16px;padding:.75rem .875rem;font-family:inherit}
-    .field-input:focus,.field-select:focus,.field-textarea:focus{outline:none;border-color:var(--blue-b);background:var(--s3)}
-    .field-select{appearance:none;-webkit-appearance:none}
-    .field-textarea{resize:none;height:110px;font-size:15px}
-    .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.625rem;margin-bottom:1rem}
-    .stat-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:.875rem 1rem}
-    .stat-label{font-size:10px;color:var(--t2);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
-    .stat-val{font-size:24px;font-weight:700;line-height:1;letter-spacing:-.02em}
-    .stat-sub{font-size:11px;color:var(--t3);margin-top:4px}
-    .badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px}
-    .badge-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-b)}
-    .badge-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-b)}
-    .badge-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-b)}
-    .badge-blue{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-b)}
-
-    /* DOMAIN CHECKBOXES */
-    .domain-grid{display:flex;flex-direction:column;gap:.375rem;margin-bottom:.75rem}
-    .domain-item{display:flex;align-items:flex-start;gap:.75rem;padding:.625rem .75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);cursor:pointer;transition:border-color .15s}
-    .domain-item.selected{border-color:var(--blue-b);background:var(--blue-bg)}
-    .domain-item input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--blue)}
-    .domain-item label{font-size:13px;color:var(--t1);cursor:pointer;line-height:1.4}
-    .domain-num{font-size:10px;font-weight:700;color:var(--t3);white-space:nowrap}
-
-    /* LOG HISTORY */
-    .log-item{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);padding:.75rem .875rem;margin-bottom:.5rem}
-    .log-item-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.375rem}
-    .log-item-name{font-size:13px;font-weight:600}
-    .log-item-date{font-size:11px;color:var(--t3)}
-    .log-item-meta{font-size:11px;color:var(--t2);line-height:1.6}
-    .log-item-domains{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.375rem}
-
-    /* TOAST */
-    .toast-container{position:fixed;bottom:calc(var(--nav-h) + .75rem);left:50%;transform:translateX(-50%);z-index:400;pointer-events:none}
-    .toast{background:var(--s1);border:1px solid var(--b2);border-radius:8px;padding:.5rem 1rem;font-size:12px;color:var(--t1);animation:toastIn .2s ease;white-space:nowrap}
-    @keyframes toastIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-    /* LINK ROW */
-    .link-row{display:flex;align-items:center;gap:.875rem;padding:.75rem .875rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);text-decoration:none;color:var(--t1);margin-bottom:.5rem;min-height:52px}
-    .link-row:active{background:var(--s3)}
-    .link-icon{font-size:20px;width:30px;text-align:center;flex-shrink:0}
-    .link-text{flex:1;min-width:0}
-    .link-text strong{display:block;font-size:14px;font-weight:500}
-    .link-text small{font-size:12px;color:var(--t2);display:block;margin-top:2px}
-    .link-arrow{color:var(--t3);font-size:18px;flex-shrink:0}
-
-    /* TIMESHEET */
-    .ts-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:.5rem;padding:.625rem .75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);margin-bottom:.375rem}
-    .ts-hrs{font-size:16px;font-weight:700;color:var(--green);white-space:nowrap}
-    .ts-date{font-size:11px;color:var(--t3);text-align:right}
-
-    /* ALERT BANNER */
-    .alert-banner{background:var(--amber-bg);border:1px solid var(--amber-b);border-radius:var(--r);padding:.875rem 1rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:.75rem}
-    .alert-icon{font-size:20px;flex-shrink:0}
-    .alert-info h4{font-size:13px;font-weight:700;color:var(--amber);margin-bottom:3px}
-    .alert-info p{font-size:12px;color:var(--t2);line-height:1.5}
-    </style>
-  <meta name="apple-mobile-web-app-title" content="OG Staff"><meta name="theme-color" content="#080D18"><link rel="apple-touch-icon" href="https://opengrace.org/og_logo.jpg"><link rel="manifest" href='data:application/manifest+json,{"name":"Open Grace Staff","short_name":"OG Staff","start_url":"/staff-portal.html","display":"standalone","background_color":"#080D18","theme_color":"#080D18","icons":[{"src":"/og_logo.jpg","sizes":"512x512","type":"image/jpeg"}]}'></head>
-  <body>
-
-    <!-- LOGIN SCREEN -->
-    <div class="login-screen" id="login-screen">
-        <img class="login-logo" src="https://opengrace.org/og_logo.jpg" alt="Open Grace">
-        <div class="login-title">Open Grace LLC</div>
-        <div class="login-sub">Staff Portal - Family Coordinators</div>
-        <div class="login-card">
-              <label class="login-label" for="access-code">Staff Access Code</label>
-              <input class="login-input" id="access-code" type="text" placeholder="OG-XXXX-XXX" maxlength="15" autocomplete="off" autocorrect="off" autocapitalize="characters" onkeydown="if(event.key==='Enter')doLogin()">
-              <button class="login-btn" id="login-btn" onclick="doLogin()">Sign In</button>
-              <div class="login-err" id="login-err"></div>
-        </div>
-    </div>
-
-    <!-- APP (hidden until login) -->
-    <div id="app" style="display:none">
-
-      <!-- HEADER -->
-      <header class="app-header">
-          <img src="https://opengrace.org/og_logo.jpg" alt="Open Grace">
-          <div class="header-text">
-                <h1>Open Grace LLC <span style="color:var(--t3)">-</span> Staff Portal</h1>
-              <p id="staff-greeting">Good morning</p>
-          </div>
-        <div class="header-right">
-            <div class="active-pill"><div class="status-dot"></div>Active</div>
-        </div>
-      </header>
-    
-    <!-- TAB: DASHBOARD -->
-    <div class="tab-panel active" id="tab-dashboard">
-
-      <div id="billing-banner" style="display:none;border-radius:var(--r);padding:.875rem 1rem;margin-bottom:.875rem;align-items:flex-start;gap:.75rem">
-        <span style="font-size:22px;flex-shrink:0" id="billing-icon">📅</span>
-        <div><div style="font-size:13px;font-weight:700;margin-bottom:3px" id="billing-title">IRC billing cut-off</div><div style="font-size:12px;color:var(--t2)" id="billing-desc"></div></div>
-      </div>
-
-      <div id="qpr-alerts"></div>
-
-      <div class="section-head">My dashboard</div>
-      <div class="stat-grid">
-          <div class="stat-card">
-                <div class="stat-label">Clients</div>
-                <div class="stat-val" id="dash-clients">-</div>
-                <div class="stat-sub">assigned</div>
-          </div>
-          <div class="stat-card">
-                <div class="stat-label">Logs</div>
-                <div class="stat-val" id="dash-logs">-</div>
-                <div class="stat-sub">this month</div>
-          </div>
-          <div class="stat-card">
-                <div class="stat-label">Hours</div>
-                <div class="stat-val" id="dash-hours" style="color:var(--green)">-</div>
-                <div class="stat-sub">this month</div>
-          </div>
-      </div>
-
-      <div id="client-cards"></div>
-
-      <div class="card">
-          <div class="card-title">Quick actions</div>
-          <div style="display:flex;flex-direction:column;gap:.5rem">
-                <button class="qa-btn primary" style="justify-content:center;font-size:14px;padding:1rem;font-weight:600" onclick="switchTab('log')">📝  Submit today's contact log</button>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
-                  <button class="qa-btn success" style="justify-content:center" onclick="switchTab('hours')">⏱  Timesheet</button>
-                  <a class="qa-btn danger" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank" style="justify-content:center">🚨  Incident</a>
-                </div>
-          </div>
-      </div>
-    
-      <div class="section-head">Recent logs</div>
-      <div id="recent-logs"></div>
-    
-      <div class="card" style="background:var(--purple-bg);border-color:var(--purple-b)">
-          <div style="font-size:13px;font-weight:600;color:#C4B5FD;margin-bottom:.375rem">Training Academy</div>
-          <p style="font-size:12px;color:var(--t2);margin-bottom:.75rem">Complete your required CFS training modules.</p>
-          <a class="qa-btn" href="https://opengrace.org/training.html" target="_blank" style="justify-content:center;background:var(--purple-bg);border-color:var(--purple-b);color:#C4B5FD">Open Training Academy</a>
+<div class="band">
+  <div class="wrap">
+    <div class="top">
+      <img src="https://opengrace.org/og_logo.jpg" alt="Open Grace">
+      <div>
+        <div class="kicker">Open Grace · Staff</div>
+        <h1>Staff Resource Hub</h1>
       </div>
     </div>
-    
-    <!-- TAB: CONTACT LOG -->
-    <div class="tab-panel" id="tab-log">
-      <div class="section-head">Daily contact log</div>
-      <div class="card">
-          <div class="card-title">New log entry</div>
-      
-          <div class="field-group">
-                <label class="field-label">Client</label>
-                <select class="field-select" id="log-client">
-                        <option value="">- Select client -</option>
-                </select>
-          </div>
-      
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
-                <div class="field-group">
-                        <label class="field-label">Date of visit</label>
-                        <input class="field-input" type="date" id="log-date">
-                </div>
-                <div class="field-group">
-                        <label class="field-label">Hours</label>
-                        <select class="field-select" id="log-hours">
-                                  <option value=".25">15 min</option>
-                                  <option value=".5">30 min</option>
-                                  <option value=".75">45 min</option>
-                                  <option value="1" selected>1 hour</option>
-                                  <option value="1.5">1.5 hrs</option>
-                                  <option value="2">2 hours</option>
-                                  <option value="2.5">2.5 hrs</option>
-                                  <option value="3">3 hours</option>
-                                  <option value="3.5">3.5 hrs</option>
-                                  <option value="4">4 hours</option>
-                        </select>
-                </div>
-          </div>
-      
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
-                <div class="field-group">
-                        <label class="field-label">Start time</label>
-                        <input class="field-input" type="time" id="log-start">
-                </div>
-                <div class="field-group">
-                        <label class="field-label">End time</label>
-                        <input class="field-input" type="time" id="log-end">
-                </div>
-          </div>
-      
-          <div class="field-group">
-                <label class="field-label">Service type</label>
-                <select class="field-select" id="log-service">
-                        <option value="in-person">In-person visit</option>
-                        <option value="phone">Phone / video call</option>
-                        <option value="community">Community outing</option>
-                        <option value="appointment">Medical appointment</option>
-                        <option value="crisis">Crisis support</option>
-                        <option value="other">Other</option>
-                </select>
-          </div>
-      
-          <div class="field-group">
-                <label class="field-label">Location</label>
-                <input class="field-input" type="text" id="log-location" placeholder="e.g. Client home, Community center">
-          </div>
-      
-          <div class="field-group">
-                <label class="field-label">CFS domains addressed</label>
-                <div class="domain-grid" id="domain-grid"></div>
-          </div>
-      
-          <div class="field-group">
-                <label class="field-label">IPP goals worked on</label>
-                <input class="field-input" type="text" id="log-ipp" placeholder="Describe which IPP goals were addressed">
-          </div>
-      
-          <div class="field-group">
-                <label class="field-label">Progress notes</label>
-                <textarea class="field-textarea" id="log-notes" placeholder="Actions taken, outcomes achieved, observations..."></textarea>
-          </div>
-      
-          <div class="field-group">
-                <label class="field-label">Family / consumer participation</label>
-                <select class="field-select" id="log-participation">
-                        <option value="engaged">Engaged and receptive</option>
-                        <option value="partial">Partially engaged</option>
-                        <option value="resistant">Resistant / not available</option>
-                        <option value="crisis">In crisis - see incident report</option>
-                </select>
-          </div>
-      
-          <div class="field-group">
-                <label class="field-label">Follow-up actions</label>
-                <input class="field-input" type="text" id="log-followup" placeholder="Next steps, upcoming appointments...">
-          </div>
-      
-          <div class="field-group">
-                <label class="field-label">Next visit planned</label>
-                <input class="field-input" type="date" id="log-next">
-          </div>
-      
-          <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);padding:.875rem;margin-bottom:.75rem">
-                <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:.75rem">Compliance acknowledgments</div>
-                <label style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.625rem;cursor:pointer">
-                        <input type="checkbox" id="ack-mandated" style="margin-top:2px;accent-color:var(--blue);flex-shrink:0">
-                        <span style="font-size:12px;color:var(--t2)">I acknowledge my role as a mandated reporter and have reported any suspected abuse or neglect.</span>
-                </label>
-                <label style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.625rem;cursor:pointer">
-                        <input type="checkbox" id="ack-incident" style="margin-top:2px;accent-color:var(--blue);flex-shrink:0">
-                        <span style="font-size:12px;color:var(--t2)">No incidents occurred during this visit, OR I have filed a separate incident report.</span>
-                </label>
-                <label style="display:flex;align-items:flex-start;gap:.75rem;cursor:pointer">
-                        <input type="checkbox" id="ack-hipaa" style="margin-top:2px;accent-color:var(--blue);flex-shrink:0">
-                        <span style="font-size:12px;color:var(--t2)">I understand this information is confidential under HIPAA and will not be shared without authorization.</span>
-                </label>
-          </div>
-      
-          <div class="field-group">
-                <label class="field-label">Electronic signature (type your full name)</label>
-                <input class="field-input" type="text" id="log-signature" placeholder="Full name as signature">
-          </div>
-      
-          <button class="qa-btn primary" style="width:100%;justify-content:center;margin-top:.5rem" id="submit-log-btn" onclick="submitLog()">
-                Submit contact log
-          </button>
-          <div id="submit-status" style="font-size:12px;margin-top:.5rem;text-align:center;min-height:18px"></div>
-      </div>
-    
-      <div class="section-head" style="display:flex;justify-content:space-between;align-items:center">
-          <span>My log history</span>
-          <span id="log-count" style="font-size:10px;color:var(--t3)"></span>
-      </div>
-      <div id="log-history"></div>
+    <p class="sub">Everything you need in one place. Daily client work — contact logs and weekly hours — happens in the Staff App.</p>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <a class="primary-cta" href="https://opengrace.org/navigator.html">
+    <span class="ic">🧭</span>
+    <div>
+      <h2>Open the Staff App</h2>
+      <small>Daily Contact Logs · weekly hours · your assigned clients · sign in with your email code &amp; PIN</small>
     </div>
-    
-    <!-- TAB: HOURS -->
-    <div class="tab-panel" id="tab-hours">
-      <div class="section-head">Monthly timesheet</div>
-    
-      <div class="alert-banner">
-          <div class="alert-icon">📅</div>
-          <div class="alert-info">
-                <h4 id="cutoff-title">IRC billing cut-off</h4>
-                <p id="cutoff-desc">Submit all hours by the 4th of the month at 4:30 PM.</p>
-          </div>
-      </div>
-    
-      <div class="card">
-          <div class="card-title">Period</div>
-          <select class="field-select" id="ts-month" onchange="renderTimesheet()"></select>
-      </div>
-    
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-bottom:1rem">
-          <div class="stat-card">
-                <div class="stat-label">Total hours</div>
-                <div class="stat-val" id="ts-total" style="color:var(--green)">0</div>
-                <div class="stat-sub">this period</div>
-          </div>
-          <div class="stat-card">
-                <div class="stat-label">Visits</div>
-                <div class="stat-val" id="ts-visits">0</div>
-                <div class="stat-sub">contact logs</div>
-          </div>
-      </div>
-    
-      <div id="ts-entries"></div>
-    
-      <button class="qa-btn" style="width:100%;justify-content:center;margin-top:.5rem" onclick="exportTimesheet()">Export timesheet</button>
+    <span class="go">→</span>
+  </a>
+
+  <div class="section-head">Policies &amp; training</div>
+  <div class="links">
+    <a class="link-row" href="https://opengrace.org/training.html">
+      <span class="ic">🎓</span>
+      <div><strong>Training Academy</strong><small>Required CFS training modules</small></div>
+      <span class="arrow">›</span>
+    </a>
+    <a class="link-row" href="https://opengrace.org/Open_Grace_Employee_Handbook.html">
+      <span class="ic">📘</span>
+      <div><strong>Employee Handbook</strong><small>Policies and procedures</small></div>
+      <span class="arrow">›</span>
+    </a>
+    <a class="link-row" href="https://opengrace.org/payroll.html">
+      <span class="ic">🧾</span>
+      <div><strong>Payroll &amp; Timekeeping Policy</strong><small>Pay periods, deadlines, and how to record time</small></div>
+      <span class="arrow">›</span>
+    </a>
+    <a class="link-row" href="https://opengrace.org/onboarding.html">
+      <span class="ic">🗂️</span>
+      <div><strong>Onboarding Prep</strong><small>New-hire checklist, Live Scan, and required documents</small></div>
+      <span class="arrow">›</span>
+    </a>
+  </div>
+
+  <div class="section-head">Compliance — same-day requirements</div>
+  <div class="links">
+    <a class="link-row" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank" rel="noopener">
+      <span class="ic">🚨</span>
+      <div><strong>Incident Report</strong><small>File the same day as any incident — the Director and IRC coordinator are notified</small></div>
+      <span class="arrow">›</span>
+    </a>
+  </div>
+
+  <div class="section-head">Share with families</div>
+  <div class="links">
+    <a class="link-row" href="sms:?body=Hi, this is your Open Grace Family Coordinator. Here is your Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf">
+      <span class="ic">💜</span>
+      <div><strong>Text the Welcome Packet</strong><small>Send a family the client welcome packet</small></div>
+      <span class="arrow">›</span>
+    </a>
+    <a class="link-row" href="sms:?body=Hi, please complete the Open Grace CFS Service Acknowledgment: https://form.jotform.com/261451993406057">
+      <span class="ic">✍️</span>
+      <div><strong>Text the CFS Acknowledgment</strong><small>Must be completed before services begin</small></div>
+      <span class="arrow">›</span>
+    </a>
+  </div>
+
+  <div class="section-head">Contact the director</div>
+  <div class="contact">
+    <b>Joshua Kennedy</b> — Director, Open Grace
+    <div class="btns">
+      <a class="btn orange" href="tel:9518804132">📞 Call</a>
+      <a class="btn" href="sms:9518804132">💬 Text</a>
+      <a class="btn" href="mailto:joshua.kennedy@opengrace.org">✉️ Email</a>
     </div>
-    
-    <!-- TAB: RESOURCES -->
-    <div class="tab-panel" id="tab-resources">
-      <div class="section-head">Send to families</div>
-    
-      <div class="card">
-          <div class="card-title">Quick share</div>
-          <div style="display:flex;flex-direction:column;gap:.625rem">
-                <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);padding:.75rem">
-                        <div style="font-size:13px;font-weight:500;margin-bottom:2px">Client Welcome Packet</div>
-                        <div style="font-size:11px;color:var(--t3);margin-bottom:.625rem">Share at or after first meeting</div>
-                        <div style="display:flex;gap:.5rem">
-                                  <a href="sms:?body=Hi, this is your Open Grace LLC Family Coordinator. Here is your Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf" class="qa-btn success" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Text</a>
-                                  <a href="mailto:?subject=Welcome to Open Grace LLC&body=Here is your Client Welcome Packet: https://opengrace.org/Open_Grace_Client_Welcome_Packet.pdf" class="qa-btn primary" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Email</a>
-                        </div>
-                </div>
-                <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);padding:.75rem">
-                        <div style="font-size:13px;font-weight:500;margin-bottom:2px">CFS Service Acknowledgment</div>
-                        <div style="font-size:11px;color:var(--t3);margin-bottom:.625rem">Required before services begin</div>
-                        <div style="display:flex;gap:.5rem">
-                                  <a href="sms:?body=Hi, please complete the Open Grace CFS Service Acknowledgment: https://form.jotform.com/261451993406057" class="qa-btn success" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Text</a>
-                                  <a href="mailto:?subject=Action Needed - CFS Service Acknowledgment&body=Please complete: https://form.jotform.com/261451993406057" class="qa-btn primary" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Email</a>
-                        </div>
-                </div>
-                <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-sm);padding:.75rem">
-                        <div style="font-size:13px;font-weight:500;margin-bottom:2px">Emergency Contacts</div>
-                        <div style="font-size:11px;color:var(--t3);margin-bottom:.625rem">APS, CPS, 211, IRC, Open Grace</div>
-                        <div style="display:flex;gap:.5rem">
-                                  <a href="sms:?body=Important contacts:%0AOpen Grace: (951) 880-4132%0AAPS: 1-877-477-3646%0ACPS Riverside: 1-800-442-4918%0A211 IE: Dial 211%0AIRC: (909) 890-3000%0AEmergency: 911" class="qa-btn success" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Text</a>
-                                  <a href="mailto:?subject=Important Contacts - Open Grace LLC" class="qa-btn primary" style="flex:1;justify-content:center;font-size:12px;min-height:38px">Email</a>
-                        </div>
-                </div>
-          </div>
-      </div>
-    
-      <div class="section-head">Staff links</div>
-      <a class="link-row" href="https://opengrace.org/training.html" target="_blank">
-          <span class="link-icon">🎓</span>
-          <div class="link-text"><strong>Training Academy</strong><small>Required CFS training modules</small></div>
-          <span class="link-arrow">›</span>
-      </a>
-      <a class="link-row" href="https://form.jotform.com/jayraykay2/incident-report-OpenGrace" target="_blank">
-          <span class="link-icon">🚨</span>
-          <div class="link-text"><strong>Incident Report</strong><small>File same day as any incident</small></div>
-          <span class="link-arrow">›</span>
-      </a>
-      <a class="link-row" href="https://opengrace.org/Open_Grace_Employee_Handbook.html" target="_blank">
-          <span class="link-icon">📘</span>
-          <div class="link-text"><strong>Employee Handbook</strong><small>Policies and procedures</small></div>
-          <span class="link-arrow">›</span>
-      </a>
-    
-      <div class="section-head">Contact director</div>
-      <div class="card">
-          <div style="font-size:14px;font-weight:600;margin-bottom:.25rem">Joshua Kennedy</div>
-          <div style="font-size:12px;color:var(--t2);margin-bottom:.875rem">Director - Open Grace LLC</div>
-          <div style="display:flex;gap:.5rem">
-                <a href="tel:9518804132" class="qa-btn success" style="flex:1;justify-content:center">Call</a>
-                <a href="sms:9518804132" class="qa-btn primary" style="flex:1;justify-content:center">Text</a>
-                <a href="mailto:joshua.kennedy@opengrace.org" class="qa-btn" style="flex:1;justify-content:center">Email</a>
-          </div>
-      </div>
-    </div>
-    
-    <!-- TAB: SETTINGS -->
-    <div class="tab-panel" id="tab-settings">
-      <div class="section-head">My account</div>
-      <div class="card">
-          <div class="card-title">Staff info</div>
-          <div style="margin-bottom:.5rem"><span style="font-size:12px;color:var(--t2)">Name: </span><span id="settings-name" style="font-size:14px;font-weight:500">-</span></div>
-          <div style="margin-bottom:.5rem"><span style="font-size:12px;color:var(--t2)">Role: </span><span id="settings-role" style="font-size:14px">-</span></div>
-          <div><span style="font-size:12px;color:var(--t2)">Code: </span><span id="settings-code" style="font-size:14px;font-family:monospace">-</span></div>
-      </div>
-      <button class="qa-btn danger" style="width:100%;justify-content:center" onclick="if(confirm('Sign out?')){signOut()}">Sign out</button>
-    </div>
-    
-    </div><!-- end #app -->
-  
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav" id="bottom-nav" style="display:none">
-    <button class="nav-btn active" id="nav-dashboard" onclick="switchTab('dashboard')">
-        <span class="nav-icon">🏠</span>Home
-    </button>
-    <button class="nav-btn" id="nav-log" onclick="switchTab('log')">
-        <span class="nav-icon">📝</span>Log
-    </button>
-    <button class="nav-btn" id="nav-hours" onclick="switchTab('hours')">
-        <span class="nav-icon">⏱</span>Hours
-    </button>
-    <button class="nav-btn" id="nav-resources" onclick="switchTab('resources')">
-        <span class="nav-icon">📚</span>Resources
-    </button>
-    <button class="nav-btn" id="nav-settings" onclick="switchTab('settings')">
-        <span class="nav-icon">⚙️</span>Settings
-    </button>
-  </nav>
-  
-  <div class="toast-container" id="toast-container"></div>
-  
-  <script>
-    const WORKER = 'https://og-security-worker.jayraykay2.workers.dev';
-    const DEPLOY_SECRET = '8164c25bb1de20a7aa3454d244dcf349668942c06c6057b9ab23c81020730691';
-    const TABS = ['dashboard','log','hours','resources','settings'];
-    const CFS_DOMAINS = [
-      {id:1,label:'Family home supports'},
-      {id:2,label:'Navigating services and resources'},
-      {id:3,label:'Diagnosis information and resources'},
-      {id:4,label:'Provider training coordination'},
-      {id:5,label:'Scheduling assistance'},
-      {id:6,label:'Transportation'},
-      {id:7,label:'Backup providers and supports'},
-      {id:8,label:'Futures planning'},
-      {id:9,label:'Independence training'},
-      {id:10,label:'Other identified needs'},
-      ];
-    const BILLING_SCHEDULE = [
-      {serviceMonth:'June 2026',cutoff:'2026-07-06',payDate:'2026-07-20'},
-      {serviceMonth:'July 2026',cutoff:'2026-08-04',payDate:'2026-08-20'},
-      ];
-    const K = {logs:'og_staff_logs_v2',auth:'og_staff_auth_v2'};
+  </div>
 
-    let currentStaff = null;
-    let gClients = [];
+</main>
 
-    // STORAGE
-    function load(key,fb=null){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fb}catch{return fb}}
-    function save(key,val){try{localStorage.setItem(key,JSON.stringify(val));return true}catch{return false}}
+<footer>
+  <div class="fin">
+    Open Grace · Coordinated Family Support Services · IRC Vendor PJ6208<br>
+    Staff use only. Do not share this page or its links with anyone outside Open Grace.
+  </div>
+</footer>
 
-    // TOAST
-    function toast(msg,dur=2800){
-        const c=document.getElementById('toast-container');
-        const el=document.createElement('div');
-        el.className='toast';el.textContent=msg;
-        c.innerHTML='';c.appendChild(el);
-        setTimeout(()=>el.remove(),dur);
-    }
-
-    // TAB NAV
-    function switchTab(name){
-        TABS.forEach(t=>{
-              document.getElementById('tab-'+t)?.classList.remove('active');
-              document.getElementById('nav-'+t)?.classList.remove('active');
-        });
-        document.getElementById('tab-'+name)?.classList.add('active');
-        document.getElementById('nav-'+name)?.classList.add('active');
-        window.scrollTo(0,0);
-        if(name==='hours')renderTimesheet();
-        if(name==='dashboard')renderDashboard();
-        if(name==='settings')renderSettings();
-        if(name==='log')renderLogHistory();
-    }
-
-    // GREETING
-    function setGreeting(){
-        const h=new Date().getHours();
-        const t=h<12?'morning':h<17?'afternoon':'evening';
-        const el=document.getElementById('staff-greeting');
-        if(el)el.textContent=`Good ${t}, ${currentStaff?.name||''}`;
-    }
-
-    // LOGIN
-    async function doLogin(){
-        const code=document.getElementById('access-code').value.trim().toUpperCase();
-        const errEl=document.getElementById('login-err');
-        const btn=document.getElementById('login-btn');
-        if(!code){errEl.textContent='Please enter your access code.';return;}
-        btn.disabled=true;btn.textContent='Checking...';
-        errEl.textContent='';
-        try{
-              const r=await fetch(WORKER+'/api/staff-auth',{
-                      method:'POST',
-                      headers:{'Content-Type':'application/json','X-OG-Deploy-Secret':DEPLOY_SECRET},
-                      body:JSON.stringify({code})
-              });
-              const d=await r.json();
-              if(d.ok){
-                      currentStaff=d;
-                      gClients=d.clients||[];
-                      save(K.auth,{code,name:d.name,position:d.position,clients:d.clients,savedAt:Date.now()});
-                      showApp();
-              } else {
-                      errEl.textContent='Invalid or inactive code. Contact the Director.';
-                      btn.disabled=false;btn.textContent='Sign In';
-              }
-        } catch(e){
-              // Offline fallback
-              const cached=load(K.auth);
-              if(cached&&cached.code===code&&Date.now()-cached.savedAt<86400000*7){
-                      currentStaff=cached;gClients=cached.clients||[];
-                      showApp();
-              } else {
-                      errEl.textContent='Connection error. Try again or check your internet.';
-                      btn.disabled=false;btn.textContent='Sign In';
-              }
-        }
-    }
-
-    function showApp(){
-        document.getElementById('login-screen').style.display='none';
-        document.getElementById('app').style.display='block';
-        document.getElementById('bottom-nav').style.display='flex';
-        populateClients();
-        buildDomainGrid();
-        buildMonthSelector();
-        setGreeting();
-        renderDashboard();
-        // Set today as default log date
-        const ld=document.getElementById('log-date');
-        if(ld)ld.value=new Date().toISOString().split('T')[0];
-    }
-
-    function signOut(){
-        localStorage.removeItem(K.auth);
-        currentStaff=null;gClients=[];
-        document.getElementById('app').style.display='none';
-        document.getElementById('bottom-nav').style.display='none';
-        document.getElementById('login-screen').style.display='flex';
-        document.getElementById('access-code').value='';
-        document.getElementById('login-btn').disabled=false;
-        document.getElementById('login-btn').textContent='Sign In';
-    }
-
-    // CLIENTS
-    function populateClients(){
-        const sel=document.getElementById('log-client');
-        if(!sel)return;
-        sel.innerHTML='<option value="">- Select client -</option>';
-        gClients.forEach(c=>{
-              const opt=document.createElement('option');
-              opt.value=c.uci;
-              opt.textContent=`${c.name} (UCI ${c.uci})`;
-              sel.appendChild(opt);
-        });
-    }
-
-    // DOMAIN GRID
-    function buildDomainGrid(){
-        const grid=document.getElementById('domain-grid');
-        if(!grid)return;
-        grid.innerHTML=CFS_DOMAINS.map(d=>`
-            <div class="domain-item" id="di-${d.id}" onclick="toggleDomain(${d.id})">
-                  <input type="checkbox" id="dc-${d.id}" onclick="event.stopPropagation()">
-                        <label for="dc-${d.id}"><span class="domain-num">#${d.id}</span> ${d.label}</label>
-                            </div>
-                              `).join('');
-    }
-    function toggleDomain(id){
-        const cb=document.getElementById('dc-'+id);
-        const item=document.getElementById('di-'+id);
-        cb.checked=!cb.checked;
-        item.classList.toggle('selected',cb.checked);
-    }
-    function getSelectedDomains(){
-        return CFS_DOMAINS.filter(d=>document.getElementById('dc-'+d.id)?.checked).map(d=>d.id);
-    }
-    function resetDomains(){
-        CFS_DOMAINS.forEach(d=>{
-              const cb=document.getElementById('dc-'+d.id);
-              const item=document.getElementById('di-'+d.id);
-              if(cb)cb.checked=false;
-              if(item)item.classList.remove('selected');
-        });
-    }
-
-    // SUBMIT CONTACT LOG
-    async function submitLog(){
-        const clientUCI=document.getElementById('log-client').value;
-        const date=document.getElementById('log-date').value;
-        const hours=parseFloat(document.getElementById('log-hours').value);
-        const notes=document.getElementById('log-notes').value.trim();
-        const signature=document.getElementById('log-signature').value.trim();
-        const domains=getSelectedDomains();
-        const ackMandated=document.getElementById('ack-mandated').checked;
-        const ackIncident=document.getElementById('ack-incident').checked;
-        const ackHipaa=document.getElementById('ack-hipaa').checked;
-
-        const statusEl=document.getElementById('submit-status');
-        const btn=document.getElementById('submit-log-btn');
-
-        if(!clientUCI){toast('Select a client');return;}
-        if(!date){toast('Select visit date');return;}
-        if(!notes){toast('Progress notes required');return;}
-        if(!domains.length){toast('Select at least one CFS domain');return;}
-        if(!signature){toast('Electronic signature required');return;}
-        if(!ackMandated||!ackIncident||!ackHipaa){toast('All compliance boxes must be checked');return;}
-
-        const clientObj=gClients.find(c=>c.uci===clientUCI)||{name:'Unknown',uci:clientUCI};
-
-        const logEntry={
-              staffName:currentStaff.name,
-              staffCode:currentStaff.code,
-              clientUCI,
-              clientName:clientObj.name,
-              date,
-              startTime:document.getElementById('log-start').value,
-              endTime:document.getElementById('log-end').value,
-              hours,
-              serviceType:document.getElementById('log-service').value,
-              location:document.getElementById('log-location').value,
-              domains,
-              ippGoals:document.getElementById('log-ipp').value,
-              notes,
-              participation:document.getElementById('log-participation').value,
-              followUp:document.getElementById('log-followup').value,
-              nextVisit:document.getElementById('log-next').value,
-              ackMandated,ackIncident,ackHipaa,
-              signature,
-              submitted:new Date().toISOString(),
-        };
-
-        // Save locally immediately
-        const logs=load(K.logs,[]);
-        logs.unshift({...logEntry,_local:true});
-        save(K.logs,logs);
-
-        btn.disabled=true;btn.textContent='Submitting...';
-        statusEl.textContent='';statusEl.style.color=getComputedStyle(document.documentElement).getPropertyValue('--t2');
-
-        try{
-              const r=await fetch(WORKER+'/api/log-submit',{
-                      method:'POST',
-                      headers:{'Content-Type':'application/json','X-OG-Deploy-Secret':DEPLOY_SECRET},
-                      body:JSON.stringify(logEntry)
-              });
-              const result=await r.json();
-
-              if(result.ok){
-                      // Update local log with server ID
-                      logs[0]._local=false;
-                      logs[0].id=result.logId;
-                      logs[0].serverTimestamp=result.serverTimestamp;
-                      save(K.logs,logs);
-
-                      statusEl.textContent='Submitted - Log ID: '+result.logId;
-                      statusEl.style.color='var(--green)';
-                      toast('Contact log submitted');
-
-                      // Reset form
-                      document.getElementById('log-notes').value='';
-                      document.getElementById('log-signature').value='';
-                      document.getElementById('log-followup').value='';
-                      document.getElementById('log-next').value='';
-                      document.getElementById('log-ipp').value='';
-                      document.getElementById('log-location').value='';
-                      document.getElementById('ack-mandated').checked=false;
-                      document.getElementById('ack-incident').checked=false;
-                      document.getElementById('ack-hipaa').checked=false;
-                      resetDomains();
-
-                      renderLogHistory();
-                      renderDashboard();
-                      setTimeout(()=>switchTab('dashboard'),1500);
-              } else {
-                      throw new Error(result.error||'Server error');
-              }
-        } catch(err){
-              statusEl.textContent='Saved locally - will sync when online ('+err.message+')';
-              statusEl.style.color='var(--amber)';
-              toast('Saved locally - sync pending');
-        } finally {
-              btn.disabled=false;btn.textContent='Submit contact log';
-        }
-    }
-
-    // RENDER LOG HISTORY
-    function renderLogHistory(){
-        const logs=load(K.logs,[]);
-        const container=document.getElementById('log-history');
-        const countEl=document.getElementById('log-count');
-        if(countEl)countEl.textContent=logs.length+' log'+(logs.length!==1?'s':'');
-        if(!container)return;
-        if(!logs.length){
-              container.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--t3);font-size:13px">No logs yet</div>';
-              return;
-        }
-        container.innerHTML=logs.slice(0,30).map(l=>`
-            <div class="log-item">
-                  <div class="log-item-head">
-                          <span class="log-item-name">${l.clientName}</span>
-                                  <span class="log-item-date">${l.date}${l._local?' (pending)':''}</span>
-                                        </div>
-                                              <div class="log-item-meta">${l.hours}h - ${l.serviceType}${l.id?' - ID: '+l.id.slice(-8):''}</div>
-                                                    <div class="log-item-meta" style="margin-top:.25rem">${l.notes.slice(0,100)}${l.notes.length>100?'...':''}</div>
-                                                          <div class="log-item-domains">${(l.domains||[]).map(d=>'<span class="badge badge-blue">#'+d+'</span>').join('')}</div>
-                                                              </div>
-                                                                `).join('');
-    }
-
-    // DASHBOARD
-    function renderDashboard(){
-        const logs = load(K.logs, []);
-        const now  = new Date();
-        const monthKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
-        const monthLogs = logs.filter(l => l.date && l.date.startsWith(monthKey));
-        const totalHours = monthLogs.reduce((s,l) => s+(l.hours||0), 0);
-        const dc=document.getElementById('dash-clients'), dl=document.getElementById('dash-logs'), dh=document.getElementById('dash-hours');
-        if(dc) dc.textContent = gClients.length || '0';
-        if(dl) dl.textContent = monthLogs.length;
-        if(dh) dh.textContent = totalHours%1===0 ? totalHours : totalHours.toFixed(1);
-        // BILLING BANNER
-        const today = now.toISOString().split('T')[0];
-        const upcoming = BILLING_SCHEDULE.find(b => b.cutoff >= today);
-        const bannerEl = document.getElementById('billing-banner');
-        if(upcoming && bannerEl){
-            const daysLeft = Math.ceil((new Date(upcoming.cutoff+'T16:30:00')-now)/86400000);
-            const urg = daysLeft <= 3;
-            bannerEl.style.display='flex'; bannerEl.style.background=urg?'var(--red-bg)':'var(--amber-bg)'; bannerEl.style.border='1px solid '+(urg?'var(--red-b)':'var(--amber-b)');
-            const ic=document.getElementById('billing-icon'), ti=document.getElementById('billing-title'), di=document.getElementById('billing-desc');
-            if(ic) ic.textContent=urg?'🚨':'📅';
-            if(ti){ti.textContent=upcoming.serviceMonth+' billing cut-off'; ti.style.color=urg?'var(--red)':'var(--amber)';}
-            if(di) di.textContent='Due '+upcoming.cutoff+' at 4:30 PM · '+(daysLeft>0?daysLeft+'d remaining':'DUE TODAY')+' · Pay date: '+upcoming.payDate;
-        }
-        // CLIENT CARDS
-        const ccEl=document.getElementById('client-cards');
-        if(ccEl){ ccEl.innerHTML=gClients.length?gClients.map(c=>{
-            const qd=c.qprDue?Math.ceil((new Date(c.qprDue)-now)/86400000):null, qUrg=qd!==null&&qd<=30;
-            const chrs=monthLogs.filter(l=>l.clientUCI===c.uci).reduce((s,l)=>s+(l.hours||0),0);
-            const allLogs=logs.filter(l=>l.clientUCI===c.uci), pct=c.authorizedHours?Math.min(Math.round(chrs/c.authorizedHours*100),100):0;
-            const qColor=qd===null?'var(--t3)':(qd<0?'var(--red)':qUrg?'var(--amber)':'var(--green)');
-            const qBg=qd===null?'transparent':(qd<0?'var(--red-bg)':qUrg?'var(--amber-bg)':'var(--green-bg)');
-            const qBd=qd===null?'transparent':(qd<0?'var(--red-b)':qUrg?'var(--amber-b)':'var(--green-b)');
-            return '<div style="background:var(--s1);border:1px solid '+(qUrg?'var(--amber-b)':'var(--b2)')+';border-radius:var(--r);padding:1rem;margin-bottom:.75rem">'
-              +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem">'
-              +'<div><div style="font-size:16px;font-weight:600">'+c.name+'</div><div style="font-size:11px;color:var(--t3);margin-top:3px">UCI '+c.uci+(c.coordinator?' · '+c.coordinator:'')+'</div></div>'
-              +(qd!==null?'<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:'+qBg+';color:'+qColor+';border:1px solid '+qBd+'">QPR '+(qd<0?'OVERDUE':qd===0?'TODAY':'in '+qd+'d')+'</span>':'')
-              +'</div>'
-              +'<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-bottom:.5rem"><span>This month: <strong style="color:var(--t1)">'+(chrs%1===0?chrs:chrs.toFixed(1))+'h</strong> / '+(c.authorizedHours||'?')+'h auth</span><span style="color:var(--t3)">'+allLogs.length+' logs</span></div>'
-              +'<div style="height:5px;background:var(--b1);border-radius:3px;overflow:hidden;margin-bottom:'+(c.qprDue?'.5rem':'0')+'">'
-              +'<div style="height:5px;background:'+(pct>=90?'var(--red)':pct>=75?'var(--amber)':'var(--green)')+';width:'+pct+'%;border-radius:3px;transition:width .4s"></div></div>'
-              +(c.qprDue?'<div style="font-size:11px;color:var(--t3)">QPR due: '+c.qprDue+'</div>':'')
-              +'</div>';
-        }).join(''):''; }
-        // QPR ALERTS
-        const al=document.getElementById('qpr-alerts');
-        if(al){ al.innerHTML=gClients.filter(c=>c.qprDue&&Math.ceil((new Date(c.qprDue)-now)/86400000)<=14).map(c=>{
-            const qd=Math.ceil((new Date(c.qprDue)-now)/86400000), ov=qd<0;
-            return '<div style="background:'+(ov?'var(--red-bg)':'var(--amber-bg)')+';border:1px solid '+(ov?'var(--red-b)':'var(--amber-b)')+';border-radius:var(--r);padding:.75rem 1rem;margin-bottom:.5rem;display:flex;gap:.75rem;align-items:center"><span>'+(ov?'🚨':'⚠️')+'</span><div><div style="font-size:13px;font-weight:600;color:'+(ov?'var(--red)':'var(--amber)')+'">'+c.name+' — QPR '+(ov?'OVERDUE':'in '+qd+'d')+'</div><div style="font-size:11px;color:var(--t2)">Due '+c.qprDue+' · UCI '+c.uci+'</div></div></div>';
-        }).join('');}
-        // RECENT LOGS
-        const rl=document.getElementById('recent-logs');
-        if(rl){ const rec=logs.slice(0,3); rl.innerHTML=rec.length?rec.map(l=>'<div class="log-item"><div class="log-item-head"><span class="log-item-name">'+l.clientName+'</span><span class="log-item-date">'+l.date+(l._local?' (pending)':'')+'</span></div><div class="log-item-meta">'+l.hours+'h · '+(l.serviceType||'visit')+(l.notes?' · '+l.notes.slice(0,70)+(l.notes.length>70?'...':''):'')+'</div><div class="log-item-domains">'+(l.domains||[]).map(d=>'<span class="badge badge-blue">#'+d+'</span>').join('')+'</div></div>').join(''):'<div style="text-align:center;padding:1.5rem;color:var(--t3);font-size:13px">No logs submitted yet</div>';}
-    }
-    // TIMESHEET
-    function buildMonthSelector(){
-        const sel=document.getElementById('ts-month');
-        if(!sel)return;
-        const now=new Date();
-        const months=[];
-        for(let i=0;i<6;i++){
-              const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-              const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-              const label=d.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-              months.push({key,label});
-        }
-        sel.innerHTML=months.map(m=>`<option value="${m.key}">${m.label}</option>`).join('');
-    }
-
-    function renderTimesheet(){
-        const sel=document.getElementById('ts-month');
-        if(!sel)return;
-        const month=sel.value;
-        const logs=load(K.logs,[]).filter(l=>l.date&&l.date.startsWith(month));
-        const total=logs.reduce((s,l)=>s+(l.hours||0),0);
-        const tv=document.getElementById('ts-total');
-        const vv=document.getElementById('ts-visits');
-        if(tv)tv.textContent=total%1===0?total:total.toFixed(1);
-        if(vv)vv.textContent=logs.length;
-        const container=document.getElementById('ts-entries');
-        if(!container)return;
-        if(!logs.length){container.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--t3);font-size:13px">No entries for this period</div>';return;}
-        // Group by client
-        const byClient={};
-        logs.forEach(l=>{
-              if(!byClient[l.clientUCI])byClient[l.clientUCI]={name:l.clientName,uci:l.clientUCI,entries:[],total:0};
-              byClient[l.clientUCI].entries.push(l);
-              byClient[l.clientUCI].total+=l.hours||0;
-        });
-        container.innerHTML=Object.values(byClient).map(c=>`
-            <div class="card" style="margin-bottom:.75rem">
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
-                          <div><div style="font-size:14px;font-weight:600">${c.name}</div><div style="font-size:11px;color:var(--t3)">UCI ${c.uci}</div></div>
-                                  <div style="text-align:right"><div style="font-size:20px;font-weight:700;color:var(--green)">${c.total%1===0?c.total:c.total.toFixed(1)}h</div><div style="font-size:11px;color:var(--t3)">${c.entries.length} visits</div></div>
-                                        </div>
-                                              ${c.entries.sort((a,b)=>a.date.localeCompare(b.date)).map(e=>`
-                                                      <div class="ts-row">
-                                                                <div><div style="font-size:13px;font-weight:500">${e.serviceType}</div><div style="font-size:11px;color:var(--t2)">#${(e.domains||[]).join(' #')}</div></div>
-                                                                          <div class="ts-hrs">${e.hours}h</div>
-                                                                                    <div class="ts-date">${e.date}</div>
-                                                                                            </div>
-                                                                                                  `).join('')}
-                                                                                                      </div>
-                                                                                                        `).join('');
-    }
-
-    function exportTimesheet(){
-        const sel=document.getElementById('ts-month');
-        const month=sel?.value||'';
-        const logs=load(K.logs,[]).filter(l=>l.date&&l.date.startsWith(month));
-        if(!logs.length){toast('No entries to export');return;}
-        const total=logs.reduce((s,l)=>s+(l.hours||0),0);
-        const rows=['IRC E-BILLING EXPORT - Open Grace LLC (PJ6208)','Period: '+month,'','Date | Client | UCI | Hours | Type','---'];
-        logs.sort((a,b)=>a.date.localeCompare(b.date)).forEach(l=>{
-              rows.push(`${l.date} | ${l.clientName} | UCI ${l.clientUCI} | ${l.hours}h | ${l.serviceType}`);
-        });
-        rows.push('---');
-        rows.push('TOTAL: '+total+'h');
-        const blob=new Blob([rows.join('\n')],{type:'text/plain'});
-        const url=URL.createObjectURL(blob);
-        const a=document.createElement('a');
-        a.href=url;a.download=`OpenGrace_Timesheet_${month}.txt`;a.click();
-        URL.revokeObjectURL(url);
-        toast('Timesheet exported');
-    }
-
-    // SETTINGS
-    function renderSettings(){
-        document.getElementById('settings-name').textContent=currentStaff?.name||'-';
-        document.getElementById('settings-role').textContent=currentStaff?.position||'-';
-        document.getElementById('settings-code').textContent=currentStaff?.code||'-';
-    }
-
-    // AUTO-LOGIN
-    window.addEventListener('DOMContentLoaded',()=>{
-        const cached=load(K.auth);
-        if(cached&&cached.code&&Date.now()-cached.savedAt<86400000*7){
-              document.getElementById('access-code').value=cached.code;
-              currentStaff=cached;gClients=cached.clients||[];
-              showApp();
-        }
-    });
-  </script>
-  </body>
+</body>
 </html>

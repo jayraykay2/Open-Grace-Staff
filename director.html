@@ -147,6 +147,7 @@
     <div class="pane" id="p-notes"></div>
     <div class="pane" id="p-money"></div>
     <div class="pane" id="p-staff"></div>
+    <div class="pane" id="p-payroll"></div>
   </div>
 </div>
 
@@ -163,7 +164,7 @@ const msalInstance=new msal.PublicClientApplication({
   cache:{cacheLocation:"sessionStorage"}
 });
 
-let CLIENTS=[],LOGS=[],STAFF=[],RATE=58.64,COST=25.00,TAB="home";
+let CLIENTS=[],LOGS=[],STAFF=[],HOURS=[],RATE=58.64,COST=25.00,TAB="home",PP_IDX=0;
 
 function signIn(){msalInstance.loginRedirect({scopes:["User.Read","Sites.ReadWrite.All"]});}
 function signOut(){msalInstance.logoutRedirect();}
@@ -193,7 +194,10 @@ function qprChip(d){
 }
 
 async function load(){
-  [CLIENTS,LOGS,STAFF]=await Promise.all([list(L_CLIENTS),list(L_LOGS),list(L_STAFF)]);
+  [CLIENTS,LOGS,STAFF,HOURS]=await Promise.all([
+    list(L_CLIENTS),list(L_LOGS),list(L_STAFF),
+    list("Staff%20Hours").catch(()=>[])   // weekly timesheets from the staff portal; optional
+  ]);
   render();
 }
 
@@ -319,7 +323,8 @@ function nav(){
     ["clients","👥 Clients & QPR",A.length],
     ["notes","📝 Case Notes",LOGS.length],
     ["money","💵 Finance",0],
-    ["staff","👔 Staff",STAFF.filter(s=>s.Active==="Yes").length]
+    ["staff","👔 Staff",STAFF.filter(s=>s.Active==="Yes").length],
+    ["payroll","🧾 Payroll",0]
   ];
   document.getElementById("nav").innerHTML=tabs.map(([k,l,n])=>
     `<button class="${TAB===k?'on':''}" onclick="go('${k}')">${l}${
@@ -327,6 +332,120 @@ function nav(){
 }
 function go(t){TAB=t;nav();document.querySelectorAll(".pane").forEach(p=>p.classList.remove("on"));
   document.getElementById("p-"+t).classList.add("on");}
+
+/* ── payroll tab ── */
+function payPeriods(n=8){
+  const out=[],now=new Date();
+  let y=now.getFullYear(),m=now.getMonth(),half=now.getDate()<=15?1:2;
+  const pad=x=>String(x).padStart(2,"0");
+  for(let i=0;i<n;i++){
+    const eom=new Date(y,m+1,0).getDate();
+    const s=half===1?`${y}-${pad(m+1)}-01`:`${y}-${pad(m+1)}-16`;
+    const e=half===1?`${y}-${pad(m+1)}-15`:`${y}-${pad(m+1)}-${pad(eom)}`;
+    const payY=half===1?y:(m===11?y+1:y), payM=half===1?m:(m===11?0:m+1), payD=half===1?20:5;
+    out.push({s,e,label:`${new Date(y,m,1).toLocaleString("en-US",{month:"short"})} ${half===1?"1–15":"16–"+eom}, ${y}`,
+      due:`${e} 5:00 PM`,pay:`${pad(payM+1)}/${pad(payD)}/${payY}`,payDate:new Date(payY,payM,payD)});
+    if(half===2){half=1}else{half=2;m--;if(m<0){m=11;y--;}}
+  }
+  return out;
+}
+function ppHours(p){
+  // contact-log hours per staff within the period
+  const inP=d=>{const x=String(d||"").slice(0,10);return x>=p.s&&x<=p.e;};
+  const logRows={};
+  LOGS.filter(l=>inP(l.ContactDate)).forEach(l=>{
+    const k=(l.NavigatorName||"Unassigned").trim()||"Unassigned";
+    if(!logRows[k])logRows[k]={hrs:0,visits:0,clients:{}};
+    const h=parseFloat(l.HoursSpent)||0;
+    logRows[k].hrs+=h;logRows[k].visits++;
+    const c=l.Client||l.Title||"—";logRows[k].clients[c]=(logRows[k].clients[c]||0)+h;
+  });
+  // submitted weekly timesheets, allocated day-by-day into the period
+  const subRows={};
+  HOURS.forEach(w=>{
+    const wk=String(w.WeekOf||"").slice(0,10);if(!wk)return;
+    const base=new Date(wk+"T12:00:00");
+    ["Monday","Tuesday","Wednesday","Thursday","Friday"].forEach((d,i)=>{
+      const day=new Date(base);day.setDate(base.getDate()+i);
+      const ds=day.toISOString().slice(0,10);
+      if(ds>=p.s&&ds<=p.e){
+        const k=w.StaffCode||w.StaffEmail||"?";
+        subRows[k]=(subRows[k]||0)+(parseFloat(w[d])||0);
+      }
+    });
+  });
+  return {logRows,subRows};
+}
+function ppCSV(){
+  const p=payPeriods()[PP_IDX],{logRows,subRows}=ppHours(p);
+  const staffOn=STAFF.filter(s=>s.Active==="Yes");
+  const rows=[["Staff","Period start","Period end","Contact-log hours","Submitted hours","Visits"]];
+  const seen=new Set();
+  staffOn.forEach(s=>{
+    const last=(s.Title||"").split(",")[0].trim().toLowerCase();
+    const lk=Object.keys(logRows).find(k=>k.toLowerCase().includes(last));if(lk)seen.add(lk);
+    const lg=lk?logRows[lk]:{hrs:0,visits:0};
+    const sub=subRows[s.StaffCode]||0;
+    rows.push([s.Title,p.s,p.e,lg.hrs.toFixed(2),sub.toFixed(2),lg.visits]);
+  });
+  Object.keys(logRows).filter(k=>!seen.has(k)).forEach(k=>
+    rows.push([k+" (unmatched)",p.s,p.e,logRows[k].hrs.toFixed(2),"0.00",logRows[k].visits]));
+  const cell=v=>{v=String(v??"");return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  const csv=rows.map(r=>r.map(cell).join(",")).join("\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download=`OpenGrace_Payroll_${p.s}_to_${p.e}.csv`;a.click();
+}
+function setPP(i){PP_IDX=+i;renderPayrollPane();}
+function renderPayrollPane(){
+  const el=document.getElementById("p-payroll");if(!el)return;
+  const periods=payPeriods(),p=periods[PP_IDX],{logRows,subRows}=ppHours(p);
+  const staffOn=STAFF.filter(s=>s.Active==="Yes");
+  const dDue=days(p.e),dPay=days(p.payDate);
+  const dueChip=dDue<0?`<span class="chip ok">closed</span>`:dDue<=2?`<span class="chip soon">time due in ${dDue}d</span>`:`<span class="chip ok">time due in ${dDue}d</span>`;
+  const payChip=dPay<0?`<span class="chip off">paid ${p.pay}</span>`:`<span class="chip soon">payday ${p.pay} (${dPay}d)</span>`;
+  const seen=new Set();let totLog=0,totSub=0;
+  const rowHTML=[];
+  staffOn.forEach(s=>{
+    const last=(s.Title||"").split(",")[0].trim().toLowerCase();
+    const lk=Object.keys(logRows).find(k=>k.toLowerCase().includes(last));if(lk)seen.add(lk);
+    const lg=lk?logRows[lk]:{hrs:0,visits:0,clients:{}};
+    const sub=subRows[s.StaffCode]||0;
+    totLog+=lg.hrs;totSub+=sub;
+    const varc=HOURS.length&&Math.abs(lg.hrs-sub)>0.01
+      ?`<span class="chip warn" title="Contact logs and submitted timesheet don't match">Δ ${(lg.hrs-sub).toFixed(2)}</span>`
+      :(HOURS.length?`<span class="chip ok">match</span>`:"—");
+    const detail=Object.entries(lg.clients||{}).map(([c,h])=>`${esc(c)} ${h.toFixed(2)}h`).join(" · ")||"No visits this period";
+    rowHTML.push(`<tr><td><b>${esc(s.Title)}</b><br><span style="color:var(--muted);font-size:.78rem">${detail}</span></td>
+      <td class="num">${lg.hrs.toFixed(2)}</td><td class="num">${HOURS.length?sub.toFixed(2):"—"}</td>
+      <td>${varc}</td><td class="num">${lg.visits}</td></tr>`);
+  });
+  Object.keys(logRows).filter(k=>!seen.has(k)).forEach(k=>{
+    totLog+=logRows[k].hrs;
+    rowHTML.push(`<tr><td><b>${esc(k)}</b> <span class="chip warn">not on staff roster</span></td>
+      <td class="num">${logRows[k].hrs.toFixed(2)}</td><td class="num">—</td><td>—</td><td class="num">${logRows[k].visits}</td></tr>`);
+  });
+  el.innerHTML=`
+    <div style="display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-bottom:12px">
+      <select onchange="setPP(this.value)" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-family:inherit">
+        ${periods.map((x,i)=>`<option value="${i}" ${i===PP_IDX?"selected":""}>${x.label}</option>`).join("")}
+      </select>
+      ${dueChip} ${payChip}
+      <button class="ghost" style="margin-left:auto" onclick="ppCSV()">⬇ Export CSV for QuickBooks</button>
+    </div>
+    ${HOURS.length?"":`<div class="alert warn"><b>No weekly timesheets found</b> — showing hours derived from Contact Logs only. Once staff submit weeks in the portal's Hours tab, they'll appear here for cross-checking.</div>`}
+    <table><tr><th>Staff</th><th>Contact-log hrs</th><th>Submitted hrs</th><th>Check</th><th>Visits</th></tr>
+      ${rowHTML.join("")||'<tr><td colspan="5" style="color:var(--muted)">No activity in this period.</td></tr>'}
+      <tr><td style="text-align:right"><b>Totals</b></td><td class="num"><b>${totLog.toFixed(2)}</b></td>
+      <td class="num"><b>${HOURS.length?totSub.toFixed(2):"—"}</b></td><td></td><td></td></tr>
+    </table>
+    <div style="font-size:.78rem;color:var(--muted);margin-top:10px;line-height:1.5">
+      <b>Contact-log hrs</b> = HoursSpent summed from Daily Contact Logs in this pay period — your billing-grade number.
+      <b>Submitted hrs</b> = staff weekly timesheets, allocated day-by-day into the period.
+      A <b>Δ</b> means the two don't match — resolve before running payroll. Time due 5:00 PM on the ${PP_IDX===0?"period's last day":"deadline shown"}; paydays are the 20th and the 5th.
+      Wages for hours worked are always paid on the regular payday regardless of documentation status.
+    </div>`;
+}
 
 function render(){
   nav();
@@ -405,6 +524,9 @@ function render(){
 
   // ── case notes ──
   renderNotesPane();
+
+  // ── payroll ──
+  renderPayrollPane();
 
   // ── finance ──
   const earned=used*RATE, labor=used*COST, margin=earned-labor, perHr=RATE-COST;
