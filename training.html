@@ -393,11 +393,10 @@ function saveProgress() {
 }
 
 async function pushProgressToGitHub() {
-  // Progress is stored in localStorage on device.
-  // The Director Dashboard Training tab reads progress from localStorage
-  // when accessed on the same device, or via completion email notifications.
-  // For multi-device sync, progress is rebuilt from the completion notification log.
-  // No token required — silent, no-op for remote sync.
+  // Remote push removed 2026-07-21 - embedded credential rotated out.
+  // Progress lives in localStorage on this device. Training completion is
+  // verified via the Training Completion Receipt form:
+  // https://form.jotform.com/262015154400037
 }
 function getP() { return progress[currentStaff.code] || {completed:[], quizScores:{}, dates:{}}; }
 function isCompleted(id) { return getP().completed.includes(id); }
@@ -804,7 +803,7 @@ function toast(msg, dur=2500) {
       +'<input id=\"og-cemail\" class=\"og-field\" type=\"email\" placeholder=\"you@example.com\">'
       +'<div id=\"og-cert\">'
         +'<div style=\"font-size:12px;letter-spacing:1px;color:#F47C20;font-weight:700\">OPEN GRACE LLC \u00b7 IRC VENDOR PJ6208</div>'
-        +'<h2>Certificate of Training Completion</h2>'
+        +'<h2>Certificate of Training Completion</h2><div style=margin-top:18px;padding:14px;border:2px solid #FF6B1A;border-radius:12px;text-align:center><b>Step 2 - Submit your Training Receipt</b><br>Download this certificate, then upload it here so it is filed in your personnel record:<br><a href=https://form.jotform.com/262015154400037 target=_blank rel=noopener style=display:inline-block;margin-top:8px;padding:10px 18px;background:#FF6B1A;color:#fff;border-radius:999px;font-weight:700;text-decoration:none>Submit Training Receipt</a></div>'
         +'<div class=\"nm\" id=\"og-cnamep\">'+(esc(nm)||'\u2014')+'</div>'
         +'<div style=\"font-size:13px;color:#555\">'+esc(pos)+'</div>'
         +'<p style=\"font-size:13px;color:#333;margin:12px 0 0\">has completed all Day-1 Required Before Client Contact training:</p>'
