@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact Log Narrative — Open Grace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="msal-browser-2.38.3.min.js"></script>
+<style>
+:root{
+  --navy:#1E1C5E; --navy2:#2D2B7F; --orange:#FF6B1A; --purple:#7B35C1;
+  --gold:#FFB800; --void:#B00020;
+  --paper:#F4F5FA; --card:#FFFFFF; --ink:#1B1B2B; --muted:#6B6B85; --line:#E4E5EF;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.55}
+a{color:var(--navy2)}
+
+/* ---- top bar ---- */
+.bar{position:sticky;top:0;z-index:40;background:var(--navy);color:#fff;padding:14px 22px;
+     display:flex;align-items:center;gap:18px;flex-wrap:wrap;box-shadow:0 2px 14px rgba(30,28,94,.25)}
+.brand{font-family:'Fraunces',serif;font-weight:700;font-size:1.12rem;letter-spacing:.2px}
+.brand span{color:var(--orange)}
+.bar .who{margin-left:auto;font-size:.76rem;color:#B9B8D8;font-family:'IBM Plex Mono',monospace}
+.btn{background:var(--orange);color:#fff;border:0;border-radius:7px;padding:9px 16px;font:600 .82rem 'DM Sans',sans-serif;cursor:pointer}
+.btn:hover{background:#e85f14}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.4)}
+.btn.ghost:hover{background:rgba(255,255,255,.12)}
+.btn:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* ---- controls ---- */
+.controls{background:#fff;border-bottom:1px solid var(--line);padding:14px 22px;
+          display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;position:sticky;top:60px;z-index:30}
+.ctl label{display:block;font:600 .66rem 'DM Sans',sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+select{font:500 .88rem 'DM Sans',sans-serif;padding:8px 11px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);min-width:190px}
+
+/* ---- ledger strip ---- */
+.ledger{display:flex;gap:0;flex-wrap:wrap;background:var(--navy2);color:#fff;padding:0}
+.stat{flex:1;min-width:130px;padding:14px 22px;border-right:1px solid rgba(255,255,255,.14)}
+.stat:last-child{border-right:0}
+.stat .n{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:600;line-height:1.1}
+.stat .l{font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;color:#B9B8D8;margin-top:3px}
+.stat.flag .n{color:var(--gold)}
+
+/* ---- header ---- */
+.head{padding:30px 22px 8px;max-width:1000px;margin:0 auto}
+.head h1{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:var(--navy);margin:0 0 4px}
+.head .sub{color:var(--muted);font-size:.9rem}
+.confid{max-width:1000px;margin:16px auto 0;padding:9px 14px;background:#FFF6E5;border-left:4px solid var(--gold);
+        font-size:.76rem;color:#6a5200;border-radius:0 5px 5px 0}
+
+/* ---- timeline ---- */
+.stream{max-width:1000px;margin:0 auto;padding:22px 22px 80px;position:relative}
+.stream::before{content:"";position:absolute;left:96px;top:0;bottom:80px;width:2px;background:linear-gradient(180deg,var(--orange),var(--purple));opacity:.28}
+.rec{position:relative;padding-left:132px;margin-bottom:26px}
+.node{position:absolute;left:0;top:2px;width:96px;text-align:right;padding-right:22px}
+.node .d{font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:600;color:var(--navy)}
+.node .wd{font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.node::after{content:"";position:absolute;right:-6px;top:5px;width:12px;height:12px;border-radius:50%;
+             background:var(--orange);border:2.5px solid var(--paper)}
+.rec.void .node::after{background:var(--void)}
+.rec.void .node .d{color:var(--void)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:17px 20px;
+      box-shadow:0 1px 3px rgba(30,28,94,.07)}
+.rec.void .card{background:#FDF3F4;border-color:#F0C9CE}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-bottom:11px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.who2{font-weight:700;font-size:.9rem;color:var(--navy)}
+.chip{font:500 .7rem 'DM Sans',sans-serif;padding:2px 9px;border-radius:11px;background:#EFEEF8;color:var(--navy2)}
+.hrs{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.86rem;
+     color:#fff;background:var(--purple);padding:3px 11px;border-radius:11px}
+.rec.void .hrs{background:var(--void)}
+.comps{font-size:.72rem;color:var(--purple);font-weight:600;margin-bottom:9px}
+.notes{white-space:pre-wrap;font-size:.9rem;line-height:1.62;color:#26263A}
+.follow{margin-top:12px;padding-top:9px;border-top:1px dashed var(--line);font-size:.81rem;color:#4A4A63}
+.follow b{color:var(--orange);font-weight:700}
+.badge-void{display:inline-block;background:var(--void);color:#fff;font:700 .62rem 'DM Sans',sans-serif;
+            letter-spacing:.08em;padding:2px 8px;border-radius:4px;margin-bottom:9px}
+
+.empty{max-width:1000px;margin:60px auto;text-align:center;color:var(--muted)}
+.gate{max-width:430px;margin:90px auto;background:#fff;border:1px solid var(--line);border-radius:11px;padding:34px;text-align:center}
+.gate h2{font-family:'Fraunces',serif;color:var(--navy);margin:0 0 8px}
+.gate p{color:var(--muted);font-size:.88rem;margin:0 0 18px}
+.err{max-width:1000px;margin:22px auto;padding:13px 16px;background:#FDECEE;border-left:4px solid var(--void);
+     color:#7d0016;border-radius:0 5px 5px 0;font-size:.85rem}
+
+@media (max-width:680px){
+  .stream::before,.node::after{display:none}
+  .rec{padding-left:0}
+  .node{position:static;width:auto;text-align:left;padding:0 0 7px}
+  .node .wd{display:inline;margin-left:7px}
+}
+@media print{
+  .bar,.controls,.gate,.confid{display:none!important}
+  body{background:#fff}
+  .ledger{background:#fff;color:#000;border-bottom:2px solid #000}
+  .stat .n,.stat .l{color:#000}
+  .stream::before{display:none}
+  .rec{page-break-inside:avoid;padding-left:0;margin-bottom:16px}
+  .node{position:static;width:auto;text-align:left;padding-bottom:5px}
+  .node::after{display:none}
+  .card{box-shadow:none;border:1px solid #999}
+  .hrs{background:#fff;color:#000;border:1px solid #666}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="brand">Open <span>Grace</span></div>
+  <div style="font-size:.8rem;color:#C9C8E4">Contact Log Narrative</div>
+  <div class="who" id="who">not signed in</div>
+  <button class="btn ghost" id="printBtn" onclick="window.print()" style="display:none">Print</button>
+  <button class="btn ghost" id="outBtn" onclick="signOut()" style="display:none">Sign out</button>
+</div>
+
+<div id="gate" class="gate">
+  <h2>Staff sign-in required</h2>
+  <p>Sign in with your Open Grace Microsoft 365 account to read contact logs.</p>
+  <button class="btn" onclick="signIn()">Sign in with Microsoft</button>
+  <div id="gateErr" style="margin-top:14px;color:var(--void);font-size:.8rem"></div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="controls">
+    <div class="ctl">
+      <label for="client">Client</label>
+      <select id="client" onchange="render()"></select>
+    </div>
+    <div class="ctl">
+      <label for="period">Period</label>
+      <select id="period" onchange="render()"></select>
+    </div>
+    <div class="ctl">
+      <label for="voidmode">Voided entries</label>
+      <select id="voidmode" onchange="render()">
+        <option value="show">Show</option>
+        <option value="hide">Hide</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="ledger" id="ledger"></div>
+
+  <div class="head">
+    <h1 id="title">Service Narrative</h1>
+    <div class="sub" id="subtitle"></div>
+  </div>
+  <div class="confid">Confidential — contains protected health information. Handle under HIPAA and W&amp;I Code §4514. Do not forward outside Open Grace.</div>
+
+  <div class="stream" id="stream"></div>
+</div>
+
+<script>
+const SITE = "netorg20110136.sharepoint.com,c877f168-84b1-4fe4-929b-4322d99beb2e,29f001f9-49ec-44b1-991b-281f4fe3ad22";
+const LIST = "9699e9a8-833c-4c23-8181-0312117cce96";
+const ITEMS = `https://graph.microsoft.com/v1.0/sites/${SITE}/lists/${LIST}/items`;
+
+// Redirect target is contact-log.html because that URI is already registered
+// with the app. Popup flow returns the token to this window.
+const msalInstance = new msal.PublicClientApplication({
+  auth: {
+    clientId: "ede1a3cf-cf8d-466b-94f0-ed1008ad0f5f",
+    authority: "https://login.microsoftonline.com/1916d89f-0ee3-4972-a513-d91fb3007040",
+    redirectUri: window.location.origin + "/contact-log.html"
+  },
+  cache: { cacheLocation: "localStorage" }
+});
+
+const KNOWN = { "7446993":"Pinto, Arianna", "6953825":"Burks, Jaybrion", "8283031":"Beinbrech, Marykate" };
+let ROWS = [];
+
+const esc = s => String(s??"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isVoid = r => /VOID/i.test(r.title||"") || /\*\*\* VOID/i.test(r.notes||"");
+const wd = d => { const t=Date.parse(d+"T12:00:00"); return isNaN(t)?"":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][new Date(t).getDay()]; };
+
+async function token(){
+  const acct = msalInstance.getAllAccounts()[0];
+  if(!acct) throw new Error("Not signed in");
+  try { return (await msalInstance.acquireTokenSilent({scopes:["Sites.ReadWrite.All"],account:acct})).accessToken; }
+  catch { return (await msalInstance.acquireTokenPopup({scopes:["Sites.ReadWrite.All"]})).accessToken; }
+}
+
+async function signIn(){
+  try{
+    await msalInstance.loginPopup({scopes:["User.Read","Sites.ReadWrite.All"]});
+    await boot();
+  }catch(e){ document.getElementById("gateErr").textContent = "Sign-in failed: " + e.message; }
+}
+function signOut(){ msalInstance.logoutRedirect(); }
+
+async function load(){
+  const t = await token();
+  let url = ITEMS + "?expand=fields&$top=200", all = [];
+  while(url){
+    const r = await fetch(url,{headers:{Authorization:"Bearer "+t}});
+    if(!r.ok) throw new Error("Graph "+r.status+" — "+(await r.text()).slice(0,120));
+    const j = await r.json();
+    all = all.concat(j.value||[]);
+    url = j["@odata.nextLink"]||null;
+  }
+  ROWS = all.map(i=>{
+    const f=i.fields||{};
+    return { id:i.id, title:f.Title||"", uci:String(f.UCI||"").trim(),
+             date:String(f.ContactDate||"").slice(0,10),
+             staff:f.NavigatorName||"—", type:f.ContactType||"", loc:f.Location||"",
+             comps:f.CFSDomains||"", hrs:Number(f.HoursSpent)||0,
+             notes:f.ProgressNotes||"", follow:f.FollowUpActions||"",
+             created:(i.createdDateTime||"").slice(0,10) };
+  }).filter(r=>r.date).sort((a,b)=> a.date.localeCompare(b.date) || Number(a.id)-Number(b.id));
+}
+
+function nameFor(uci, sample){
+  if(KNOWN[uci]) return KNOWN[uci];
+  const m=(sample||"").match(/—\s*([A-Za-z'-]+)\s*$/);
+  return (m? m[1].charAt(0).toUpperCase()+m[1].slice(1) : "Client") + " (" + uci + ")";
+}
+
+function fillControls(){
+  const cs=document.getElementById("client");
+  const seen={};
+  ROWS.forEach(r=>{ if(!seen[r.uci]) seen[r.uci]=r.title; });
+  const ucis=Object.keys(seen).sort((a,b)=>nameFor(a,seen[a]).localeCompare(nameFor(b,seen[b])));
+  cs.innerHTML = ucis.map(u=>`<option value="${esc(u)}">${esc(nameFor(u,seen[u]))} · ${esc(u)}</option>`).join("");
+
+  const ps=document.getElementById("period");
+  const months=[...new Set(ROWS.map(r=>r.date.slice(0,7)))].sort().reverse();
+  ps.innerHTML = `<option value="all">All dates</option>` + months.map(m=>{
+    const d=new Date(m+"-01T12:00:00");
+    return `<option value="${m}">${d.toLocaleString('en-US',{month:'long',year:'numeric'})}</option>`;
+  }).join("");
+}
+
+function render(){
+  const uci=document.getElementById("client").value;
+  const per=document.getElementById("period").value;
+  const vm=document.getElementById("voidmode").value;
+
+  let rows=ROWS.filter(r=>r.uci===uci);
+  if(per!=="all") rows=rows.filter(r=>r.date.startsWith(per));
+  const voided=rows.filter(isVoid);
+  if(vm==="hide") rows=rows.filter(r=>!isVoid(r));
+
+  const billable=rows.filter(r=>!isVoid(r));
+  const hours=billable.reduce((s,r)=>s+r.hrs,0);
+  const missing=billable.filter(r=>!r.follow.trim()||!r.comps.trim()||!r.notes.trim()).length;
+
+  document.getElementById("title").textContent =
+    nameFor(uci, rows[0]?.title) + " — Service Narrative";
+  document.getElementById("subtitle").textContent =
+    (per==="all" ? "All recorded dates" : document.getElementById("period").selectedOptions[0].textContent)
+    + " · UCI " + uci + " · generated " + new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+
+  document.getElementById("ledger").innerHTML = `
+    <div class="stat"><div class="n">${billable.length}</div><div class="l">Billable entries</div></div>
+    <div class="stat"><div class="n">${hours.toFixed(2)}</div><div class="l">Hours</div></div>
+    <div class="stat"><div class="n">$${(hours*58.64).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="l">At 076 rate</div></div>
+    <div class="stat ${voided.length?'flag':''}"><div class="n">${voided.length}</div><div class="l">Voided</div></div>
+    <div class="stat ${missing?'flag':''}"><div class="n">${missing}</div><div class="l">Incomplete</div></div>`;
+
+  const s=document.getElementById("stream");
+  if(!rows.length){ s.innerHTML=`<div class="empty">No entries for this client in the selected period.</div>`; return; }
+
+  s.innerHTML = rows.map(r=>{
+    const v=isVoid(r);
+    const chips=[r.type,r.loc].filter(Boolean).map(x=>`<span class="chip">${esc(x)}</span>`).join("");
+    return `<div class="rec ${v?'void':''}">
+      <div class="node"><div class="d">${esc(r.date.slice(5))}</div><div class="wd">${wd(r.date)}</div></div>
+      <div class="card">
+        ${v?`<div class="badge-void">VOID — NOT BILLABLE</div>`:``}
+        <div class="meta">
+          <span class="who2">${esc(r.staff)}</span>${chips}
+          <span class="hrs">${r.hrs.toFixed(2)} hrs</span>
+        </div>
+        ${r.comps?`<div class="comps">CFS components: ${esc(r.comps)}</div>`:``}
+        <div class="notes">${esc(r.notes)||'<i style="color:#999">No progress note recorded.</i>'}</div>
+        ${r.follow?`<div class="follow"><b>Follow-up:</b> ${esc(r.follow)}</div>`:``}
+      </div></div>`;
+  }).join("");
+}
+
+async function boot(){
+  const acct=msalInstance.getAllAccounts()[0];
+  if(!acct) return;
+  document.getElementById("gate").style.display="none";
+  document.getElementById("app").style.display="block";
+  document.getElementById("printBtn").style.display="inline-block";
+  document.getElementById("outBtn").style.display="inline-block";
+  document.getElementById("who").textContent=acct.username;
+  try{
+    await load();
+    if(!ROWS.length){ document.getElementById("stream").innerHTML=`<div class="empty">No contact logs found.</div>`; return; }
+    fillControls(); render();
+  }catch(e){
+    document.getElementById("stream").innerHTML=`<div class="err">Could not load contact logs. ${esc(e.message)}</div>`;
+  }
+}
+
+msalInstance.handleRedirectPromise().then(boot).catch(()=>boot());
+</script>
+</body>
+</html>
