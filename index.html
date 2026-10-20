@@ -59,11 +59,11 @@ section{padding-block:72px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--surface)}
 .nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .nav .wrap{display:flex;align-items:center;gap:16px;height:68px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex:1;min-width:0}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex:0 0 auto;margin-right:auto}
 .brand img{width:36px;height:auto}
 .brand b{font-family:var(--display);font-size:22px;color:var(--indigo);line-height:1;white-space:nowrap}
 .brand small{white-space:nowrap;display:block;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.02em;margin-top:2px}
-.links{display:flex;gap:4px;align-items:center}
+.links{display:flex;gap:2px;align-items:center;margin-left:24px}
 .links a{text-decoration:none;font-size:15px;font-weight:600;color:var(--text);padding:8px 10px;white-space:nowrap;border-radius:999px}
 .links a:hover{background:var(--peri)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 24px;border-radius:999px;font-weight:700;font-size:16px;text-decoration:none;border:2px solid transparent;transition:transform .15s}
@@ -73,10 +73,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .nav .btn{min-height:42px;padding:8px 18px;font-size:15px}
 .menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:12px;width:46px;height:46px;color:var(--ink);cursor:pointer}
 .menu-btn svg{width:22px;height:22px}
-@media (max-width:1080px){
+@media (max-width:1180px){
   .links,.nav .btn{display:none}
   .menu-btn{display:inline-flex;align-items:center;justify-content:center}
-  .nav.open .links{display:flex;flex-direction:column;align-items:stretch;position:absolute;left:0;right:0;top:68px;background:var(--surface);border-bottom:1px solid var(--line);padding:12px max(20px,env(safe-area-inset-right,0px)) 20px max(20px,env(safe-area-inset-left,0px));gap:2px}
+  .nav.open .links{margin:0;display:flex;flex-direction:column;align-items:stretch;position:absolute;left:0;right:0;top:68px;background:var(--surface);border-bottom:1px solid var(--line);padding:12px max(20px,env(safe-area-inset-right,0px)) 20px max(20px,env(safe-area-inset-left,0px));gap:2px}
   .nav.open .links a{padding:14px 12px;font-size:17px}
 }
 
@@ -191,8 +191,6 @@ footer a:hover{color:var(--ink)}
       <a href="#services">Services</a>
       <a href="#who">Who We Serve</a>
       <a href="#coordinators">For Coordinators</a>
-      <a href="#faq">FAQ</a>
-      <a href="family-prescreening.html">Pre-Screening</a>
       <a href="resources.html">Resources</a>
       <a href="careers.html">Careers</a>
       <a href="es.html" lang="es">Español</a>
@@ -379,6 +377,7 @@ footer a:hover{color:var(--ink)}
   <div class="wrap">
     <span>© 2026 Open Grace LLC · CFS Vendor PJ6208 · Inland Regional Center</span>
     <nav aria-label="Footer">
+      <a href="#faq">FAQ</a>
       <a href="family-prescreening.html">Pre-Screening</a>
       <a href="family-portal.html">Family Portal</a>
       <a href="coordinators.html">Coordinator Info</a>
