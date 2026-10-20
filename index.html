@@ -13,7 +13,7 @@
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="og-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <style>
@@ -24,7 +24,7 @@
   --indigo:#3F3A7A; --navy:#253F6A; --peri:#D7DDF2; --peri-ink:#2A2655;
   --gold:#FDBA45; --gold-ink:#2A2655; --orange:#E85F14; --line:#E1E0EC;
   --band:#253F6A; --band-text:#FFFFFF; --band-muted:#C9D3EE;
-  --display:'Fraunces',Georgia,'Times New Roman',serif;
+  --display:'Playfair Display',Georgia,'Times New Roman',serif;
   --sans:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
   --r:18px;
 }
@@ -84,7 +84,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .hero{padding-block:56px 40px}
 .hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center}
 .hero h1{font-size:clamp(34px,5.2vw,56px);margin:14px 0 18px}
-.hero h1 em{font-style:italic;color:var(--orange);font-weight:600}
+.hero h1 em{font-style:italic;color:var(--orange);font-weight:500}
 .hero .lead{font-size:clamp(17px,1.6vw,19px);color:var(--muted);max-width:52ch}
 .hero .ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
 .hero .vendor{margin-top:26px;font-size:14px;color:var(--muted)}
@@ -175,7 +175,7 @@ footer a:hover{color:var(--ink)}
   .areas,.steps{grid-template-columns:1fr}
   section{padding-block:56px}
 }
-@media (max-width:480px){.hero .ctas .btn{width:100%}.card-info dl{grid-template-columns:1fr;gap:2px}.card-info dd{margin-bottom:10px}}
+@media (max-width:480px){.photo .pill{font-size:14px;padding:10px 12px;left:12px;right:12px}.hero .ctas .btn{width:100%}.card-info dl{grid-template-columns:1fr;gap:2px}.card-info dd{margin-bottom:10px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 
@@ -217,7 +217,7 @@ footer a:hover{color:var(--ink)}
       <p class="vendor">Vendored through <b>Inland Regional Center</b> · CFS Vendor <b>PJ6208</b></p>
     </div>
     <div class="photo">
-      <img src="og-family.jpg" alt="A young man in a wheelchair talks and laughs with two friends over coffee outdoors" width="1200" height="801">
+      <img src="og-family.jpg" alt="A young man in a wheelchair talks and laughs with two friends over coffee outdoors" width="1118" height="744">
       <div class="pill">Serving Riverside &amp; San Bernardino Counties</div>
     </div>
   </div>
